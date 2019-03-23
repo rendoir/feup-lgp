@@ -19,5 +19,6 @@ For Windows users<br>
 
 ### Folders Structure
 Stylesheets (css): [/public/stylesheets](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/public/stylesheets)<br>
-HTML (reactJS not working by now): [/views](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/views)<br>
+Pages (use .jsx extension): [/views](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/views)<br>
+Default layouts (Common components): [/views/layouts](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/views/layouts)<br>
 Routing: [/routes](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/routes)
