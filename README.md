@@ -10,8 +10,14 @@ Move to the project folder<br>
 And run the following code<br>
 <code>npm install</code><br>
 
-For MacOs and Linux, run<br>
+### Starting the server
+For MacOs and Linux users<br>
 <code>DEBUG=gnet:* npm start</code>
 
-For Windows, run<br>
+For Windows users<br>
 <code>set DEBUG=gnet:* & npm start</code>
+
+### Folders Structure
+Stylesheets (css): [/public/stylesheets](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/public/stylesheets)<br>
+HTML (reactJS not working by now): [/views](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/views)<br>
+Routing: [/routes](https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a/tree/skeleton/gnet/routes)
