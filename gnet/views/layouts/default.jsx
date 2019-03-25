@@ -14,10 +14,9 @@ class DefaultLayout extends React.Component {
                 <meta name={"keywords"} content={"gnet social network medical glintt lgp"}/>
                 <meta name={"viewport"} content={"width=device-width, initial-scale=1, shrink-to-fit=no"}/>
 
-                <link rel={"shortcut icon"} type={"image/png"} href={"icon.png"}/>
-                <link rel={"apple-touch-icon"} href={"icon.png"}/>
                 <link rel={"stylesheet"} href={"bootstrap/css/bootstrap.css"}/>
-                <link rel={"stylesheet"} href={"stylesheets/homepage.css"}/>
+                {/*<link rel={"stylesheet"} href={"stylesheets/homepage.css"}/>*/}
+                <link rel={"stylesheet"} href={"stylesheets/style.css"}/>
                 <link rel={"stylesheet"} href={"https://use.fontawesome.com/releases/v5.7.2/css/all.css"}
                       integrity={"sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"}
                       crossOrigin={"anonymous"}/>
@@ -45,10 +44,12 @@ class DefaultLayout extends React.Component {
                     <div className={"collapse navbar-collapse"} id={"navbarColor01"}>
                         <ul className={"navbar-nav mr-auto"}>
                             <li className={"nav-item active"}>
-                                <a className={"nav-link"} href={"#"}>Home <span className={"sr-only"}>(current)</span></a>
+                                <a className={"nav-link"} href={"#"}>Home <span
+                                    className={"sr-only"}>(current)</span></a>
                             </li>
                             <li className={"nav-item"}>
-                                <a className={"nav-link"} href={"#"}>Loja <span className={"sr-only"}>(current)</span></a>
+                                <a className={"nav-link"} href={"#"}>Loja <span
+                                    className={"sr-only"}>(current)</span></a>
                             </li>
                         </ul>
                         <div className={"dropdown"}>
@@ -57,16 +58,19 @@ class DefaultLayout extends React.Component {
                                     aria-expanded={"false"}>Search type
                             </button>
                             <div className={"dropdown-menu"}>
-                                <a className={"dropdown-item"} href={"#"}><i className={"fas fa-book-medical"}/> Documents</a>
+                                <a className={"dropdown-item"} href={"#"}><i
+                                    className={"fas fa-book-medical"}/> Documents</a>
                                 <a className={"dropdown-item"} href={"#"}><i className={"fas fa-user"}/> Users</a>
                                 <a className={"dropdown-item"} href={"#"}><i className={" fas fa-align-justify"}/> Posts</a>
                             </div>
                         </div>
                         <form className={"form-inline my-2 my-lg-0"}>
                             <input className={"form-control mr-sm-2"} type={"text"} placeholder={"Search"}/>
-                            <button className={"form-control btn btn-secondary my-2 my-sm-0 fas fa-search"} type={"submit"}/>
+                            <button className={"form-control btn btn-secondary my-2 my-sm-0 fas fa-search"}
+                                    type={"submit"}/>
                         </form>
-                        <a className={"nav-link"} href={"#"}><span className={"text-white h3 pl-3"}><i className={"fas fa-user-md"}/></span></a>
+                        <a className={"nav-link"} href={"#"}><span className={"text-white h3 pl-3"}><i
+                            className={"fas fa-user-md"}/></span></a>
                     </div>
                 </nav>
             </header>
@@ -75,9 +79,9 @@ class DefaultLayout extends React.Component {
                     {this.props.children}
                 </div>
             </main>
-            <footer className={"container mt-5"}>
-                <p className={"float-right"}><a href={"#"}>Back to top</a></p>
+            <footer className={"mt-5"}>
                 <p>© 2019 gNet. · <a href={"#"}>Privacy</a> · <a href={"#"}>Terms</a></p>
+                <p><a href={"#"}>Back to top</a></p>
             </footer>
             </body>
             </html>
