@@ -6,3 +6,37 @@
 body {
   padding-top: 56px;
 }
+
+.bg-primary {
+  background-color: #F69127!important;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #F69127;
+  border-color: #F69127;
+}
+
+.btn-secondary {
+  color: #fff;
+  background-color: #AEA79F;
+  border-color: #AEA79F;
+}
+
+a, h1 {
+  color: #F69127;
+  background-color: transparent;
+}
+
+#user-points{
+  color: #F69127;
+}
+
+.fa, .far, .fas {
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free", serif;
+}
+
+#search-products{
+  margin-left: 20px;
+}
