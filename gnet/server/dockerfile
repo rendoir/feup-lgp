@@ -1,0 +1,12 @@
+FROM node:latest
+
+ENV PRODUCTION true
+WORKDIR /home/node/app
+COPY . .
+RUN mkdir uploads
+RUN npm install
+RUN chmod -R 777 /home/node/app/uploads
+RUN chown -R node: /home/node/app/uploads
+USER node
+CMD npm start
+EXPOSE 8443
