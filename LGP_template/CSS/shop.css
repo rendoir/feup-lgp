@@ -4,6 +4,10 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-shop-homepage/blob/master/LICENSE)
  */
 
+.container{
+  margin-left: 200px;
+}
+
 .bg-primary {
   background-color: #F69127!important;
 }
@@ -34,6 +38,82 @@ a, h1 {
   font-family: "Font Awesome 5 Free", serif;
 }
 
+#shop-left-box{
+  height: 130px;
+}
+
 #search-products{
   margin-left: 20px;
+}
+
+#search-shop-input{
+  margin-left: 10px;
+  width: 72%;
+}
+
+@media screen and (max-width: 1500px) {
+
+  .container{
+    margin-left: 0;
+  }
+
+}
+
+@media screen and (max-width: 1200px){
+  #shop-left-box{
+    height: 200px;
+  }
+
+  #search-shop-input{
+    width: 100%;
+  }
+
+  #search-shop-button{
+    margin-left: 10px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+
+  .container{
+    margin-left: 100px;
+  }
+
+  #shop-left-box{
+    height: 130px;
+  }
+
+  #search-products{
+    margin-left: 10px;
+    margin-right: 20px;
+  }
+
+  #search-shop-input{
+    width: 50%;
+    margin-right: 10px;
+  }
+
+  div.col-lg-4{
+    width: 50%;
+  }
+
+}
+
+@media screen and (max-width: 575px) {
+
+  .container{
+    margin-left: 0;
+  }
+
+  #search-products{
+    width: 100%;
+  }
+
+  #search-shop-button{
+    width: 12%;
+  }
+
+  div.col-lg-4{
+    width: 100%;
+  }
 }
