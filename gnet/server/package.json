@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "gnet server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a.git"
+  },
+  "keywords": [
+    "gnet",
+    "medical",
+    "social-network",
+    "glintt",
+    "medicine"
+  ],
+  "author": "lgp-3a",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "pg": "^7.9.0"
+  }
+}
