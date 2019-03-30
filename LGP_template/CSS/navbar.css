@@ -30,14 +30,30 @@ a:hover {
     border-color: transparent;
 }
 
-
-
+#loadMore {
+    padding-bottom: 30px;
+    padding-top: 30px;
+    text-align: center;
+    width: 100%;
+}
+#loadMore a {
+    background: #faa635;
+    border-radius: 3px;
+    color: white;
+    display: inline-block;
+    padding: 10px 30px;
+    transition: all 0.25s ease-out;
+    -webkit-font-smoothing: antialiased;
+}
+#loadMore a:hover {
+    background-color: #042a63;
+}
 
 .animated-icon1 {
     width: 30px;
     height: 20px;
     position: relative;
-    margin: 0px;
+    margin: 0;
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
     -o-transform: rotate(0deg);
@@ -72,7 +88,7 @@ a:hover {
 }
 
 .animated-icon1 span:nth-child(1) {
-    top: 0px;
+    top: 0;
 }
 
 .animated-icon1 span:nth-child(2) {
@@ -109,7 +125,7 @@ a:hover {
     width: 30px;
     height: 20px;
     position: relative;
-    margin: 0px;
+    margin: 0;
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
     -o-transform: rotate(0deg);
@@ -144,7 +160,7 @@ a:hover {
 }
 
 .animated-icon2 span:nth-child(1) {
-    top: 0px;
+    top: 0;
 }
 
 .animated-icon2 span:nth-child(2) {
