@@ -1,14 +1,18 @@
 import * as React from "react";
+import { Navbar } from "react-bootstrap";
+import "./header.css";
 
-export default class Navbar extends React.Component {
+export default class Header extends React.Component {
   public render() {
     return (
       <header>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <a className="navbar-brand" href="#">
-            {" "}
-            <i className="fas fa-clinic-medical fa-lg" /> gNet
-          </a>
+        <Navbar expand="lg" variant="dark" bg="primary">
+          <Navbar.Brand>
+            <a href="#">
+              {" "}
+              <i className="fas fa-clinic-medical fa-lg" /> gNet
+            </a>
+          </Navbar.Brand>
           <button
             className="navbar-toggler"
             type="button"
@@ -77,7 +81,7 @@ export default class Navbar extends React.Component {
               </span>
             </a>
           </div>
-        </nav>
+        </Navbar>
       </header>
     );
   }
