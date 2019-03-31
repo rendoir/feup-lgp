@@ -1,21 +1,17 @@
 import * as React from "react";
-import BasicInput from "../components/Inputs/BasicInput";
+import MyButton from "../components/Button";
+import Header from "../components/header/Header";
 import "../stylesheets/App.css";
-
-import logo from "../images/logo.svg";
 
 class App extends React.Component {
   public render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
+        <Header />
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <BasicInput label={"name"} />
+        <MyButton prop2={2} prop3={5} prop4={"option1"} />
       </div>
     );
   }
