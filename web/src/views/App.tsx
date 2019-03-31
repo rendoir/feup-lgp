@@ -1,6 +1,7 @@
 import * as React from "react";
 import MyButton from "../components/Button";
 import "../stylesheets/App.css";
+import Navbar from "./navbar/Navbar";
 
 import logo from "../images/logo.svg";
 
@@ -12,6 +13,7 @@ class App extends React.Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
+        <Navbar />
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
