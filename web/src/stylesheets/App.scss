@@ -1,28 +1,45 @@
-.App {
-  text-align: center;
+:root {
+  --main-color: #F69127;
+  --light-accent-color: #e9542040;
+  --dark-accent-color: #ff6600;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+body {
+  color: #5a5a5a;
+  background-color: #fff;
+  font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.footer a {
+  color: var(--main-color) !important;
 }
 
-.App-title {
-  font-size: 1.5em;
+.footer a:hover {
+  color: var(--dark-accent-color) !important;
 }
 
-.App-intro {
-  font-size: large;
+body p {
+  margin: 0;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+textarea {
+  overflow: hidden !important;
+  resize: none !important;
+  height:  calc(1.5em + .75rem + 2px) !important;
+}
+
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 0.2rem var(--light-accent-color) !important;
+  border-color: var(--light-accent-color) !important;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+  color: #6f8183;
+}
+
+input[type="text"]:focus::placeholder
+textarea:focus::placeholder {
+  color: darkgrey;
 }

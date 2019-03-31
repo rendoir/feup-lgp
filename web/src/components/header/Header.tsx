@@ -1,18 +1,15 @@
 import * as React from "react";
-import { Navbar } from "react-bootstrap";
 import "./header.css";
 
 export default class Header extends React.Component {
   public render() {
     return (
       <header>
-        <Navbar expand="lg" variant="dark" bg="primary">
-          <Navbar.Brand>
-            <a href="#">
-              {" "}
-              <i className="fas fa-clinic-medical fa-lg" /> gNet
-            </a>
-          </Navbar.Brand>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+          <a className="navbar-brand" href="#">
+            {" "}
+            <i className="fas fa-clinic-medical fa-lg" /> gNet
+          </a>
           <button
             className="navbar-toggler"
             type="button"
@@ -51,13 +48,13 @@ export default class Header extends React.Component {
               </button>
               <div className="dropdown-menu">
                 <a className="dropdown-item" href="#">
-                  <i className="fas fa-book-medical" /> Documents
+                  <i className="fas fa-book-medical " /> Documents
                 </a>
                 <a className="dropdown-item" href="#">
                   <i className="fas fa-user " /> Users
                 </a>
                 <a className="dropdown-item" href="#">
-                  <i className=" fas fa-align-justify" /> Posts
+                  <i className=" fas fa-align-justify " /> Posts
                 </a>
               </div>
             </div>
@@ -68,10 +65,7 @@ export default class Header extends React.Component {
                 type="text"
                 placeholder="Search"
               />
-              <button
-                className="form-control btn btn-secondary my-2 my-sm-0"
-                type="submit"
-              >
+              <button className="btn btn-secondary my-2 my-sm-0" type="submit">
                 <i className="fas fa-search" />
               </button>
             </form>
@@ -81,7 +75,7 @@ export default class Header extends React.Component {
               </span>
             </a>
           </div>
-        </Navbar>
+        </nav>
       </header>
     );
   }
