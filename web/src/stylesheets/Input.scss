@@ -1,0 +1,29 @@
+$GlinttColor: rgba(246,145,39,.8);
+
+.inputComponent {
+  label {
+    color: $GlinttColor;
+    text-align: left;
+    text-transform: capitalize;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: sans-serif;
+  };
+  label input {
+    color: black;
+    border: 0 transparent;
+    border-bottom: 2px solid black;
+    box-shadow: none;
+    font-weight: 500;
+    font-size: 20px;
+    padding: 0.3em 0;
+    border-radius: 0;
+    font-family: sans-serif;
+  }
+  label input:focus {
+        border-bottom: 2px solid $GlinttColor;
+        outline: none;
+  };
+}
+
+

@@ -1,5 +1,5 @@
 import * as React from "react";
-import MyButton from "../components/Button";
+import BasicInput from "../components/Inputs/BasicInput";
 import "../stylesheets/App.css";
 
 import logo from "../images/logo.svg";
@@ -15,7 +15,7 @@ class App extends React.Component {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <MyButton prop2={2} prop3={5} prop4={"option1"} />
+        <BasicInput label={"name"} />
       </div>
     );
   }

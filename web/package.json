@@ -22,12 +22,8 @@
     "typescript": "^3.4.1"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": [
+    "./**/*.{js,jsx,ts,tsx}": [
       "./node_modules/.bin/prettier --single-qute --write --parser \"typescript\",",
-      "git add"
-    ],
-    "src/stylesheets/*.scss": [
-      "./node_modules/.bin/stylelint --syntax=scss",
       "git add"
     ]
   },
