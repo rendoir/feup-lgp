@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Component } from "react";
-import "../../stylesheets/Input.css";
 
 /**
  * Basic input properties

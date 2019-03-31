@@ -1,5 +1,5 @@
 .navbar :focus {
-    border-color: var(--light-accent-color) !important;
+    border-color: $light-accent-color !important;
 }
 
 .form-control {
@@ -33,7 +33,7 @@ a:hover {
 }
 
 .navbar.bg-primary {
-    background-color: var(--main-color) !important;
+    background-color: $main-color !important;
 }
 
 #dropdownCategories-btn {
@@ -42,15 +42,15 @@ a:hover {
 }
 
 #dropdownCategories-btn:focus {
-    background-color: var(--dark-accent-color);
+    background-color: $dark-accent-color;
 }
 
 #dropdownCategories-btn:focus {
-    box-shadow: 0 0 0 0.2rem var(--light-accent-color) !important;
+    box-shadow: 0 0 0 0.2rem $light-accent-color !important;
 }
 
 .dropdown-item:active {
-    background-color: var(--main-color) !important;
+    background-color: $main-color !important;
 }
 
 
@@ -226,6 +226,6 @@ header {
     }
 
     .navbar-toggler:focus {
-        outline-color: var(--dark-accent-color);
+        outline-color: $dark-accent-color;
     }
 }

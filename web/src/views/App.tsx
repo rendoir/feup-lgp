@@ -1,7 +1,6 @@
 import * as React from "react";
 import MyButton from "../components/Button";
-import Header from "../components/header/Header";
-import "../stylesheets/App.css";
+import Header from "../components/Header";
 
 class App extends React.Component {
   public render() {
