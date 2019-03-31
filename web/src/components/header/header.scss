@@ -215,3 +215,17 @@ header {
         width: 400px;
     }
 }
+
+@media (max-width: 992px) {
+    .navbar-collapse .dropdown, 
+    .navbar-collapse .dropdown button,
+    .navbar-collapse a.nav-link,
+    .navbar-collapse a.nav-link span {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .navbar-toggler:focus {
+        outline-color: var(--dark-accent-color);
+    }
+}
