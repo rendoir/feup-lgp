@@ -1,0 +1,34 @@
+@import "colors";
+
+// DEFAULTS
+// Colors
+$default-background-color: $white;
+$default-font-color-light: $greyish;
+$default-font-color: $black;
+// Sizes
+$default-font-size-small: 14px;
+$default-font-size: 16px;
+$default-font-size-large: 18px;
+$default-line-height-small: 1.25;
+$default-line-height: 1.5;
+$default-line-height-large: 2;
+$default-padding-small: 10px;
+$default-padding: 16;
+$default-padding-large: 20px;
+$default-border-radius-small: 3px;
+$default-border-radius: 4px;
+// Durations
+$default-transition-duration: 150ms;
+// Fonts
+$default-font-family: sans-serif;
+
+// NON-DEFAULTS
+// Colors
+$color-primary: $glintt;
+$color-success: $medium-green;
+$color-danger: $lipstick;
+$color-info: $pale-blue;
+$color-warning: $orange-yellow;
+$color-pending: $color-info;
+$color-error: $color-danger;
+$color-labels: $dark-grey;
