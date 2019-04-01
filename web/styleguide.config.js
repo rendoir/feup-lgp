@@ -39,7 +39,7 @@ module.exports = {
       ]
     },
     color: {
-      link: "#5856d6",
+      link: "#fff",
       linkHover: "rgb(70, 69, 171)",
       sidebarBackground: "rgba(246,145,39,.8)",
       errorBackground: "#e22d44"
