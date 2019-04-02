@@ -1,3 +1,5 @@
+@import "variables";
+
 body {
     font-family: $default-font-family !important;
   
@@ -35,7 +37,7 @@ body {
       color: #6f8183;
     }
   
-    input[type="text"]:focus::placeholder
+    input[type="text"]:focus::placeholder,
     textarea:focus::placeholder {
       color: darkgrey;
     }
