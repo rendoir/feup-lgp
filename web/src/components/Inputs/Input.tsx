@@ -1,12 +1,11 @@
-import * as React from "react";
-import { Component } from "react";
+import React, { Component } from "react";
 import styles from "./Input.module.css";
 import classNames from "classnames";
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
 export type Props = {
-  /** component class attribute */
+  /** Input class attribute */
   className?: string;
   /** input class attribute */
   inputClassName?: string;
