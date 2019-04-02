@@ -1,11 +1,9 @@
 import * as React from "react";
-import Header from "../components/header/Header";
 
 class Profile extends React.Component {
   public render() {
     return (
       <div className="Profile">
-        <Header />
         <main id="profile" className="container">
           <div id="top-div" className="w-100 mt-5">
             <aside className="profile-card">
