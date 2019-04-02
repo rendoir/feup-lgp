@@ -1,15 +1,19 @@
 import * as React from "react";
+import { Route, BrowserRouter as Router } from "react-router-dom";
+
 import Header from "../components/header/Header";
 import "../styles/App.css";
+
+import Profile from "./Profile";
 
 class App extends React.Component {
   public render() {
     return (
       <div className="App">
         <Header />
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
+        <Router>
+          <Route exact path="/user/:username" component={Profile} />
+        </Router>
       </div>
     );
   }
