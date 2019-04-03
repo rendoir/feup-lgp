@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
+import Backoffice from "./Backoffice";
 
 class App extends React.Component {
   public render() {
@@ -13,6 +14,7 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact path="/user/:username" component={Profile} />
+          <Route exact path="/admin" component={Backoffice} />
         </Router>
       </div>
     );
