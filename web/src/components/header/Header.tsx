@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./header.css";
+import "./Header.scss";
 
 export default class Header extends React.Component {
   public render() {
@@ -32,6 +32,11 @@ export default class Header extends React.Component {
               <li className="nav-item active">
                 <a className="nav-link" href="#">
                   Profile <span className="sr-only">(current)</span>
+                </a>
+              </li>
+              <li className="nav-item active">
+                <a className="nav-link" href="#">
+                  Shop <span className="sr-only">(current)</span>
                 </a>
               </li>
             </ul>
