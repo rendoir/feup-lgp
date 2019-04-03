@@ -1,0 +1,45 @@
+@import "variables";
+
+body {
+    font-family: $default-font-family !important;
+  
+  
+    p {
+      margin: 0;
+    }
+  
+  
+    .footer {
+      a {
+        color: $glintt !important;
+      }
+  
+      a:hover {
+        color: $dark-accent-color !important;
+      }
+    }
+  
+  
+    textarea {
+      overflow: hidden !important;
+      resize: none !important;
+      height:  calc(1.5em + .75rem + 2px) !important;
+    }
+  
+    input:focus,
+    textarea:focus {
+      box-shadow: 0 0 0 0.2rem $light-accent-color !important;
+      border-color: $light-accent-color !important;
+    }
+  
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: #6f8183;
+    }
+  
+    input[type="text"]:focus::placeholder,
+    textarea:focus::placeholder {
+      color: darkgrey;
+    }
+  }
+  

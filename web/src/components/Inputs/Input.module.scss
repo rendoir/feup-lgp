@@ -1,0 +1,224 @@
+@import "../../styles/variables";
+
+$input-error-color: $color-danger;
+$input-warning-color: $color-warning;
+$input-success-color: $color-success;
+$input-text-color: $black;
+$input-placeholder-color: rgba($black, .3);
+$input-border-color: rgba($black, .35);
+$input-border-width: 1px;
+$input-focus-border-width: 2px;
+$input-default-font-size: 18px;
+$input-default-line-height: 1.4;
+$input-large-font-size: 22px;
+$input-large-line-height: 1.25;
+$input-font-family: $default-font-family;
+$input-focused-color: $black;
+$input-focused-border-color: $color-primary;
+$input-disabled-color: $pinkish-grey-two;
+$input-disabled-border-color: $input-disabled-color;
+$input-disabled-background-color: rgba($input-disabled-color, .15);
+$input-label-color: $color-primary;
+$input-label-font-size: 14px;
+$input-label-line-height: 22px;
+$input-label-font-family: $default-font-family;
+$input-hint-color: rgba($black, .3);
+$input-hint-font-size: 14px;
+$input-hint-line-height: 18px;
+$input-hint-font-family: $default-font-family;
+$input-prefix-color: $default-font-color-light;
+
+/* Styles */
+.container {
+  all: initial;
+  display: block;
+  width: 100%;
+  margin-bottom: $default-padding;
+  line-height: 0;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: row;
+  cursor: text;
+  transition: box-shadow $default-transition-duration ease-in-out;
+  box-shadow: 0 $input-border-width 0 0 $input-border-color;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.prefix {
+  padding: 10px 0 10px 0;
+  cursor: inherit;
+  user-select: none;
+  transition: color $default-transition-duration ease-in-out;
+  font-family: $input-font-family;
+  font-size: $input-default-font-size;
+  line-height: $input-default-line-height;
+  color: $input-prefix-color;
+}
+
+.input {
+  all: initial;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 0;
+  cursor: inherit;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  box-shadow: none;
+  font-family: $input-font-family;
+  font-size: $input-default-font-size;
+  line-height: $input-default-line-height;
+  color: $input-text-color;
+
+  &::-webkit-input-placeholder {
+    color: $input-placeholder-color;
+  }
+
+  &:-moz-placeholder {
+    color: $input-placeholder-color;
+  }
+
+  &::-moz-placeholder {
+    color: $input-placeholder-color;
+  }
+
+  &:-ms-input-placeholder {
+    color: $input-placeholder-color;
+  }
+}
+
+.filled {
+  & .inputWrapper {
+    box-shadow: 0 $input-border-width 0 0 $input-focused-border-color;
+  }
+
+  & .prefix {
+    color: $input-focused-border-color;
+  }
+
+  & .input {
+    color: $input-focused-color;
+  }
+}
+
+.focused {
+  & .inputWrapper {
+    box-shadow: 0 $input-focus-border-width 0 0 $input-focused-border-color;
+  }
+
+  & .prefix {
+    color: $input-focused-border-color;
+  }
+
+  & .input {
+    color: $input-focused-color;
+  }
+}
+
+.disabled {
+  & .label {
+    cursor: not-allowed;
+    color: $input-disabled-color;
+  }
+
+  & .input {
+    color: rgba($input-text-color, .35);
+    cursor: not-allowed;
+  }
+
+  & .inputWrapper {
+    cursor: not-allowed;
+    box-shadow: 0 $input-border-width 0 0 $input-disabled-border-color;
+  }
+}
+
+.large {
+  & .input {
+    padding: $default-padding 0;
+    font-size: $input-large-font-size;
+    line-height: $input-large-line-height;
+  }
+
+  & .prefix {
+    padding: $default-padding 4px $default-padding 0;
+    font-size: $input-large-font-size;
+  }
+}
+
+.label {
+  all: initial;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  font-family: $input-font-family;
+  font-size: $input-label-font-size;
+  font-weight: 500;
+  line-height: $input-default-line-height;
+  color: $input-label-color;
+}
+
+.hint {
+  all: initial;
+  display: inline-block;
+  margin: 6px 0;
+  user-select: none;
+  font-family: $input-hint-font-family;
+  font-size: $input-hint-font-size;
+  line-height: $input-hint-line-height;
+  color: $input-hint-color;
+}
+
+.success {
+  & .inputWrapper {
+    box-shadow: 0 $input-border-width 0 0 $input-success-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 $input-focus-border-width 0 0 $input-success-color;
+    }
+  }
+
+  & .hint {
+    color: $input-success-color;
+  }
+}
+
+.error {
+  & .inputWrapper {
+    box-shadow: 0 $input-border-width 0 0 $input-error-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 $input-focus-border-width 0 0 $input-error-color;
+    }
+  }
+
+  & .hint {
+    color: $input-error-color
+  }
+}
+
+.warning {
+  & .inputWrapper {
+    box-shadow: 0 $input-border-width 0 0 $input-warning-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 $input-focus-border-width 0 0 $input-warning-color;
+    }
+  }
+
+  & .hint {
+    color: $input-warning-color;
+  }
+}
+
+
