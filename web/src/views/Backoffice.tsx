@@ -1,5 +1,6 @@
 import * as React from "react";
-import { bool } from "prop-types";
+
+import "../styles/Backoffice.css";
 
 interface BackofficeState {
   usersAreaActive: boolean;
@@ -14,7 +15,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   getUsersArea() {
-    console.log("users area");
     return (
       <div id="users_area" className="col-12 col-sm-9">
         {/* User search form */}
@@ -161,7 +161,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   getNotifications() {
-    console.log("notifications");
     return (
       <div id="notifications_area" className="col-12 col-md-9 mt-2 mt-md-0">
         {/* Notification list */}
