@@ -1,5 +1,6 @@
 import * as React from "react";
 import Button from "../components/Button/Button";
+import "../styles/Shop.css";
 
 class Shop extends React.Component {
   public render() {
@@ -128,9 +129,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -158,9 +159,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -188,9 +189,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -218,9 +219,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -248,9 +249,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -278,9 +279,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -308,9 +309,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -338,9 +339,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -368,9 +369,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -398,9 +399,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -428,9 +429,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -458,9 +459,9 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <button type="button" className="btn btn-link">
+                      <Button theme="primary" view="outline" size="small" wide>
                         Exchange
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>

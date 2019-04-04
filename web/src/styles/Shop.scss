@@ -1,131 +1,132 @@
-@import "variables";
-
-//colors
-$color_carrot_orange_approx: #f69127;
-$white: #fff;
-$color_cloudy_approx: #aea79f;
-$color_sea_buckthorn_approx: #faa635;
-$color_deep_sapphire_approx: #042a63;
-
-//fonts
-$font_0: Font Awesome 5 Free;
-$font_1: serif;
-
-.container {
+.container{
   margin-left: 200px;
 }
+
 .bg-primary {
-  background-color: $color_carrot_orange_approx!important;
+  background-color: #F69127!important;
 }
+
 .btn-primary {
-  color: $white;
-  background-color: $color_carrot_orange_approx;
-  border-color: $color_carrot_orange_approx;
+  color: #fff;
+  background-color: #F69127;
+  border-color: #F69127;
 }
+
 .btn-secondary {
-  color: $white;
-  background-color: $color_cloudy_approx;
-  border-color: $color_cloudy_approx;
+  color: #fff;
+  background-color: #AEA79F;
+  border-color: #AEA79F;
 }
-a {
-  color: $color_carrot_orange_approx;
+
+a, h1 {
+  color: #F69127;
   background-color: transparent;
 }
-h1 {
-  color: $color_carrot_orange_approx;
-  background-color: transparent;
+
+#user-points{
+  color: #F69127;
 }
-#user-points {
-  color: $color_carrot_orange_approx;
-}
-.fa {
+
+.fa, .far, .fas {
   font-weight: 900;
-  font-family: $font_0, $font_1;
+  font-family: "Font Awesome 5 Free", serif;
 }
-.far {
-  font-weight: 900;
-  font-family: $font_0, $font_1;
-}
-.fas {
-  font-weight: 900;
-  font-family: $font_0, $font_1;
-}
-#shop-left-box {
+
+#shop-left-box{
   height: 130px;
+}
+
+#search-products{
   margin-left: 20px;
 }
-#search-products {
-  margin-left: 20px;
-}
-#search-shop-input {
+
+#search-shop-input{
   margin-left: 10px;
   width: 72%;
 }
+
 #loadMore {
   padding-bottom: 30px;
   padding-top: 30px;
   text-align: center;
   width: 100%;
-  a {
-    background: $color_sea_buckthorn_approx;
-    //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
-    border-radius: 3px;
-    color: $white;
-    display: inline-block;
-    padding: 10px 30px;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
-    transition: all 0.25s ease-out;
-    &:hover {
-      background-color: $color_deep_sapphire_approx;
-    }
-  }
 }
-@media screen and(max-width: 1500px) {
-  .container {
+#loadMore a {
+  background: #faa635;
+  border-radius: 3px;
+  color: white;
+  display: inline-block;
+  padding: 10px 30px;
+  transition: all 0.25s ease-out;
+  -webkit-font-smoothing: antialiased;
+}
+#loadMore a:hover {
+  background-color: #042a63;
+}
+
+@media screen and (max-width: 1500px) {
+
+  .container{
     margin-left: 0;
   }
+
 }
-@media screen and(max-width: 1200px) {
-  #shop-left-box {
+
+@media screen and (max-width: 1200px){
+  #shop-left-box{
     height: 200px;
   }
-  #search-shop-input {
+
+  #search-shop-input{
     width: 100%;
   }
-  #search-shop-button {
+
+  #search-shop-button{
     margin-left: 10px;
   }
 }
-@media screen and(max-width: 991px) {
-  .container {
+
+@media screen and (max-width: 991px) {
+
+  .container{
     margin-left: 100px;
   }
-  #shop-left-box {
+
+  #shop-left-box{
     height: 130px;
   }
-  #search-products {
+
+  #search-products{
     margin-left: 10px;
     margin-right: 20px;
   }
-  #search-shop-input {
+
+  #search-shop-input{
     width: 50%;
     margin-right: 10px;
   }
-  div.col-lg-4 {
+
+  div.col-lg-4{
     width: 50%;
   }
+
 }
-@media screen and(max-width: 575px) {
-  .container {
+
+@media screen and (max-width: 575px) {
+
+  .container{
     margin-left: 0;
   }
-  #search-products {
+
+  #search-products{
     width: 100%;
   }
-  #search-shop-button {
+
+  #search-shop-button{
     width: 12%;
   }
-  div.col-lg-4 {
+
+  div.col-lg-4{
     width: 100%;
   }
 }
