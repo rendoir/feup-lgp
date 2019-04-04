@@ -1,4 +1,5 @@
 import * as React from "react";
+import Button from "../components/Button/Button";
 
 class Shop extends React.Component {
   public render() {
@@ -464,9 +465,11 @@ class Shop extends React.Component {
                   </div>
                 </div>
               </div>
-              <div id="loadMore">
-                <a href="#">Load More</a>
-              </div>
+            </div>
+            <div id="loadMore">
+              <Button size="small" wide>
+                Load more
+              </Button>
             </div>
           </div>
         </div>
