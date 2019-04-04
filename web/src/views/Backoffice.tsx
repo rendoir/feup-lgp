@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import "../styles/Backoffice.css";
-
 interface BackofficeState {
   usersAreaActive: boolean;
 }
@@ -16,7 +14,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   getUsersArea() {
     return (
-      <div id="users_area" className="col-12 col-sm-9">
+      <div id="backoffice_users_area" className="col-12 col-sm-9">
         {/* User search form */}
         <div className="row d-flex justify-content-center">
           <div className="dropdown mr-4 col-xs-12">
@@ -162,7 +160,10 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   getNotifications() {
     return (
-      <div id="notifications_area" className="col-12 col-md-9 mt-2 mt-md-0">
+      <div
+        id="backoffice_notifications_area"
+        className="col-12 col-md-9 mt-2 mt-md-0"
+      >
         {/* Notification list */}
         {/* Comment report notification (one line) */}
         <div className="container border mb-2">

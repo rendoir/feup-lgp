@@ -1,0 +1,18 @@
+#backoffice_users_area {
+	.btn-block {
+		border-radius: 40px;
+	}
+
+	@media screen and (max-width: 990px) {
+		.rounded-circle {
+			width: 100px;
+			height: 100px;
+		}
+	}
+}
+
+#backoffice_notifications_area {
+	.report_message {
+		margin-bottom: 6px;
+	}
+}
