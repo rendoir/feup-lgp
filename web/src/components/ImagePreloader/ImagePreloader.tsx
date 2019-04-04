@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, ReactNode } from "react";
 
 export const STATE_PENDING = "pending";
 export const STATE_SUCCESS = "success";
@@ -8,17 +8,17 @@ export type ImageState = "pending" | "success" | "error";
 
 export type State = {
   state: ImageState;
-  src?: string | null;
-  error?: any;
+  src: string | undefined;
+  error: unknown | null | undefined;
 };
 
 export type Props = {
   /** Image src attribute */
-  src?: string | null;
+  src: string | undefined;
   /** Image onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
-  children: (state: State) => Node;
+  children: (state: State) => ReactNode;
 };
 
 class ImagePreloader extends Component<Props, State> {
@@ -30,7 +30,7 @@ class ImagePreloader extends Component<Props, State> {
 
     this.state = {
       state: STATE_PENDING,
-      src: null,
+      src: undefined,
       error: null
     };
   }
@@ -43,8 +43,9 @@ class ImagePreloader extends Component<Props, State> {
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): State {
     return {
-      src: nextProps.src === null ? null : prevState.src,
-      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING
+      src: nextProps.src === undefined ? undefined : prevState.src,
+      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
+      error: null
     };
   }
 
