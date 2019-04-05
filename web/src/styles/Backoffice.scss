@@ -1,13 +1,40 @@
-#backoffice_users_area {
-	.btn-block {
-		border-radius: 40px;
-	}
+@import "variables";
+@import "functions";
 
+#backoffice_users_area {
 	@media screen and (max-width: 990px) {
 		.rounded-circle {
 			width: 100px;
 			height: 100px;
 		}
+	}
+	//BUTTONS
+	.btn-block {
+		border-radius: 40px;
+	}
+	.btn {
+		border: none !important;
+	}
+	.btn:focus {
+		box-shadow: none !important;
+	}
+	.btn-primary {
+		background-color: $color-primary;
+	}
+	.btn-primary:hover {
+		background-color: shade($color-primary, 30);
+	}
+	.btn-danger {
+		background-color: $color-danger;
+	}
+	.btn-danger:hover {
+		background-color: shade($color-danger, 30);
+	}
+	.btn-info {
+		background-color: $color-info;
+	}
+	.btn-info:hover {
+		background-color: shade($color-info, 30);
 	}
 }
 

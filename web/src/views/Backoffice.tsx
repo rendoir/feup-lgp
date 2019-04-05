@@ -1,4 +1,5 @@
 import * as React from "react";
+import Button from "../components/Button/Button";
 
 interface BackofficeState {
   usersAreaActive: boolean;
@@ -10,11 +11,11 @@ interface BackofficeUserCardProps {
   email: string;
   institution: string;
   profession: string;
-  userType: string;
-  banHandler: any;
-  unbanHandler: any;
-  turnAdminHandler: any;
-  expelAdminHandler: any;
+  userType?: string; //This parameter can be ommited if it's a regular user
+  banHandler?: any; //Regular and admin users require this handler
+  unbanHandler?: any; //Banned users require this handler
+  turnAdminHandler?: any; //Regular users require this handler
+  expelAdminHandler?: any; //Admin users require this handler
 }
 
 const BANNED_USER = "banned";
@@ -26,61 +27,61 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
   }
 
   getButtons() {
-    //generalizar class name
     const banButton = (
-      <div className="row mb-3">
-        <button
-          className="btn btn-danger btn-block"
-          onClick={this.props.banHandler}
-        >
-          Ban
-        </button>
-      </div>
+      <button
+        className="btn btn-danger btn-block"
+        onClick={this.props.banHandler}
+      >
+        Ban
+      </button>
     );
-
     const unbanButton = (
-      <div className="row">
-        <button
-          className="btn btn-primary btn-block"
-          onClick={this.props.unbanHandler}
-        >
-          Unban
-        </button>
-      </div>
+      <button
+        className="btn btn-primary btn-block"
+        onClick={this.props.unbanHandler}
+      >
+        Unban
+      </button>
     );
-
     const turnAdminButton = (
-      <div className="row">
-        <button
-          className="btn btn-info btn-block"
-          onClick={this.props.turnAdminHandler}
-        >
-          Turn admin
-        </button>
-      </div>
+      <button
+        className="btn btn-info btn-block"
+        onClick={this.props.turnAdminHandler}
+      >
+        Turn admin
+      </button>
+    );
+    const expelAdminButton = (
+      <button
+        className="btn btn-primary btn-block"
+        onClick={this.props.expelAdminHandler}
+      >
+        Expel admin
+      </button>
     );
 
-    const expelAdminButton = (
-      <div className="row">
-        <button
-          className="btn btn-primary btn-block"
-          onClick={this.props.expelAdminHandler}
-        >
-          Expel admin
-        </button>
-      </div>
-    );
-    let buttons = [];
-    if (this.props.userType === BANNED_USER) {
-      buttons.push(unbanButton);
-    } else {
-      buttons.push(banButton);
-      if (this.props.userType === ADMIN_USER) buttons.push(expelAdminButton);
-      else buttons.push(turnAdminButton);
+    let userTypeButton;
+    switch (this.props.userType) {
+      case BANNED_USER:
+        userTypeButton = unbanButton;
+        break;
+
+      case ADMIN_USER:
+        userTypeButton = expelAdminButton;
+        break;
+
+      default:
+        userTypeButton = turnAdminButton;
+        break;
     }
 
     return (
-      <div className="col-12 col-lg-2 justify-content-lg-center">{buttons}</div>
+      <div className="col-12 col-lg-2 justify-content-lg-center">
+        {this.props.userType !== BANNED_USER && (
+          <div className="row mb-3">{banButton}</div>
+        )}
+        <div className="row">{userTypeButton}</div>
+      </div>
     );
   }
 
@@ -107,6 +108,7 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
               <strong>Profession/Course:</strong> {this.props.profession}
             </p>
           </div>
+          {this.getButtons()}
         </div>
       </div>
     );
@@ -119,6 +121,28 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.state = {
       usersAreaActive: true
     };
+
+    //User card button handlers
+    this.handleUserCardBan = this.handleUserCardBan.bind(this);
+    this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
+    this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
+    this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
+  }
+
+  handleUserCardBan() {
+    console.log("BAN");
+  }
+
+  handleUserCardUnban() {
+    console.log("UN-BAN");
+  }
+
+  handleUserCardTurnAdmin() {
+    console.log("TURN");
+  }
+
+  handleUserCardExpelAdmin() {
+    console.log("EXPEL");
   }
 
   getUsersArea() {
@@ -169,74 +193,32 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             email="alberta.fcup55@fe.up.pt"
             institution="Faculty of Medicine of University of Porto"
             profession="Urology"
+            banHandler={this.handleUserCardBan}
+            turnAdminHandler={this.handleUserCardTurnAdmin}
           />
 
           {/* Alberta banned */}
-          <div className="card mb-2">
-            <div className="card-header">Alberta Ferndandes Banned</div>
-            <div className="card-body row col-md d-flex align-items-center">
-              <div className="col-12 col-lg-2">
-                <img
-                  className="img-fluid img-thumbnail rounded-circle d-flex justify-content-center"
-                  src="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-                  alt="card image"
-                />
-              </div>
-              <div className="col-12 col-lg-8 mb-2 mb-lg-0">
-                <p className="card-text">
-                  <strong>Email:</strong> alberta.fcup55@fe.up.pt
-                </p>
-                <p className="card-text">
-                  <strong>Institution/College:</strong> Faculty of Medicine of
-                  University of Porto
-                </p>
-                <p className="card-text">
-                  <strong>Profession/Course:</strong> Urology
-                </p>
-              </div>
-              <div className="col-12 col-lg-2 justify-content-lg-center">
-                <div className="row mb-3">
-                  <button className="btn btn-primary btn-block">Unban</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <BackofficeUserCard
+            name="Alberta Ferndandes Normal"
+            image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+            email="alberta.fcup55@fe.up.pt"
+            institution="Faculty of Medicine of University of Porto"
+            profession="Urology"
+            userType={BANNED_USER}
+            unbanHandler={this.handleUserCardUnban}
+          />
 
           {/* Alberta admin */}
-          <div className="card mb-2">
-            <div className="card-header">Alberta Ferndandes Admin</div>
-            <div className="card-body row col-md d-flex align-items-center">
-              <div className="col-12 col-lg-2">
-                <img
-                  className="img-fluid img-thumbnail rounded-circle d-flex justify-content-center"
-                  src="https://pbs.twimg.com/profile_images/938813312506064896/ciY68hiP_400x400.jpg"
-                  alt="card image"
-                />
-              </div>
-              <div className="col-12 col-lg-8 mb-2 mb-lg-0">
-                <p className="card-text">
-                  <strong>Email:</strong> alberta.fcup55@fe.up.pt
-                </p>
-                <p className="card-text">
-                  <strong>Institution/College:</strong> Faculty of Medicine of
-                  University of Porto
-                </p>
-                <p className="card-text">
-                  <strong>Profession/Course:</strong> Urology
-                </p>
-              </div>
-              <div className="col-12 col-lg-2 justify-content-lg-center">
-                <div className="row mb-3">
-                  <button className="btn btn-danger btn-block">Ban</button>
-                </div>
-                <div className="row">
-                  <button className="btn btn-primary btn-block">
-                    Expel admin
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <BackofficeUserCard
+            name="Alberta Ferndandes Normal"
+            image="https://pbs.twimg.com/profile_images/938813312506064896/ciY68hiP_400x400.jpg"
+            email="alberta.fcup55@fe.up.pt"
+            institution="Faculty of Medicine of University of Porto"
+            profession="Urology"
+            userType={ADMIN_USER}
+            banHandler={this.handleUserCardBan}
+            expelAdminHandler={this.handleUserCardExpelAdmin}
+          />
         </div>
       </div>
     );
