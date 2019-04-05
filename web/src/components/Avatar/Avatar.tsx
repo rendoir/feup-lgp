@@ -146,7 +146,7 @@ class Avatar extends Component<Props, State> {
       return null;
     }
 
-    return <circle x="84" y="84" r="15" className={styles[status]} />;
+    return <circle cx="84" cy="84" r="15" className={styles[status]} />;
   }
 
   renderAvatar = (imageState: ImagePreloaderState) => {
