@@ -53,7 +53,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(jwtMiddleware());
+// Uncomment the following line when login is implemented.
+// app.use(jwtMiddleware());
+
 // Define routes.
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
