@@ -16,7 +16,7 @@ export type Props = {
   size: number;
   placeholder: AvatarPlaceholder;
   className?: string;
-  onClick?: (event: MouseEvent) => any;
+  onClick?: (event: MouseEvent) => unknown;
   status?: UserStatusType | null | undefined;
 };
 
@@ -30,8 +30,8 @@ class Avatar extends Component<Props, State> {
   id: string;
 
   static defaultProps = {
-    image: null,
-    title: null,
+    image: undefined,
+    title: undefined,
     size: 32,
     placeholder: "empty",
     status: null
@@ -54,13 +54,13 @@ class Avatar extends Component<Props, State> {
       <linearGradient
         id={this.id}
         gradientUnits="userSpaceOnUse"
-        x1={"100%"}
-        y1={"100%"}
-        y2={"0%"}
-        x2={"0%"}
+        x1="100%"
+        y1="100%"
+        y2="0%"
+        x2="0%"
       >
-        <stop offset={"0%"} stopColor={colors.payload.from} />
-        <stop offset={"100%"} stopColor={colors.payload.to} />
+        <stop offset="0%" stopColor={colors.payload.from} />
+        <stop offset="100%" stopColor={colors.payload.to} />
       </linearGradient>
     );
   }
@@ -74,7 +74,14 @@ class Avatar extends Component<Props, State> {
           height="100%"
           patternUnits="objectBoundingBox"
         >
-          <img src={src} width="100%" height="100%" alt="" />
+          <image
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            xlinkHref={src}
+            preserveAspectRatio="xMidYMid slice"
+          />
         </pattern>
       );
     }
@@ -114,9 +121,9 @@ class Avatar extends Component<Props, State> {
     if (!status || status === "invisible") {
       return (
         <circle
-          fill={"url(#${this.id})"}
-          x="50"
-          y="50"
+          fill={`url(#${this.id})`}
+          cx="50"
+          cy="50"
           r="50"
           className={styles.mask}
         />
@@ -126,7 +133,7 @@ class Avatar extends Component<Props, State> {
     return (
       <path
         d="M68.393 96.508C62.7 98.762 56.495 100 50 100 22.386 100 0 77.614 0 50S22.386 0 50 0s50 22.386 50 50c0 6.495-1.238 12.7-3.492 18.393C93.083 65.643 88.734 64 84 64c-11.046 0-20 8.954-20 20 0 4.734 1.644 9.083 4.393 12.508z"
-        fill={"url(#${this.id})"}
+        fill={`url(#${this.id})`}
         className={styles.mask}
       />
     );

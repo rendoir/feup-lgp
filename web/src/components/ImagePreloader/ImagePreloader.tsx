@@ -22,8 +22,8 @@ export type Props = {
 };
 
 class ImagePreloader extends Component<Props, State> {
-  requestId?: number | null;
-  image?: HTMLImageElement | null;
+  requestId: number | null | undefined;
+  image: HTMLImageElement | null | undefined;
 
   constructor(props: Props) {
     super(props);
