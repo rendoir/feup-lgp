@@ -6,7 +6,7 @@ export default class Header extends React.Component {
     return (
       <header>
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             {" "}
             <i className="fas fa-clinic-medical fa-lg" /> gNet
           </a>
@@ -25,7 +25,7 @@ export default class Header extends React.Component {
           <div className="collapse navbar-collapse" id="navbarColor01">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <a className="nav-link" href="/">
                   Home <span className="sr-only">(current)</span>
                 </a>
               </li>
