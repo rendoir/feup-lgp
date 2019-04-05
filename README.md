@@ -20,7 +20,7 @@ First we are going to install the app dependencies by going to the app folder us
 Then, we move to the server by running the command `cd ../server` and then `npm install`
 
 #### Starting the application
-Inside the server folder, run `npm start` to start the server. Then, move to the app folder by typing `cd ../app` \
+Inside the server folder, run `npm start` to start the server. Then, move to the app folder by typing `cd ../web` \
 followed by `npm start`.
 
 Useful links
