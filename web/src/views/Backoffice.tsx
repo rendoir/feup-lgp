@@ -18,6 +18,17 @@ interface BackofficeUserCardProps {
   expelAdminHandler?: any; //Admin users require this handler
 }
 
+interface BackofficeNotificationProps {
+  id: number;
+  username: string;
+  notificationType: string; //Comment or publication
+  content: string;
+  contentId: number;
+  banUserHandler: any;
+  deleteContentHandler: any;
+  ignoreHandler: any;
+}
+
 const BANNED_USER = "banned";
 const ADMIN_USER = "admin";
 
@@ -115,6 +126,63 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
   }
 }
 
+const PUBLICATION_NOTIFICATION = "publication";
+const COMMENT_NOTIFICATION = "comment";
+
+class BackofficeNotification extends React.Component<
+  BackofficeNotificationProps,
+  {}
+> {
+  constructor(props: any) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className="container border mb-2">
+        <div className="row d-flex justify-content-between mx-1">
+          <div className="mt-2">
+            <b>Comment Report</b>
+          </div>
+          <button className="close align-self-end">
+            <i className="fas fa-times" />
+          </button>
+        </div>
+
+        <div className="dropdown-divider p" />
+
+        <p className="report_message">
+          <a href="#">Alberta Ferndes</a> comment:{" "}
+          <a href="#">"You are all useless"</a> has been reported.
+        </p>
+
+        <div className="col-12 mb-3 dropdown d-flex justify-content-end">
+          <button
+            className="btn bg-danger dropdown-toggle p-1 text-white"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Take action
+          </button>
+          <div className="dropdown-menu">
+            <a className="dropdown-item" href="#">
+              Ban user
+            </a>
+            <a className="dropdown-item" href="#">
+              Delete content
+            </a>
+            <a className="dropdown-item" href="#">
+              Ignore
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
     super(props);
@@ -127,22 +195,41 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
+
+    //Notification button handlers
+    this.handleNotificationUserBan = this.handleNotificationUserBan.bind(this);
+    this.handleNotificationContentDelete = this.handleNotificationContentDelete.bind(
+      this
+    );
+    this.handleNotificationIgnore = this.handleNotificationIgnore.bind(this);
   }
 
   handleUserCardBan() {
-    console.log("BAN");
+    console.log("BAN USER CARD");
   }
 
   handleUserCardUnban() {
-    console.log("UN-BAN");
+    console.log("UN-BAN USER CARD");
   }
 
   handleUserCardTurnAdmin() {
-    console.log("TURN");
+    console.log("TURN USER CARD");
   }
 
   handleUserCardExpelAdmin() {
-    console.log("EXPEL");
+    console.log("EXPEL USER CARD");
+  }
+
+  handleNotificationUserBan() {
+    console.log("BAN NOTIFICATION");
+  }
+
+  handleNotificationContentDelete() {
+    console.log("DELETE CONTENT NOTIFICATION");
+  }
+
+  handleNotificationIgnore() {
+    console.log("IGNORE NOTIFICATION");
   }
 
   getUsersArea() {
