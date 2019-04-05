@@ -467,11 +467,6 @@ class Shop extends React.Component {
                 </div>
               </div>
             </div>
-            <div id="loadMore">
-              <Button size="small" wide>
-                Load more
-              </Button>
-            </div>
           </div>
         </div>
       </div>
