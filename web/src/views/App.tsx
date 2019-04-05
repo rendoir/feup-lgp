@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
+import Shop from "./Shop";
 
 class App extends React.Component {
   public render() {
@@ -13,6 +14,9 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact path="/user/:username" component={Profile} />
+        </Router>
+        <Router>
+          <Route exact path="/shop" component={Shop} />
         </Router>
       </div>
     );
