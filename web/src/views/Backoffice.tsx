@@ -4,6 +4,115 @@ interface BackofficeState {
   usersAreaActive: boolean;
 }
 
+interface BackofficeUserCardProps {
+  name: string;
+  image: string;
+  email: string;
+  institution: string;
+  profession: string;
+  userType: string;
+  banHandler: any;
+  unbanHandler: any;
+  turnAdminHandler: any;
+  expelAdminHandler: any;
+}
+
+const BANNED_USER = "banned";
+const ADMIN_USER = "admin";
+
+class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
+  constructor(props: any) {
+    super(props);
+  }
+
+  getButtons() {
+    //generalizar class name
+    const banButton = (
+      <div className="row mb-3">
+        <button
+          className="btn btn-danger btn-block"
+          onClick={this.props.banHandler}
+        >
+          Ban
+        </button>
+      </div>
+    );
+
+    const unbanButton = (
+      <div className="row">
+        <button
+          className="btn btn-primary btn-block"
+          onClick={this.props.unbanHandler}
+        >
+          Unban
+        </button>
+      </div>
+    );
+
+    const turnAdminButton = (
+      <div className="row">
+        <button
+          className="btn btn-info btn-block"
+          onClick={this.props.turnAdminHandler}
+        >
+          Turn admin
+        </button>
+      </div>
+    );
+
+    const expelAdminButton = (
+      <div className="row">
+        <button
+          className="btn btn-primary btn-block"
+          onClick={this.props.expelAdminHandler}
+        >
+          Expel admin
+        </button>
+      </div>
+    );
+    let buttons = [];
+    if (this.props.userType === BANNED_USER) {
+      buttons.push(unbanButton);
+    } else {
+      buttons.push(banButton);
+      if (this.props.userType === ADMIN_USER) buttons.push(expelAdminButton);
+      else buttons.push(turnAdminButton);
+    }
+
+    return (
+      <div className="col-12 col-lg-2 justify-content-lg-center">{buttons}</div>
+    );
+  }
+
+  render() {
+    return (
+      <div className="card mb-2">
+        <div className="card-header">{this.props.name}</div>
+        <div className="card-body row col-md d-flex align-items-center">
+          <div className="col-12 col-lg-2">
+            <img
+              className="img-fluid img-thumbnail rounded-circle d-flex justify-content-center"
+              src={this.props.image}
+              alt="card image"
+            />
+          </div>
+          <div className="col-12 col-lg-8 mb-2 mb-lg-0">
+            <p className="card-text">
+              <strong>Email:</strong> {this.props.email}
+            </p>
+            <p className="card-text">
+              <strong>Institution/College:</strong> {this.props.institution}
+            </p>
+            <p className="card-text">
+              <strong>Profession/Course:</strong> {this.props.profession}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
     super(props);
@@ -54,38 +163,13 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         {/* User list*/}
         <div className="col">
           {/* Alberta normal */}
-          <div className="card mb-2">
-            <div className="card-header">Alberta Ferndandes Normal</div>
-            <div className="card-body row col-md d-flex align-items-center">
-              <div className="col-12 col-lg-2">
-                <img
-                  className="img-fluid img-thumbnail rounded-circle d-flex justify-content-center"
-                  src="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-                  alt="card image"
-                />
-              </div>
-              <div className="col-12 col-lg-8 mb-2 mb-lg-0">
-                <p className="card-text">
-                  <strong>Email:</strong> alberta.fcup55@fe.up.pt
-                </p>
-                <p className="card-text">
-                  <strong>Institution/College:</strong> Faculty of Medicine of
-                  University of Porto
-                </p>
-                <p className="card-text">
-                  <strong>Profession/Course:</strong> Urology
-                </p>
-              </div>
-              <div className="col-12 col-lg-2 justify-content-lg-center">
-                <div className="row mb-3">
-                  <button className="btn btn-danger btn-block">Ban</button>
-                </div>
-                <div className="row">
-                  <button className="btn btn-info btn-block">Turn admin</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <BackofficeUserCard
+            name="Alberta Ferndandes Normal"
+            image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+            email="alberta.fcup55@fe.up.pt"
+            institution="Faculty of Medicine of University of Porto"
+            profession="Urology"
+          />
 
           {/* Alberta banned */}
           <div className="card mb-2">
