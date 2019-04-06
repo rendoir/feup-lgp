@@ -1,9 +1,4 @@
 import * as React from "react";
-import Button from "../components/Button/Button";
-
-interface BackofficeState {
-  usersAreaActive: boolean;
-}
 
 interface BackofficeUserCardProps {
   name: string;
@@ -27,6 +22,10 @@ interface BackofficeNotificationProps {
   banUserHandler: any;
   deleteContentHandler: any;
   ignoreHandler: any;
+}
+
+interface BackofficeState {
+  usersAreaActive: boolean;
 }
 
 const BANNED_USER = "banned";
@@ -87,7 +86,7 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
     }
 
     return (
-      <div className="col-12 col-lg-2 justify-content-lg-center">
+      <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
         {this.props.userType !== BANNED_USER && (
           <div className="row mb-3">{banButton}</div>
         )}
@@ -100,10 +99,10 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
     return (
       <div className="card mb-2">
         <div className="card-header">{this.props.name}</div>
-        <div className="card-body row col-md d-flex align-items-center">
-          <div className="col-12 col-lg-2">
+        <div className="card-body row col-md d-flex align-items-center pr-lg-2 pr-xl-4">
+          <div className="col-12 col-lg-2 d-flex justify-content-center">
             <img
-              className="img-fluid img-thumbnail rounded-circle d-flex justify-content-center"
+              className="img-fluid img-thumbnail rounded-circle"
               src={this.props.image}
               alt="card image"
             />
@@ -141,10 +140,13 @@ class BackofficeNotification extends React.Component<
     return (
       <div className="container border mb-2">
         <div className="row d-flex justify-content-between mx-1">
-          <div className="mt-2">
-            <b>Comment Report</b>
+          <div className="mt-2" style={{ textTransform: "capitalize" }}>
+            <b>{this.props.notificationType} Report</b>
           </div>
-          <button className="close align-self-end">
+          <button
+            className="close align-self-end"
+            onClick={this.props.ignoreHandler}
+          >
             <i className="fas fa-times" />
           </button>
         </div>
@@ -152,11 +154,12 @@ class BackofficeNotification extends React.Component<
         <div className="dropdown-divider p" />
 
         <p className="report_message">
-          <a href="#">Alberta Ferndes</a> comment:{" "}
-          <a href="#">"You are all useless"</a> has been reported.
+          <a href={`/user/${this.props.username}`}>{this.props.username}</a>'s{" "}
+          {this.props.notificationType}: <a href="#">"{this.props.content}"</a>{" "}
+          has been reported.
         </p>
 
-        <div className="col-12 mb-3 dropdown d-flex justify-content-end">
+        <div className="col-12 mb-3 mt-2 dropdown d-flex justify-content-end">
           <button
             className="btn bg-danger dropdown-toggle p-1 text-white"
             type="button"
@@ -167,13 +170,25 @@ class BackofficeNotification extends React.Component<
             Take action
           </button>
           <div className="dropdown-menu">
-            <a className="dropdown-item" href="#">
+            <a
+              className="dropdown-item"
+              href="#"
+              onClick={this.props.banUserHandler}
+            >
               Ban user
             </a>
-            <a className="dropdown-item" href="#">
+            <a
+              className="dropdown-item"
+              href="#"
+              onClick={this.props.deleteContentHandler}
+            >
               Delete content
             </a>
-            <a className="dropdown-item" href="#">
+            <a
+              className="dropdown-item"
+              href="#"
+              onClick={this.props.ignoreHandler}
+            >
               Ignore
             </a>
           </div>
@@ -189,19 +204,30 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.state = {
       usersAreaActive: true
     };
-
+    //Admin menu handlers
+    this.handleUsersArea = this.handleUsersArea.bind(this);
+    this.handleNotifArea = this.handleNotifArea.bind(this);
     //User card button handlers
     this.handleUserCardBan = this.handleUserCardBan.bind(this);
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
-
     //Notification button handlers
-    this.handleNotificationUserBan = this.handleNotificationUserBan.bind(this);
-    this.handleNotificationContentDelete = this.handleNotificationContentDelete.bind(
-      this
-    );
-    this.handleNotificationIgnore = this.handleNotificationIgnore.bind(this);
+    this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
+    this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
+    this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
+  }
+
+  handleUsersArea() {
+    this.setState({
+      usersAreaActive: true
+    });
+  }
+
+  handleNotifArea() {
+    this.setState({
+      usersAreaActive: false
+    });
   }
 
   handleUserCardBan() {
@@ -220,24 +246,24 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     console.log("EXPEL USER CARD");
   }
 
-  handleNotificationUserBan() {
+  handleNotifUserBan() {
     console.log("BAN NOTIFICATION");
   }
 
-  handleNotificationContentDelete() {
+  handleNotifContentDelete() {
     console.log("DELETE CONTENT NOTIFICATION");
   }
 
-  handleNotificationIgnore() {
+  handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
   }
 
   getUsersArea() {
     return (
-      <div id="backoffice_users_area" className="col-12 col-sm-9">
+      <div id="backoffice_users_area" className="col-12 col-md-9">
         {/* User search form */}
-        <div className="row d-flex justify-content-center">
-          <div className="dropdown mr-4 col-xs-12">
+        <div className="row d-flex justify-content-center ml-sm-5">
+          <div className="dropdown d-flex justify-content-center justify-content-sm-end col-sm-3">
             <button
               className="btn bg-secondary dropdown-toggle mt-2 mb-2 p-1 text-white"
               type="button"
@@ -259,7 +285,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               </a>
             </div>
           </div>
-          <form className="form-inline my-2 my-lg-0">
+          <form className="form-inline w-75 row col-sm-9 my-2 my-lg-0">
             <input
               className="form-control mr-1"
               type="text"
@@ -283,10 +309,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             banHandler={this.handleUserCardBan}
             turnAdminHandler={this.handleUserCardTurnAdmin}
           />
-
           {/* Alberta banned */}
           <BackofficeUserCard
-            name="Alberta Ferndandes Normal"
+            name="Alberta Ferndandes Banned"
             image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
             email="alberta.fcup55@fe.up.pt"
             institution="Faculty of Medicine of University of Porto"
@@ -294,10 +319,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             userType={BANNED_USER}
             unbanHandler={this.handleUserCardUnban}
           />
-
           {/* Alberta admin */}
           <BackofficeUserCard
-            name="Alberta Ferndandes Normal"
+            name="Alberta Ferndandes Admin"
             image="https://pbs.twimg.com/profile_images/938813312506064896/ciY68hiP_400x400.jpg"
             email="alberta.fcup55@fe.up.pt"
             institution="Faculty of Medicine of University of Porto"
@@ -319,182 +343,51 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       >
         {/* Notification list */}
         {/* Comment report notification (one line) */}
-        <div className="container border mb-2">
-          <div className="row d-flex justify-content-between mx-1">
-            <div className="mt-2">
-              <b>Comment Report</b>
-            </div>
-            <button className="close align-self-end">
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <div className="dropdown-divider p" />
-
-          <p className="report_message">
-            <a href="#">Alberta Ferndes</a> comment:{" "}
-            <a href="#">"You are all useless"</a> has been reported.
-          </p>
-
-          <div className="col-12 mb-3 dropdown d-flex justify-content-end">
-            <button
-              className="btn bg-danger dropdown-toggle p-1 text-white"
-              type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Take action
-            </button>
-            <div className="dropdown-menu">
-              <a className="dropdown-item" href="#">
-                Ban user
-              </a>
-              <a className="dropdown-item" href="#">
-                Delete content
-              </a>
-              <a className="dropdown-item" href="#">
-                Ignore
-              </a>
-            </div>
-          </div>
-        </div>
-
+        <BackofficeNotification
+          id={1}
+          username="Alberta Fernandes"
+          notificationType={COMMENT_NOTIFICATION}
+          content="You are all useless"
+          contentId={1}
+          banUserHandler={this.handleNotifUserBan}
+          deleteContentHandler={this.handleNotifContentDelete}
+          ignoreHandler={this.handleNotifIgnore}
+        />
         {/* Comment report notification (Multiple lines) */}
-        <div className="container border mb-2">
-          <div className="row d-flex justify-content-between mx-1">
-            <div className="mt-2">
-              <b>Comment Report</b>
-            </div>
-            <button className="close align-self-end">
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <div className="dropdown-divider p" />
-
-          <p className="report_message">
-            <a href="#">Alberta Ferndes</a> comment:{" "}
-            <a href="#">
-              "Very big comment that takes more than one line, look so many
-              characters, surely it has more than one row"
-            </a>{" "}
-            has been reported.
-          </p>
-
-          <div className="col-12 mb-3 dropdown d-flex justify-content-end">
-            <button
-              className="btn bg-danger dropdown-toggle p-1 text-white"
-              type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Take action
-            </button>
-            <div className="dropdown-menu">
-              <a className="dropdown-item" href="#">
-                Ban user
-              </a>
-              <a className="dropdown-item" href="#">
-                Delete content
-              </a>
-              <a className="dropdown-item" href="#">
-                Ignore
-              </a>
-            </div>
-          </div>
-        </div>
-
+        <BackofficeNotification
+          id={2}
+          username="Alberta Fernandes"
+          notificationType={COMMENT_NOTIFICATION}
+          content="Very big comment that takes more than one line, look so many characters, surely it has more than one row"
+          contentId={2}
+          banUserHandler={this.handleNotifUserBan}
+          deleteContentHandler={this.handleNotifContentDelete}
+          ignoreHandler={this.handleNotifIgnore}
+        />
         {/* Publication report notification (one line) */}
-        <div className="container border mb-2">
-          <div className="row d-flex justify-content-between mx-1">
-            <div className="mt-2">
-              <b>Publication Report</b>
-            </div>
-            <button className="close align-self-end">
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <div className="dropdown-divider p" />
-
-          <p className="report_message">
-            <a href="#">Alberta Ferndes</a> publication:{" "}
-            <a href="#">"The benefits of anti-vaxx on newborns"</a> has been
-            reported.
-          </p>
-
-          <div className="col-12 mb-3 dropdown d-flex justify-content-end">
-            <button
-              className="btn bg-danger dropdown-toggle p-1 text-white"
-              type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Take action
-            </button>
-            <div className="dropdown-menu">
-              <a className="dropdown-item" href="#">
-                Ban user
-              </a>
-              <a className="dropdown-item" href="#">
-                Delete content
-              </a>
-              <a className="dropdown-item" href="#">
-                Ignore
-              </a>
-            </div>
-          </div>
-        </div>
-
+        <BackofficeNotification
+          id={3}
+          username="Alberta Fernandes"
+          notificationType={PUBLICATION_NOTIFICATION}
+          content="The benefits of anti-vaxx on newborns"
+          contentId={3}
+          banUserHandler={this.handleNotifUserBan}
+          deleteContentHandler={this.handleNotifContentDelete}
+          ignoreHandler={this.handleNotifIgnore}
+        />
         {/* Publication report notification (multiple line) */}
-        <div className="container border mb-2">
-          <div className="row d-flex justify-content-between mx-1">
-            <div className="mt-2">
-              <b>Publication Report</b>
-            </div>
-            <button className="close align-self-end">
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <div className="dropdown-divider p" />
-
-          <p className="report_message">
-            <a href="#">Alberta Ferndes</a> publication:{" "}
-            <a href="#">
-              "Very big publication title that takes multiple lines, with
-              useless text just to get to the third row, look how useless these
-              characters that are being typed are, now we got there"
-            </a>{" "}
-            has been reported.
-          </p>
-
-          <div className="col-12 mb-3 dropdown d-flex justify-content-end">
-            <button
-              className="btn bg-danger dropdown-toggle p-1 text-white"
-              type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Take action
-            </button>
-            <div className="dropdown-menu">
-              <a className="dropdown-item" href="#">
-                Ban user
-              </a>
-              <a className="dropdown-item" href="#">
-                Delete content
-              </a>
-              <a className="dropdown-item" href="#">
-                Ignore
-              </a>
-            </div>
-          </div>
-        </div>
+        <BackofficeNotification
+          id={4}
+          username="Alberta Fernandes"
+          notificationType={PUBLICATION_NOTIFICATION}
+          content="Very big publication title that takes multiple lines, with
+          useless text just to get to the third row, look how useless these
+          characters that are being typed are, now we got there"
+          contentId={4}
+          banUserHandler={this.handleNotifUserBan}
+          deleteContentHandler={this.handleNotifContentDelete}
+          ignoreHandler={this.handleNotifIgnore}
+        />
       </div>
     );
   }
@@ -504,14 +397,22 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       <div id="backoffice_container" className="container mt-3 ml-0">
         <div className="row">
           {/* Admin menu */}
-          <div className="col-12 col-sm-3">
+          <div className="col-12 col-md-3">
             <div className="dropdown">
               <h6 className="dropdown-header">Admin area</h6>
               <div className="dropdown-divider" />
-              <a id="manage_users" className="dropdown-item" href="#">
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
                 Manage users
               </a>
-              <a id="notifications" className="dropdown-item" href="#">
+              <a
+                id="notifications"
+                className="dropdown-item"
+                onClick={this.handleNotifArea}
+              >
                 Notifications <span className="badge badge-light">4</span>
               </a>
             </div>

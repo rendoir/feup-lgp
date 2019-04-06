@@ -2,10 +2,16 @@
 @import "functions";
 
 #backoffice_users_area {
-	@media screen and (max-width: 990px) {
+
+	.rounded-circle {
+		width: 100px;
+		height: 100px;
+	}
+	
+	@media screen and (min-width: 991px) and (max-width: 1199px) {
 		.rounded-circle {
-			width: 100px;
-			height: 100px;
+			width: 80px;
+			height: 80px;
 		}
 	}
 	//BUTTONS
