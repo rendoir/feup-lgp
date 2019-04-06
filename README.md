@@ -8,16 +8,28 @@ in discussions and conferences in the platform.
 
 Installation
 ------------
-#### Cloning the repository
+### Cloning the repository
+
+#### HTTPS
 open a terminal and run the command `git clone https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a.git && cd lgp-3a`
 
-#### Dependencies
-First we are going to install the app dependencies by going to the app folder using `cd app` followed by `npm install`. \
+#### SSH
+To clone using ssh you must first add a SSH key to your profile.
+open a terminal and run the command `git clone git@git.fe.up.pt:lgp2019/lgp-3/lgp-3a.git`
+
+### Dependencies
+First we are going to install the app dependencies by going to the app folder using `cd web` followed by `npm install`. \
 Then, we move to the server by running the command `cd ../server` and then `npm install`
 
-#### Starting the application
-Inside the server folder, run `npm start` to start the server. Then, move to the app folder by typing `cd ../app` \
+### Starting the application
+Inside the server folder, run `npm start` to start the server. Then, move to the app folder by typing `cd ../web` \
 followed by `npm start`.
+
+Contribution Guidelines
+------------
+
+### Merge Requests
+Each merge request must be approved by at least 2 members before merge. As our Gitlab edition does not have the 'Approve' functionality enabled, one must instead comment 'LGTM' ("Looks Good To Me").
 
 Useful links
 ------------
