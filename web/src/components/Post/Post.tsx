@@ -80,7 +80,7 @@ class Post extends Component<Props, State> {
           <VideoPreloader src={this.props.video}>
             {({ src }) => {
               return (
-                <img
+                <iframe
                   src={src}
                   width={content_width}
                   height={content_height - this.props.text_height}

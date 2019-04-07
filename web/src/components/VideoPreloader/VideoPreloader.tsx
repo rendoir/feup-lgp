@@ -70,7 +70,7 @@ class VideoPreloader extends Component<Props, State> {
   handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
-      const Video = document.createElement("img");
+      const Video = document.createElement("iframe");
 
       Video.onload = this.handleSuccess;
       Video.onerror = this.handleError;
