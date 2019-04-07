@@ -3,7 +3,12 @@ import classNames from "classnames";
 
 import createSequence from "../../utils/createSequence";
 
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.js";
+import "@fortawesome/fontawesome-free/css/all.css";
+
 import styles from "./Post.module.css";
+
 import Avatar from "../Avatar/Avatar";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
@@ -14,9 +19,11 @@ export type Props = {
 
   hasImage: boolean;
   image: string | undefined;
+  image_height: number;
 
   hasVideo: boolean;
   video: string | undefined;
+  video_height: number;
 
   author: string;
 
@@ -44,7 +51,11 @@ class Post extends Component<Props, State> {
 
   render() {
     const { content_width } = this.props;
-    const { content_height } = this.props;
+    const { content_height } =
+      this.props.text_height +
+      this.props.image_height +
+      this.props.video_height;
+
     const className = classNames(styles.container);
     /*
       this.props.className,
@@ -58,14 +69,14 @@ class Post extends Component<Props, State> {
 
     if (hasImage) {
       imgDiv = (
-        <div className="post-content">
+        <div className={styles.post_content}>
           <ImagePreloader src={this.props.image}>
             {({ src }) => {
               return (
                 <img
                   src={src}
                   width={content_width}
-                  height={content_height - this.props.text_height}
+                  height={this.props.image_height}
                 />
               );
             }}
@@ -74,20 +85,31 @@ class Post extends Component<Props, State> {
       );
     }
 
-    if (hasVideo) {
-      videoDiv = (
-        <div className="post-content">
+    /* VIDEO PRELOADER CODE
           <VideoPreloader src={this.props.video}>
             {({ src }) => {
               return (
                 <iframe
                   src={src}
                   width={content_width}
-                  height={content_height - this.props.text_height}
+                  height={this.props.video_height}
                 />
               );
             }}
           </VideoPreloader>
+      */
+
+    if (hasVideo) {
+      videoDiv = (
+        <div className={styles.post_content}>
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/Y6U728AZnV0"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
         </div>
       );
     }
@@ -95,7 +117,7 @@ class Post extends Component<Props, State> {
     return (
       <div
         className={`${styles.post} mb-4`}
-        style={{ width: content_width, height: content_height + 139 }}
+        style={{ width: content_width, height: content_height }}
       >
         <div className={styles.post_header}>
           <Avatar
@@ -106,6 +128,7 @@ class Post extends Component<Props, State> {
           />
           <p className={styles.post_author}> {this.props.author} </p>
           <p className={styles.post_date}>20-02-2019</p>
+          <div className="" />
         </div>
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
@@ -115,6 +138,20 @@ class Post extends Component<Props, State> {
         <div className={styles.post_stats}>
           <span>35 likes</span>
           <span>14 comments</span>
+        </div>
+        <div className={styles.post_actions}>
+          <button>
+            <i class="fas fa-thumbs-up" />
+            <span>Like</span>
+          </button>
+          <button>
+            <i class="far fa-comment-alt" />
+            <span>Comment</span>
+          </button>
+          <button>
+            <i class="fas fa-share-square" />
+            <span>Share</span>
+          </button>
         </div>
       </div>
     );
