@@ -44,5 +44,29 @@ module.exports = {
       sidebarBackground: "rgba(246,145,39,.8)",
       errorBackground: "#e22d44"
     }
-  }
+  },
+  sections: [
+    {
+      name: "Forms",
+      components: [
+        "src/components/Input/*.tsx",
+        "src/components/InputNext/*.tsx"
+      ]
+    },
+    {
+      name: "Buttons",
+      components: [
+        "src/components/Button/*.tsx",
+        "src/components/ButtonNext/*.tsx",
+        "src/components/IconButton/*.tsx"
+      ]
+    },
+    {
+      name: "Interface",
+      components: [
+        "src/components/Avatar/*.tsx",
+        "src/components/ImagePreloader/*.tsx"
+      ]
+    }
+  ]
 };
