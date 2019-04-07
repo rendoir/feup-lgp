@@ -29,6 +29,8 @@ export type Props = {
 
   text: string | undefined;
   text_height: number;
+
+  comments: undefined;
 };
 
 export type State = {};
