@@ -103,9 +103,9 @@ class Post extends Component<Props, State> {
       videoDiv = (
         <div className={styles.post_content}>
           <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/Y6U728AZnV0"
+            width={this.props.content_width}
+            height={this.props.video_height}
+            src={this.props.video}
             frameborder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
@@ -128,7 +128,22 @@ class Post extends Component<Props, State> {
           />
           <p className={styles.post_author}> {this.props.author} </p>
           <p className={styles.post_date}>20-02-2019</p>
-          <div className="" />
+          <div className="btn-group">
+            <a className="" role="button" type="button" data-toggle="dropdown">
+              <i class="fas fa-ellipsis-v" />
+            </a>
+            <div className="dropdown-menu dropdown-menu-right">
+              <button className="dropdown-item" type="button">
+                Edit Post
+              </button>
+              <button className="dropdown-item" type="button">
+                Delete Post
+              </button>
+              <button className="dropdown-item" type="button">
+                etc
+              </button>
+            </div>
+          </div>
         </div>
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
