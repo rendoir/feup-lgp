@@ -1,34 +1,31 @@
-@import '../../styles/variables';
-
-/** Right div **/
 .post {
   border: solid lightgray 1px;
 }
 
-.post-header,
-.post-content,
-.post-stats,
-.post-actions {
+.post_header,
+.post_content,
+.post_stats,
+.post_actions {
   display: flex;
   align-items: center;
   padding: 0.75rem 1.5rem;
   border-bottom: solid lightgray 1px;
 }
 
-.post div:last-child {
+.post div:last_child {
   border-bottom: none;
 }
 
-.post-comment-section {
+.post_comment_section {
   padding: 0.75rem 1.5rem;
 }
 
-.post-author {
+.post_author {
   margin: 0 0 0 0.75rem;
   color: var(--main-color);
 }
 
-.post-avatar {
+.post_avatar {
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
@@ -36,28 +33,28 @@
   height: 6vh;
 }
 
-.post-comment .post-avatar,
-.post .post-add-comment .post-avatar {
+.post_comment .post_avatar,
+.post .post_add_comment .post_avatar {
   width: 5vh;
   height: 5vh;
 }
 
-.post-date {
+.post_date {
   margin: 0 0 0 auto;
 }
 
-.post-content {
+.post_content {
   border-bottom: none;
   padding: 0;
 }
 
-.post-content p {
+.post_content p {
   margin: 0;
   padding: 0.75rem 1.5rem;
 }
 
-.post-content img,
-.post-content iframe {
+.post_content img,
+.post_content iframe {
   width: 100%;
   text-align: center;
   display:block;
@@ -65,14 +62,14 @@
   max-height: 1000px;
 }
 
-.post-stats {
+.post_stats {
   display: flex;
   justify-content: space-around;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
 
-.post-actions {
+.post_actions {
   display: flex;
   justify-content: space-around;
   padding-top: 0;
@@ -80,64 +77,64 @@
   height: 3rem;
 }
 
-.post-actions button,
-.comment-action,
-.submit-comment {
+.post_actions button,
+.comment_action,
+.submit_comment {
   width: 30%;
   background: none;
   border: none;
   height: 100%;
 }
 
-.submit-comment {
+.submit_comment {
   width: initial;
 }
 
-.post-actions button i {
+.post_actions button i {
   margin-right: 0.5rem;
 }
 
-.post-comment .comment-header {
+.post_comment .comment_header {
   display: inline-flex;
 }
 
-.post-add-comment {
+.post_add_comment {
   display: flex;
   align-items: center;
 }
 
-.post-comment .post-author {
+.post_comment .post_author {
   margin: 0 0.5rem 0 0;
 }
 
 /* Bellow 512 hide action button icons */
 @media (max-width: 512px) {
-  .post-actions button span {
+  .post_actions button span {
       display: none;
   }
 }
 
-.post-actions button:hover,
-.comment-action:hover,
-.submit-comment:hover {
+.post_actions button:hover,
+.comment_action:hover,
+.submit_comment:hover {
   background: rgb(245, 245, 245);
 }
 
-.post-actions button:focus,
-.comment-action:focus,
-.submit-comment:focus {
+.post_actions button:focus,
+.comment_action:focus,
+.submit_comment:focus {
   outline: none;
 }
 
-.post-actions button.liked i {
+.post_actions button.liked i {
   color: var(--main-color);
 }
 
-.post-comment .post-actions {
+.post_comment .post_actions {
   border: none;
 }
 
-.post-comment .comment-text {
+.post_comment .comment_text {
   margin: 0 0 0 0.75rem;
   position: relative;
   background: rgb(240, 240, 240);
@@ -145,24 +142,24 @@
   padding: 0.5rem;
 }
 
-.post-comment .comment-social {
+.post_comment .comment_social {
   font-size: 0.9rem;
   margin-left: 0.75rem;
 }
 
-.post-comment .comment-action {
+.post_comment .comment_action {
   width: initial;
   margin: 0;
   padding: 0.5rem;
 }
 
-.post-comment .comment-detail {
+.post_comment .comment_detail {
   position: absolute;
   right: 0;
   bottom: -10px;
   font-size: 0.9rem;
 }
 
-.post-comment .comment-detail i {
+.post_comment .comment_detail i {
   margin-right: 5px;
 }
