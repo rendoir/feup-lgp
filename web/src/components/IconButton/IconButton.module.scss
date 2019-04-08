@@ -182,7 +182,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:hover,
     &:focus {
-      background-color: tint($color-primary, 10%);
+      background-color: shade($color-primary, 10%);
     }
 
     &:active {
@@ -199,7 +199,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:hover,
     &:focus {
-      background-color: tint($color-success, 10%);
+      background-color: shade($color-success, 10%);
     }
 
     &:active {
@@ -216,7 +216,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:hover,
     &:focus {
-      background-color: tint($color-danger, 10%);
+      background-color: shade($color-danger, 10%);
     }
 
     &:active {
@@ -233,7 +233,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:hover,
     &:focus {
-      background-color: tint($color-info, 10%);
+      background-color: shade($color-info, 10%);
     }
 
     &:active {
@@ -250,7 +250,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:hover,
     &:focus {
-      background-color: tint($color-warning, 10%);
+      background-color: shade($color-warning, 10%);
     }
 
     &:active {

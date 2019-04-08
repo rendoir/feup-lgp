@@ -8,9 +8,9 @@ export type Props = {
   icon: IconDefinition;
   size: IconSize;
   fixedWidth?: boolean;
-  inverse?: boolean;
+  inverse: boolean;
   listItem?: boolean;
-  rotation?: number;
+  rotation?: 90 | 180 | 270;
   flip?: "horizontal" | "vertical" | "both";
   spin?: boolean;
   pulse?: boolean;
@@ -18,24 +18,78 @@ export type Props = {
   pull?: "left" | "right";
   transform?: any;
   mask?: IconDefinition;
+  symbol?: boolean;
+  layer?: boolean;
 };
 
 class Icon extends Component<Props> {
   static defaultProps = {
     size: "sm",
-    theme: "default"
+    theme: "default",
+    inverse: false
   };
 
   render() {
-    const { className, icon, size } = this.props;
+    const {
+      className,
+      icon,
+      size,
+      fixedWidth,
+      inverse,
+      listItem,
+      rotation,
+      flip,
+      spin,
+      pulse,
+      border,
+      pull,
+      transform,
+      mask,
+      symbol,
+      layer
+    } = this.props;
 
     const props = {
       className,
       icon,
-      size
+      size,
+      inverse,
+      border,
+      transform,
+      mask,
+      symbol
     };
 
-    return <FontAwesomeIcon {...props} />;
+    if (layer) {
+      return (
+        <span className="fa-layers fa-fw">
+          <FontAwesomeIcon
+            {...props}
+            fixedWidth={fixedWidth}
+            listItem={listItem}
+            rotation={rotation}
+            flip={flip}
+            spin={spin}
+            pulse={pulse}
+            pull={pull}
+          />
+          ;
+        </span>
+      );
+    }
+
+    return (
+      <FontAwesomeIcon
+        {...props}
+        fixedWidth={fixedWidth}
+        listItem={listItem}
+        rotation={rotation}
+        flip={flip}
+        spin={spin}
+        pulse={pulse}
+        pull={pull}
+      />
+    );
   }
 }
 

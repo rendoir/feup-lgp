@@ -10,48 +10,49 @@ import { faThumbsUp, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 
 IconButton sizes:
 ```jsx
+import { faApple, faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
 <div className="styleguide__buttons">
-  <IconButton glyph="fab fa-canadian-maple-leaf" size="small" onClick={() => alert('Clicked')} />
-  <IconButton glyph="fab fa-canadian-maple-leaf" size="normal" onClick={() => alert('Clicked')} />
-  <IconButton glyph="fab fa-canadian-maple-leaf" size="large" onClick={() => alert('Clicked')} />
+  <IconButton glyph={faApple} size="small" onClick={() => alert('Clicked')} />
+  <IconButton glyph={faFacebook} size="normal" onClick={() => alert('Clicked')} />
+  <IconButton glyph={faTwitter} size="large" onClick={() => alert('Clicked')} />
 </div>
 ```
 
 Flat Themed IconButton:
-
 ```jsx
+import { faUserMd } from "@fortawesome/free-solid-svg-icons";
 <div className="styleguide__buttons">
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="default" />
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="primary" />
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="success" />
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="danger" />
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="info" />
-  <IconButton glyph="logo" size="small" onClick={() => {}} flat theme="warning" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="default" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="primary" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="success" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="danger" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="info" />
+  <IconButton glyph={ faUserMd } size="small" onClick={() => {}} flat theme="warning" />
   <br />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="default" />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="primary" />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="success" />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="danger" />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="info" />
-  <IconButton glyph="logo" size="normal" onClick={() => {}} flat theme="warning" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="default" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="primary" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="success" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="danger" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="info" />
+  <IconButton glyph={ faUserMd } size="normal" onClick={() => {}} flat theme="warning" />
   <br />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="default" />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="primary" />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="success" />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="danger" />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="info" />
-  <IconButton glyph="logo" size="large" onClick={() => {}} flat theme="warning" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="default" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="primary" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="success" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="danger" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="info" />
+  <IconButton glyph={ faUserMd } size="large" onClick={() => {}} flat theme="warning" />
 </div>
 ```
 
 Disabled IconButton:
-
 ```jsx
+import { faReact } from "@fortawesome/free-brands-svg-icons";
 <div className="styleguide__buttons">
-  <IconButton glyph="attach_file" size="normal" disabled />
-  <IconButton glyph="apple" size="large" disabled />
+  <IconButton glyph={ faReact } size="normal" disabled />
+  <IconButton glyph={ faReact } size="large" disabled />
   <br />
-  <IconButton glyph="more_outline" size="normal" flat disabled />
-  <IconButton glyph="phone_outline" size="large" flat disabled />
+  <IconButton glyph={ faReact } size="normal" flat disabled />
+  <IconButton glyph={ faReact } size="large" flat disabled />
 </div>
 ```
