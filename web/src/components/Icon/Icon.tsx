@@ -1,39 +1,51 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { IconSize } from "../../utils/types";
+import {
+  FaSymbol,
+  FlipProp,
+  IconProp,
+  PullProp,
+  RotateProp,
+  Transform
+} from "@fortawesome/fontawesome-svg-core";
+import { ColorTheme, IconSize } from "../../utils/types";
+import classNames from "classnames";
+import styles from "./Icon.module.css";
 
 export type Props = {
   className?: string;
-  icon: IconDefinition;
+  icon: IconProp;
   size: IconSize;
+  style?: CSSProperties;
+  theme: ColorTheme;
   fixedWidth?: boolean;
   inverse: boolean;
   listItem?: boolean;
-  rotation?: 90 | 180 | 270;
-  flip?: "horizontal" | "vertical" | "both";
+  rotation?: RotateProp;
+  flip?: FlipProp;
   spin?: boolean;
   pulse?: boolean;
   border?: boolean;
-  pull?: "left" | "right";
-  transform?: any;
-  mask?: IconDefinition;
-  symbol?: boolean;
-  layer?: boolean;
+  pull?: PullProp;
+  transform?: Transform;
+  mask?: IconProp;
+  symbol?: FaSymbol;
 };
 
 class Icon extends Component<Props> {
   static defaultProps = {
-    size: "sm",
+    type: "icon",
+    size: "1x",
     theme: "default",
     inverse: false
   };
 
   render() {
     const {
-      className,
       icon,
       size,
+      style,
+      theme,
       fixedWidth,
       inverse,
       listItem,
@@ -45,38 +57,29 @@ class Icon extends Component<Props> {
       pull,
       transform,
       mask,
-      symbol,
-      layer
+      symbol
     } = this.props;
 
+    const className = classNames(
+      styles.container,
+      {
+        [styles[theme]]: theme,
+        [styles.inverted]: inverse
+      },
+      this.props.className
+    );
+
     const props = {
-      className,
+      className: className,
       icon,
       size,
+      style,
       inverse,
       border,
       transform,
       mask,
       symbol
     };
-
-    if (layer) {
-      return (
-        <span className="fa-layers fa-fw">
-          <FontAwesomeIcon
-            {...props}
-            fixedWidth={fixedWidth}
-            listItem={listItem}
-            rotation={rotation}
-            flip={flip}
-            spin={spin}
-            pulse={pulse}
-            pull={pull}
-          />
-          ;
-        </span>
-      );
-    }
 
     return (
       <FontAwesomeIcon

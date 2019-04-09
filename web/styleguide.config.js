@@ -39,7 +39,7 @@ module.exports = {
       ]
     },
     color: {
-      link: "#fff",
+      link: "#1673b1",
       linkHover: "rgb(70, 69, 171)",
       sidebarBackground: "rgba(246,145,39,.8)",
       errorBackground: "#e22d44"
@@ -65,7 +65,8 @@ module.exports = {
       name: "Interface",
       components: [
         "src/components/Avatar/*.tsx",
-        "src/components/ImagePreloader/*.tsx"
+        "src/components/ImagePreloader/*.tsx",
+        "src/components/Icon/*.tsx"
       ]
     }
   ]
