@@ -1,7 +1,22 @@
 import * as React from "react";
 import axios from "axios";
+import Post from "../components/Post/Post";
 
-class Feed extends React.Component {
+interface Props {}
+
+interface State {
+  posts: Array<any>;
+}
+
+class Feed extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      posts: []
+    };
+  }
+
   componentDidMount() {
     this.apiGetFeed();
   }
@@ -14,12 +29,33 @@ class Feed extends React.Component {
           /*'Authorization': "Bearer " + getToken()*/
         }
       })
-      .then(res => console.log(res.data))
+      .then(res => {
+        //console.log(res.data);
+        this.setState({ posts: res.data });
+      })
       .catch(() => console.log("Failed to get feed"));
   }
 
   public render() {
-    return <div className="Feed">Hello feed</div>;
+    let posts = this.state.posts.map(info => (
+      <Post
+        key={info.id}
+        content_width={800}
+        author={info.author}
+        text={info.content}
+        text_height={200}
+        content_height={200}
+        image={undefined}
+        image_height={0}
+        hasImage={true}
+        video={undefined}
+        video_height={0}
+        hasVideo={false}
+        comments={undefined}
+      />
+    ));
+
+    return <div className="Feed">{posts}</div>;
   }
 }
 
