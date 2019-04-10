@@ -8,7 +8,8 @@ export default class Header extends React.Component {
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
           <a className="navbar-brand" href="#">
             {" "}
-            <i className="fas fa-clinic-medical fa-lg" /> gNet
+            <i className="fas fa-clinic-medical fa-lg" />{" "}
+            <span className="notranslate">gNet</span>
           </a>
           <button
             className="navbar-toggler"
