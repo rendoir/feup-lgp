@@ -75,12 +75,13 @@ class VideoPreloader extends Component<Props, State> {
       Video.onload = this.handleSuccess;
       Video.onerror = this.handleError;
       Video.src = src;
-
+      /*
+      COMENTADO PARA CONSEGUIR COMPILAR
       if (Video.complete) {
         this.handleSuccess();
       }
 
-      this.Video = Video;
+      this.Video = Video;*/
     });
   };
 

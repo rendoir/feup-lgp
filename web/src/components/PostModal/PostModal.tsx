@@ -96,7 +96,7 @@ class PostModal extends Component<Props, State> {
       );
     }
 
-    return { postDiv };
+    return postDiv;
   }
 }
 
