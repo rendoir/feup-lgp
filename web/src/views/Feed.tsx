@@ -41,7 +41,7 @@ class Feed extends React.Component<Props, State> {
       <Post
         key={info.id}
         content_width={800}
-        author={info.author}
+        author={info.first_name + " " + info.last_name}
         text={info.content}
         text_height={200}
         content_height={200}

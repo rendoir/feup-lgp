@@ -7,8 +7,9 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT id, author, title, content, date_created, date_updated
-                    FROM posts
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.date_created, p.date_updated
+                    FROM posts p
+                        INNER JOIN users ON (users.id = p.author)
                     WHERE
                         author = $1
                         OR author IN (SELECT followed FROM follows WHERE follower = $1)
