@@ -138,7 +138,7 @@ class BackofficeNotification extends React.Component<
 
   render() {
     return (
-      <div className="container border mb-2">
+      <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
           <div className="mt-2" style={{ textTransform: "capitalize" }}>
             <b>{this.props.notificationType} Report</b>
@@ -417,7 +417,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               </a>
             </div>
           </div>
-
           {this.state.usersAreaActive && this.getUsersArea()}
           {!this.state.usersAreaActive && this.getNotifications()}
         </div>
