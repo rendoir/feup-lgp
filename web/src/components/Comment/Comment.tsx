@@ -3,17 +3,19 @@ import React, { Component } from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
+// - Import style
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.js";
+import "@fortawesome/fontawesome-free/css/all.css";
+
+import styles from "./Comment.module.css";
+
 // - Import app components
 import Avatar from "../Avatar/Avatar";
 
-// - Import API
-
-// - Import actions
-
 import createSequence from "../../utils/createSequence";
 
-// - Import style
-import styles from "./../Post/Post.module.css";
+const seq = createSequence();
 
 export type Props = {
   //comment: Comment //from model (substitutes title, text)
@@ -21,8 +23,9 @@ export type Props = {
   text: string | undefined;
 
   author: string | undefined;
-  date: string;
+  //date: string;
 
+  /*
   openEditor?: Function; //Open profile editor
   closeEditor?: () => any; //Close comment editor
 
@@ -45,9 +48,11 @@ export type Props = {
   translate?: (state: any) => any; //Translate to locale string
 
   onClick?: (event: MouseEvent) => unknown;
+  */
 };
 
 export type State = {
+  /*
   initialText?: string; //Initial text comment
   text: string; //Initial text comment
 
@@ -57,6 +62,53 @@ export type State = {
   display?: boolean; //Display comment {true} or not {false}
   openMenu?: boolean; //Whether comment menu is open
   anchorEl: any; //Anchor element
+  */
 };
 
-class Comment extends Component<Props, State> {}
+class Comment extends Component<Props, State> {
+  id: string;
+
+  static defaultProps = {};
+
+  constructor(props: Props) {
+    super(props);
+
+    this.id = "comment_" + seq.next();
+    this.state = {
+      isHovered: false
+    };
+  }
+
+  public render() {
+    const className = classNames(styles.container);
+
+    return (
+      <div className={`${styles.post_comment} my-3`}>
+        <div className={styles.command_header}>
+          <Avatar
+            title={this.props.author}
+            placeholder="empty"
+            size={30}
+            image="https://picsum.photos/200/200?image=52"
+          />
+          <div>
+            <div className={styles.command_text}>
+              <p>
+                <span className={styles.post_author}>{this.props.author}</span>
+                {this.props.text}
+              </p>
+              <span className={styles.comment_detail}>
+                <i className="fas fa-thumbs-up" />2
+              </span>
+            </div>
+            <div className={styles.comment_social}>
+              <button className={styles.comment_action}>Like</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Comment;
