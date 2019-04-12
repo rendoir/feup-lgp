@@ -30,6 +30,7 @@ before_script:
 build_web:
   stage: build
   script:
+    - npm install -g git
     - mkdir -p web/docker
     - cd web
     - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
