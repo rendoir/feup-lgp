@@ -212,21 +212,21 @@ class Post extends Component<Props, State> {
         </div>
         <div className={styles.post_comment_section}>
           {this.createCommentsSection()}
-        </div>
-        <div className={styles.post_add_comment}>
-          <Avatar
-            title={this.props.author}
-            placeholder="empty"
-            size={30}
-            image="https://picsum.photos/200/200?image=52"
-          />
-          <textarea
-            className="form-control ml-4 mr-3"
-            placeholder="Insert your comment..."
-          />
-          <button className={`${styles.submit_comment} px-2 py-1`}>
-            <i className="fas fa-chevron-circle-right" />
-          </button>
+          <div className={styles.post_add_comment}>
+            <Avatar
+              title={this.props.author}
+              placeholder="empty"
+              size={30}
+              image="https://picsum.photos/200/200?image=52"
+            />
+            <textarea
+              className="form-control ml-4 mr-3"
+              placeholder="Insert your comment..."
+            />
+            <button className={`${styles.submit_comment} px-2 py-1`}>
+              <i className="fas fa-chevron-circle-right" />
+            </button>
+          </div>
         </div>
       </div>
     );
