@@ -1,6 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import Post from "../components/Post/Post";
+import "../styles/Feed.css";
 
 interface Props {}
 
@@ -51,12 +52,11 @@ class Feed extends React.Component<Props, State> {
     ));
 
     return (
-      <div id="Feed" className="container">
-        {posts}
+      <div id="Feed" className="container my-5">
         <div className="row">
-          <div className="col-sm">One of three columns</div>
-          <div className="col-sm">One of three columns</div>
-          <div className="col-sm">One of three columns</div>
+          <div className="left col-lg-2">LEFT</div>
+          <div className="middle col-lg-8">{posts}</div>
+          <div className="right col-lg-2">RIGHT</div>
         </div>
       </div>
     );
