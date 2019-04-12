@@ -84,7 +84,7 @@ class Comment extends Component<Props, State> {
 
     return (
       <div className={`${styles.post_comment} my-3`}>
-        <div className={styles.command_header}>
+        <div className={styles.comment_header}>
           <Avatar
             title={this.props.author}
             placeholder="empty"
@@ -92,7 +92,7 @@ class Comment extends Component<Props, State> {
             image="https://picsum.photos/200/200?image=52"
           />
           <div>
-            <div className={styles.command_text}>
+            <div className={styles.comment_text}>
               <p>
                 <span className={styles.post_author}>{this.props.author}</span>
                 {this.props.text}

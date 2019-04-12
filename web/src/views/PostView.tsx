@@ -50,8 +50,12 @@ class PostView extends React.Component {
           image_height={0}
           hasImage={false}
           comments={[
-            { author: "John Doe", text: "xpto" },
-            { author: "John Doe", text: "xpto" }
+            {
+              author: "John Doe",
+              text:
+                "This is a super big comment just to test some stuff and has absolutely no content."
+            },
+            { author: "John Doe", text: "This is a comment." }
           ]}
         />
       </div>
