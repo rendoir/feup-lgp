@@ -11,8 +11,7 @@ import styles from "./Post.module.css";
 
 import Avatar from "../Avatar/Avatar";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostModal from "../PostModal/PostModal";
+//import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 export type Props = {
   content_width: number;
@@ -60,11 +59,8 @@ class Post extends Component<Props, State> {
 
   render() {
     const { content_width } = this.props;
-    const content_height = 800;
-    /*const content_height =
-      this.props.text_height +
-      this.props.image_height +
-      this.props.video_height;*/
+    const content_height = this.props.text_height + this.props.image_height;
+    +this.props.video_height;
 
     const className = classNames(styles.container);
     /*
@@ -72,21 +68,28 @@ class Post extends Component<Props, State> {
       this.state.isHovered ? styles.hovered : null
     */
 
-    const imgDiv = (
-      <div className={styles.post_content}>
-        <ImagePreloader src={this.props.image}>
-          {({ src }) => {
-            return (
-              <img
-                src={src}
-                width={content_width}
-                height={this.props.image_height}
-              />
-            );
-          }}
-        </ImagePreloader>
-      </div>
-    );
+    const hasImage = this.props.hasImage;
+    const hasVideo = this.props.hasVideo;
+    let imgDiv;
+    let videoDiv;
+
+    if (hasImage) {
+      imgDiv = (
+        <div className={styles.post_content}>
+          <ImagePreloader src={this.props.image}>
+            {({ src }) => {
+              return (
+                <img
+                  src={src}
+                  width={content_width}
+                  height={this.props.image_height}
+                />
+              );
+            }}
+          </ImagePreloader>
+        </div>
+      );
+    }
 
     /* VIDEO PRELOADER CODE
           <VideoPreloader src={this.props.video}>
@@ -102,18 +105,20 @@ class Post extends Component<Props, State> {
           </VideoPreloader>
       */
 
-    const videoDiv = (
-      <div className={styles.post_content}>
-        <iframe
-          width={this.props.content_width}
-          height={this.props.video_height}
-          src={this.props.video}
-          frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
+    if (hasVideo) {
+      videoDiv = (
+        <div className={styles.post_content}>
+          <iframe
+            width={this.props.content_width}
+            height={this.props.video_height}
+            src={this.props.video}
+            frameBorder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      );
+    }
 
     return (
       <div
@@ -153,8 +158,8 @@ class Post extends Component<Props, State> {
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
         </div>
-        {this.props.hasImage && imgDiv}
-        {this.props.hasVideo && videoDiv}
+        {imgDiv}
+        {videoDiv}
         <div className={styles.post_stats}>
           <span>35 likes</span>
           <span>14 comments</span>

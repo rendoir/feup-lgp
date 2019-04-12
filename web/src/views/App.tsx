@@ -5,7 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
-import Post from "./Post";
+import Feed from "./Feed";
 import Shop from "./Shop";
 
 class App extends React.Component {
@@ -15,7 +15,7 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact path="/user/:username" component={Profile} />
-          <Route exact path="/post/:id" component={Post} />
+          <Route exact path="/" component={Feed} />
           <Route exact path="/shop" component={Shop} />
         </Router>
       </div>
