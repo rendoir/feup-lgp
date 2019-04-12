@@ -76,11 +76,7 @@ class Post extends Component<Props, State> {
   }
 
   handleEditPost() {
-    console.log("EDIT POST");
-  }
-
-  handleDeletePost() {
-    console.log("DELETE POST");
+    console.log("EDITA POST");
   }
 
   createCommentsSection = () => {
@@ -101,66 +97,60 @@ class Post extends Component<Props, State> {
 
   render() {
     const { content_width } = this.props;
-    const content_height = this.props.text_height + this.props.image_height;
-    +this.props.video_height;
+    const content_height = 1000;
+    /*const content_height =
+          this.props.text_height +
+          this.props.image_height +
+          this.props.video_height;*/
 
     const className = classNames(styles.container);
     /*
-      this.props.className,
-      this.state.isHovered ? styles.hovered : null
-    */
+          this.props.className,
+          this.state.isHovered ? styles.hovered : null
+        */
 
-    const hasImage = this.props.hasImage;
-    const hasVideo = this.props.hasVideo;
-    let imgDiv;
-    let videoDiv;
-
-    if (hasImage) {
-      imgDiv = (
-        <div className={styles.post_content}>
-          <ImagePreloader src={this.props.image}>
-            {({ src }) => {
-              return (
-                <img
-                  src={src}
-                  width={content_width}
-                  height={this.props.image_height}
-                />
-              );
-            }}
-          </ImagePreloader>
-        </div>
-      );
-    }
+    const imgDiv = (
+      <div className={styles.post_content}>
+        <ImagePreloader src={this.props.image}>
+          {({ src }) => {
+            return (
+              <img
+                src={src}
+                width={content_width}
+                height={this.props.image_height}
+              />
+            );
+          }}
+        </ImagePreloader>
+      </div>
+    );
 
     /* VIDEO PRELOADER CODE
-          <VideoPreloader src={this.props.video}>
-            {({ src }) => {
-              return (
-                <iframe
-                  src={src}
-                  width={content_width}
-                  height={this.props.video_height}
-                />
-              );
-            }}
-          </VideoPreloader>
-      */
+              <VideoPreloader src={this.props.video}>
+                {({ src }) => {
+                  return (
+                    <iframe
+                      src={src}
+                      width={content_width}
+                      height={this.props.video_height}
+                    />
+                  );
+                }}
+              </VideoPreloader>
+          */
 
-    if (hasVideo) {
-      videoDiv = (
-        <div className={styles.post_content}>
-          <iframe
-            width={this.props.content_width}
-            height={this.props.video_height}
-            src={this.props.video}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      );
-    }
+    const videoDiv = (
+      <div className={styles.post_content}>
+        <iframe
+          width={this.props.content_width}
+          height={this.props.video_height}
+          src={this.props.video}
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
 
     return (
       <div
