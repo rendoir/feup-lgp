@@ -1,4 +1,4 @@
-image: registry.gitlab.com/Alexandreaam/lgp-3a/base_ci:latest
+image: registry.gitlab.com/alexandreaam/lgp-3a/base_ci:latest
 services:
   - docker:dind
 
@@ -12,17 +12,17 @@ stages:
 variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
-  WEB_PRE_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/web:$CI_COMMIT_REF_SLUG
-  API_PRE_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/api:$CI_COMMIT_REF_SLUG
-  DB_PRE_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/db:$CI_COMMIT_REF_SLUG
-  API_TEST_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/apitest:$CI_COMMIT_REF_SLUG
-  E2E_TEST_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/e2e:$CI_COMMIT_REF_SLUG
-  WEB_STAGING_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/web:latest
-  API_STAGING_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/api:latest
-  DB_STAGING_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/db:latest
-  WEB_PROD_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/web:stable
-  API_PROD_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/api:stable
-  DB_PROD_IMAGE: registry.gitlab.com/Alexandreaam/lgp-3a/db:stable
+  WEB_PRE_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/web:$CI_COMMIT_REF_SLUG
+  API_PRE_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/api:$CI_COMMIT_REF_SLUG
+  DB_PRE_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/db:$CI_COMMIT_REF_SLUG
+  API_TEST_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/apitest:$CI_COMMIT_REF_SLUG
+  E2E_TEST_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/e2e:$CI_COMMIT_REF_SLUG
+  WEB_STAGING_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
+  API_STAGING_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/api:latest
+  DB_STAGING_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
+  WEB_PROD_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
+  API_PROD_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/api:stable
+  DB_PROD_IMAGE: registry.gitlab.com/alexandreaam/lgp-3a/db:stable
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
