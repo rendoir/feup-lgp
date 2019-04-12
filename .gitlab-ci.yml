@@ -87,7 +87,7 @@ build_db:
 test_web_linter:
   stage: lint
   script:
-    - cd web && npm install && ng lint
+    - cd web && npm install && npm run lint
 
 test_api_linter:
   stage: lint

@@ -42,7 +42,8 @@
     "start": "./node_modules/.bin/npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts build",
     "test": "./node_modules/.bin/react-scripts test",
-    "eject": "./node_modules/.bin/react-scripts eject"
+    "eject": "./node_modules/.bin/react-scripts eject",
+    "lint": "tslint -c tslint.json src/*.tsx src/*/*.tsx src/*/*/*.tsx"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
