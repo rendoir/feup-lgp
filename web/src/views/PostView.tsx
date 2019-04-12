@@ -1,5 +1,5 @@
 import * as React from "react";
-//import axios from "axios";
+import axios from "axios";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
@@ -7,29 +7,43 @@ import "@fortawesome/fontawesome-free/css/all.css";
 
 import Post from "../components/Post/Post";
 
+interface Props {}
+
+interface State {
+  post: Array<any>;
+}
+
 const postStyle = {
   margin: "2rem auto auto auto"
 };
 
 class PostView extends React.Component {
-  componentDidMount() {
-    //this.apiGetPost();
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      posts: []
+    };
   }
 
-  /*public apiGetPost() {
+  componentDidMount() {
+    this.apiGetPost();
+  }
+
+  public apiGetPost() {
     axios
-      .get("https://localhost:8443/post?ID=", {
+      .get("https://localhost:8443/post?ID=1", {
         params: {},
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-  /*      }
+        }
       })
       .then(res => {
-        //console.log(res.data);
-        this.setState({ posts: res.data });
+        console.log(res.data);
+        this.setState({ post: res.data });
       })
-      .catch(() => console.log("Failed to get feed"));
-  }*/
+      .catch(() => console.log("Failed to get post info"));
+  }
 
   public render() {
     return (

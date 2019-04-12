@@ -1,8 +1,9 @@
 'use strict';
 import { Router } from 'express';
-export const postRouter = Router();
 import * as multer from 'multer';
 import * as controller from '../controllers/post';
+
+export const postRouter = Router();
 
 const upload = multer({dest: 'uploads'});
 

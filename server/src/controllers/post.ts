@@ -32,9 +32,9 @@ export async function getPost(req, res) {
     try {
         const result = await query({
             text: `SELECT *
-                    FROM posts p
+                    FROM posts
                     WHERE
-                        author = $1`,
+                        id = $1`,
             values: [postId, offset],
         });
         res.send(result.rows);
@@ -43,6 +43,25 @@ export async function getPost(req, res) {
         res.status(500).send(new Error('Error retrieving feed'));
     }
 }
+
+export async function getCommentsOfPost(req, res) {
+    const offset = req.query.offset;
+    const postId = 1;
+    try {
+        const result = await query({
+            text: `SELECT *
+                    FROM comments
+                    WHERE
+                        post = $1`,
+            values: [postId, offset],
+        });
+        res.send(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving feed'));
+    }
+}
+
 
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {
