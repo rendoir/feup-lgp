@@ -13,4 +13,4 @@ RUN rc-update add docker boot
 RUN apk add npm
 # RUN npm install -g @angular/cli
 # RUN npm install -g apidoc
-RUN apk add openssh-client
+# RUN apk add openssh-client
