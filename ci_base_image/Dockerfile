@@ -5,8 +5,8 @@ RUN apk upgrade --update-cache --available
 
 RUN apk update
 RUN apk add docker
-RUN apk add py-pip
 RUN apk add openrc
+RUN apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
 RUN pip install --upgrade pip
 RUN pip install docker-compose
 RUN rc-update add docker boot
