@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
+import Backoffice from "./Backoffice";
 import Shop from "./Shop";
 
 class App extends React.Component {
@@ -14,8 +15,7 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact path="/user/:username" component={Profile} />
-        </Router>
-        <Router>
+          <Route exact path="/admin" component={Backoffice} />
           <Route exact path="/shop" component={Shop} />
         </Router>
       </div>
