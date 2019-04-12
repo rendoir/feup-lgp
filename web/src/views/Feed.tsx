@@ -40,22 +40,26 @@ class Feed extends React.Component<Props, State> {
     let posts = this.state.posts.map(info => (
       <Post
         key={info.id}
-        content_width={800}
         author={info.first_name + " " + info.last_name}
         text={info.content}
-        text_height={200}
-        content_height={200}
         image={undefined}
-        image_height={0}
         hasImage={true}
         video={undefined}
-        video_height={0}
         hasVideo={false}
         comments={undefined}
       />
     ));
 
-    return <div className="Feed">{posts}</div>;
+    return (
+      <div id="Feed" className="container">
+        {posts}
+        <div className="row">
+          <div className="col-sm">One of three columns</div>
+          <div className="col-sm">One of three columns</div>
+          <div className="col-sm">One of three columns</div>
+        </div>
+      </div>
+    );
   }
 }
 
