@@ -44,7 +44,7 @@ build_api:
   stage: build
   script:
     - mkdir -p api/docker
-    - mv environment/prod.env api/docker/prod.env
+    - mv environment/environment.env api/docker/prod.env
     - cd api
     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
     - echo "$API_KEY" | tr -d '\r' > docker/api.key
@@ -67,7 +67,7 @@ build_db:
 #   stage: build
 #   script:
 #     - mkdir -p api/docker
-#     - mv environment/prod.env api/docker/prod.env
+#     - mv environment/environment.env api/docker/prod.env
 #     - cd api
 #     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
 #     - echo "$API_KEY" | tr -d '\r' > docker/api.key
