@@ -5,7 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
-import Post from "../components/Post/Post";
+import Post from "./Post";
 import Shop from "./Shop";
 
 class App extends React.Component {
