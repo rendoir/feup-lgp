@@ -1,7 +1,5 @@
 FROM nginx:alpine
 
-RUN apk add git
-
 COPY build /usr/share/nginx/html
 RUN mkdir -p /run/secrets
 COPY docker/site.key /run/secrets/site.key

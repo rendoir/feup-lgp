@@ -2,8 +2,9 @@ FROM alpine:latest
 
 RUN sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
 RUN apk upgrade --update-cache --available
-
 RUN apk update
+
+RUN apk add git
 RUN apk add docker
 RUN apk add openrc
 RUN apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
