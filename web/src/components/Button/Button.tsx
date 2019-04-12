@@ -1,8 +1,8 @@
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import styles from "./Button.module.css";
-import classNames from "classnames";
 
-export type Props = {
+export interface Props {
   /** Button id attribute */
   id?: string;
   /** Button class attribute */
@@ -27,10 +27,10 @@ export type Props = {
   size: "small" | "normal" | "large";
   /** Button onClick event attribute */
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => any;
-};
+}
 
 class Button extends Component<Props> {
-  static defaultProps = {
+  public static defaultProps = {
     view: "button",
     type: "button",
     theme: "primary",
@@ -40,7 +40,7 @@ class Button extends Component<Props> {
     disabled: false
   };
 
-  render() {
+  public render() {
     const {
       id,
       type,

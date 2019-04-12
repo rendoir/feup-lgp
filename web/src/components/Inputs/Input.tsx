@@ -1,10 +1,10 @@
+import classNames from "classnames";
 import React, { Component } from "react";
 import styles from "./Input.module.css";
-import classNames from "classnames";
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
-export type Props = {
+export interface Props {
   /** Input class attribute */
   className?: string;
   /** input class attribute */
@@ -58,20 +58,19 @@ export type Props = {
   onFocus?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
   /** input onBlur event attribute */
   onBlur?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
-};
+}
 
-export type State = {
+export interface State {
   isFocused: boolean;
-};
+}
 
 class Input extends Component<Props, State> {
-  input?: HTMLInputElement | HTMLTextAreaElement;
-
   static defaultProps = {
     type: "text",
     status: "normal",
     spellcheck: "false"
   };
+  input?: HTMLInputElement | HTMLTextAreaElement;
 
   constructor(props: Props) {
     super(props);

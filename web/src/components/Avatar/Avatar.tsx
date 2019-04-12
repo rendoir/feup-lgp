@@ -1,16 +1,16 @@
-import React, { Component } from "react";
 import classNames from "classnames";
-import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
-import getAvatarText from "../../utils/getAvatarText";
-import getAvatarColor from "../../utils/getAvatarColor";
+import React, { Component } from "react";
 import createSequence from "../../utils/createSequence";
+import getAvatarColor from "../../utils/getAvatarColor";
+import getAvatarText from "../../utils/getAvatarText";
+import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
 import ImagePreloader, {
   State as ImagePreloaderState,
   STATE_SUCCESS
 } from "../ImagePreloader/ImagePreloader";
 import styles from "./Avatar.module.css";
 
-export type Props = {
+export interface Props {
   title: string | undefined;
   image: string | undefined;
   size: number;
@@ -18,17 +18,15 @@ export type Props = {
   className?: string;
   onClick?: (event: MouseEvent) => unknown;
   status?: UserStatusType | null | undefined;
-};
+}
 
-export type State = {
+export interface State {
   isHovered: boolean;
-};
+}
 
 const seq = createSequence();
 
 class Avatar extends Component<Props, State> {
-  id: string;
-
   static defaultProps = {
     image: undefined,
     title: undefined,
@@ -36,6 +34,7 @@ class Avatar extends Component<Props, State> {
     placeholder: "empty",
     status: null
   };
+  id: string;
 
   constructor(props: Props) {
     super(props);

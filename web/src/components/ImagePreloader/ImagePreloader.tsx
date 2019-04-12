@@ -6,22 +6,29 @@ export const STATE_ERROR = "error";
 
 export type ImageState = "pending" | "success" | "error";
 
-export type State = {
+export interface State {
   state: ImageState;
   src: string | undefined;
   error: unknown | null | undefined;
-};
+}
 
-export type Props = {
+export interface Props {
   /** Image src attribute */
   src: string | undefined;
   /** Image onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
   children: (state: State) => ReactNode;
-};
+}
 
 class ImagePreloader extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): State {
+    return {
+      src: nextProps.src === undefined ? undefined : prevState.src,
+      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
+      error: null
+    };
+  }
   requestId: number | null | undefined;
   image: HTMLImageElement | null | undefined;
 
@@ -39,14 +46,6 @@ class ImagePreloader extends Component<Props, State> {
     if (this.props.src) {
       this.handleStartFetch(this.props.src);
     }
-  }
-
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): State {
-    return {
-      src: nextProps.src === undefined ? undefined : prevState.src,
-      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
-      error: null
-    };
   }
 
   componentDidUpdate(prevProps: Props): void {
