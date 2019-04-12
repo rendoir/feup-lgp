@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Profile from "./Profile";
+import PostView from "./PostView";
 import Feed from "./Feed";
 import Backoffice from "./Backoffice";
 import Shop from "./Shop";
@@ -16,6 +17,7 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact path="/user/:username" component={Profile} />
+          <Route exact path="/post/:id" component={PostView} />
           <Route exact path="/admin" component={Backoffice} />
           <Route exact path="/" component={Feed} />
           <Route exact path="/shop" component={Shop} />

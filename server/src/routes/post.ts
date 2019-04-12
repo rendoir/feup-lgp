@@ -26,3 +26,18 @@ const upload = multer({dest: 'uploads'});
  *     }
  */
 postRouter.post('/', upload.array('image', 10), controller.createPost);
+
+/**
+ * @api {post} /api/post Get a post
+ * @apiName Get-A-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Name of the page/account to post
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.get('/', controller.getPost);

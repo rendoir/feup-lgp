@@ -26,6 +26,24 @@ export function createPost(req, res) {
     });
 }
 
+export async function getPost(req, res) {
+    const offset = req.query.offset;
+    const postId = 1;
+    try {
+        const result = await query({
+            text: `SELECT *
+                    FROM posts p
+                    WHERE
+                        author = $1`,
+            values: [postId, offset],
+        });
+        res.send(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving feed'));
+    }
+}
+
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {
         query({

@@ -1,21 +1,32 @@
+// - Import react components
 import React, { Component } from "react";
 import classNames from "classnames";
+import PropTypes from "prop-types";
 
-import createSequence from "../../utils/createSequence";
-
+// - Import styles
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 import styles from "./Post.module.css";
 
+// - Import app components
 import Avatar from "../Avatar/Avatar";
+import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
-//import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
+
+import createSequence from "../../utils/createSequence";
+
+const seq = createSequence();
 
 export type Props = {
+  title: string;
+
+  //postAuthor?: ;
+  //post: [] | undefined;
+
   content_width: number;
-  content_height: number;
 
   hasImage: boolean;
   image: string | undefined;
@@ -30,12 +41,10 @@ export type Props = {
   text: string | undefined;
   text_height: number;
 
-  comments: undefined;
+  comments: Array<any>;
 };
 
 export type State = {};
-
-const seq = createSequence();
 
 class Post extends Component<Props, State> {
   id: string;
@@ -53,9 +62,42 @@ class Post extends Component<Props, State> {
     this.handleEditPost = this.handleEditPost.bind(this);
   }
 
-  handleEditPost() {
-    console.log("EDITA POST");
+  getData() {
+    setTimeout(() => {
+      console.log("Our data is fetched");
+      this.setState({
+        data: "Hello WallStreet"
+      });
+    }, 1000);
   }
+
+  componentDidMount() {
+    this.getData();
+  }
+
+  handleEditPost() {
+    console.log("EDIT POST");
+  }
+
+  handleDeletePost() {
+    console.log("DELETE POST");
+  }
+
+  createCommentsSection = () => {
+    let commentsSection = [];
+
+    for (var i = 0; i < this.props.comments.length; i++) {
+      commentsSection.push(
+        <Comment
+          title=""
+          author={this.props.comments[i].author}
+          text={this.props.comments[i].text}
+        />
+      );
+    }
+
+    return <div className={styles.post_comments}>{commentsSection}</div>;
+  };
 
   render() {
     const { content_width } = this.props;
@@ -134,8 +176,8 @@ class Post extends Component<Props, State> {
           />
           <p className={styles.post_author}> {this.props.author} </p>
           <p className={styles.post_date}>20-02-2019</p>
-          <div className="btn-group">
-            <a className="" role="button" type="button" data-toggle="dropdown">
+          <div className={`${styles.post_options_button_grp} btn-group`}>
+            <a role="button" data-toggle="dropdown">
               <i className="fas fa-ellipsis-v" />
             </a>
             <div className="dropdown-menu dropdown-menu-right">
@@ -158,8 +200,8 @@ class Post extends Component<Props, State> {
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
         </div>
-        {imgDiv}
-        {videoDiv}
+        {this.props.image != undefined && imgDiv}
+        {this.props.video != undefined && videoDiv}
         <div className={styles.post_stats}>
           <span>35 likes</span>
           <span>14 comments</span>
@@ -176,6 +218,24 @@ class Post extends Component<Props, State> {
           <button>
             <i className="fas fa-share-square" />
             <span>Share</span>
+          </button>
+        </div>
+        <div className={styles.post_comment_section}>
+          {this.createCommentsSection()}
+        </div>
+        <div className={styles.post_add_comment}>
+          <Avatar
+            title={this.props.author}
+            placeholder="empty"
+            size={30}
+            image="https://picsum.photos/200/200?image=52"
+          />
+          <textarea
+            className="form-control ml-4 mr-3"
+            placeholder="Insert your comment..."
+          />
+          <button className={`${styles.submit_comment} px-2 py-1`}>
+            <i className="fas fa-chevron-circle-right" />
           </button>
         </div>
       </div>
