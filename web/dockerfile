@@ -1,0 +1,14 @@
+FROM nginx:alpine
+
+RUN apk add git
+
+COPY build /usr/share/nginx/html
+RUN mkdir -p /run/secrets
+COPY docker/site.key /run/secrets/site.key
+COPY docker/site.crt /run/secrets/site.crt
+
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 4200
+
+CMD ["nginx", "-g", "daemon off;"]
