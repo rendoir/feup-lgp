@@ -35,7 +35,7 @@ export interface Props {
   large?: boolean;
   /** input placeholder attribute */
   placeholder?: string;
-  /** input prefix*/
+  /** input prefix */
   prefix?: string;
   /** input disabled attribute */
   disabled?: boolean;
@@ -200,14 +200,14 @@ class Input extends Component<Props, State> {
       disabled,
       id,
       name,
+      onBlur: this.handleBlur,
+      onChange: this.handleChange,
+      onFocus: this.handleFocus,
       placeholder: placeholder ? placeholder : "",
-      type,
-      value,
       ref: this.setInput,
       tabIndex,
-      onChange: this.handleChange,
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus
+      type,
+      value
     };
 
     if (type === "textarea") {
