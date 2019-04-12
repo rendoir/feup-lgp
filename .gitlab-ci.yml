@@ -38,6 +38,7 @@ build_web:
     - npm install
     # - npm rebuild node-sass
     # - ng build --prod
+    - npm run build-css
     - npm run build
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
