@@ -1,10 +1,6 @@
 import * as React from "react";
 //import axios from "axios";
 
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
-import "@fortawesome/fontawesome-free/css/all.css";
-
 import Post from "../components/Post/Post";
 
 const postStyle = {

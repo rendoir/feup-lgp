@@ -4,10 +4,6 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 
 // - Import styles
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
-import "@fortawesome/fontawesome-free/css/all.css";
-
 import styles from "./Post.module.css";
 
 // - Import app components
@@ -15,12 +11,13 @@ import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import PostModal from "../PostModal/PostModal";
 
 import createSequence from "../../utils/createSequence";
 
 const seq = createSequence();
 
-export type Props = {
+interface Props {
   title: string;
 
   //postAuthor?: ;
@@ -44,7 +41,10 @@ export type Props = {
   comments: Array<any>;
 };
 
-export type State = {};
+interface State {
+  isHovered: boolean;
+  data: any;
+};
 
 class Post extends Component<Props, State> {
   id: string;
@@ -56,7 +56,8 @@ class Post extends Component<Props, State> {
 
     this.id = "post_" + seq.next();
     this.state = {
-      isHovered: false
+      isHovered: false,
+      data: ''
     };
 
     this.handleEditPost = this.handleEditPost.bind(this);
@@ -79,20 +80,19 @@ class Post extends Component<Props, State> {
     console.log("EDITA POST");
   }
 
-  createCommentsSection = () => {
-    let commentsSection = [];
-
-    for (var i = 0; i < this.props.comments.length; i++) {
-      commentsSection.push(
+  getCommentSection() {
+    let commentSection = this.props.comments.map((comment, idx) => {
+      return (
         <Comment
+          key={idx}
           title=""
-          author={this.props.comments[i].author}
-          text={this.props.comments[i].text}
+          author={comment.author}
+          text={comment.text}
         />
       );
-    }
-
-    return <div className={styles.post_comments}>{commentsSection}</div>;
+    });
+    
+    return <div className={styles.post_comments}>{commentSection}</div>;
   };
 
   render() {
@@ -174,7 +174,8 @@ class Post extends Component<Props, State> {
               <button
                 className="dropdown-item"
                 type="button"
-                onClick={this.handleEditPost}
+                data-toggle="modal"
+                data-target="#edit_post_modal"
               >
                 Edit Post
               </button>
@@ -210,8 +211,11 @@ class Post extends Component<Props, State> {
             <span>Share</span>
           </button>
         </div>
+        {/* Post edition modal (mode 1 is edition)*/}
+        <PostModal {...this.props} editHandler={this.handleEditPost} />
+        {/* Comment section*/}
         <div className={styles.post_comment_section}>
-          {this.createCommentsSection()}
+          {this.getCommentSection()}
           <div className={styles.post_add_comment}>
             <Avatar
               title={this.props.author}
