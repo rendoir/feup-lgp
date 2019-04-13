@@ -7,6 +7,7 @@ import "../styles/App.css";
 import Profile from "./Profile";
 import Backoffice from "./Backoffice";
 import Shop from "./Shop";
+import RegisterLanding from "./RegisterLanding";
 
 class App extends React.Component {
   public render() {
@@ -17,6 +18,7 @@ class App extends React.Component {
           <Route exact path="/user/:username" component={Profile} />
           <Route exact path="/admin" component={Backoffice} />
           <Route exact path="/shop" component={Shop} />
+          <Route exact path="/register" component={RegisterLanding} />
         </Router>
       </div>
     );
