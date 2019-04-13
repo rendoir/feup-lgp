@@ -12,7 +12,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 const CREATE_MODE = 0;
-const EDIT_MODE = 1;
+const EDIT_MODE = 0;
 
 interface Props {
   id?: number;
@@ -41,7 +41,7 @@ interface State {}
 
 const seq = createSequence();
 
-class PostModal extends Component<Props, State> {
+class DeleteModal extends Component<Props, State> {
   static defaultProps = {};
 
   constructor(props: Props) {
@@ -56,7 +56,7 @@ class PostModal extends Component<Props, State> {
     return (
       <div
         className="modal fade"
-        id="edit_post_modal"
+        id="delete_post_modal"
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
@@ -66,7 +66,7 @@ class PostModal extends Component<Props, State> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                Modal title
+                Delete post
               </h5>
               <button
                 type="button"
@@ -78,7 +78,10 @@ class PostModal extends Component<Props, State> {
               </button>
             </div>
             <div className="modal-body">
-              <p>this is a test</p>
+              <p>
+                Are you sure you want do delete this post? It can't be retrieved
+                later.
+              </p>
             </div>
             <div className="modal-footer">
               <button
@@ -86,7 +89,7 @@ class PostModal extends Component<Props, State> {
                 className="btn btn-danger"
                 data-dismiss="modal"
               >
-                Cancel
+                Yes
               </button>
               <button
                 type="button"
@@ -94,7 +97,7 @@ class PostModal extends Component<Props, State> {
                 data-dismiss="modal"
                 onClick={this.props.editHandler}
               >
-                Save changes
+                No
               </button>
             </div>
           </div>
@@ -104,4 +107,4 @@ class PostModal extends Component<Props, State> {
   }
 }
 
-export default PostModal;
+export default DeleteModal;

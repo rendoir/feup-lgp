@@ -26,8 +26,7 @@
     "react-scripts": "^2.1.8",
     "redux": "^4.0.1",
     "redux-starter-kit": "^0.4.3",
-    "stylelint": "^9.10.1",
-    "typescript": "^3.4.1"
+    "stylelint": "^9.10.1"
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
@@ -54,7 +53,9 @@
     "react-docgen-typescript": "^1.12.3",
     "react-styleguidist": "^9.0.5",
     "redux-devtools": "^3.5.0",
-    "ts-loader": "^5.3.3"
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.3"
   },
   "husky": {
     "hooks": {

@@ -12,6 +12,7 @@ import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 import PostModal from "../PostModal/PostModal";
+import DeleteModal from "../PostModal/DeleteModal";
 
 import createSequence from "../../utils/createSequence";
 
@@ -39,12 +40,12 @@ interface Props {
   text_height: number;
 
   comments: Array<any>;
-};
+}
 
 interface State {
   isHovered: boolean;
   data: any;
-};
+}
 
 class Post extends Component<Props, State> {
   id: string;
@@ -57,10 +58,11 @@ class Post extends Component<Props, State> {
     this.id = "post_" + seq.next();
     this.state = {
       isHovered: false,
-      data: ''
+      data: ""
     };
 
     this.handleEditPost = this.handleEditPost.bind(this);
+    this.handleDeletePost = this.handleDeletePost.bind(this);
   }
 
   getData() {
@@ -77,7 +79,11 @@ class Post extends Component<Props, State> {
   }
 
   handleEditPost() {
-    console.log("EDITA POST");
+    console.log("EDIT POST");
+  }
+
+  handleDeletePost() {
+    console.log("DELETE POST");
   }
 
   getCommentSection() {
@@ -91,9 +97,9 @@ class Post extends Component<Props, State> {
         />
       );
     });
-    
+
     return <div className={styles.post_comments}>{commentSection}</div>;
-  };
+  }
 
   render() {
     const { content_width } = this.props;
@@ -179,7 +185,12 @@ class Post extends Component<Props, State> {
               >
                 Edit Post
               </button>
-              <button className="dropdown-item" type="button">
+              <button
+                className="dropdown-item"
+                type="button"
+                data-toggle="modal"
+                data-target="#delete_post_modal"
+              >
                 Delete Post
               </button>
               <button className="dropdown-item" type="button">
@@ -213,6 +224,8 @@ class Post extends Component<Props, State> {
         </div>
         {/* Post edition modal (mode 1 is edition)*/}
         <PostModal {...this.props} editHandler={this.handleEditPost} />
+        {/* Delete Post */}
+        <DeleteModal {...this.props} deleteHandler={this.handleDeletePost()} />
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
