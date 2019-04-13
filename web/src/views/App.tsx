@@ -9,6 +9,7 @@ import PostView from "./PostView";
 import Feed from "./Feed";
 import Backoffice from "./Backoffice";
 import Shop from "./Shop";
+import RegisterLanding from "./RegisterLanding";
 
 class App extends React.Component {
   public render() {
@@ -21,6 +22,7 @@ class App extends React.Component {
           <Route exact path="/admin" component={Backoffice} />
           <Route exact path="/" component={Feed} />
           <Route exact path="/shop" component={Shop} />
+          <Route exact path="/register" component={RegisterLanding} />
         </Router>
       </div>
     );
