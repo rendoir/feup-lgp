@@ -135,27 +135,13 @@ class Post extends Component<Props, State> {
 
   render() {
     const { content_width } = this.props;
-    const content_height = 1000;
+    const content_height = 500; //to_change when add images/videos
 
     const className = classNames(styles.container);
     /*
           this.props.className,
           this.state.isHovered ? styles.hovered : null
         */
-
-    /* VIDEO PRELOADER CODE
-              <VideoPreloader src={this.props.video}>
-                {({ src }) => {
-                  return (
-                    <iframe
-                      src={src}
-                      width={content_width}
-                      height={this.props.video_height}
-                    />
-                  );
-                }}
-              </VideoPreloader>
-          */
 
     return (
       <div
