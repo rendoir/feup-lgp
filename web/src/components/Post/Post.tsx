@@ -1,7 +1,7 @@
 // - Import react components
-import React, { Component } from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
+import React, { Component } from "react";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -10,9 +10,9 @@ import styles from "./Post.module.css";
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostModal from "../PostModal/PostModal";
 import DeleteModal from "../PostModal/DeleteModal";
+import PostModal from "../PostModal/PostModal";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 interface Props {
   id: number;
@@ -23,15 +23,15 @@ interface Props {
 
   content_width: number;
 
-  images: Array<string> | undefined;
+  images: string[] | undefined;
 
-  videos: Array<string> | undefined;
+  videos: string[] | undefined;
 
   author: string;
 
   text: string | undefined;
 
-  comments: Array<any>;
+  comments: any[];
 }
 
 interface State {
@@ -40,9 +40,8 @@ interface State {
 }
 
 class Post extends Component<Props, State> {
-  id: string;
-
-  static defaultProps = {};
+  public static defaultProps = {};
+  public id: string;
 
   constructor(props: Props) {
     super(props);
@@ -57,7 +56,7 @@ class Post extends Component<Props, State> {
     this.handleDeletePost = this.handleDeletePost.bind(this);
   }
 
-  getData() {
+  public getData() {
     setTimeout(() => {
       console.log("Our data is fetched");
       this.setState({
@@ -66,20 +65,20 @@ class Post extends Component<Props, State> {
     }, 1000);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.getData();
   }
 
-  handleEditPost() {
+  public handleEditPost() {
     console.log("EDIT POST");
   }
 
-  handleDeletePost() {
+  public handleDeletePost() {
     console.log("DELETE POST");
   }
 
-  getCommentSection() {
-    let commentSection = this.props.comments.map((comment, idx) => {
+  public getCommentSection() {
+    const commentSection = this.props.comments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
@@ -93,10 +92,10 @@ class Post extends Component<Props, State> {
     return <div className={styles.post_comments}>{commentSection}</div>;
   }
 
-  getImages() {
-    let imgDiv = [];
+  public getImages() {
+    const imgDiv = [];
 
-    if (this.props.images != null && this.props.images != undefined)
+    if (this.props.images != null && this.props.images != undefined) {
       for (let i = 0; i < this.props.images.length; i++) {
         imgDiv.push(
           <div className={styles.post_content}>
@@ -108,14 +107,15 @@ class Post extends Component<Props, State> {
           </div>
         );
       }
+    }
 
     return imgDiv;
   }
 
-  getVideos() {
-    let videoDiv = [];
+  public getVideos() {
+    const videoDiv = [];
 
-    if (this.props.videos != null && this.props.videos != undefined)
+    if (this.props.videos != null && this.props.videos != undefined) {
       for (let i = 0; i < this.props.videos.length; i++) {
         videoDiv.push(
           <div className={styles.post_content}>
@@ -124,16 +124,17 @@ class Post extends Component<Props, State> {
               src={this.props.videos[i]}
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+              allowFullScreen={true}
             />
           </div>
         );
       }
+    }
 
     return videoDiv;
   }
 
-  render() {
+  public render() {
     const { content_width } = this.props;
 
     const className = classNames(styles.container);

@@ -44,7 +44,7 @@ export async function getPost(req, res) {
                     FROM posts p
                     LEFT JOIN comments c
                     ON p.id = c.post
-                    INNER JOIN users a 
+                    INNER JOIN users a
                     ON c.author = a.id
                     WHERE
                         p.id = $1`,
@@ -52,15 +52,14 @@ export async function getPost(req, res) {
         });
         const result = {
             post: post.rows,
-            comments: comments.rows
-        }
+            comments: comments.rows,
+        };
         res.send(result);
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
     }
 }
-
 
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {

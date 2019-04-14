@@ -1,9 +1,9 @@
-import React, { Component } from "react";
 import classNames from "classnames";
+import React, { Component } from "react";
 
 import createSequence from "../../utils/createSequence";
 
-//import styles from "./PostModal.module.css";
+// import styles from "./PostModal.module.css";
 
 import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
@@ -19,8 +19,8 @@ interface Props {
 
   content_width: number;
 
-  images: Array<string> | undefined;
-  videos: Array<string> | undefined;
+  images: string[] | undefined;
+  videos: string[] | undefined;
   text: string | undefined;
 
   editHandler?: any;
@@ -35,7 +35,7 @@ interface State {}
 const seq = createSequence();
 
 class DeleteModal extends Component<Props, State> {
-  static defaultProps = {};
+  public static defaultProps = {};
 
   constructor(props: Props) {
     super(props);
@@ -43,8 +43,8 @@ class DeleteModal extends Component<Props, State> {
     this.state = {};
   }
 
-  render() {
-    //const className = classNames(styles.container);
+  public render() {
+    // const className = classNames(styles.container);
 
     return (
       <div

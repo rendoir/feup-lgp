@@ -6,24 +6,34 @@ export const STATE_ERROR = "error";
 
 export type VideoState = "pending" | "success" | "error";
 
-export type State = {
+export interface State {
   state: VideoState;
   src: string | undefined;
   error: unknown | null | undefined;
-};
+}
 
-export type Props = {
+export interface Props {
   /** Video src attribute */
   src: string | undefined;
   /** Video onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
   children: (state: State) => ReactNode;
-};
+}
 
 class VideoPreloader extends Component<Props, State> {
-  requestId: number | null | undefined;
-  Video: HTMLVideoElement | null | undefined;
+  public static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State
+  ): State {
+    return {
+      src: nextProps.src === undefined ? undefined : prevState.src,
+      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
+      error: null
+    };
+  }
+  public requestId: number | null | undefined;
+  public Video: HTMLVideoElement | null | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -35,21 +45,13 @@ class VideoPreloader extends Component<Props, State> {
     };
   }
 
-  componentDidMount(): void {
+  public componentDidMount(): void {
     if (this.props.src) {
       this.handleStartFetch(this.props.src);
     }
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): State {
-    return {
-      src: nextProps.src === undefined ? undefined : prevState.src,
-      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
-      error: null
-    };
-  }
-
-  componentDidUpdate(prevProps: Props): void {
+  public componentDidUpdate(prevProps: Props): void {
     if (this.props.src === null) {
       this.handleStopFetch();
     }
@@ -63,11 +65,11 @@ class VideoPreloader extends Component<Props, State> {
     }
   }
 
-  componentWillUnmount(): void {
+  public componentWillUnmount(): void {
     this.handleStopFetch();
   }
 
-  handleStartFetch = (src: string): void => {
+  public handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
       const Video = document.createElement("iframe");
@@ -85,7 +87,7 @@ class VideoPreloader extends Component<Props, State> {
     });
   };
 
-  handleStopFetch = (): void => {
+  public handleStopFetch = (): void => {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = null;
@@ -94,7 +96,7 @@ class VideoPreloader extends Component<Props, State> {
     this.handleVideoClear();
   };
 
-  handleVideoClear = (): void => {
+  public handleVideoClear = (): void => {
     if (this.Video) {
       this.Video.src = "";
       this.Video.onload = null;
@@ -104,7 +106,7 @@ class VideoPreloader extends Component<Props, State> {
     }
   };
 
-  handleSuccess = (): void => {
+  public handleSuccess = (): void => {
     this.setState({
       state: STATE_SUCCESS,
       src: this.props.src
@@ -112,7 +114,7 @@ class VideoPreloader extends Component<Props, State> {
     this.handleStopFetch();
   };
 
-  handleError = (error?: any): void => {
+  public handleError = (error?: any): void => {
     this.setState({
       state: STATE_ERROR,
       src: this.props.src,
@@ -121,7 +123,7 @@ class VideoPreloader extends Component<Props, State> {
     this.handleStopFetch();
   };
 
-  render() {
+  public render() {
     return this.props.children(this.state);
   }
 }

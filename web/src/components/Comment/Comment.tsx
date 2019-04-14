@@ -1,12 +1,12 @@
 // - Import react components
-import React, { Component } from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
+import React, { Component } from "react";
 
 // - Import style
+import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
-import "@fortawesome/fontawesome-free/css/all.css";
 
 import styles from "./../Post/Post.module.scss";
 
@@ -17,13 +17,13 @@ import createSequence from "../../utils/createSequence";
 
 const seq = createSequence();
 
-export type Props = {
-  //comment: Comment //from model (substitutes title, text)
+export interface Props {
+  // comment: Comment //from model (substitutes title, text)
   title: string | undefined;
   text: string | undefined;
 
   author: string | undefined;
-  //date: string;
+  // date: string;
 
   /*
   openEditor?: Function; //Open profile editor
@@ -49,9 +49,9 @@ export type Props = {
 
   onClick?: (event: MouseEvent) => unknown;
   */
-};
+}
 
-export type State = {
+export interface State {
   /*
   initialText?: string; //Initial text comment
   text: string; //Initial text comment
@@ -63,12 +63,11 @@ export type State = {
   openMenu?: boolean; //Whether comment menu is open
   anchorEl: any; //Anchor element
   */
-};
+}
 
 class Comment extends Component<Props, State> {
-  id: string;
-
-  static defaultProps = {};
+  public static defaultProps = {};
+  public id: string;
 
   constructor(props: Props) {
     super(props);

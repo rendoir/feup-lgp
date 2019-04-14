@@ -1,5 +1,5 @@
-import * as React from "react";
 import axios from "axios";
+import * as React from "react";
 
 import Post from "../components/Post/Post";
 
@@ -13,8 +13,8 @@ interface Props {
 
 interface State {
   id: number;
-  post: Array<any>;
-  comments: Array<any>;
+  post: any[];
+  comments: any[];
 }
 
 const postStyle = {
@@ -44,7 +44,7 @@ class PostView extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.apiGetPost(this.props.match.params.id);
   }
 
@@ -67,9 +67,11 @@ class PostView extends React.Component<Props, State> {
   }
 
   public date() {
-    if (this.state.post[0].date_updated != null)
+    if (this.state.post[0].date_updated != null) {
       return this.processDate(this.state.post[0].date_updated);
-    else return this.processDate(this.state.post[0].date_created);
+    } else {
+      return this.processDate(this.state.post[0].date_created);
+    }
   }
 
   public processDate(dateToProcess: string) {

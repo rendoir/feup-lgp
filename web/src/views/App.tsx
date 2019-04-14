@@ -1,15 +1,15 @@
 import * as React from "react";
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import Header from "../components/header/Header";
 import "../styles/App.css";
 
-import Profile from "./Profile";
-import PostView from "./PostView";
-import Feed from "./Feed";
 import Backoffice from "./Backoffice";
-import Shop from "./Shop";
+import Feed from "./Feed";
+import PostView from "./PostView";
+import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
+import Shop from "./Shop";
 
 class App extends React.Component {
   public render() {
@@ -17,12 +17,12 @@ class App extends React.Component {
       <div className="App">
         <Header />
         <Router>
-          <Route exact path="/user/:username" component={Profile} />
-          <Route exact path="/post/:id" component={PostView} />
-          <Route exact path="/admin" component={Backoffice} />
-          <Route exact path="/" component={Feed} />
-          <Route exact path="/shop" component={Shop} />
-          <Route exact path="/register" component={RegisterLanding} />
+          <Route exact={true} path="/user/:username" component={Profile} />
+          <Route exact={true} path="/post/:id" component={PostView} />
+          <Route exact={true} path="/admin" component={Backoffice} />
+          <Route exact={true} path="/" component={Feed} />
+          <Route exact={true} path="/shop" component={Shop} />
+          <Route exact={true} path="/register" component={RegisterLanding} />
         </Router>
       </div>
     );

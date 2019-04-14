@@ -1,5 +1,5 @@
-import React, { Component } from "react";
 import classNames from "classnames";
+import React, { Component } from "react";
 
 import createSequence from "../../utils/createSequence";
 
@@ -8,9 +8,9 @@ import "./PostModal.module.css";
 import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
 
+import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import { checkPropTypes } from "prop-types";
 
 const CREATE_MODE = 0;
 const EDIT_MODE = 1;
@@ -22,11 +22,11 @@ interface Props {
 
   content_width: number;
 
-  images: Array<string> | undefined;
-  videos: Array<string> | undefined;
+  images: string[] | undefined;
+  videos: string[] | undefined;
   text: string | undefined;
 
-  createHandler?: any; //Only required for post creation
+  createHandler?: any; // Only required for post creation
   editHandler?: any;
 
   onChange?: (state: State) => any;
@@ -40,10 +40,10 @@ interface State {
 const seq = createSequence();
 
 class PostModal extends Component<Props, State> {
-  mode: string;
+  public mode: string;
 
-  image: any = React.createRef();
-  video: any = React.createRef();
+  public image: any = React.createRef();
+  public video: any = React.createRef();
 
   constructor(props: Props) {
     super(props);
@@ -60,24 +60,24 @@ class PostModal extends Component<Props, State> {
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
-  handleInputChange(event: any) {
+  public handleInputChange(event: any) {
     const field = event.target.name;
     const value = event.target.value;
     console.log(field, ": ", value);
-    var partialState: any = {};
+    let partialState: any = {};
     partialState[field] = value;
     this.setState(partialState);
   }
 
-  getInputRequiredClass(content: string) {
+  public getInputRequiredClass(content: string) {
     return content === "" ? "form-control" : "";
   }
 
-  getInputRequiredStyle(content: string) {
+  public getInputRequiredStyle(content: string) {
     return content !== "" ? { display: "none" } : {};
   }
 
-  getPostForm() {
+  public getPostForm() {
     return (
       <form id="post_modal_form" className="was-validated">
         <div className="mb-3">
@@ -91,7 +91,7 @@ class PostModal extends Component<Props, State> {
             onChange={this.handleInputChange}
             placeholder="Insert title"
             value={this.state.title}
-            required
+            required={true}
           />
           <div
             className="invalid-feedback"
@@ -111,7 +111,7 @@ class PostModal extends Component<Props, State> {
             onChange={this.handleInputChange}
             placeholder="Insert body"
             value={this.state.text}
-            required
+            required={true}
           />
           <div
             className="invalid-feedback"
@@ -145,8 +145,8 @@ class PostModal extends Component<Props, State> {
       </form>
     );
   }
-  render() {
-    //const className = classNames(styles.container);
+  public render() {
+    // const className = classNames(styles.container);
 
     return (
       <div

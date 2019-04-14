@@ -9,7 +9,7 @@ class Shop extends React.Component {
         <div className="row">
           <div className="col-lg-3 ml-0">
             <div className="mb-4">
-              <h1 className="my-4"> </h1>
+              <h1 className="my-4" />
               <div className="card h-100">
                 <div className="card-body">
                   <h6>
@@ -109,7 +109,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -139,7 +144,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -169,7 +179,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -199,7 +214,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -229,7 +249,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -259,7 +284,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -289,7 +319,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -319,7 +354,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -349,7 +389,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -379,7 +424,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -409,7 +459,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
@@ -439,7 +494,12 @@ class Shop extends React.Component {
                   </div>
                   <div className="card-footer">
                     <div className="">
-                      <Button theme="primary" view="outline" size="small" wide>
+                      <Button
+                        theme="primary"
+                        view="outline"
+                        size="small"
+                        wide={true}
+                      >
                         Exchange
                       </Button>
                     </div>
