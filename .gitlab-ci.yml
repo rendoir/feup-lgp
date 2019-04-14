@@ -84,10 +84,10 @@ build_db:
 #     - docker image build -t $E2E_TEST_IMAGE .
 #     - docker push $E2E_TEST_IMAGE
 
-test_web_linter:
-  stage: lint
-  script:
-    - cd web && npm install && npm run lint
+# test_web_linter:
+#   stage: lint
+#   script:
+#     - cd web && npm install && npm run lint
 
 test_api_linter:
   stage: lint

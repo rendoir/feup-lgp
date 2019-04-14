@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  reverseproxy:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/reverseproxy:stable
+    depends_on:
+      - webprod
+      - webstaging
+    ports:
+      - 443:443
+  webprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
+    depends_on:
+      - apiprod
+  dbprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/db:stable
+  apiprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/api:stable
+    environment:
+      - DB_HOST=dbprod
+    depends_on:
+      - dbprod
+  webstaging:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
+    depends_on:
+      - apistaging
+  dbstaging:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
+  apistaging:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/api:latest
+    environment:
+      - DB_HOST=dbstaging
+    depends_on:
+      - dbstaging
