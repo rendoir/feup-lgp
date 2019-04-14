@@ -135,7 +135,6 @@ class Post extends Component<Props, State> {
 
   render() {
     const { content_width } = this.props;
-    const content_height = 500; //to_change when add images/videos
 
     const className = classNames(styles.container);
     /*
@@ -144,10 +143,7 @@ class Post extends Component<Props, State> {
   */
 
     return (
-      <div
-        className={`${styles.post} mb-4`}
-        style={{ width: content_width, height: content_height }}
-      >
+      <div className={`${styles.post} mb-4`} style={{ width: content_width }}>
         <div className={styles.post_header}>
           <Avatar
             title={this.props.author}
