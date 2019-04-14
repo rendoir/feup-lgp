@@ -181,7 +181,7 @@ class Post extends Component<Props, State> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#edit_post_modal"
+                data-target="#post_modal"
               >
                 Edit Post
               </button>
@@ -222,8 +222,8 @@ class Post extends Component<Props, State> {
             <span>Share</span>
           </button>
         </div>
-        {/* Post edition modal (mode 1 is edition)*/}
-        <PostModal {...this.props} editHandler={this.handleEditPost} />
+        {/* Post edition modal */}
+        <PostModal {...this.props} />
         {/* Delete Post */}
         <DeleteModal {...this.props} deleteHandler={this.handleDeletePost()} />
         {/* Comment section*/}
