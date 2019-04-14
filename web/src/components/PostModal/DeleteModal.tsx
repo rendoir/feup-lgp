@@ -3,7 +3,7 @@ import classNames from "classnames";
 
 import createSequence from "../../utils/createSequence";
 
-import styles from "./PostModal.module.css";
+//import styles from "./PostModal.module.css";
 
 import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
@@ -44,7 +44,7 @@ class DeleteModal extends Component<Props, State> {
   }
 
   render() {
-    const className = classNames(styles.container);
+    //const className = classNames(styles.container);
 
     return (
       <div
