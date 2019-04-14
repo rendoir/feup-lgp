@@ -139,9 +139,9 @@ class Post extends Component<Props, State> {
 
     const className = classNames(styles.container);
     /*
-          this.props.className,
-          this.state.isHovered ? styles.hovered : null
-        */
+    this.props.className,
+    this.state.isHovered ? styles.hovered : null
+  */
 
     return (
       <div

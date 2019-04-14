@@ -3,9 +3,16 @@ import axios from "axios";
 
 import Post from "../components/Post/Post";
 
-interface Props {}
+interface Props {
+  match: {
+    params: {
+      id: number;
+    };
+  };
+}
 
 interface State {
+  id: number;
   post: Array<any>;
   comments: Array<any>;
 }
@@ -19,6 +26,7 @@ class PostView extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      id: 1,
       post: [
         {
           author: "1",
@@ -37,19 +45,23 @@ class PostView extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.apiGetPost();
+    this.apiGetPost(this.props.match.params.id);
   }
 
-  public apiGetPost() {
+  public apiGetPost(id: number) {
     axios
-      .get("https://localhost:8443/post/1", {
+      .get("https://localhost:8443/post/" + id, {
         params: {},
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {
-        this.setState({ post: res.data.post, comments: res.data.comments });
+        this.setState({
+          id: res.data.post[0].id,
+          post: res.data.post,
+          comments: res.data.comments
+        });
       })
       .catch(() => console.log("Failed to get post info"));
   }
@@ -65,7 +77,6 @@ class PostView extends React.Component<Props, State> {
   }
 
   public render() {
-    console.log(this.state.comments);
     return (
       <div
         className="d-flex justify-content-center align-items-center align-self-center"
