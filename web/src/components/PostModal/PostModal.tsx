@@ -19,16 +19,9 @@ interface Props {
 
   content_width: number;
 
-  hasImage: boolean;
-  image: string | undefined;
-  image_height: number;
-
-  hasVideo: boolean;
-  video: string | undefined;
-  video_height: number;
-
+  images: Array<string> | undefined;
+  videos: Array<string> | undefined;
   text: string | undefined;
-  text_height: number;
 
   editHandler?: any;
   createHandler?: any;

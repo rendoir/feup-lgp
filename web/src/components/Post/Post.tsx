@@ -14,30 +14,22 @@ import VideoPreloader from "../VideoPreloader/VideoPreloader";
 import PostModal from "../PostModal/PostModal";
 import DeleteModal from "../PostModal/DeleteModal";
 
-import createSequence from "../../utils/createSequence";
-
-const seq = createSequence();
-
 interface Props {
+  id: number;
+
   title: string;
 
-  //postAuthor?: ;
-  //post: [] | undefined;
+  date: string | undefined;
 
   content_width: number;
 
-  hasImage: boolean;
-  image: string | undefined;
-  image_height: number;
+  images: Array<string> | undefined;
 
-  hasVideo: boolean;
-  video: string | undefined;
-  video_height: number;
+  videos: Array<string> | undefined;
 
   author: string;
 
   text: string | undefined;
-  text_height: number;
 
   comments: Array<any>;
 }
@@ -55,7 +47,7 @@ class Post extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.id = "post_" + seq.next();
+    this.id = "post_" + this.props.id;
     this.state = {
       isHovered: false,
       data: ""
@@ -91,9 +83,9 @@ class Post extends Component<Props, State> {
       return (
         <Comment
           key={idx}
-          title=""
-          author={comment.author}
-          text={comment.text}
+          title={comment.id}
+          author={comment.first_name + " " + comment.last_name}
+          text={comment.comment}
         />
       );
     });
@@ -101,35 +93,55 @@ class Post extends Component<Props, State> {
     return <div className={styles.post_comments}>{commentSection}</div>;
   }
 
+  getImages() {
+    let imgDiv = [];
+
+    if (this.props.images != null && this.props.images != undefined)
+      for (let i = 0; i < this.props.images.length; i++) {
+        imgDiv.push(
+          <div className={styles.post_content}>
+            <ImagePreloader src={this.props.images[i]}>
+              {({ src }) => {
+                return <img src={src} width={this.props.content_width} />;
+              }}
+            </ImagePreloader>
+          </div>
+        );
+      }
+
+    return imgDiv;
+  }
+
+  getVideos() {
+    let videoDiv = [];
+
+    if (this.props.videos != null && this.props.videos != undefined)
+      for (let i = 0; i < this.props.videos.length; i++) {
+        videoDiv.push(
+          <div className={styles.post_content}>
+            <iframe
+              width={this.props.content_width}
+              src={this.props.videos[i]}
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        );
+      }
+
+    return videoDiv;
+  }
+
   render() {
     const { content_width } = this.props;
     const content_height = 1000;
-    /*const content_height =
-          this.props.text_height +
-          this.props.image_height +
-          this.props.video_height;*/
 
     const className = classNames(styles.container);
     /*
           this.props.className,
           this.state.isHovered ? styles.hovered : null
         */
-
-    const imgDiv = (
-      <div className={styles.post_content}>
-        <ImagePreloader src={this.props.image}>
-          {({ src }) => {
-            return (
-              <img
-                src={src}
-                width={content_width}
-                height={this.props.image_height}
-              />
-            );
-          }}
-        </ImagePreloader>
-      </div>
-    );
 
     /* VIDEO PRELOADER CODE
               <VideoPreloader src={this.props.video}>
@@ -145,19 +157,6 @@ class Post extends Component<Props, State> {
               </VideoPreloader>
           */
 
-    const videoDiv = (
-      <div className={styles.post_content}>
-        <iframe
-          width={this.props.content_width}
-          height={this.props.video_height}
-          src={this.props.video}
-          frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
-
     return (
       <div
         className={`${styles.post} mb-4`}
@@ -171,7 +170,7 @@ class Post extends Component<Props, State> {
             image="https://picsum.photos/200/200?image=52"
           />
           <p className={styles.post_author}> {this.props.author} </p>
-          <p className={styles.post_date}>20-02-2019</p>
+          <p className={styles.post_date}>{this.props.date}</p>
           <div className={`${styles.post_options_button_grp} btn-group`}>
             <a role="button" data-toggle="dropdown">
               <i className="fas fa-ellipsis-v" />
@@ -202,8 +201,8 @@ class Post extends Component<Props, State> {
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
         </div>
-        {this.props.image != undefined && imgDiv}
-        {this.props.video != undefined && videoDiv}
+        {this.getImages()}
+        {this.getVideos()}
         <div className={styles.post_stats}>
           <span>35 likes</span>
           <span>14 comments</span>

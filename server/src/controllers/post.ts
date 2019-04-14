@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as request from 'request-promise';
 // import * as Twitter from 'twitter';
+
 import {query} from '../db/db';
 
 export function createPost(req, res) {
@@ -27,38 +28,36 @@ export function createPost(req, res) {
 }
 
 export async function getPost(req, res) {
-    const offset = req.query.offset;
-    const postId = 1;
+    const postId = req.params.id;
     try {
-        const result = await query({
-            text: `SELECT *
-                    FROM posts
+        const post = await query({
+            text: `SELECT p.*, a.first_name, a.last_name
+                    FROM posts p
+                    INNER JOIN users a
+                    ON p.author = a.id
                     WHERE
-                        id = $1`,
-            values: [postId, offset],
+                        p.id = $1`,
+            values: [postId],
         });
-        res.send(result.rows);
+        const comments = await query({
+            text: `SELECT c.*, a.first_name, a.last_name
+                    FROM posts p
+                    LEFT JOIN comments c
+                    ON p.id = c.post
+                    INNER JOIN users a 
+                    ON c.author = a.id
+                    WHERE
+                        p.id = $1`,
+            values: [postId],
+        });
+        const result = {
+            post: post.rows,
+            comments: comments.rows
+        }
+        res.send(result);
     } catch (error) {
         console.error(error);
-        res.status(500).send(new Error('Error retrieving feed'));
-    }
-}
-
-export async function getCommentsOfPost(req, res) {
-    const offset = req.query.offset;
-    const postId = 1;
-    try {
-        const result = await query({
-            text: `SELECT *
-                    FROM comments
-                    WHERE
-                        post = $1`,
-            values: [postId, offset],
-        });
-        res.send(result.rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(new Error('Error retrieving feed'));
+        res.status(500).send(new Error('Error retrieving post'));
     }
 }
 

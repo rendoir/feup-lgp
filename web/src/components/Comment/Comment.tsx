@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "@fortawesome/fontawesome-free/css/all.css";
 
-import styles from "./Comment.module.scss";
+import styles from "./../Post/Post.module.scss";
 
 // - Import app components
 import Avatar from "../Avatar/Avatar";

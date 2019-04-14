@@ -7,18 +7,32 @@ interface Props {}
 
 interface State {
   post: Array<any>;
+  comments: Array<any>;
 }
 
 const postStyle = {
   margin: "2rem auto auto auto"
 };
 
-class PostView extends React.Component {
+class PostView extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      posts: []
+      post: [
+        {
+          author: "1",
+          content_text: "",
+          content_document: null,
+          content_image: null,
+          content_video: null,
+          date_created: "",
+          date_updated: "",
+          id: "",
+          title: ""
+        }
+      ],
+      comments: []
     };
   }
 
@@ -28,45 +42,47 @@ class PostView extends React.Component {
 
   public apiGetPost() {
     axios
-      .get("https://localhost:8443/post?ID=1", {
+      .get("https://localhost:8443/post/1", {
         params: {},
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {
-        console.log(res.data);
-        this.setState({ post: res.data });
+        this.setState({ post: res.data.post, comments: res.data.comments });
       })
       .catch(() => console.log("Failed to get post info"));
   }
 
+  public date() {
+    if (this.state.post[0].date_updated != null)
+      return this.processDate(this.state.post[0].date_updated);
+    else return this.processDate(this.state.post[0].date_created);
+  }
+
+  public processDate(dateToProcess: string) {
+    return dateToProcess.split("T")[0];
+  }
+
   public render() {
+    console.log(this.state.comments);
     return (
       <div
         className="d-flex justify-content-center align-items-center align-self-center"
         style={postStyle}
       >
         <Post
-          title=""
+          id={Number(this.state.post[0].id)}
+          title={this.state.post[0].title}
           content_width={screen.width / 1.2}
-          author="John Doe"
-          text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          text_height={96}
-          video="https://www.youtube.com/embed/Y6U728AZnV0"
-          video_height={315}
-          hasVideo={true}
-          image=""
-          image_height={0}
-          hasImage={false}
-          comments={[
-            {
-              author: "John Doe",
-              text:
-                "This is a super big comment just to test some stuff and has absolutely no content."
-            },
-            { author: "John Doe", text: "This is a comment." }
-          ]}
+          author={
+            this.state.post[0].first_name + " " + this.state.post[0].last_name
+          }
+          date={this.date()}
+          text={this.state.post[0].content_text}
+          videos={this.state.post[0].content_video}
+          images={this.state.post[0].content_image}
+          comments={this.state.comments}
         />
       </div>
     );

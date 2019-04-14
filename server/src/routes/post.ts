@@ -33,7 +33,7 @@ postRouter.post('/', upload.array('image', 10), controller.createPost);
  * @apiName Get-A-Post
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Name of the page/account to post
+ * @apiParam {String}   post.id   Number of the post
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -41,4 +41,4 @@ postRouter.post('/', upload.array('image', 10), controller.createPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.get('/', controller.getPost);
+postRouter.get('/:id', controller.getPost);
