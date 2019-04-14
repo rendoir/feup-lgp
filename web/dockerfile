@@ -6,12 +6,8 @@ RUN mkdir /usr/gnet
 WORKDIR /usr/gnet
 COPY build /usr/gnet
 
-# add `/usr/src/app/node_modules/.bin` to $PATH
-# ENV PATH /usr/src/app/node_modules/.bin:$PATH
-
-# install and cache app dependencies
-# COPY package.json /usr/src/app/package.json
-# RUN npm install
+# COPY docker/site.key /run/secrets/site.key
+# COPY docker/site.crt /run/secrets/site.crt
 
 RUN npm install -g serve
 CMD serve -s build
