@@ -1,2 +1,6 @@
 .idea/
 secrets
+reverse_proxy/*.crt
+reverse_proxy/*.key
+reverse_proxy/*.conf
+docker-compose.yml
