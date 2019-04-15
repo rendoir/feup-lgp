@@ -58,7 +58,8 @@ module.exports = {
       components: [
         "src/components/Button/*.tsx",
         "src/components/ButtonNext/*.tsx",
-        "src/components/IconButton/*.tsx"
+        "src/components/IconButton/*.tsx",
+        "src/components/LinkButton/*.tsx"
       ]
     },
     {
