@@ -70,6 +70,7 @@ module.exports = {
         "src/components/ImagePreloader/*.tsx",
         "src/components/Icon/*.tsx",
         "src/components/Tabs/Tabs.tsx"
+        // "src/components/Post/Post.tsx",
       ]
     }
   ]
