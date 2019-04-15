@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component } from "react";
 
 import createSequence from "../../utils/createSequence";
@@ -57,12 +58,34 @@ class PostModal extends Component<IProps, IState> {
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
+  public apiCreatePost() {
+    // TODO: call api to create post
+  }
+
+  public apiEditPost() {
+    axios
+      .post("https://localhost:8443/post/edit", {
+        body: {
+          id: this.props.id,
+          title: this.state.title,
+          text: this.state.text
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Post edited");
+      })
+      .catch(() => console.log("Failed to edit post"));
+  }
+
   public handlePostCreation() {
-    console.log("CRIOUUU");
+    this.apiCreatePost();
   }
 
   public handlePostEdition() {
-    console.log("EDITOUUUU");
+    this.apiEditPost();
   }
 
   public handleInputChange(event: any) {

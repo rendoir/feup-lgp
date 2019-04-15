@@ -27,6 +27,19 @@ export function createPost(req, res) {
     });
 }
 
+export function editPost(req, res) {
+    query({
+        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
+        text: 'UPDATE posts SET title=$2, content_text=$3 WHERE id=$1',
+        values: [req.body.id, req.body.title, req.body.text],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing post' });
+    });
+}
+
 export async function getPost(req, res) {
     const postId = req.params.id;
     try {
