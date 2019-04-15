@@ -50,6 +50,27 @@ postRouter.post('/', upload.array('image', 10), controller.createPost);
 postRouter.post('/edit', controller.editPost);
 
 /**
+ * @api {post} /api/post/delete Delete a post
+ * @apiName Delete-A-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id Id of the post.
+ * @apiParam {String}   title Title of the post.
+ * @apiParam {String}   text Body of the post.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while deleting post'
+ *     }
+ */
+postRouter.delete('/delete', controller.deletePost);
+
+/**
  * @api {post} /api/post Get a post
  * @apiName Get-A-Post
  * @apiGroup Post

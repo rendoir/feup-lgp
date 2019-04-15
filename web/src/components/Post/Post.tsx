@@ -207,7 +207,7 @@ class Post extends Component<Props, State> {
         {/* Post edition modal */}
         <PostModal {...this.props} />
         {/* Delete Post */}
-        <DeleteModal {...this.props} deleteHandler={this.handleDeletePost()} />
+        <DeleteModal {...this.props} />
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}

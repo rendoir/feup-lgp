@@ -40,6 +40,17 @@ export function editPost(req, res) {
     });
 }
 
+export function deletePost(req, res) {
+    query({
+        text: 'DELETE FROM posts WHERE id=$1', values: [req.body.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting post' });
+    });
+}
+
 export async function getPost(req, res) {
     const postId = req.params.id;
     try {
