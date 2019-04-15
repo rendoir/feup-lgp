@@ -61,6 +61,17 @@ export async function getPost(req, res) {
     }
 }
 
+export function addComment(req, res){
+    const postId = req.params.id;
+    console.log(req.params.id);
+    try {
+        res.send("ADDED POST");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post'));
+    }
+}
+
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {
         query({

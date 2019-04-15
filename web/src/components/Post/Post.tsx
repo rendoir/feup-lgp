@@ -2,6 +2,7 @@
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
+import axios from "axios";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -36,7 +37,7 @@ interface Props {
 
 interface State {
   isHovered: boolean;
-  data: any;
+  commentValue: string;
 }
 
 class Post extends Component<Props, State> {
@@ -49,25 +50,16 @@ class Post extends Component<Props, State> {
     this.id = "post_" + this.props.id;
     this.state = {
       isHovered: false,
-      data: ""
+      commentValue: ""
     };
 
     this.handleEditPost = this.handleEditPost.bind(this);
     this.handleDeletePost = this.handleDeletePost.bind(this);
+    this.handleAddComment = this.handleAddComment.bind(this);
+    this.changeCommentValue = this.changeCommentValue.bind(this);
   }
 
-  public getData() {
-    setTimeout(() => {
-      console.log("Our data is fetched");
-      this.setState({
-        data: "Hello WallStreet"
-      });
-    }, 1000);
-  }
-
-  public componentDidMount() {
-    this.getData();
-  }
+  public componentDidMount() {}
 
   public handleEditPost() {
     console.log("EDIT POST");
@@ -75,6 +67,24 @@ class Post extends Component<Props, State> {
 
   public handleDeletePost() {
     console.log("DELETE POST");
+  }
+
+  public changeCommentValue(event: any) {
+    this.setState({ commentValue: event.target.value });
+  }
+
+  public handleAddComment() {
+    let web_route =
+      "https://localhost:8443/post/" + this.props.id + "/new_comment";
+    axios
+      .post(web_route, {
+        comment: this.state.commentValue,
+        author: 1
+      })
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(() => console.log("Failed to post new comment"));
   }
 
   public getCommentSection() {
@@ -211,7 +221,10 @@ class Post extends Component<Props, State> {
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
-          <div className={styles.post_add_comment}>
+          <form
+            onSubmit={this.handleAddComment}
+            className={styles.post_add_comment}
+          >
             <Avatar
               title={this.props.author}
               placeholder="empty"
@@ -221,11 +234,17 @@ class Post extends Component<Props, State> {
             <textarea
               className="form-control ml-4 mr-3"
               placeholder="Insert your comment..."
+              value={this.state.commentValue}
+              onChange={this.changeCommentValue}
             />
-            <button className={`${styles.submit_comment} px-2 py-1`}>
+            <button
+              className={`${styles.submit_comment} px-2 py-1`}
+              type="submit"
+              value="Submit"
+            >
               <i className="fas fa-chevron-circle-right" />
             </button>
-          </div>
+          </form>
         </div>
       </div>
     );
