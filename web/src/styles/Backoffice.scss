@@ -1,0 +1,63 @@
+@import "variables";
+@import "functions";
+
+#backoffice_users_area {
+
+	.rounded-circle {
+		width: 100px;
+		height: 100px;
+	}
+	
+	@media screen and (min-width: 991px) and (max-width: 1199px) {
+		.rounded-circle {
+			width: 80px;
+			height: 80px;
+		}
+	}
+	//BUTTONS
+	.btn-block {
+		border-radius: 40px;
+	}
+	.btn {
+		border: none !important;
+	}
+	.btn:focus {
+		box-shadow: none !important;
+	}
+	.btn-primary {
+		background-color: $color-primary;
+	}
+	.btn-primary:hover {
+		background-color: shade($color-primary, 30);
+	}
+	.btn-danger {
+		background-color: $color-danger;
+	}
+	.btn-danger:hover {
+		background-color: shade($color-danger, 30);
+	}
+	.btn-info {
+		background-color: $color-info;
+	}
+	.btn-info:hover {
+		background-color: shade($color-info, 30);
+	}
+}
+
+#backoffice_notifications_area {
+	.report_message {
+		margin-bottom: 6px;
+	}
+
+	@media screen and (min-width: 768px) {
+		.admin_notif {
+			margin-left: 13px;
+		}
+	}
+
+	@media screen and (min-width: 576px) and (max-width: 767px) {
+		.admin_notif {
+			margin-left: 5px;
+		}
+	}
+}
