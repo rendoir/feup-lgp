@@ -1,9 +1,8 @@
-import classNames from "classnames";
 import React, { Component } from "react";
 
 import createSequence from "../../utils/createSequence";
 
-import "./PostModal.module.css";
+import "./PostModal.css";
 
 import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
@@ -62,15 +61,17 @@ class PostModal extends Component<Props, State> {
 
   public handleInputChange(event: any) {
     const field = event.target.name;
-    const value = event.target.value;
-    console.log(field, ": ", value);
-    let partialState: any = {};
+    const value = !event.target.value.replace(/\s/g, "").length
+      ? ""
+      : event.target.value; //Ignore input only containing white spaces
+
+    var partialState: any = {};
     partialState[field] = value;
     this.setState(partialState);
   }
 
-  public getInputRequiredClass(content: string) {
-    return content === "" ? "form-control" : "";
+  getInputRequiredClass(content: string) {
+    return content === "" ? "empty_required_field" : "post_field";
   }
 
   public getInputRequiredStyle(content: string) {
@@ -79,22 +80,20 @@ class PostModal extends Component<Props, State> {
 
   public getPostForm() {
     return (
-      <form id="post_modal_form" className="was-validated">
+      <form className="was-validated">
         <div className="mb-3">
           <h5>Title</h5>
           <input
             name="title"
             type="text"
-            className={`post_field ${this.getInputRequiredClass(
-              this.state.title
-            )}`}
+            className={this.getInputRequiredClass(this.state.title)}
             onChange={this.handleInputChange}
             placeholder="Insert title"
             value={this.state.title}
             required={true}
           />
           <div
-            className="invalid-feedback"
+            className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.title)}
           >
             Title must be provided
@@ -105,16 +104,14 @@ class PostModal extends Component<Props, State> {
           <h5>Body</h5>
           <textarea
             name="text"
-            className={`post_field ${this.getInputRequiredClass(
-              this.state.text
-            )}`}
+            className={this.getInputRequiredClass(this.state.text)}
             onChange={this.handleInputChange}
             placeholder="Insert body"
             value={this.state.text}
             required={true}
           />
           <div
-            className="invalid-feedback"
+            className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.text)}
           >
             Body must be provided
@@ -132,12 +129,14 @@ class PostModal extends Component<Props, State> {
           />
         </div>
 
+        <div>
+          <h5>Image</h5>
+        </div>
         <div className="custom-file">
-          <label className="custom-file-label">Image</label>
+          <label className="custom-file-label">Image (Optional)</label>
           <input
             type="file"
             className="custom-file-input"
-            placeholder="Insert image (Optional)"
             ref={this.image}
             defaultValue={""}
           />
@@ -145,19 +144,21 @@ class PostModal extends Component<Props, State> {
       </form>
     );
   }
-  public render() {
-    // const className = classNames(styles.container);
 
+  render() {
     return (
       <div
         id="post_modal"
-        className="modal fade w-75"
+        className="modal fade"
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-dialog-centered" role="document">
+        <div
+          className="modal-dialog modal-dialog-centered modal-xl"
+          role="document"
+        >
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
