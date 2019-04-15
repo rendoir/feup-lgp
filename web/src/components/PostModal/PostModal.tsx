@@ -11,43 +11,38 @@ import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
-const CREATE_MODE = 0;
-const EDIT_MODE = 1;
+const CREATE_MODE = "Create";
+const EDIT_MODE = "Edit";
 
-interface Props {
+interface IProps {
   /* The following attributes are only required for post edition */
   id?: number;
   title?: string;
+  text?: string;
+
+  images?: string[];
+  videos?: string[];
 
   content_width: number;
-
-  images: string[] | undefined;
-  videos: string[] | undefined;
-  text: string | undefined;
-
-  createHandler?: any; // Only required for post creation
-  editHandler?: any;
-
-  onChange?: (state: State) => any;
 }
 
-interface State {
+interface IState {
   title: string;
   text: string;
 }
 
 const seq = createSequence();
 
-class PostModal extends Component<Props, State> {
+class PostModal extends Component<IProps, IState> {
   public mode: string;
 
   public image: any = React.createRef();
   public video: any = React.createRef();
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
-    this.mode = props.id ? "Edit" : "Create";
+    this.mode = props.id ? EDIT_MODE : CREATE_MODE;
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
@@ -55,22 +50,33 @@ class PostModal extends Component<Props, State> {
       text: props.text || ""
     };
 
+    // Post manipulation handlers
+    this.handlePostCreation = this.handlePostCreation.bind(this);
+    this.handlePostEdition = this.handlePostEdition.bind(this);
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
+  public handlePostCreation() {
+    console.log("CRIOUUU");
+  }
+
+  public handlePostEdition() {
+    console.log("EDITOUUUU");
   }
 
   public handleInputChange(event: any) {
     const field = event.target.name;
     const value = !event.target.value.replace(/\s/g, "").length
       ? ""
-      : event.target.value; //Ignore input only containing white spaces
+      : event.target.value; // Ignore input only containing white spaces
 
-    var partialState: any = {};
+    const partialState: any = {};
     partialState[field] = value;
     this.setState(partialState);
   }
 
-  getInputRequiredClass(content: string) {
+  public getInputRequiredClass(content: string) {
     return content === "" ? "empty_required_field" : "post_field";
   }
 
@@ -133,7 +139,7 @@ class PostModal extends Component<Props, State> {
           <h5>Image</h5>
         </div>
         <div className="custom-file">
-          <label className="custom-file-label">Image (Optional)</label>
+          <label className="custom-file-label">Insert image (Optional)</label>
           <input
             type="file"
             className="custom-file-input"
@@ -145,7 +151,24 @@ class PostModal extends Component<Props, State> {
     );
   }
 
-  render() {
+  public getActionButton() {
+    return (
+      <button
+        type="button"
+        className="btn btn-primary"
+        data-dismiss="modal"
+        onClick={
+          this.mode === CREATE_MODE
+            ? this.handlePostCreation
+            : this.handlePostEdition
+        }
+      >
+        {this.mode === CREATE_MODE ? "Create new post" : "Save changes"}
+      </button>
+    );
+  }
+
+  public render() {
     return (
       <div
         id="post_modal"
@@ -182,14 +205,7 @@ class PostModal extends Component<Props, State> {
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                data-dismiss="modal"
-                onClick={this.props.editHandler}
-              >
-                Save changes
-              </button>
+              {this.getActionButton()}
             </div>
           </div>
         </div>
