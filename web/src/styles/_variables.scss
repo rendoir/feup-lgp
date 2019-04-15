@@ -35,3 +35,9 @@ $color-error: $color-danger;
 $color-labels: $dark-grey;
 $light-accent-color: #e9542040;
 $dark-accent-color: #ff6600;
+
+$default-gradient: linear-gradient(
+  80deg,
+  $marigold,
+  $color-primary
+);

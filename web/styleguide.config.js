@@ -66,7 +66,8 @@ module.exports = {
       components: [
         "src/components/Avatar/*.tsx",
         "src/components/ImagePreloader/*.tsx",
-        "src/components/Icon/*.tsx"
+        "src/components/Icon/*.tsx",
+        "src/components/Tabs/Tabs.tsx"
       ]
     }
   ]
