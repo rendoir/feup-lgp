@@ -24,6 +24,8 @@ services:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
     depends_on:
       - apistaging
+    ports:
+      - "5001:5000/tcp"
   dbstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
   apistaging:
