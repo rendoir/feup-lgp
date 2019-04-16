@@ -6,7 +6,7 @@ stages:
   - build
   - lint
   - release
-  # - deploy
+  - deploy
   # - test
 
 variables:
@@ -165,9 +165,9 @@ release-db-prod:
   only:
     - master
 
-# deploy:
-#   stage: deploy
-#   script:
-#     - echo "$SSH_KEY" | tr -d '\r' > ec2_london_key.pem
-#     - chmod 600 ec2_london_key.pem
-#     - ssh -o StrictHostKeyChecking=no -i "ec2_london_key.pem" ubuntu@ec2-35-177-109-152.eu-west-2.compute.amazonaws.com 'sudo ./update.sh'
+deploy:
+  stage: deploy
+  script:
+    - echo "$SSH_KEY" | tr -d '\r' > rsa_voidlab
+    - chmod 600 rsa_voidlab
+    - ssh -o StrictHostKeyChecking=no -i "rsa_voidlab" user@voidlab.fe.up.pt 'sudo ./update.sh'
