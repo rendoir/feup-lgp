@@ -1,11 +1,11 @@
-@import "../../styles/variables";
+@import '../../styles/variables';
 
 $input-error-color: $color-danger;
 $input-warning-color: $color-warning;
 $input-success-color: $color-success;
 $input-text-color: $black;
-$input-placeholder-color: rgba($black, .3);
-$input-border-color: rgba($black, .35);
+$input-placeholder-color: rgba($black, 0.3);
+$input-border-color: rgba($black, 0.35);
 $input-border-width: 1px;
 $input-focus-border-width: 2px;
 $input-default-font-size: 18px;
@@ -17,12 +17,12 @@ $input-focused-color: $black;
 $input-focused-border-color: $color-primary;
 $input-disabled-color: $pinkish-grey-two;
 $input-disabled-border-color: $input-disabled-color;
-$input-disabled-background-color: rgba($input-disabled-color, .15);
+$input-disabled-background-color: rgba($input-disabled-color, 0.15);
 $input-label-color: $color-primary;
 $input-label-font-size: 14px;
 $input-label-line-height: 22px;
 $input-label-font-family: $default-font-family;
-$input-hint-color: rgba($black, .3);
+$input-hint-color: rgba($black, 0.3);
 $input-hint-font-size: 14px;
 $input-hint-line-height: 18px;
 $input-hint-font-family: $default-font-family;
@@ -139,7 +139,7 @@ $input-prefix-color: $default-font-color-light;
   }
 
   & .input {
-    color: rgba($input-text-color, .35);
+    color: rgba($input-text-color, 0.35);
     cursor: not-allowed;
   }
 
@@ -186,7 +186,7 @@ $input-prefix-color: $default-font-color-light;
   }
 
   & .hint {
-    color: $input-error-color
+    color: $input-error-color;
   }
 }
 

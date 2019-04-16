@@ -1,4 +1,4 @@
-@import "../../styles/variables";
+@import '../../styles/variables';
 
 $button-next-min-width: 140px;
 
@@ -15,39 +15,84 @@ $button-next-font-size: $default-font-size-large;
 $button-next-line-height: 26px;
 $button-next-size-modifier: 0.25;
 
-$button-next-default-text-shadow: 0 1px 1px rgba($black, .2);
-$button-next-default-box-shadow: 0 2px 4px rgba($black, .25);
-$button-next-default-box-shadow-active: 0 1px 1px rgba($black, .25);
+$button-next-default-text-shadow: 0 1px 1px rgba($black, 0.2);
+$button-next-default-box-shadow: 0 2px 4px rgba($black, 0.25);
+$button-next-default-box-shadow-active: 0 1px 1px rgba($black, 0.25);
 $button-next-default-color: #fff;
 
 $button-next-primary-background-color: $color-primary;
-$button-next-primary-hover-background-color: tint($button-next-primary-background-color, 10%);
-$button-next-primary-active-background-color: shade($button-next-primary-background-color, 5%);
-$button-next-primary-disabled-background-color: rgba(darken($button-next-primary-background-color, .5), .7);
+$button-next-primary-hover-background-color: tint(
+  $button-next-primary-background-color,
+  10%
+);
+$button-next-primary-active-background-color: shade(
+  $button-next-primary-background-color,
+  5%
+);
+$button-next-primary-disabled-background-color: rgba(
+  darken($button-next-primary-background-color, 0.5),
+  0.7
+);
 $button-next-primary-color: $button-next-default-color;
 
 $button-next-success-background-color: $color-success;
-$button-next-success-hover-background-color: tint($button-next-success-background-color, 10%);
-$button-next-success-active-background-color: shade($button-next-success-background-color, 5%);
-$button-next-success-disabled-background-color: rgba(darken($button-next-success-background-color, .5), .7);
+$button-next-success-hover-background-color: tint(
+  $button-next-success-background-color,
+  10%
+);
+$button-next-success-active-background-color: shade(
+  $button-next-success-background-color,
+  5%
+);
+$button-next-success-disabled-background-color: rgba(
+  darken($button-next-success-background-color, 0.5),
+  0.7
+);
 $button-next-success-color: $button-next-default-color;
 
 $button-next-danger-background-color: $color-danger;
-$button-next-danger-hover-background-color: tint($button-next-danger-background-color, 10%);
-$button-next-danger-active-background-color: shade($button-next-danger-background-color, 5%);
-$button-next-danger-disabled-background-color: rgba(darken($button-next-danger-background-color, .5), .7);
+$button-next-danger-hover-background-color: tint(
+  $button-next-danger-background-color,
+  10%
+);
+$button-next-danger-active-background-color: shade(
+  $button-next-danger-background-color,
+  5%
+);
+$button-next-danger-disabled-background-color: rgba(
+  darken($button-next-danger-background-color, 0.5),
+  0.7
+);
 $button-next-danger-color: $button-next-default-color;
 
 $button-next-info-background-color: $color-info;
-$button-next-info-hover-background-color: tint($button-next-info-background-color, 10%);
-$button-next-info-active-background-color: shade($button-next-info-background-color, 5%);
-$button-next-info-disabled-background-color: rgba(darken($button-next-info-background-color, .5), .7);
+$button-next-info-hover-background-color: tint(
+  $button-next-info-background-color,
+  10%
+);
+$button-next-info-active-background-color: shade(
+  $button-next-info-background-color,
+  5%
+);
+$button-next-info-disabled-background-color: rgba(
+  darken($button-next-info-background-color, 0.5),
+  0.7
+);
 $button-next-info-color: $button-next-default-color;
 
 $button-next-warning-background-color: $color-warning;
-$button-next-warning-hover-background-color: tint($button-next-warning-background-color, 10%);
-$button-next-warning-active-background-color: shade($button-next-warning-background-color, 5%);
-$button-next-warning-disabled-background-color: rgba(darken($button-next-warning-background-color, .5), .7);
+$button-next-warning-hover-background-color: tint(
+  $button-next-warning-background-color,
+  10%
+);
+$button-next-warning-active-background-color: shade(
+  $button-next-warning-background-color,
+  5%
+);
+$button-next-warning-disabled-background-color: rgba(
+  darken($button-next-warning-background-color, 0.5),
+  0.7
+);
 $button-next-warning-color: $button-next-default-color;
 
 $button-next-transition-duration: $default-transition-duration;
@@ -379,27 +424,25 @@ $button-next-transition-duration: $default-transition-duration;
 
 .small {
   padding: ($button-next-padding-top * (1 - $button-next-size-modifier))
-          ($button-next-padding-right * (1 - $button-next-size-modifier))
-          ($button-next-padding-bottom * (1 - $button-next-size-modifier))
-          ($button-next-padding-left * (1 - $button-next-size-modifier));
+    ($button-next-padding-right * (1 - $button-next-size-modifier))
+    ($button-next-padding-bottom * (1 - $button-next-size-modifier))
+    ($button-next-padding-left * (1 - $button-next-size-modifier));
   font-size: $button-next-font-size * (1 - $button-next-size-modifier);
   line-height: $button-next-line-height * (1 - $button-next-size-modifier);
 }
 
 .normal {
-  padding: $button-next-padding-top
-  $button-next-padding-right
-  $button-next-padding-bottom
-  $button-next-padding-left;
+  padding: $button-next-padding-top $button-next-padding-right
+    $button-next-padding-bottom $button-next-padding-left;
   font-size: $button-next-font-size;
   line-height: $button-next-line-height;
 }
 
 .large {
   padding: ($button-next-padding-top * (1 + $button-next-size-modifier))
-          ($button-next-padding-right * (1 + $button-next-size-modifier))
-          ($button-next-padding-bottom * (1 + $button-next-size-modifier))
-          ($button-next-padding-left * (1 + $button-next-size-modifier));
+    ($button-next-padding-right * (1 + $button-next-size-modifier))
+    ($button-next-padding-bottom * (1 + $button-next-size-modifier))
+    ($button-next-padding-left * (1 + $button-next-size-modifier));
   font-size: $button-next-font-size * (1 + $button-next-size-modifier);
   line-height: $button-next-line-height * (1 + $button-next-size-modifier);
 }

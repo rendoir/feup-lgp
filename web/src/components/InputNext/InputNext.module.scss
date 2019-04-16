@@ -1,11 +1,11 @@
-@import "../../styles/variables";
+@import '../../styles/variables';
 
 $input-next-error-color: $color-danger;
 $input-next-warning-color: $color-warning;
 $input-next-success-color: $color-success;
 $input-next-text-color: $black;
-$input-next-placeholder-color: rgba($black, .3);
-$input-next-border-color: rgba($black, .35);
+$input-next-placeholder-color: rgba($black, 0.3);
+$input-next-border-color: rgba($black, 0.35);
 $input-next-border-width: 1px;
 $input-next-focus-border-width: 2px;
 $input-next-default-font-size: 18px;
@@ -17,17 +17,16 @@ $input-next-focused-color: $black;
 $input-next-focused-border-color: $color-primary;
 $input-next-disabled-color: $pinkish-grey-two;
 $input-next-disabled-border-color: $input-next-disabled-color;
-$input-next-disabled-background-color: rgba($input-next-disabled-color, .15);
+$input-next-disabled-background-color: rgba($input-next-disabled-color, 0.15);
 $input-next-label-color: $color-primary;
 $input-next-label-font-size: 14px;
 $input-next-label-line-height: 22px;
 $input-next-label-font-family: $default-font-family;
-$input-next-hint-color: rgba($black, .3);
+$input-next-hint-color: rgba($black, 0.3);
 $input-next-hint-font-size: 14px;
 $input-next-hint-line-height: 18px;
 $input-next-hint-font-family: $default-font-family;
 $input-next-prefix-color: $default-font-color-light;
-
 
 /* Styles */
 .container {
@@ -111,7 +110,8 @@ $input-next-prefix-color: $default-font-color-light;
 
 .focused {
   & .inputWrapper {
-    box-shadow: 0 0 0 $input-next-focus-border-width $input-next-focused-border-color;
+    box-shadow: 0 0 0 $input-next-focus-border-width
+      $input-next-focused-border-color;
   }
 
   & .prefix {
@@ -144,7 +144,7 @@ $input-next-prefix-color: $default-font-color-light;
   }
 
   & .input {
-    color: rgba($input-next-text-color, .35);
+    color: rgba($input-next-text-color, 0.35);
     cursor: not-allowed;
   }
 
@@ -207,7 +207,7 @@ $input-next-prefix-color: $default-font-color-light;
   }
 
   & .hint {
-    color: $input-next-error-color
+    color: $input-next-error-color;
   }
 }
 

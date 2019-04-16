@@ -2,9 +2,15 @@
 
 $avatar-selector-transition-duration: $default-transition-duration;
 $avatar-selector-camera-icon-color: $color-primary;
-$avatar-selector-camera-icon-color-hover: rgba($avatar-selector-camera-icon-color, 90%);
+$avatar-selector-camera-icon-color-hover: rgba(
+  $avatar-selector-camera-icon-color,
+  90%
+);
 $avatar-selector-remove-icon-color: $color-danger;
-$avatar-selector-remove-icon-color-hover: rgba($avatar-selector-remove-icon-color, 90%);
+$avatar-selector-remove-icon-color-hover: rgba(
+  $avatar-selector-remove-icon-color,
+  90%
+);
 
 .container {
   all: initial;

@@ -61,7 +61,7 @@
 .post_content iframe {
   width: 100%;
   text-align: center;
-  display:block;
+  display: block;
   object-fit: cover;
   max-height: 1000px;
 }
@@ -114,7 +114,7 @@
 /* Bellow 512 hide action button icons */
 @media (max-width: 512px) {
   .post_actions button span {
-      display: none;
+    display: none;
   }
 }
 
