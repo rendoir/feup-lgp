@@ -27,42 +27,42 @@ variables:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
-build_web:
-  stage: build
-  script:
-    - mkdir -p web/docker
-    - cd web
-    - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
-    - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
-    - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
-    # - npm install
-    # - npm rebuild node-sass
-    # - npm run build-css
-    # - npm run build
-    - docker image build -t $WEB_PRE_IMAGE .
-    - docker push $WEB_PRE_IMAGE
-build_api:
-  stage: build
-  script:
-    - mkdir -p api/docker
-    - mv environment/prod.env api/docker/prod.env
-    - cd api
-    - echo "$API_CRT" | tr -d '\r' > docker/api.crt
-    - echo "$API_KEY" | tr -d '\r' > docker/api.key
-    - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-    - docker image build -t $API_PRE_IMAGE .
-    - docker push $API_PRE_IMAGE
-    - apidoc -i src/routes -o public
-  artifacts:
-    paths:
-    - api/public
+# build_web:
+#   stage: build
+#   script:
+#     - mkdir -p web/docker
+#     - cd web
+#     - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
+#     - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
+#     - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
+#     # - npm install
+#     # - npm rebuild node-sass
+#     # - npm run build-css
+#     # - npm run build
+#     - docker image build -t $WEB_PRE_IMAGE .
+#     - docker push $WEB_PRE_IMAGE
+# build_api:
+#   stage: build
+#   script:
+#     - mkdir -p api/docker
+#     - mv environment/prod.env api/docker/prod.env
+#     - cd api
+#     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
+#     - echo "$API_KEY" | tr -d '\r' > docker/api.key
+#     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
+#     - docker image build -t $API_PRE_IMAGE .
+#     - docker push $API_PRE_IMAGE
+#     - apidoc -i src/routes -o public
+#   artifacts:
+#     paths:
+#     - api/public
 
-build_db:
-  stage: build
-  script:
-    - cd db
-    - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
-    - docker push $DB_PRE_IMAGE
+# build_db:
+#   stage: build
+#   script:
+#     - cd db
+#     - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
+#     - docker push $DB_PRE_IMAGE
 
 # build_api_tests:
 #   stage: build
@@ -88,10 +88,10 @@ build_db:
 #   script:
 #     - cd web && npm install && npm run lint
 
-test_api_linter:
-  stage: lint
-  script:
-    - cd api && npm install && npm run lint
+# test_api_linter:
+#   stage: lint
+#   script:
+#     - cd api && npm install && npm run lint
 
 # web_integration_tests:
 #   stage: test
@@ -117,53 +117,53 @@ test_api_linter:
 #     - sleep 5
 #     - docker-compose up --exit-code-from apitest
 
-release-web-staging:
-  stage: release
-  script:
-    - docker pull $WEB_PRE_IMAGE
-    - docker tag $WEB_PRE_IMAGE $WEB_STAGING_IMAGE
-    - docker push $WEB_STAGING_IMAGE
+# release-web-staging:
+#   stage: release
+#   script:
+#     - docker pull $WEB_PRE_IMAGE
+#     - docker tag $WEB_PRE_IMAGE $WEB_STAGING_IMAGE
+#     - docker push $WEB_STAGING_IMAGE
 
-release-api-staging:
-  stage: release
-  script:
-    - docker pull $API_PRE_IMAGE
-    - docker tag $API_PRE_IMAGE $API_STAGING_IMAGE
-    - docker push $API_STAGING_IMAGE
+# release-api-staging:
+#   stage: release
+#   script:
+#     - docker pull $API_PRE_IMAGE
+#     - docker tag $API_PRE_IMAGE $API_STAGING_IMAGE
+#     - docker push $API_STAGING_IMAGE
 
-release-db-staging:
-  stage: release
-  script:
-    - docker pull $DB_PRE_IMAGE
-    - docker tag $DB_PRE_IMAGE $DB_STAGING_IMAGE
-    - docker push $DB_STAGING_IMAGE
+# release-db-staging:
+#   stage: release
+#   script:
+#     - docker pull $DB_PRE_IMAGE
+#     - docker tag $DB_PRE_IMAGE $DB_STAGING_IMAGE
+#     - docker push $DB_STAGING_IMAGE
 
-release-web-prod:
-  stage: release
-  script:
-    - docker pull $WEB_PRE_IMAGE
-    - docker tag $WEB_PRE_IMAGE $WEB_PROD_IMAGE
-    - docker push $WEB_PROD_IMAGE
-  only:
-    - master
+# release-web-prod:
+#   stage: release
+#   script:
+#     - docker pull $WEB_PRE_IMAGE
+#     - docker tag $WEB_PRE_IMAGE $WEB_PROD_IMAGE
+#     - docker push $WEB_PROD_IMAGE
+#   only:
+#     - master
 
-release-api-prod:
-  stage: release
-  script:
-    - docker pull $API_PRE_IMAGE
-    - docker tag $API_PRE_IMAGE $API_PROD_IMAGE
-    - docker push $API_PROD_IMAGE
-  only:
-    - master
+# release-api-prod:
+#   stage: release
+#   script:
+#     - docker pull $API_PRE_IMAGE
+#     - docker tag $API_PRE_IMAGE $API_PROD_IMAGE
+#     - docker push $API_PROD_IMAGE
+#   only:
+#     - master
 
-release-db-prod:
-  stage: release
-  script:
-    - docker pull $DB_PRE_IMAGE
-    - docker tag $DB_PRE_IMAGE $DB_PROD_IMAGE
-    - docker push $DB_PROD_IMAGE
-  only:
-    - master
+# release-db-prod:
+#   stage: release
+#   script:
+#     - docker pull $DB_PRE_IMAGE
+#     - docker tag $DB_PRE_IMAGE $DB_PROD_IMAGE
+#     - docker push $DB_PROD_IMAGE
+#   only:
+#     - master
 
 deploy:
   stage: deploy
