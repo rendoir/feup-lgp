@@ -1,5 +1,5 @@
-@import "colors";
-@import "functions";
+@import 'colors';
+@import 'functions';
 
 // DEFAULTS
 // Colors
@@ -21,7 +21,9 @@ $default-border-radius: 4px;
 // Durations
 $default-transition-duration: 150ms;
 // Fonts
-$default-font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$default-font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+  Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
+  'Segoe UI Emoji', 'Segoe UI Symbol';
 
 // NON-DEFAULTS
 // Colors
@@ -36,8 +38,4 @@ $color-labels: $dark-grey;
 $light-accent-color: #e9542040;
 $dark-accent-color: #ff6600;
 
-$default-gradient: linear-gradient(
-  80deg,
-  $marigold,
-  $color-primary
-);
+$default-gradient: linear-gradient(80deg, $marigold, $color-primary);
