@@ -1,12 +1,13 @@
 # Stage 1 - Build
-FROM node:lts as react-build
+FROM node:lts-alpine as react-build
 WORKDIR /web
 COPY . ./
+RUN apk add git
 RUN npm install
 RUN npm run build
 
 # Stage 2 - Serve
-FROM node:lts
+FROM node:lts-alpine
 WORKDIR /usr/gnet
 COPY --from=react-build /web/build /usr/gnet
 
@@ -15,7 +16,7 @@ COPY --from=react-build /web/build /usr/gnet
 
 RUN npm install -g serve
 CMD serve -s .
-EXPOSE 5001
+EXPOSE 5000
 
 # FROM nginx:alpine
 
