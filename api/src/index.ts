@@ -6,7 +6,8 @@ import { config } from 'dotenv';
 import * as express from 'express';
 import * as express_session from 'express-session';
 import * as fs from 'fs';
-import * as https from 'https';
+// import * as https from 'https';
+import * as http from 'http';
 import * as morgan from 'morgan';
 import { jwtMiddleware } from './_helpers/jwt';
 let privateKey; let certificate;
@@ -86,4 +87,5 @@ app.use((err, req, res, next) => {
 });
 
 console.log('PORT: ' + process.env.API_PORT);
-https.createServer(credentials, app).listen(process.env.API_PORT);
+// https.createServer(credentials, app).listen(process.env.API_PORT);
+http.createServer(app).listen(process.env.API_PORT);
