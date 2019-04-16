@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:lts-alpine
 
 ENV PRODUCTION true
 WORKDIR /home/node/app
