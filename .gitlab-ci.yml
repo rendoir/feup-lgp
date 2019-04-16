@@ -3,9 +3,9 @@ services:
   - docker:dind
 
 stages:
-  - build
-  - lint
-  - release
+  # - build
+  # - lint
+  # - release
   - deploy
   # - test
 
@@ -170,4 +170,5 @@ deploy:
   script:
     - echo "$SSH_KEY" | tr -d '\r' > rsa_voidlab
     - chmod 600 rsa_voidlab
+    - apt install ssh
     - ssh -o StrictHostKeyChecking=no -i "rsa_voidlab" user@voidlab.fe.up.pt 'sudo ./update.sh'
