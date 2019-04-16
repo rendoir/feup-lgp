@@ -82,11 +82,11 @@ $input-next-prefix-color: $default-font-color-light;
     color: $input-next-placeholder-color;
   }
 
-  &:-moz-placeholder {
+  &::-moz-placeholder {
     color: $input-next-placeholder-color;
   }
 
-  &::-moz-placeholder {
+  &:-moz-placeholder {
     color: $input-next-placeholder-color;
   }
 
@@ -123,6 +123,20 @@ $input-next-prefix-color: $default-font-color-light;
   }
 }
 
+.label {
+  all: initial;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  font-family: $input-next-font-family;
+  font-size: $input-next-label-font-size;
+  font-weight: 500;
+  line-height: $input-next-default-line-height;
+  color: $input-next-label-color;
+  margin-bottom: $default-padding;
+}
+
 .disabled {
   & .label {
     cursor: not-allowed;
@@ -153,20 +167,6 @@ $input-next-prefix-color: $default-font-color-light;
   }
 }
 
-.label {
-  all: initial;
-  display: inline-block;
-  cursor: pointer;
-  user-select: none;
-  text-transform: uppercase;
-  font-family: $input-next-font-family;
-  font-size: $input-next-label-font-size;
-  font-weight: 500;
-  line-height: $input-next-default-line-height;
-  color: $input-next-label-color;
-  margin-bottom: $default-padding;
-}
-
 .hint {
   all: initial;
   display: inline-block;
@@ -178,6 +178,7 @@ $input-next-prefix-color: $default-font-color-light;
   color: $input-next-hint-color;
 }
 
+/* stylelint-disable */
 .success {
   & .inputWrapper {
     box-shadow: 0 0 0 $input-next-border-width $input-next-success-color;
@@ -225,6 +226,7 @@ $input-next-prefix-color: $default-font-color-light;
     color: $input-next-warning-color;
   }
 }
+/* stylelint-enable */
 
 .lengthLimitCounter {
   float: right;

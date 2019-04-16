@@ -3,6 +3,74 @@
 $light-border: solid lightgray 1px;
 
 #profile {
+  //Profile card
+  .profile-card {
+    max-width: 100%;
+    background: #fff;
+    overflow: hidden;
+    transform-style: preserve-3d;
+
+    p {
+      line-height: 1.6;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .rating {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    //Cover
+    header #cover-img {
+      width: 100%;
+      text-align: center;
+      display: block;
+      object-fit: cover;
+      min-height: 30vh;
+      margin-bottom: 70px;
+      position: relative;
+    }
+
+    //Avatar
+    header #avatar-img {
+      border: solid 3px #fff;
+      display: block;
+      -moz-border-radius: 50%;
+      -webkit-border-radius: 50%;
+      border-radius: 50%;
+      -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+      position: absolute;
+      left: 50%;
+      min-width: 150px;
+      width: 25%;
+      max-width: 230px;
+      transform: translate(-50%, -110%);
+    }
+
+    header h1,
+    header h2 {
+      margin: 5px 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 500;
+      color: $glintt;
+    }
+
+    header h2 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #8f8f8f;
+    }
+  }
+
   #left-div {
     width: 35%;
     float: left;
@@ -142,10 +210,6 @@ $light-border: solid lightgray 1px;
         outline: none;
       }
 
-      .post-actions button.liked i {
-        color: $glintt;
-      }
-
       .post-comment {
         .comment-header {
           display: inline-flex;
@@ -189,6 +253,10 @@ $light-border: solid lightgray 1px;
           margin-right: 5px;
         }
       }
+
+      .post-actions button.liked i {
+        color: $glintt;
+      }
     }
   }
 
@@ -211,74 +279,6 @@ $light-border: solid lightgray 1px;
       width: 100%;
       margin-left: 0;
       margin-bottom: 5%;
-    }
-  }
-
-  //Profile card
-  .profile-card {
-    max-width: 100%;
-    background: #fff;
-    overflow: hidden;
-    transform-style: preserve-3d;
-
-    p {
-      line-height: 1.6;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 400;
-    }
-
-    .rating {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    //Cover
-    header #cover-img {
-      width: 100%;
-      text-align: center;
-      display: block;
-      object-fit: cover;
-      min-height: 30vh;
-      margin-bottom: 70px;
-      position: relative;
-    }
-
-    //Avatar
-    header #avatar-img {
-      border: solid 3px #fff;
-      display: block;
-      -moz-border-radius: 50%;
-      -webkit-border-radius: 50%;
-      border-radius: 50%;
-      -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
-      position: absolute;
-      left: 50%;
-      min-width: 150px;
-      width: 25%;
-      max-width: 230px;
-      transform: translate(-50%, -110%);
-    }
-
-    header h1,
-    header h2 {
-      margin: 5px 30px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 500;
-      color: $glintt;
-    }
-
-    header h2 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 400;
-      font-size: 14px;
-      text-transform: uppercase;
-      color: #8f8f8f;
     }
   }
 }

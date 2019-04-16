@@ -12,7 +12,7 @@
   border-bottom: solid lightgray 1px;
 }
 
-.post div:last_child {
+.post div:last-child {
   border-bottom: none;
 }
 
@@ -130,6 +130,10 @@
   outline: none;
 }
 
+.post_comment .comment_detail i {
+  margin-right: 5px;
+}
+
 .post_actions button.liked i {
   color: var(--main-color);
 }
@@ -162,8 +166,4 @@
   right: 0;
   bottom: -10px;
   font-size: 0.9rem;
-}
-
-.post_comment .comment_detail i {
-  margin-right: 5px;
 }

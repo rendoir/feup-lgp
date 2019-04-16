@@ -78,11 +78,11 @@ $input-prefix-color: $default-font-color-light;
     color: $input-placeholder-color;
   }
 
-  &:-moz-placeholder {
+  &::-moz-placeholder {
     color: $input-placeholder-color;
   }
 
-  &::-moz-placeholder {
+  &:-moz-placeholder {
     color: $input-placeholder-color;
   }
 
@@ -119,6 +119,19 @@ $input-prefix-color: $default-font-color-light;
   }
 }
 
+.label {
+  all: initial;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  font-family: $input-font-family;
+  font-size: $input-label-font-size;
+  font-weight: 500;
+  line-height: $input-default-line-height;
+  color: $input-label-color;
+}
+
 .disabled {
   & .label {
     cursor: not-allowed;
@@ -149,19 +162,6 @@ $input-prefix-color: $default-font-color-light;
   }
 }
 
-.label {
-  all: initial;
-  display: inline-block;
-  cursor: pointer;
-  user-select: none;
-  text-transform: uppercase;
-  font-family: $input-font-family;
-  font-size: $input-label-font-size;
-  font-weight: 500;
-  line-height: $input-default-line-height;
-  color: $input-label-color;
-}
-
 .hint {
   all: initial;
   display: inline-block;
@@ -173,22 +173,7 @@ $input-prefix-color: $default-font-color-light;
   color: $input-hint-color;
 }
 
-.success {
-  & .inputWrapper {
-    box-shadow: 0 $input-border-width 0 0 $input-success-color;
-  }
-
-  & .focused {
-    & .inputWrapper {
-      box-shadow: 0 $input-focus-border-width 0 0 $input-success-color;
-    }
-  }
-
-  & .hint {
-    color: $input-success-color;
-  }
-}
-
+/* stylelint-disable */
 .error {
   & .inputWrapper {
     box-shadow: 0 $input-border-width 0 0 $input-error-color;
@@ -221,4 +206,19 @@ $input-prefix-color: $default-font-color-light;
   }
 }
 
+.success {
+  & .inputWrapper {
+    box-shadow: 0 $input-border-width 0 0 $input-success-color;
+  }
 
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 $input-focus-border-width 0 0 $input-success-color;
+    }
+  }
+
+  & .hint {
+    color: $input-success-color;
+  }
+}
+/* stylelint-enable */

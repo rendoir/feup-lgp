@@ -18,6 +18,10 @@ $avatar-selector-remove-icon-color-hover: rgba($avatar-selector-remove-icon-colo
   z-index: 0;
 }
 
+.avatarChangerIcon {
+  color: $avatar-selector-camera-icon-color;
+}
+
 .avatarChanger {
   z-index: 1;
   position: absolute;
@@ -36,8 +40,8 @@ $avatar-selector-remove-icon-color-hover: rgba($avatar-selector-remove-icon-colo
   }
 }
 
-.avatarChangerIcon {
-  color: $avatar-selector-camera-icon-color;
+.avatarRemoveIcon {
+  color: $avatar-selector-remove-icon-color;
 }
 
 .avatarRemove {
@@ -59,8 +63,4 @@ $avatar-selector-remove-icon-color-hover: rgba($avatar-selector-remove-icon-colo
       color: $avatar-selector-remove-icon-color-hover;
     }
   }
-}
-
-.avatarRemoveIcon {
-  color: $avatar-selector-remove-icon-color;
 }

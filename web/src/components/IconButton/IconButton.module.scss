@@ -49,6 +49,41 @@ $icon-button-flat-large-size: $icon-button-large-size;
   transition: all $default-transition-duration ease;
 }
 
+.active {
+  & .icon {
+    color: $icon-button-hover-color !important;
+  }
+}
+
+.defaultStyle {
+  background-color: $icon-button-background-color;
+  box-shadow: inset 0 0 0 1px rgba($black, .2),
+  0 1px 2px 0 rgba($black, .1);
+
+  & .icon {
+    color: $icon-button-default-color;
+  }
+
+  &:hover,
+  &:focus {
+    box-shadow: inset 0 0 0 1px rgba($black, .3),
+    0 2px 4px 0 rgba($black, .25);
+
+    & .icon {
+      color: $icon-button-hover-color;
+    }
+  }
+
+  &:active {
+    box-shadow: inset 0 0 0 1px rgba($black, .3),
+    0 1px 1px 0 rgba($black, .25);
+
+    & .icon {
+      color: $icon-button-hover-color;
+    }
+  }
+}
+
 .disabled {
   cursor: not-allowed;
   opacity: 0.7;
@@ -71,42 +106,7 @@ $icon-button-flat-large-size: $icon-button-large-size;
       color: $icon-button-flat-color !important;
     }
   }
-;
-}
 
-.active {
-  & .icon {
-    color: $icon-button-hover-color !important;
-  }
-}
-
-.defaultStyle {
-  background-color: $icon-button-background-color;
-  box-shadow: inset 0 0 0 1px rgba($black, .2),
-              0 1px 2px 0 rgba($black, .1);
-
-  & .icon {
-    color: $icon-button-default-color;
-  }
-
-  &:hover,
-  &:focus {
-    box-shadow: inset 0 0 0 1px rgba($black, .3),
-                0 2px 4px 0 rgba($black, .25);
-
-    & .icon {
-      color: $icon-button-hover-color;
-    }
-  }
-
-  &:active {
-    box-shadow: inset 0 0 0 1px rgba($black, .3),
-                0 1px 1px 0 rgba($black, .25);
-
-    & .icon {
-      color: $icon-button-hover-color;
-    }
-  }
 }
 
 .small {
@@ -146,33 +146,6 @@ $icon-button-flat-large-size: $icon-button-large-size;
 }
 
 .flat {
-  &.default {
-    background-color: transparent;
-    box-shadow: inset 0 0 0 $icon-button-flat-border-width $icon-button-flat-color;
-
-    & .icon {
-      color: $icon-button-flat-color;
-    }
-
-    &:hover,
-    &:focus {
-      background-color: $icon-button-flat-hover-background-color;
-      box-shadow: inset 0 0 0 $icon-button-flat-border-width $icon-button-flat-hover-background-color;
-
-      & .icon {
-        color: $icon-button-flat-color-hover;
-      }
-    }
-
-    &:active {
-      background-color: shade($icon-button-flat-hover-background-color, 5%);
-
-      & .icon {
-        color: $icon-button-flat-color-hover;
-      }
-    }
-  }
-
   &.primary {
     background-color: $color-primary;
 
@@ -255,6 +228,33 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
     &:active {
       background-color: shade($color-warning, 5%);
+    }
+  }
+
+  &.default {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 $icon-button-flat-border-width $icon-button-flat-color;
+
+    & .icon {
+      color: $icon-button-flat-color;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $icon-button-flat-hover-background-color;
+      box-shadow: inset 0 0 0 $icon-button-flat-border-width $icon-button-flat-hover-background-color;
+
+      & .icon {
+        color: $icon-button-flat-color-hover;
+      }
+    }
+
+    &:active {
+      background-color: shade($icon-button-flat-hover-background-color, 5%);
+
+      & .icon {
+        color: $icon-button-flat-color-hover;
+      }
     }
   }
 }
