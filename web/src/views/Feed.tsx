@@ -24,14 +24,14 @@ class Feed extends React.Component<Props, State> {
 
   public apiGetFeed() {
     axios
-      .get("https://localhost:8443/feed/", {
+      .get(`${process.env.REACT_APP_API_URL}/feed/`, {
         params: {},
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {
-        //console.log(res.data);
+        // console.log(res.data);
         this.setState({ posts: res.data });
       })
       .catch(() => console.log("Failed to get feed"));
