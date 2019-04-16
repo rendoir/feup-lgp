@@ -24,7 +24,7 @@ services:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
     expose: [5000]
     environment:
-      - API_HOST=apistaging
+      - REACT_APP_API_URL=apistaging
     depends_on:
       - apistaging
     ports:
