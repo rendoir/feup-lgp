@@ -5,7 +5,7 @@ const DB_HOST = process.env.DB_HOST != null ? process.env.DB_HOST : 'localhost';
 
 const dbConfig = {
     user: 'postgres',
-    host: DB_HOST,
+    host: 'localhost',
     database: 'postgres',
     password: process.env.POSTGRES_PASSWORD,
     port: +process.env.DB_PORT,
