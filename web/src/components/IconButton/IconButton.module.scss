@@ -3,9 +3,6 @@
 $icon-button-small-size: 32px;
 $icon-button-default-size: 40px;
 $icon-button-large-size: 54px;
-$icon-button-icon-small-size: 18px;
-$icon-button-icon-default-size: 24px;
-$icon-button-icon-large-size: 42px;
 $icon-button-background-color: $white;
 $icon-button-default-color: rgb(178, 178, 178);
 $icon-button-hover-color: $color-primary;
@@ -19,12 +16,13 @@ $icon-button-flat-large-size: $icon-button-large-size;
 
 .container {
   all: initial;
-  display: inline-block;
+  display: inline-flex;
   cursor: pointer;
   user-select: none;
   transition: all $default-transition-duration ease;
   text-align: center;
   vertical-align: middle;
+  align-items: center;
   border-radius: 50%;
   border: 0;
 
