@@ -28,6 +28,12 @@ export function createPost(req, res) {
 }
 
 export function editPost(req, res) {
+    if(!req.body.title.trim() || !req.body.title.trim()) {
+        console.log('\n\nERROR: Post title and body cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while editing post' });
+        return;
+    }
+
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: 'UPDATE posts SET title=$2, content_text=$3 WHERE id=$1',

@@ -52,7 +52,6 @@ class Post extends Component<Props, State> {
       data: ""
     };
 
-    this.handleEditPost = this.handleEditPost.bind(this);
     this.handleDeletePost = this.handleDeletePost.bind(this);
   }
 
@@ -67,10 +66,6 @@ class Post extends Component<Props, State> {
 
   public componentDidMount() {
     this.getData();
-  }
-
-  public handleEditPost() {
-    console.log("EDIT POST");
   }
 
   public handleDeletePost() {

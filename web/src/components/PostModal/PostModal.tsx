@@ -54,8 +54,17 @@ class PostModal extends Component<IProps, IState> {
     // Post manipulation handlers
     this.handlePostCreation = this.handlePostCreation.bind(this);
     this.handlePostEdition = this.handlePostEdition.bind(this);
+    this.handlePostCancel = this.handlePostCancel.bind(this);
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
+  public handlePostCancel() {
+    // Reset field values
+    this.setState({
+      title: this.props.title || "",
+      text: this.props.text || ""
+    });
   }
 
   public apiCreatePost() {
@@ -65,19 +74,22 @@ class PostModal extends Component<IProps, IState> {
   public apiEditPost() {
     axios
       .post("https://localhost:8443/post/edit", {
-        body: {
-          id: this.props.id,
-          title: this.state.title,
-          text: this.state.text
-        },
+        id: this.props.id,
+        title: this.state.title,
+        text: this.state.text,
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {
-        console.log("Post edited");
+        console.log("Post edited - reloading page...");
+        window.location.reload();
       })
       .catch(() => console.log("Failed to edit post"));
+  }
+
+  public validPost() {
+    return Boolean(this.state.title && this.state.text);
   }
 
   public handlePostCreation() {
@@ -185,6 +197,7 @@ class PostModal extends Component<IProps, IState> {
             ? this.handlePostCreation
             : this.handlePostEdition
         }
+        disabled={!this.validPost()}
       >
         {this.mode === CREATE_MODE ? "Create new post" : "Save changes"}
       </button>
@@ -225,6 +238,7 @@ class PostModal extends Component<IProps, IState> {
                 type="button"
                 className="btn btn-danger"
                 data-dismiss="modal"
+                onClick={this.handlePostCancel}
               >
                 Cancel
               </button>
