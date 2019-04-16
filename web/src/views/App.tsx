@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Header from "../components/header/Header";
 import "../styles/App.css";
 
-import Feed from "./Feed";
 import Backoffice from "./Backoffice";
+import Feed from "./Feed";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import Shop from "./Shop";

@@ -22,15 +22,22 @@ services:
   #     - dbprod
   webstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
+    expose: [5000]
     depends_on:
       - apistaging
+    links:
+      - apistaging
     ports:
-      - "5001:5000/tcp"
+      - "5000:5000"
   dbstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
+    expose: [5433]
   apistaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/api:latest
+    expose: [8443]
     environment:
       - DB_HOST=dbstaging
     depends_on:
       - dbstaging
+    ports:
+      - "8443:8443"

@@ -7,9 +7,6 @@ RUN npm run build
 
 # Stage 2 - Serve
 FROM node:lts
-
-# set working directory
-RUN mkdir /usr/gnet
 WORKDIR /usr/gnet
 COPY --from=react-build /web/build /usr/gnet
 

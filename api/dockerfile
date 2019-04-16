@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:lts
 
 ENV PRODUCTION true
 WORKDIR /home/node/app
