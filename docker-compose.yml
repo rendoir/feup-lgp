@@ -23,6 +23,8 @@ services:
   webstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
     expose: [5000]
+    environment:
+      - API_HOST=apistaging
     depends_on:
       - apistaging
     ports:
@@ -30,8 +32,6 @@ services:
   dbstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
     expose: [5432]
-    # ports:
-    #   - "5433:5432"
   apistaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/api:latest
     expose: [8443]
