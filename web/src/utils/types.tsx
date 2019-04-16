@@ -34,3 +34,12 @@ export type IconSize =
   | "8x"
   | "9x"
   | "10x";
+
+export type ClientRect = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+};
