@@ -1,10 +1,17 @@
-# base image
+# Stage 1 - Build
+FROM node:9.6.1 as react-build
+WORKDIR /web
+COPY . ./
+RUN npm install
+RUN npm run build
+
+# Stage 2 - Serve
 FROM node:9.6.1
 
 # set working directory
 RUN mkdir /usr/gnet
 WORKDIR /usr/gnet
-COPY build /usr/gnet
+COPY --from=react-build /web/build /usr/gnet
 
 # COPY docker/site.key /run/secrets/site.key
 # COPY docker/site.crt /run/secrets/site.crt
