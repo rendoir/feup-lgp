@@ -50,7 +50,8 @@ module.exports = {
       name: "Forms",
       components: [
         "src/components/Input/*.tsx",
-        "src/components/InputNext/*.tsx"
+        "src/components/InputNext/*.tsx",
+        "src/components/Select/*.tsx"
       ]
     },
     {
