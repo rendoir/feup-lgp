@@ -73,7 +73,8 @@ export async function getPost(req, res) {
                     INNER JOIN users a
                     ON c.author = a.id
                     WHERE
-                        p.id = $1`,
+                        p.id = $1
+                    ORDER BY c.date_updated ASC;`,
             values: [postId],
         });
         const result = {
