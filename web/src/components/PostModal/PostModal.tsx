@@ -68,7 +68,20 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiCreatePost() {
-    // TODO: call api to create post
+    axios
+      .post("https://localhost:8443/post/create", {
+        author: 1, //When loggin, this is the user logged in
+        title: this.state.title,
+        text: this.state.text,
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Post created - reloading page...");
+        window.location.href = "/post/" + res.data.id[0].id;
+      })
+      .catch(() => console.log("Failed to create post"));
   }
 
   public apiEditPost() {
@@ -205,14 +218,17 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public render() {
+    let classname_id = "post_modal_" + this.mode;
+
     return (
       <div
-        id="post_modal"
+        id={classname_id}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true"
+        data-backdrop="false"
       >
         <div
           className="modal-dialog modal-dialog-centered modal-xl"

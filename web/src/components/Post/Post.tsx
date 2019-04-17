@@ -158,7 +158,7 @@ class Post extends Component<Props, State> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#post_modal"
+                data-target="#post_modal_Edit"
               >
                 Edit Post
               </button>
@@ -175,6 +175,9 @@ class Post extends Component<Props, State> {
               </button>
             </div>
           </div>
+        </div>
+        <div className={styles.post_content}>
+          <h4> {this.props.title} </h4>
         </div>
         <div className={styles.post_content}>
           <p> {this.props.text} </p>

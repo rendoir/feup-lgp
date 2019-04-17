@@ -26,7 +26,7 @@ const upload = multer({dest: 'uploads'});
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/', upload.array('image', 10), controller.createPost);
+postRouter.post('/create', controller.createPost);
 
 /**
  * @api {post} /api/post/edit Edit a post
