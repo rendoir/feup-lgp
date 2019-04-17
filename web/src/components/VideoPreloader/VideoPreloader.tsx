@@ -4,24 +4,24 @@ export const STATE_PENDING = "pending";
 export const STATE_SUCCESS = "success";
 export const STATE_ERROR = "error";
 
-export type ImageState = "pending" | "success" | "error";
+export type VideoState = "pending" | "success" | "error";
 
 export interface State {
-  state: ImageState;
+  state: VideoState;
   src: string | undefined;
   error: unknown | null | undefined;
 }
 
 export interface Props {
-  /** Image src attribute */
+  /** Video src attribute */
   src: string | undefined;
-  /** Image onChange event handler */
+  /** Video onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
   children: (state: State) => ReactNode;
 }
 
-class ImagePreloader extends Component<Props, State> {
+class VideoPreloader extends Component<Props, State> {
   public static getDerivedStateFromProps(
     nextProps: Props,
     prevState: State
@@ -33,7 +33,7 @@ class ImagePreloader extends Component<Props, State> {
     };
   }
   public requestId: number | null | undefined;
-  public image: HTMLImageElement | null | undefined;
+  public Video: HTMLVideoElement | null | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -72,17 +72,18 @@ class ImagePreloader extends Component<Props, State> {
   public handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
-      const image = document.createElement("img");
+      const Video = document.createElement("iframe");
 
-      image.onload = this.handleSuccess;
-      image.onerror = this.handleError;
-      image.src = src;
-
-      if (image.complete) {
+      Video.onload = this.handleSuccess;
+      Video.onerror = this.handleError;
+      Video.src = src;
+      /*
+      COMENTADO PARA CONSEGUIR COMPILAR
+      if (Video.complete) {
         this.handleSuccess();
       }
 
-      this.image = image;
+      this.Video = Video;*/
     });
   };
 
@@ -92,16 +93,16 @@ class ImagePreloader extends Component<Props, State> {
       this.requestId = null;
     }
 
-    this.handleImageClear();
+    this.handleVideoClear();
   };
 
-  public handleImageClear = (): void => {
-    if (this.image) {
-      this.image.src = "";
-      this.image.onload = null;
+  public handleVideoClear = (): void => {
+    if (this.Video) {
+      this.Video.src = "";
+      this.Video.onload = null;
       // @ts-ignore
-      this.image.onerror = null;
-      this.image = null;
+      this.Video.onerror = null;
+      this.Video = null;
     }
   };
 
@@ -127,4 +128,4 @@ class ImagePreloader extends Component<Props, State> {
   }
 }
 
-export default ImagePreloader;
+export default VideoPreloader;

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
 import classNames from "classnames";
-import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
-import getAvatarText from "../../utils/getAvatarText";
-import getAvatarColor from "../../utils/getAvatarColor";
+import React, { Component } from "react";
 import createSequence from "../../utils/createSequence";
+import getAvatarColor from "../../utils/getAvatarColor";
+import getAvatarText from "../../utils/getAvatarText";
+import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
 import ImagePreloader, {
   State as ImagePreloaderState,
   STATE_SUCCESS
 } from "../ImagePreloader/ImagePreloader";
 import styles from "./Avatar.module.css";
 
-export type Props = {
+export interface Props {
   title: string | undefined;
   image: string | undefined;
   size: number;
@@ -18,24 +18,23 @@ export type Props = {
   className?: string;
   onClick?: (event: MouseEvent) => unknown;
   status?: UserStatusType | null | undefined;
-};
+}
 
-export type State = {
+export interface State {
   isHovered: boolean;
-};
+}
 
 const seq = createSequence();
 
 class Avatar extends Component<Props, State> {
-  id: string;
-
-  static defaultProps = {
+  public static defaultProps = {
     image: undefined,
     title: undefined,
     size: 32,
     placeholder: "empty",
     status: null
   };
+  public id: string;
 
   constructor(props: Props) {
     super(props);
@@ -46,7 +45,7 @@ class Avatar extends Component<Props, State> {
     };
   }
 
-  renderGradient() {
+  public renderGradient() {
     const { placeholder } = this.props;
     const colors = getAvatarColor(placeholder);
 
@@ -65,7 +64,7 @@ class Avatar extends Component<Props, State> {
     );
   }
 
-  renderDefs({ state, src }: ImagePreloaderState) {
+  public renderDefs({ state, src }: ImagePreloaderState) {
     if (state === STATE_SUCCESS || src !== undefined) {
       return (
         <pattern
@@ -88,7 +87,7 @@ class Avatar extends Component<Props, State> {
     return this.renderGradient();
   }
 
-  renderText({ state, src }: ImagePreloaderState) {
+  public renderText({ state, src }: ImagePreloaderState) {
     const { title, size } = this.props;
 
     if (state === STATE_SUCCESS || src !== undefined || !title) {
@@ -115,7 +114,7 @@ class Avatar extends Component<Props, State> {
     );
   }
 
-  renderMask() {
+  public renderMask() {
     const { status } = this.props;
 
     if (!status || status === "invisible") {
@@ -139,7 +138,7 @@ class Avatar extends Component<Props, State> {
     );
   }
 
-  renderStatus() {
+  public renderStatus() {
     const { status } = this.props;
 
     if (!status || status === "invisible") {
@@ -149,7 +148,7 @@ class Avatar extends Component<Props, State> {
     return <circle cx="84" cy="84" r="15" className={styles[status]} />;
   }
 
-  renderAvatar = (imageState: ImagePreloaderState) => {
+  public renderAvatar = (imageState: ImagePreloaderState) => {
     return (
       <g>
         <defs>{this.renderDefs(imageState)}</defs>
@@ -160,7 +159,7 @@ class Avatar extends Component<Props, State> {
     );
   };
 
-  render() {
+  public render() {
     const { size } = this.props;
     const className = classNames(
       styles.container,

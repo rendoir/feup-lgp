@@ -239,7 +239,7 @@ class Profile extends React.Component {
                     src="https://www.youtube.com/embed/Y6U728AZnV0"
                     frameBorder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+                    allowFullScreen={true}
                   />
                 </div>
                 <div className="post-stats">
