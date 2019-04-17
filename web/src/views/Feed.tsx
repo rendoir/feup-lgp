@@ -37,8 +37,9 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    const posts = this.state.posts.map(info => (
+    const posts = this.state.posts.map((info, idx) => (
       <Post
+        key={idx}
         id={1}
         title=""
         date=""
