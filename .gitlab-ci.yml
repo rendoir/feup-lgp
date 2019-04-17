@@ -35,10 +35,6 @@ build_web:
     - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
     - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
     - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
-    # - npm install
-    # - npm rebuild node-sass
-    # - npm run build-css
-    # - npm run build
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
 build_api:
