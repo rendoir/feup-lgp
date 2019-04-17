@@ -56,4 +56,4 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/new_comment', controller.addComment);
+postRouter.post('/newcomment', controller.addComment);

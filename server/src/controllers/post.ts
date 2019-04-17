@@ -62,14 +62,22 @@ export async function getPost(req, res) {
 }
 
 export function addComment(req, res){
-    const postId = req.params.id;
-    console.log(req.params.id);
-    try {
-        res.send("ADDED POST");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(new Error('Error retrieving post'));
-    }
+    /*if(!req.body.id.trim() || !req.body.author.trim()) {
+        console.log('\n\nERROR: Post title and body cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while creating a new post' });
+        return;
+    }*/
+    console.log("Here!");
+
+    query({
+        text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
+        values: [req.body.author, req.body.id, req.body.comment],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
+    });
 }
 
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {

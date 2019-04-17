@@ -74,15 +74,24 @@ class Post extends Component<Props, State> {
   }
 
   public handleAddComment() {
-    let web_route =
-      "https://localhost:8443/post/" + this.props.id + "/new_comment";
+    this.apiComments();
+  }
+
+  public apiComments() {
+    let data = {
+      id: this.props.id,
+      title: 1,
+      text: this.state.commentValue,
+      headers: {
+        /*'Authorization': "Bearer " + getToken()*/
+      }
+    };
+
     axios
-      .post(web_route, {
-        comment: this.state.commentValue,
-        author: 1
-      })
+      .post("https://localhost:8443/post/newcomment")
       .then(res => {
-        console.log(res.data);
+        console.log("Post commented - reloading page...");
+        window.location.reload();
       })
       .catch(() => console.log("Failed to post new comment"));
   }
