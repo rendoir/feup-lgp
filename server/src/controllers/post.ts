@@ -87,17 +87,18 @@ export async function getPost(req, res) {
     }
 }
 
-export function addComment(req, res){
-    /*if(!req.body.id.trim() || !req.body.author.trim()) {
-        console.log('\n\nERROR: Post title and body cannot be empty');
+export function insertComment(req, res){
+    console.log("Here!");
+
+    if(!req.body.comment.trim() || !req.body.comment.trim()) {
+        console.log('\n\nERROR: Post body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while creating a new post' });
         return;
-    }*/
-    console.log("Here!");
+    }
 
     query({
         text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [req.body.author, req.body.id, req.body.comment],
+        values: [req.body.author, req.body.post, req.body.comment],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

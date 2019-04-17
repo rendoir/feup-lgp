@@ -1,8 +1,7 @@
 // - Import react components
-import classNames from "classnames";
-import PropTypes from "prop-types";
-import React, { Component } from "react";
 import axios from "axios";
+import classNames from "classnames";
+import React, { Component } from "react";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -36,6 +35,7 @@ interface Props {
 }
 
 interface State {
+  post_id: number;
   isHovered: boolean;
   commentValue: string;
 }
@@ -49,6 +49,7 @@ class Post extends Component<Props, State> {
 
     this.id = "post_" + this.props.id;
     this.state = {
+      post_id: 0,
       isHovered: false,
       commentValue: ""
     };
@@ -58,7 +59,9 @@ class Post extends Component<Props, State> {
     this.changeCommentValue = this.changeCommentValue.bind(this);
   }
 
-  public componentDidMount() {}
+  public componentDidMount() {
+    this.setState({ post_id: this.props.id });
+  }
 
   public handleDeletePost() {
     console.log("DELETE POST");
@@ -73,22 +76,20 @@ class Post extends Component<Props, State> {
   }
 
   public apiComments() {
-    let data = {
-      id: this.props.id,
-      title: 1,
-      text: this.state.commentValue,
-      headers: {
-        /*'Authorization': "Bearer " + getToken()*/
-      }
-    };
-
     axios
-      .post("https://localhost:8443/post/newcomment")
+      .post("https://localhost:8443/post/newcomment", {
+        author: 1, //When loggin, this is the user logged in
+        post: this.state.post_id,
+        comment: this.state.commentValue,
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
       .then(res => {
-        console.log("Post commented - reloading page...");
+        console.log("Comment created - reloading page...");
         window.location.reload();
       })
-      .catch(() => console.log("Failed to post new comment"));
+      .catch(() => console.log("Failed to create comment"));
   }
 
   public getCommentSection() {
@@ -148,6 +149,18 @@ class Post extends Component<Props, State> {
     return videoDiv;
   }
 
+  public validComment() {
+    return Boolean(this.state.commentValue);
+  }
+
+  public getInputRequiredClass(content: string) {
+    return content === "" ? "empty_required_field" : "post_field";
+  }
+
+  public getInputRequiredStyle(content: string) {
+    return content !== "" ? { display: "none" } : {};
+  }
+
   public render() {
     const { content_width } = this.props;
 
@@ -155,7 +168,7 @@ class Post extends Component<Props, State> {
     /*
     this.props.className,
     this.state.isHovered ? styles.hovered : null
-  */
+    */
 
     return (
       <div className={`${styles.post} mb-4`} style={{ width: content_width }}>
@@ -228,10 +241,7 @@ class Post extends Component<Props, State> {
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
-          <form
-            onSubmit={this.handleAddComment}
-            className={styles.post_add_comment}
-          >
+          <form className={styles.post_add_comment}>
             <Avatar
               title={this.props.author}
               placeholder="empty"
@@ -239,15 +249,20 @@ class Post extends Component<Props, State> {
               image="https://picsum.photos/200/200?image=52"
             />
             <textarea
-              className="form-control ml-4 mr-3"
+              className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                this.state.commentValue
+              )}`}
               placeholder="Insert your comment..."
               value={this.state.commentValue}
               onChange={this.changeCommentValue}
+              required={true}
             />
             <button
               className={`${styles.submit_comment} px-2 py-1`}
               type="submit"
               value="Submit"
+              onClick={this.handleAddComment}
+              disabled={!this.validComment()}
             >
               <i className="fas fa-chevron-circle-right" />
             </button>
