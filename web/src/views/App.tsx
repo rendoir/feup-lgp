@@ -16,11 +16,11 @@ class App extends React.Component {
       <div className="App">
         <Header />
         <Router>
-          <Route exact path="/user/:username" component={Profile} />
-          <Route exact path="/" component={Feed} />
-          <Route exact path="/admin" component={Backoffice} />
-          <Route exact path="/shop" component={Shop} />
-          <Route exact path="/register" component={RegisterLanding} />
+          <Route exact={true} path="/user/:username" component={Profile} />
+          <Route exact={true} path="/" component={Feed} />
+          <Route exact={true} path="/admin" component={Backoffice} />
+          <Route exact={true} path="/shop" component={Shop} />
+          <Route exact={true} path="/register" component={RegisterLanding} />
         </Router>
       </div>
     );

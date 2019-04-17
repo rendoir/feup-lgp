@@ -1,32 +1,32 @@
 import * as React from "react";
 
-interface BackofficeUserCardProps {
+type BackofficeUserCardProps = {
   name: string;
   image: string;
   email: string;
   institution: string;
   profession: string;
-  userType?: string; //This parameter can be ommited if it's a regular user
-  banHandler?: any; //Regular and admin users require this handler
-  unbanHandler?: any; //Banned users require this handler
-  turnAdminHandler?: any; //Regular users require this handler
-  expelAdminHandler?: any; //Admin users require this handler
-}
+  userType?: string; // This parameter can be ommited if it's a regular user
+  banHandler?: any; // Regular and admin users require this handler
+  unbanHandler?: any; // Banned users require this handler
+  turnAdminHandler?: any; // Regular users require this handler
+  expelAdminHandler?: any; // Admin users require this handler
+};
 
-interface BackofficeNotificationProps {
+type BackofficeNotificationProps = {
   id: number;
   username: string;
-  notificationType: string; //Comment or publication
+  notificationType: string; // Comment or publication
   content: string;
   contentId: number;
   banUserHandler: any;
   deleteContentHandler: any;
   ignoreHandler: any;
-}
+};
 
-interface BackofficeState {
+type BackofficeState = {
   usersAreaActive: boolean;
-}
+};
 
 const BANNED_USER = "banned";
 const ADMIN_USER = "admin";
@@ -36,7 +36,36 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
     super(props);
   }
 
-  getButtons() {
+  public render() {
+    return (
+      <div className="card mb-2">
+        <div className="card-header">{this.props.name}</div>
+        <div className="card-body row col-md d-flex align-items-center pr-lg-2 pr-xl-4">
+          <div className="col-12 col-lg-2 d-flex justify-content-center">
+            <img
+              className="img-fluid img-thumbnail rounded-circle"
+              src={this.props.image}
+              alt="card image"
+            />
+          </div>
+          <div className="col-12 col-lg-8 mb-2 mb-lg-0">
+            <p className="card-text">
+              <strong>Email:</strong> {this.props.email}
+            </p>
+            <p className="card-text">
+              <strong>Institution/College:</strong> {this.props.institution}
+            </p>
+            <p className="card-text">
+              <strong>Profession/Course:</strong> {this.props.profession}
+            </p>
+          </div>
+          {this.getButtons()}
+        </div>
+      </div>
+    );
+  }
+
+  private getButtons() {
     const banButton = (
       <button
         className="btn btn-danger btn-block"
@@ -94,35 +123,6 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
       </div>
     );
   }
-
-  render() {
-    return (
-      <div className="card mb-2">
-        <div className="card-header">{this.props.name}</div>
-        <div className="card-body row col-md d-flex align-items-center pr-lg-2 pr-xl-4">
-          <div className="col-12 col-lg-2 d-flex justify-content-center">
-            <img
-              className="img-fluid img-thumbnail rounded-circle"
-              src={this.props.image}
-              alt="card image"
-            />
-          </div>
-          <div className="col-12 col-lg-8 mb-2 mb-lg-0">
-            <p className="card-text">
-              <strong>Email:</strong> {this.props.email}
-            </p>
-            <p className="card-text">
-              <strong>Institution/College:</strong> {this.props.institution}
-            </p>
-            <p className="card-text">
-              <strong>Profession/Course:</strong> {this.props.profession}
-            </p>
-          </div>
-          {this.getButtons()}
-        </div>
-      </div>
-    );
-  }
 }
 
 const PUBLICATION_NOTIFICATION = "publication";
@@ -136,7 +136,7 @@ class BackofficeNotification extends React.Component<
     super(props);
   }
 
-  render() {
+  public render() {
     return (
       <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
@@ -204,61 +204,61 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.state = {
       usersAreaActive: true
     };
-    //Admin menu handlers
+    // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
-    //User card button handlers
+    // User card button handlers
     this.handleUserCardBan = this.handleUserCardBan.bind(this);
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
-    //Notification button handlers
+    // Notification button handlers
     this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
     this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
   }
 
-  handleUsersArea() {
+  private handleUsersArea() {
     this.setState({
       usersAreaActive: true
     });
   }
 
-  handleNotifArea() {
+  private handleNotifArea() {
     this.setState({
       usersAreaActive: false
     });
   }
 
-  handleUserCardBan() {
+  private handleUserCardBan() {
     console.log("BAN USER CARD");
   }
 
-  handleUserCardUnban() {
+  private handleUserCardUnban() {
     console.log("UN-BAN USER CARD");
   }
 
-  handleUserCardTurnAdmin() {
+  private handleUserCardTurnAdmin() {
     console.log("TURN USER CARD");
   }
 
-  handleUserCardExpelAdmin() {
+  private handleUserCardExpelAdmin() {
     console.log("EXPEL USER CARD");
   }
 
-  handleNotifUserBan() {
+  private handleNotifUserBan() {
     console.log("BAN NOTIFICATION");
   }
 
-  handleNotifContentDelete() {
+  private handleNotifContentDelete() {
     console.log("DELETE CONTENT NOTIFICATION");
   }
 
-  handleNotifIgnore() {
+  private handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
   }
 
-  getUsersArea() {
+  private getUsersArea() {
     return (
       <div id="backoffice_users_area" className="col-12 col-md-9">
         {/* User search form */}
@@ -335,7 +335,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     );
   }
 
-  getNotifications() {
+  private getNotifications() {
     return (
       <div
         id="backoffice_notifications_area"
