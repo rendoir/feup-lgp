@@ -47,8 +47,8 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
-      title: props.title || "",
-      text: props.text || ""
+      text: props.text || "",
+      title: props.title || ""
     };
 
     // Post manipulation handlers
@@ -62,8 +62,8 @@ class PostModal extends Component<IProps, IState> {
   public handlePostCancel() {
     // Reset field values
     this.setState({
-      title: this.props.title || "",
-      text: this.props.text || ""
+      text: this.props.text || "",
+      title: this.props.title || ""
     });
   }
 
@@ -76,12 +76,13 @@ class PostModal extends Component<IProps, IState> {
     postUrl += "/post/create";
     axios
       .post(postUrl, {
-        author: 1, //When loggin, this is the user logged in
-        title: this.state.title,
-        text: this.state.text,
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        }
+        },
+        // tslint:disable-next-line:object-literal-sort-keys
+        author: 1, // This is the logged in user
+        text: this.state.text,
+        title: this.state.title
       })
       .then(res => {
         console.log("Post created - reloading page...");
@@ -91,14 +92,20 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiEditPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post/edit";
     axios
-      .post("https://localhost:8443/post/edit", {
-        id: this.props.id,
-        title: this.state.title,
-        text: this.state.text,
+      .post(postUrl, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        }
+        },
+        id: this.props.id,
+        text: this.state.text,
+        title: this.state.title
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -224,11 +231,11 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public render() {
-    let classname_id = "post_modal_" + this.mode;
+    const classnameId = "post_modal_" + this.mode;
 
     return (
       <div
-        id={classname_id}
+        id={classnameId}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
