@@ -3,8 +3,6 @@ View Post with text and image:
 <div>
     <Post
         title=""
-        
-        content_width={800}
 
         author="John Doe"
 
@@ -21,8 +19,6 @@ View Post with text and image:
 <div>
     <Post
         title=""
-        
-        content_width={800}
 
         author="John Doe"
 
@@ -44,8 +40,6 @@ View Post with text and video:
 <div>
     <Post
         title=""
-        
-        content_width={560}
 
         author="John Doe"
 

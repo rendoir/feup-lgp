@@ -55,7 +55,6 @@ class Feed extends React.Component<Props, State> {
         comments={[]}
         title=""
         date=""
-        content_width={screen.width}
       />
     ));
 

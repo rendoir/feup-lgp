@@ -23,8 +23,6 @@ interface IProps {
 
   images?: string[];
   videos?: string[];
-
-  content_width: number;
 }
 
 interface IState {

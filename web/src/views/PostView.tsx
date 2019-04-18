@@ -100,7 +100,6 @@ class PostView extends React.Component<IProps, IState> {
         <Post
           id={Number(this.state.post[0].id)}
           title={this.state.post[0].title}
-          content_width={screen.width / 1.2}
           author={
             this.state.post[0].first_name + " " + this.state.post[0].last_name
           }

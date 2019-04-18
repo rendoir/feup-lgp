@@ -19,8 +19,6 @@ type Props = {
 
   date: string | undefined;
 
-  content_width: number;
-
   images: string[] | undefined;
 
   videos: string[] | undefined;
@@ -53,10 +51,8 @@ class Post extends Component<Props, State> {
     this.handleDeletePost = this.handleDeletePost.bind(this);
   }
   public render() {
-    const { content_width } = this.props;
-
     return (
-      <div className={`${styles.post} mb-4`} style={{ width: content_width }}>
+      <div className={`${styles.post} mb-4`}>
         <div className={styles.post_header}>
           <Avatar
             title={this.props.author}
@@ -175,7 +171,7 @@ class Post extends Component<Props, State> {
           <div className={styles.post_content}>
             <ImagePreloader src={image}>
               {({ src }) => {
-                return <img src={src} width={this.props.content_width} />;
+                return <img src={src} width="100" />;
               }}
             </ImagePreloader>
           </div>
@@ -195,7 +191,7 @@ class Post extends Component<Props, State> {
         videoDiv.push(
           <div className={styles.post_content}>
             <iframe
-              width={this.props.content_width}
+              width="100"
               src={video}
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"

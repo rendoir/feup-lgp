@@ -92,7 +92,6 @@ export default class Header extends React.Component {
               text=""
               images={undefined}
               videos={undefined}
-              content_width={screen.width / 3}
             />
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
