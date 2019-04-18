@@ -23,7 +23,7 @@ class Feed extends React.Component<Props, State> {
   }
 
   public apiGetFeed() {
-    let feedUrl = `${process.env.REACT_APP_API_URL}`;
+    let feedUrl = `${location.protocol}//${location.hostname}`;
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
       feedUrl += `:${process.env.REACT_APP_API_PORT}/feed`;
     } else {
