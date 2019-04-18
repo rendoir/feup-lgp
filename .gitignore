@@ -3,4 +3,3 @@
 secrets
 reverse_proxy/*.crt
 reverse_proxy/*.key
-docker-compose.yml
