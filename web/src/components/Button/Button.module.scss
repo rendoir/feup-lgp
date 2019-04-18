@@ -1,4 +1,4 @@
-@import "../../styles/variables";
+@import '../../styles/variables';
 
 $button-min-width: 90px;
 
@@ -16,39 +16,91 @@ $button-line-height: 26px;
 $button-font-family: $default-font-family;
 $button-size-modifier: 0.25;
 
-$button-default-text-shadow: 0 1px 1px rgba($black, .2);
-$button-default-box-shadow: 0 2px 4px rgba($black, .25);
-$button-default-box-shadow-active: 0 1px 1px rgba($black, .25);
-$button-default-color: #fff;
+$button-default-background-color: #757575;
+$button-default-text-shadow: 0 1px 1px rgba($black, 0.2);
+$button-default-box-shadow: 0 2px 4px rgba($black, 0.25);
+$button-default-box-shadow-active: 0 1px 1px rgba($black, 0.25);
+$button-default-hover-background-color: tint(
+  $button-default-background-color,
+  10%
+);
+$button-default-active-background-color: shade(
+  $button-default-background-color,
+  5%
+);
+$button-default-disabled-background-color: rgba(
+  darken($button-default-background-color, 0.5),
+  0.7
+);
+$button-default-color: $white;
 
 $button-primary-background-color: $color-primary;
-$button-primary-hover-background-color: tint($button-primary-background-color, 10%);
-$button-primary-active-background-color: shade($button-primary-background-color, 5%);
-$button-primary-disabled-background-color: rgba(darken($button-primary-background-color, .5), .7);
+$button-primary-hover-background-color: tint(
+  $button-primary-background-color,
+  10%
+);
+$button-primary-active-background-color: shade(
+  $button-primary-background-color,
+  5%
+);
+$button-primary-disabled-background-color: rgba(
+  darken($button-primary-background-color, 0.5),
+  0.7
+);
 $button-primary-color: $button-default-color;
 
 $button-success-background-color: $color-success;
-$button-success-hover-background-color: tint($button-success-background-color, 10%);
-$button-success-active-background-color: shade($button-success-background-color, 5%);
-$button-success-disabled-background-color: rgba(darken($button-success-background-color, .5), .7);
+$button-success-hover-background-color: tint(
+  $button-success-background-color,
+  10%
+);
+$button-success-active-background-color: shade(
+  $button-success-background-color,
+  5%
+);
+$button-success-disabled-background-color: rgba(
+  darken($button-success-background-color, 0.5),
+  0.7
+);
 $button-success-color: $button-default-color;
 
 $button-danger-background-color: $color-danger;
-$button-danger-hover-background-color: tint($button-danger-background-color, 10%);
-$button-danger-active-background-color: shade($button-danger-background-color, 5%);
-$button-danger-disabled-background-color: rgba(darken($button-danger-background-color, .5), .7);
+$button-danger-hover-background-color: tint(
+  $button-danger-background-color,
+  10%
+);
+$button-danger-active-background-color: shade(
+  $button-danger-background-color,
+  5%
+);
+$button-danger-disabled-background-color: rgba(
+  darken($button-danger-background-color, 0.5),
+  0.7
+);
 $button-danger-color: $button-default-color;
 
 $button-info-background-color: $color-info;
 $button-info-hover-background-color: tint($button-info-background-color, 10%);
 $button-info-active-background-color: shade($button-info-background-color, 5%);
-$button-info-disabled-background-color: rgba(darken($button-info-background-color, .5), .7);
+$button-info-disabled-background-color: rgba(
+  darken($button-info-background-color, 0.5),
+  0.7
+);
 $button-info-color: $button-default-color;
 
 $button-warning-background-color: $color-warning;
-$button-warning-hover-background-color: tint($button-warning-background-color, 10%);
-$button-warning-active-background-color: shade($button-warning-background-color, 5%);
-$button-warning-disabled-background-color: rgba(darken($button-warning-background-color, .5), .7);
+$button-warning-hover-background-color: tint(
+  $button-warning-background-color,
+  10%
+);
+$button-warning-active-background-color: shade(
+  $button-warning-background-color,
+  5%
+);
+$button-warning-disabled-background-color: rgba(
+  darken($button-warning-background-color, 0.5),
+  0.7
+);
 $button-warning-color: $button-default-color;
 
 $button-transition-duration: $default-transition-duration;
@@ -85,6 +137,24 @@ $button-transition-duration: $default-transition-duration;
 
   &.small {
     border-radius: $button-border-radius-small;
+  }
+}
+
+.default {
+  background-color: $button-default-background-color;
+  color: $button-default-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-default-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-default-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-default-disabled-background-color;
   }
 }
 
@@ -195,6 +265,23 @@ $button-transition-duration: $default-transition-duration;
   background-color: transparent !important;
   box-shadow: none !important;
 
+  &.default {
+    color: $button-default-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-default-hover-background-color;
+    }
+
+    &:active {
+      color: $button-default-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-default-disabled-background-color;
+    }
+  }
+
   &.primary {
     color: $button-primary-background-color;
 
@@ -291,6 +378,24 @@ $button-transition-duration: $default-transition-duration;
     text-shadow: $button-default-text-shadow;
   }
 
+  &.default {
+    box-shadow: inset 0 0 0 1px $button-default-background-color;
+    color: $button-default-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-default-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-default-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-default-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-default-active-background-color;
+      color: $white;
+    }
+  }
+
   &.primary {
     box-shadow: inset 0 0 0 1px $button-primary-background-color;
     color: $button-primary-background-color;
@@ -384,27 +489,25 @@ $button-transition-duration: $default-transition-duration;
 
 .small {
   padding: ($button-padding-top * (1 - $button-size-modifier))
-           ($button-padding-right * (1 - $button-size-modifier))
-           ($button-padding-bottom * (1 - $button-size-modifier))
-           ($button-padding-left * (1 - $button-size-modifier));
+    ($button-padding-right * (1 - $button-size-modifier))
+    ($button-padding-bottom * (1 - $button-size-modifier))
+    ($button-padding-left * (1 - $button-size-modifier));
   font-size: $button-font-size * (1 - $button-size-modifier);
   line-height: $button-line-height * (1 - $button-size-modifier);
 }
 
 .normal {
-  padding: $button-padding-top
-           $button-padding-right
-           $button-padding-bottom
-           $button-padding-left;
+  padding: $button-padding-top $button-padding-right $button-padding-bottom
+    $button-padding-left;
   font-size: $button-font-size;
   line-height: $button-line-height;
 }
 
 .large {
   padding: ($button-padding-top * (1 + $button-size-modifier))
-           ($button-padding-right * (1 + $button-size-modifier))
-           ($button-padding-bottom * (1 + $button-size-modifier))
-           ($button-padding-left * (1 + $button-size-modifier));
+    ($button-padding-right * (1 + $button-size-modifier))
+    ($button-padding-bottom * (1 + $button-size-modifier))
+    ($button-padding-left * (1 + $button-size-modifier));
   font-size: $button-font-size * (1 + $button-size-modifier);
   line-height: $button-line-height * (1 + $button-size-modifier);
 }

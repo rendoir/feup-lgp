@@ -44,16 +44,18 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    const posts = this.state.posts.map(info => (
+    const posts = this.state.posts.map(post => (
       <Post
-        key={info.id}
-        author={info.first_name + " " + info.last_name}
-        text={info.content}
-        image={undefined}
-        hasImage={true}
-        video={undefined}
-        hasVideo={false}
-        comments={undefined}
+        key={post.id}
+        id={post.id}
+        author={post.first_name + " " + post.last_name}
+        text={post.content}
+        images={undefined}
+        videos={undefined}
+        comments={[]}
+        title=""
+        date=""
+        content_width={screen.width}
       />
     ));
 

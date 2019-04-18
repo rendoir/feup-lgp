@@ -1,89 +1,62 @@
-import classNames from "classnames";
+// - Import react components
 import React, { Component } from "react";
 
-import createSequence from "../../utils/createSequence";
-
-import "@fortawesome/fontawesome-free/css/all.css";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
-
+// - Import styles
 import styles from "./Post.module.css";
 
+// - Import app components
 import Avatar from "../Avatar/Avatar";
+import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
-// import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import DeleteModal from "../PostModal/DeleteModal";
+import PostModal from "../PostModal/PostModal";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
-export type Props = {
-  hasImage: boolean;
-  image: string | undefined;
+type Props = {
+  id: number;
 
-  hasVideo: boolean;
-  video: string | undefined;
+  title: string;
+
+  date: string | undefined;
+
+  content_width: number;
+
+  images: string[] | undefined;
+
+  videos: string[] | undefined;
 
   author: string;
 
   text: string | undefined;
 
-  comments: undefined;
+  comments: any[];
 };
 
-export type State = {};
-
-const seq = createSequence();
+type State = {
+  isHovered: boolean;
+  data: any;
+};
 
 class Post extends Component<Props, State> {
-  id: string;
-
-  static defaultProps = {};
+  public static defaultProps = {};
+  public id: string;
 
   constructor(props: Props) {
     super(props);
 
-    this.id = "post_" + seq.next();
+    this.id = "post_" + this.props.id;
     this.state = {
+      data: "",
       isHovered: false
     };
+
+    this.handleDeletePost = this.handleDeletePost.bind(this);
   }
-
-  render() {
-    const className = classNames(styles.container);
-    /*
-      this.props.className,
-      this.state.isHovered ? styles.hovered : null
-    */
-
-    const hasImage = this.props.hasImage;
-    const hasVideo = this.props.hasVideo;
-    let imgDiv;
-    let videoDiv;
-
-    if (hasImage) {
-      imgDiv = (
-        <div className={styles.post_content}>
-          <ImagePreloader src={this.props.image}>
-            {({ src }) => {
-              return <img src={src} />;
-            }}
-          </ImagePreloader>
-        </div>
-      );
-    }
-
-    if (hasVideo) {
-      videoDiv = (
-        <div className={styles.post_content}>
-          <iframe
-            src={this.props.video}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen={true}
-          />
-        </div>
-      );
-    }
+  public render() {
+    const { content_width } = this.props;
 
     return (
-      <div className={`${styles.post} mb-4`}>
+      <div className={`${styles.post} mb-4`} style={{ width: content_width }}>
         <div className={styles.post_header}>
           <Avatar
             title={this.props.author}
@@ -92,16 +65,26 @@ class Post extends Component<Props, State> {
             image="https://picsum.photos/200/200?image=52"
           />
           <p className={styles.post_author}> {this.props.author} </p>
-          <p className={styles.post_date}>20-02-2019</p>
-          <div className={`${styles.post_options} btn-group`}>
-            <a className="btn" data-toggle="dropdown">
+          <p className={styles.post_date}>{this.props.date}</p>
+          <div className={`${styles.post_options_button_grp} btn-group`}>
+            <a role="button" data-toggle="dropdown">
               <i className="fas fa-ellipsis-v" />
             </a>
             <div className="dropdown-menu dropdown-menu-right">
-              <button className="dropdown-item" type="button">
+              <button
+                className="dropdown-item"
+                type="button"
+                data-toggle="modal"
+                data-target="#post_modal_Edit"
+              >
                 Edit Post
               </button>
-              <button className="dropdown-item" type="button">
+              <button
+                className="dropdown-item"
+                type="button"
+                data-toggle="modal"
+                data-target="#delete_post_modal"
+              >
                 Delete Post
               </button>
               <button className="dropdown-item" type="button">
@@ -111,10 +94,13 @@ class Post extends Component<Props, State> {
           </div>
         </div>
         <div className={styles.post_content}>
+          <h4> {this.props.title} </h4>
+        </div>
+        <div className={styles.post_content}>
           <p> {this.props.text} </p>
         </div>
-        {imgDiv}
-        {videoDiv}
+        {this.getImages()}
+        {this.getVideos()}
         <div className={styles.post_stats}>
           <span>35 likes</span>
           <span>14 comments</span>
@@ -133,8 +119,94 @@ class Post extends Component<Props, State> {
             <span>Share</span>
           </button>
         </div>
+        {/* Post edition modal */}
+        <PostModal {...this.props} />
+        {/* Delete Post */}
+        <DeleteModal {...this.props} />
+        {/* Comment section*/}
+        <div className={styles.post_comment_section}>
+          {this.getCommentSection()}
+          <div className={styles.post_add_comment}>
+            <Avatar
+              title={this.props.author}
+              placeholder="empty"
+              size={30}
+              image="https://picsum.photos/200/200?image=52"
+            />
+            <textarea
+              className="form-control ml-4 mr-3"
+              placeholder="Insert your comment..."
+            />
+            <button className={`${styles.submit_comment} px-2 py-1`}>
+              <i className="fas fa-chevron-circle-right" />
+            </button>
+          </div>
+        </div>
       </div>
     );
+  }
+
+  public handleDeletePost() {
+    console.log("DELETE POST");
+  }
+
+  public getCommentSection() {
+    const commentSection = this.props.comments.map((comment, idx) => {
+      return (
+        <Comment
+          key={idx}
+          title={comment.id}
+          author={comment.first_name + " " + comment.last_name}
+          text={comment.comment}
+        />
+      );
+    });
+
+    return <div className={styles.post_comments}>{commentSection}</div>;
+  }
+
+  private getImages() {
+    const imgDiv = [];
+
+    if (this.props.images) {
+      // if exists
+      for (const image of this.props.images) {
+        imgDiv.push(
+          <div className={styles.post_content}>
+            <ImagePreloader src={image}>
+              {({ src }) => {
+                return <img src={src} width={this.props.content_width} />;
+              }}
+            </ImagePreloader>
+          </div>
+        );
+      }
+    }
+
+    return imgDiv;
+  }
+
+  private getVideos() {
+    const videoDiv = [];
+
+    if (this.props.videos) {
+      // if exists
+      for (const video of this.props.videos) {
+        videoDiv.push(
+          <div className={styles.post_content}>
+            <iframe
+              width={this.props.content_width}
+              src={video}
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen={true}
+            />
+          </div>
+        );
+      }
+    }
+
+    return videoDiv;
   }
 }
 

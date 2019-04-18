@@ -1,6 +1,8 @@
 import * as React from "react";
 import "./Header.css";
 
+import PostModal from "../PostModal/PostModal";
+
 export default class Header extends React.Component {
   public render() {
     return (
@@ -75,6 +77,23 @@ export default class Header extends React.Component {
                 <i className="fas fa-search" />
               </button>
             </form>
+            <a
+              className="nav-link"
+              data-toggle="modal"
+              data-target="#post_modal_Create"
+            >
+              <span className="text-white h3 pl-3">
+                <i className="fas fa-plus-square" />
+              </span>
+            </a>
+            <PostModal
+              id={0}
+              title=""
+              text=""
+              images={undefined}
+              videos={undefined}
+              content_width={screen.width / 3}
+            />
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-user-md" />
