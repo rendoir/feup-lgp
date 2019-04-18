@@ -34,7 +34,7 @@ build_web:
     - cd web
     - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
     - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
-    - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
+    # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
 build_api:

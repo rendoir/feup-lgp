@@ -7,7 +7,9 @@ services:
       # - webprod
       - webstaging
     ports:
-      - 443:443
+      # - 443:443
+      - 80:80
+    # restart: always
   # webprod:
   #   image: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
   #   depends_on:
@@ -23,12 +25,8 @@ services:
   webstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
     expose: [5000]
-    environment:
-      - REACT_APP_API_URL=apistaging
     depends_on:
       - apistaging
-    ports:
-      - "5000:5000"
   dbstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
     expose: [5432]
@@ -39,5 +37,3 @@ services:
       - DB_HOST=dbstaging
     depends_on:
       - dbstaging
-    ports:
-      - "8443:8443"
