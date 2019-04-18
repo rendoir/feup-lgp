@@ -5,7 +5,7 @@ import "../styles/Shop.css";
 class Shop extends React.Component {
   public render() {
     return (
-      <div className="container">
+      <div id="Shop" className="container">
         <div className="row">
           <div className="col-lg-3 ml-0">
             <div className="mb-4">

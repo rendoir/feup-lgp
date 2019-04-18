@@ -3,7 +3,7 @@ import * as React from "react";
 
 import Post from "../components/Post/Post";
 
-interface Props {
+interface IProps {
   match: {
     params: {
       id: number;
@@ -11,18 +11,19 @@ interface Props {
   };
 }
 
-interface State {
+interface IState {
   id: number;
   post: any[];
   comments: any[];
+  fetchingInfo: boolean;
 }
 
 const postStyle = {
   margin: "2rem auto auto auto"
 };
 
-class PostView extends React.Component<Props, State> {
-  constructor(props: Props) {
+class PostView extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -40,7 +41,8 @@ class PostView extends React.Component<Props, State> {
           title: ""
         }
       ],
-      comments: []
+      comments: [],
+      fetchingInfo: true
     };
   }
 
@@ -60,7 +62,8 @@ class PostView extends React.Component<Props, State> {
         this.setState({
           id: res.data.post[0].id,
           post: res.data.post,
-          comments: res.data.comments
+          comments: res.data.comments,
+          fetchingInfo: false
         });
       })
       .catch(() => console.log("Failed to get post info"));
@@ -79,6 +82,10 @@ class PostView extends React.Component<Props, State> {
   }
 
   public render() {
+    if (this.state.fetchingInfo) {
+      return null;
+    }
+
     return (
       <div
         className="d-flex justify-content-center align-items-center align-self-center"

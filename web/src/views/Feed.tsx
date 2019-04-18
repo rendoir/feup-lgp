@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as React from "react";
 import Post from "../components/Post/Post";
+import "../styles/Feed.css";
 
 interface Props {}
 
@@ -13,7 +14,7 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      posts: ["post1", "post2"]
+      posts: []
     };
   }
 
@@ -37,24 +38,45 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    const posts = this.state.posts.map(info => (
+    const posts = this.state.posts.map((info, idx) => (
       <Post
-        id={1}
+        key={info.id}
+        id={info.id}
+        author={info.first_name + " " + info.last_name}
+        text={info.content}
+        images={undefined}
+        videos={undefined}
+        comments={[]}
         title=""
         date=""
-        content_width={screen.width / 1.2}
-        author="John Doe"
-        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        videos={undefined}
-        images={undefined}
-        comments={[
-          { author: "John Doe", text: "xpto" },
-          { author: "John Doe", text: "xpto" }
-        ]}
+        content_width={screen.width}
       />
     ));
 
-    return <div className="Feed">{posts}</div>;
+    let hardCodedConferences = [
+      "Conference 1",
+      "Conference 45465",
+      "Conference 45",
+      "Conference 46848",
+      "Big Conference name to test css properly, omg this name is not over yet"
+    ];
+    let conferences = hardCodedConferences.map(title => (
+      <a key={title} className="conference-link d-block my-2">
+        {title}
+      </a>
+    ));
+
+    return (
+      <div id="Feed" className="container my-5">
+        <div className="row">
+          <div className="left col-lg-3 mr-5">
+            <h5>Conferences</h5>
+            {conferences}
+          </div>
+          <div className="middle col-lg-8">{posts}</div>
+        </div>
+      </div>
+    );
   }
 }
 

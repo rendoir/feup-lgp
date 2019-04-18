@@ -1,0 +1,258 @@
+@import '../../styles/variables';
+
+$icon-button-small-size: 32px;
+$icon-button-default-size: 40px;
+$icon-button-large-size: 54px;
+$icon-button-background-color: $white;
+$icon-button-default-color: rgb(178, 178, 178);
+$icon-button-hover-color: $color-primary;
+$icon-button-flat-color: rgb(178, 178, 178);
+$icon-button-flat-color-hover: $white;
+$icon-button-flat-hover-background-color: rgb(150, 150, 150);
+$icon-button-flat-border-width: 1px;
+$icon-button-flat-small-size: $icon-button-small-size;
+$icon-button-flat-default-size: $icon-button-default-size;
+$icon-button-flat-large-size: $icon-button-large-size;
+
+.container {
+  all: initial;
+  display: inline-flex;
+  cursor: pointer;
+  user-select: none;
+  transition: all $default-transition-duration ease;
+  text-align: center;
+  vertical-align: middle;
+  align-items: center;
+  border-radius: 50%;
+  border: 0;
+
+  /* flexbox fix for safari */
+  &::before,
+  &::after {
+    content: '';
+    flex: 1 1 auto;
+  }
+}
+
+.fix {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.icon {
+  cursor: inherit;
+  transition: all $default-transition-duration ease;
+}
+
+.active {
+  & .icon {
+    color: $icon-button-hover-color !important;
+  }
+}
+
+.defaultStyle {
+  background-color: $icon-button-background-color;
+  box-shadow: inset 0 0 0 1px rgba($black, 0.2), 0 1px 2px 0 rgba($black, 0.1);
+
+  & .icon {
+    color: $icon-button-default-color;
+  }
+
+  &:hover,
+  &:focus {
+    box-shadow: inset 0 0 0 1px rgba($black, 0.3),
+      0 2px 4px 0 rgba($black, 0.25);
+
+    & .icon {
+      color: $icon-button-hover-color;
+    }
+  }
+
+  &:active {
+    box-shadow: inset 0 0 0 1px rgba($black, 0.3),
+      0 1px 1px 0 rgba($black, 0.25);
+
+    & .icon {
+      color: $icon-button-hover-color;
+    }
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+
+  &.defaultStyle {
+    background-color: $icon-button-background-color !important;
+    box-shadow: inset 0 0 0 1px rgba($black, 0.2), 0 1px 2px 0 rgba($black, 0.1) !important;
+
+    & .icon {
+      color: $icon-button-default-color !important;
+    }
+  }
+
+  &.flat {
+    background-color: transparent !important;
+    box-shadow: inset 0 0 0 $icon-button-flat-border-width
+      $icon-button-flat-color !important;
+
+    & .icon {
+      color: $icon-button-flat-color !important;
+    }
+  }
+}
+
+.small {
+  &.defaultStyle {
+    width: $icon-button-small-size;
+    height: $icon-button-small-size;
+  }
+
+  &.flat {
+    width: $icon-button-flat-small-size;
+    height: $icon-button-flat-small-size;
+  }
+}
+
+.normal {
+  &.defaultStyle {
+    width: $icon-button-default-size;
+    height: $icon-button-default-size;
+  }
+
+  &.flat {
+    width: $icon-button-flat-default-size;
+    height: $icon-button-flat-default-size;
+  }
+}
+
+.large {
+  &.defaultStyle {
+    width: $icon-button-large-size;
+    height: $icon-button-large-size;
+  }
+
+  &.flat {
+    width: $icon-button-flat-large-size;
+    height: $icon-button-flat-large-size;
+  }
+}
+
+.flat {
+  &.primary {
+    background-color: $color-primary;
+
+    & .icon {
+      color: $icon-button-flat-color-hover;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: shade($color-primary, 10%);
+    }
+
+    &:active {
+      background-color: shade($color-primary, 5%);
+    }
+  }
+
+  &.success {
+    background-color: $color-success;
+
+    & .icon {
+      color: $icon-button-flat-color-hover;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: shade($color-success, 10%);
+    }
+
+    &:active {
+      background-color: shade($color-success, 5%);
+    }
+  }
+
+  &.danger {
+    background-color: $color-danger;
+
+    & .icon {
+      color: $icon-button-flat-color-hover;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: shade($color-danger, 10%);
+    }
+
+    &:active {
+      background-color: shade($color-danger, 5%);
+    }
+  }
+
+  &.info {
+    background-color: $color-info;
+
+    & .icon {
+      color: $icon-button-flat-color-hover;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: shade($color-info, 10%);
+    }
+
+    &:active {
+      background-color: shade($color-info, 5%);
+    }
+  }
+
+  &.warning {
+    background-color: $color-warning;
+
+    & .icon {
+      color: $icon-button-flat-color-hover;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: shade($color-warning, 10%);
+    }
+
+    &:active {
+      background-color: shade($color-warning, 5%);
+    }
+  }
+
+  &.default {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 $icon-button-flat-border-width
+      $icon-button-flat-color;
+
+    & .icon {
+      color: $icon-button-flat-color;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $icon-button-flat-hover-background-color;
+      box-shadow: inset 0 0 0 $icon-button-flat-border-width
+        $icon-button-flat-hover-background-color;
+
+      & .icon {
+        color: $icon-button-flat-color-hover;
+      }
+    }
+
+    &:active {
+      background-color: shade($icon-button-flat-hover-background-color, 5%);
+
+      & .icon {
+        color: $icon-button-flat-color-hover;
+      }
+    }
+  }
+}

@@ -53,7 +53,6 @@ class Post extends Component<Props, State> {
       commentValue: ""
     };
 
-    this.handleEditPost = this.handleEditPost.bind(this);
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
@@ -173,7 +172,7 @@ class Post extends Component<Props, State> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#post_modal"
+                data-target="#post_modal_Edit"
               >
                 Edit Post
               </button>
@@ -190,6 +189,9 @@ class Post extends Component<Props, State> {
               </button>
             </div>
           </div>
+        </div>
+        <div className={styles.post_content}>
+          <h4> {this.props.title} </h4>
         </div>
         <div className={styles.post_content}>
           <p> {this.props.text} </p>
@@ -217,7 +219,7 @@ class Post extends Component<Props, State> {
         {/* Post edition modal */}
         <PostModal {...this.props} />
         {/* Delete Post */}
-        <DeleteModal {...this.props} deleteHandler={this.handleDeletePost()} />
+        <DeleteModal {...this.props} />
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
