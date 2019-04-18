@@ -24,7 +24,7 @@ class Feed extends React.Component<Props, State> {
 
   public apiGetFeed() {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/feed/`, {
+      .get(`${process.env.REACT_APP_API_URL}/api/feed/`, {
         params: {},
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
