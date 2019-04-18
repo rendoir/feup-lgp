@@ -14,7 +14,7 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      posts: ["post1", "post2"]
+      posts: []
     };
   }
 

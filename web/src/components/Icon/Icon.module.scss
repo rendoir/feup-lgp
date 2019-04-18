@@ -1,0 +1,71 @@
+@import '../../styles/variables';
+
+$icon-default-color: rgb(178, 178, 178);
+$icon-inverted-color: $white;
+
+.container {
+  display: inline-flex;
+  cursor: inherit;
+  user-select: none;
+  vertical-align: middle;
+  background-color: transparent;
+  flex-flow: row;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+}
+
+.inverted {
+  cursor: inherit;
+  background-color: $icon-default-color;
+  color: $icon-inverted-color !important;
+}
+
+.default {
+  color: $icon-default-color;
+
+  &.inverted {
+    background-color: $icon-default-color;
+  }
+}
+
+.primary {
+  color: $color-primary;
+
+  &.inverted {
+    background-color: $color-primary;
+  }
+}
+
+.success {
+  color: $color-success;
+
+  &.inverted {
+    background-color: $color-success;
+  }
+}
+
+.danger {
+  color: $color-danger;
+
+  &.inverted {
+    background-color: $color-danger;
+  }
+}
+
+.info {
+  color: $color-info;
+
+  &.inverted {
+    background-color: $color-info;
+  }
+}
+
+.warning {
+  color: $color-warning;
+
+  &.inverted {
+    background-color: $color-warning;
+  }
+}

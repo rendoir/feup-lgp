@@ -1,0 +1,241 @@
+@import '../../styles/variables';
+
+$input-next-error-color: $color-danger;
+$input-next-warning-color: $color-warning;
+$input-next-success-color: $color-success;
+$input-next-text-color: $black;
+$input-next-placeholder-color: rgba($black, 0.3);
+$input-next-border-color: rgba($black, 0.35);
+$input-next-border-width: 1px;
+$input-next-focus-border-width: 2px;
+$input-next-default-font-size: 18px;
+$input-next-default-line-height: 1.4;
+$input-next-large-font-size: 22px;
+$input-next-large-line-height: 1.25;
+$input-next-font-family: $default-font-family;
+$input-next-focused-color: $black;
+$input-next-focused-border-color: $color-primary;
+$input-next-disabled-color: $pinkish-grey-two;
+$input-next-disabled-border-color: $input-next-disabled-color;
+$input-next-disabled-background-color: rgba($input-next-disabled-color, 0.15);
+$input-next-label-color: $color-primary;
+$input-next-label-font-size: 14px;
+$input-next-label-line-height: 22px;
+$input-next-label-font-family: $default-font-family;
+$input-next-hint-color: rgba($black, 0.3);
+$input-next-hint-font-size: 14px;
+$input-next-hint-line-height: 18px;
+$input-next-hint-font-family: $default-font-family;
+$input-next-prefix-color: $default-font-color-light;
+
+/* Styles */
+.container {
+  all: initial;
+  display: block;
+  width: 100%;
+  margin-bottom: $default-padding;
+  line-height: 0;
+  position: relative;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: row;
+  cursor: inherit;
+  transition: box-shadow $default-transition-duration ease-in-out;
+  box-shadow: 0 0 0 $input-next-border-width $input-next-border-color;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-left: $default-padding-small;
+}
+
+.prefix {
+  padding: 10px 0 10px 0;
+  cursor: inherit;
+  user-select: none;
+  transition: color $default-transition-duration ease-in-out;
+  font-family: $input-next-font-family;
+  font-size: $input-next-default-font-size;
+  line-height: $input-next-default-line-height;
+  color: $input-next-prefix-color;
+}
+
+.input {
+  all: initial;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 0;
+  cursor: inherit;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  box-shadow: none;
+  font-family: $input-next-font-family;
+  font-size: $input-next-default-font-size;
+  line-height: $input-next-default-line-height;
+  color: $input-next-text-color;
+
+  &::-webkit-input-placeholder {
+    color: $input-next-placeholder-color;
+  }
+
+  &::-moz-placeholder {
+    color: $input-next-placeholder-color;
+  }
+
+  &:-moz-placeholder {
+    color: $input-next-placeholder-color;
+  }
+
+  &:-ms-input-placeholder {
+    color: $input-next-placeholder-color;
+  }
+}
+
+.filled {
+  & .inputWrapper {
+    box-shadow: 0 0 0 $input-next-border-width $input-next-focused-border-color;
+  }
+
+  & .prefix {
+    color: $input-next-focused-border-color;
+  }
+
+  & .input {
+    color: $input-next-focused-color;
+  }
+}
+
+.focused {
+  & .inputWrapper {
+    box-shadow: 0 0 0 $input-next-focus-border-width
+      $input-next-focused-border-color;
+  }
+
+  & .prefix {
+    color: $input-next-focused-border-color;
+  }
+
+  & .input {
+    color: $input-next-focused-color;
+  }
+}
+
+.label {
+  all: initial;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  font-family: $input-next-font-family;
+  font-size: $input-next-label-font-size;
+  font-weight: 500;
+  line-height: $input-next-default-line-height;
+  color: $input-next-label-color;
+  margin-bottom: $default-padding;
+}
+
+.disabled {
+  & .label {
+    cursor: not-allowed;
+    color: $input-next-disabled-color;
+  }
+
+  & .input {
+    color: rgba($input-next-text-color, 0.35);
+    cursor: not-allowed;
+  }
+
+  & .inputWrapper {
+    cursor: not-allowed;
+    box-shadow: 0 0 0 $input-next-border-width $input-next-disabled-border-color;
+  }
+}
+
+.large {
+  & .input {
+    padding: $default-padding 0;
+    font-size: $input-next-large-font-size;
+    line-height: $input-next-large-line-height;
+  }
+
+  & .prefix {
+    padding: $default-padding 4px $default-padding 0;
+    font-size: $input-next-large-font-size;
+  }
+}
+
+.hint {
+  all: initial;
+  display: inline-block;
+  margin: 6px 0;
+  user-select: none;
+  font-family: $input-next-hint-font-family;
+  font-size: $input-next-hint-font-size;
+  line-height: $input-next-hint-line-height;
+  color: $input-next-hint-color;
+}
+
+/* stylelint-disable */
+.success {
+  & .inputWrapper {
+    box-shadow: 0 0 0 $input-next-border-width $input-next-success-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 0 0 $input-next-focus-border-width $input-next-success-color;
+    }
+  }
+
+  & .hint {
+    color: $input-next-success-color;
+  }
+}
+
+.error {
+  & .inputWrapper {
+    box-shadow: 0 0 0 $input-next-border-width $input-next-error-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 0 0 $input-next-focus-border-width $input-next-error-color;
+    }
+  }
+
+  & .hint {
+    color: $input-next-error-color;
+  }
+}
+
+.warning {
+  & .inputWrapper {
+    box-shadow: 0 0 0 $input-next-border-width $input-next-warning-color;
+  }
+
+  & .focused {
+    & .inputWrapper {
+      box-shadow: 0 0 0 $input-next-focus-border-width $input-next-warning-color;
+    }
+  }
+
+  & .hint {
+    color: $input-next-warning-color;
+  }
+}
+/* stylelint-enable */
+
+.lengthLimitCounter {
+  float: right;
+  display: inline-block;
+  color: $input-next-label-color;
+  font-family: $input-next-font-family;
+  font-size: $input-next-label-font-size;
+  font-weight: 500;
+  line-height: $input-next-default-line-height;
+  margin-bottom: $default-padding;
+  cursor: pointer;
+}

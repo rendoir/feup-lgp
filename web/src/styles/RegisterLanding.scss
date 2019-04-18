@@ -1,11 +1,11 @@
 @import 'variables';
 
 #landing-info {
-    display: block !important;
+  display: block !important;
+}
+
+@media screen and (max-width: 992px) {
+  #landing-info {
+    display: none !important;
   }
-  
-  @media screen and (max-width: 992px) {
-    #landing-info {
-      display: none !important;
-    }
-  }
+}
