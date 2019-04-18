@@ -1,6 +1,5 @@
 // - Import react components
 import classNames from "classnames";
-import PropTypes from "prop-types";
 import React, { Component } from "react";
 
 // - Import style
@@ -17,7 +16,7 @@ import createSequence from "../../utils/createSequence";
 
 const seq = createSequence();
 
-export interface Props {
+export type Props = {
   // comment: Comment //from model (substitutes title, text)
   title: string | undefined;
   text: string | undefined;
@@ -49,9 +48,9 @@ export interface Props {
 
   onClick?: (event: MouseEvent) => unknown;
   */
-}
+};
 
-export interface State {
+export type State = {
   /*
   initialText?: string; //Initial text comment
   text: string; //Initial text comment
@@ -63,7 +62,7 @@ export interface State {
   openMenu?: boolean; //Whether comment menu is open
   anchorEl: any; //Anchor element
   */
-}
+};
 
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
@@ -79,8 +78,6 @@ class Comment extends Component<Props, State> {
   }
 
   public render() {
-    const className = classNames(styles.container);
-
     return (
       <div className={`${styles.post_comment} my-3`}>
         <div className={styles.comment_header}>
