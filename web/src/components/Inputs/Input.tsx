@@ -4,7 +4,7 @@ import styles from "./Input.module.css";
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
-export interface Props {
+export type Props = {
   /** Input class attribute */
   className?: string;
   /** input class attribute */
@@ -58,19 +58,19 @@ export interface Props {
   onFocus?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
   /** input onBlur event attribute */
   onBlur?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
-}
+};
 
-export interface State {
+export type State = {
   isFocused: boolean;
-}
+};
 
 class Input extends Component<Props, State> {
-  static defaultProps = {
-    type: "text",
+  public static defaultProps = {
+    spellcheck: "false",
     status: "normal",
-    spellcheck: "false"
+    type: "text"
   };
-  input?: HTMLInputElement | HTMLTextAreaElement;
+  private input?: HTMLInputElement | HTMLTextAreaElement;
 
   constructor(props: Props) {
     super(props);
@@ -80,19 +80,68 @@ class Input extends Component<Props, State> {
     };
   }
 
-  componentDidMount(): void {
+  public render() {
+    const {
+      props: { value, disabled, status, large },
+      state: { isFocused }
+    } = this;
+
+    const className = classNames(
+      styles.container,
+      this.props.className,
+      status ? styles[status] : null,
+      value ? styles.filled : null,
+      isFocused ? styles.focused : null,
+      disabled ? styles.disabled : null,
+      large ? styles.large : null
+    );
+
+    const wrapperClassName = classNames(
+      styles.inputWrapper,
+      this.props.wrapperClassName
+    );
+
+    return (
+      <div className={className}>
+        {this.renderLabel()}
+        <div className={wrapperClassName}>
+          {this.renderPrefix()}
+          {this.renderInput()}
+        </div>
+        {this.renderHint()}
+      </div>
+    );
+  }
+
+  public componentDidMount(): void {
     this.autoFocus();
   }
 
-  componentDidUpdate(): void {
+  public componentDidUpdate(): void {
     this.autoFocus();
   }
 
-  handleChange = (event: React.ChangeEvent<HTMLAbstractInputElement>): void => {
+  public focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  public blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
+  private handleChange = (
+    event: React.ChangeEvent<HTMLAbstractInputElement>
+  ): void => {
     this.props.onChange(event.target.value, event);
   };
 
-  handleFocus = (event: React.FocusEvent<HTMLAbstractInputElement>): void => {
+  private handleFocus = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) {
@@ -100,7 +149,9 @@ class Input extends Component<Props, State> {
     }
   };
 
-  handleBlur = (event: React.FocusEvent<HTMLAbstractInputElement>): void => {
+  private handleBlur = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
     if (this.isAutoFocus()) {
       event.preventDefault();
       event.target.focus();
@@ -114,15 +165,15 @@ class Input extends Component<Props, State> {
     }
   };
 
-  isAutoFocus(): boolean {
+  private isAutoFocus(): boolean {
     return Boolean(this.props.autoFocus) && !this.props.disabled;
   }
 
-  setInput = (element: any): void => {
+  private setInput = (element: any): void => {
     this.input = element;
   };
 
-  autoFocus(): void {
+  private autoFocus(): void {
     if (this.isAutoFocus() && this.input) {
       if (document.activeElement !== this.input) {
         this.input.focus();
@@ -130,19 +181,7 @@ class Input extends Component<Props, State> {
     }
   }
 
-  focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  blur(): void {
-    if (this.input) {
-      this.input.blur();
-    }
-  }
-
-  renderLabel() {
+  private renderLabel() {
     const { id, label } = this.props;
 
     if (!label) {
@@ -156,7 +195,7 @@ class Input extends Component<Props, State> {
     );
   }
 
-  renderHint() {
+  private renderHint() {
     const { hint } = this.props;
 
     if (!hint) {
@@ -166,7 +205,7 @@ class Input extends Component<Props, State> {
     return <p className={styles.hint}>{hint}</p>;
   }
 
-  renderPrefix() {
+  private renderPrefix() {
     const { prefix, id } = this.props;
 
     if (!prefix) {
@@ -181,7 +220,7 @@ class Input extends Component<Props, State> {
     );
   }
 
-  renderInput() {
+  private renderInput() {
     const {
       props: {
         id,
@@ -217,39 +256,6 @@ class Input extends Component<Props, State> {
     }
 
     return <input {...props} spellCheck={spellcheck} tabIndex={tabIndex} />;
-  }
-
-  render() {
-    const {
-      props: { value, disabled, status, large },
-      state: { isFocused }
-    } = this;
-
-    const className = classNames(
-      styles.container,
-      this.props.className,
-      status ? styles[status] : null,
-      value ? styles.filled : null,
-      isFocused ? styles.focused : null,
-      disabled ? styles.disabled : null,
-      large ? styles.large : null
-    );
-
-    const wrapperClassName = classNames(
-      styles.inputWrapper,
-      this.props.wrapperClassName
-    );
-
-    return (
-      <div className={className}>
-        {this.renderLabel()}
-        <div className={wrapperClassName}>
-          {this.renderPrefix()}
-          {this.renderInput()}
-        </div>
-        {this.renderHint()}
-      </div>
-    );
   }
 }
 

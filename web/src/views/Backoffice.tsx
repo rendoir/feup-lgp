@@ -218,6 +218,38 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
   }
 
+  public render() {
+    return (
+      <div id="backoffice_container" className="container mt-3 ml-0">
+        <div className="row">
+          {/* Admin menu */}
+          <div className="col-12 col-md-3">
+            <div className="dropdown">
+              <h6 className="dropdown-header">Admin area</h6>
+              <div className="dropdown-divider" />
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
+                Manage users
+              </a>
+              <a
+                id="notifications"
+                className="dropdown-item"
+                onClick={this.handleNotifArea}
+              >
+                Notifications <span className="badge badge-light">4</span>
+              </a>
+            </div>
+          </div>
+          {this.state.usersAreaActive && this.getUsersArea()}
+          {!this.state.usersAreaActive && this.getNotifications()}
+        </div>
+      </div>
+    );
+  }
+
   private handleUsersArea() {
     this.setState({
       usersAreaActive: true
@@ -388,38 +420,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           deleteContentHandler={this.handleNotifContentDelete}
           ignoreHandler={this.handleNotifIgnore}
         />
-      </div>
-    );
-  }
-
-  public render() {
-    return (
-      <div id="backoffice_container" className="container mt-3 ml-0">
-        <div className="row">
-          {/* Admin menu */}
-          <div className="col-12 col-md-3">
-            <div className="dropdown">
-              <h6 className="dropdown-header">Admin area</h6>
-              <div className="dropdown-divider" />
-              <a
-                id="manage_users"
-                className="dropdown-item"
-                onClick={this.handleUsersArea}
-              >
-                Manage users
-              </a>
-              <a
-                id="notifications"
-                className="dropdown-item"
-                onClick={this.handleNotifArea}
-              >
-                Notifications <span className="badge badge-light">4</span>
-              </a>
-            </div>
-          </div>
-          {this.state.usersAreaActive && this.getUsersArea()}
-          {!this.state.usersAreaActive && this.getNotifications()}
-        </div>
       </div>
     );
   }

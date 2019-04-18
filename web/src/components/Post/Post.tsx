@@ -1,17 +1,17 @@
-import React, { Component } from "react";
 import classNames from "classnames";
+import React, { Component } from "react";
 
 import createSequence from "../../utils/createSequence";
 
+import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
-import "@fortawesome/fontawesome-free/css/all.css";
 
 import styles from "./Post.module.css";
 
 import Avatar from "../Avatar/Avatar";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
-//import VideoPreloader from "../VideoPreloader/VideoPreloader";
+// import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 export type Props = {
   hasImage: boolean;
@@ -76,7 +76,7 @@ class Post extends Component<Props, State> {
             src={this.props.video}
             frameBorder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+            allowFullScreen={true}
           />
         </div>
       );

@@ -10,7 +10,7 @@ import ImagePreloader, {
 } from "../ImagePreloader/ImagePreloader";
 import styles from "./Avatar.module.css";
 
-export interface Props {
+export type Props = {
   title: string | undefined;
   image: string | undefined;
   size: number;
@@ -18,23 +18,23 @@ export interface Props {
   className?: string;
   onClick?: (event: MouseEvent) => unknown;
   status?: UserStatusType | null | undefined;
-}
+};
 
-export interface State {
+export type State = {
   isHovered: boolean;
-}
+};
 
 const seq = createSequence();
 
 class Avatar extends Component<Props, State> {
-  static defaultProps = {
+  public static defaultProps = {
     image: undefined,
-    title: undefined,
-    size: 32,
     placeholder: "empty",
-    status: null
+    size: 32,
+    status: null,
+    title: undefined
   };
-  id: string;
+  private id: string;
 
   constructor(props: Props) {
     super(props);
