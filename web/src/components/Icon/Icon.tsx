@@ -1,5 +1,5 @@
 import React, { Component, CSSProperties } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   FaSymbol,
   FlipProp,
@@ -8,8 +8,10 @@ import {
   RotateProp,
   Transform
 } from "@fortawesome/fontawesome-svg-core";
-import { ColorTheme, IconSize } from "../../utils/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import classNames from "classnames";
+import { ColorTheme, IconSize } from "../../utils/types";
 import styles from "./Icon.module.css";
 
 export type Props = {
@@ -33,14 +35,14 @@ export type Props = {
 };
 
 class Icon extends Component<Props> {
-  static defaultProps = {
-    type: "icon",
+  public static defaultProps = {
+    inverse: false,
     size: "1x",
     theme: "default",
-    inverse: false
+    type: "icon"
   };
 
-  render() {
+  public render() {
     const {
       icon,
       size,
@@ -70,15 +72,15 @@ class Icon extends Component<Props> {
     );
 
     const props = {
-      className: className,
+      border,
+      // className: {className},
       icon,
+      inverse,
+      mask,
       size,
       style,
-      inverse,
-      border,
-      transform,
-      mask,
-      symbol
+      symbol,
+      transform
     };
 
     return (

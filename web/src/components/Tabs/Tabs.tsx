@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import classNames from "classnames";
 import Tab from "./Tab";
 import styles from "./Tabs.module.css";
@@ -16,7 +17,7 @@ type Props<T> = {
 };
 
 class Tabs<T extends string> extends Component<Props<T>> {
-  render() {
+  public render() {
     const { current, variants } = this.props;
     const className = classNames(styles.container, this.props.className);
 

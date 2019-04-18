@@ -6,20 +6,20 @@ export const STATE_ERROR = "error";
 
 export type VideoState = "pending" | "success" | "error";
 
-export interface State {
+export type State = {
   state: VideoState;
   src: string | undefined;
   error: unknown | null | undefined;
-}
+};
 
-export interface Props {
+export type Props = {
   /** Video src attribute */
   src: string | undefined;
   /** Video onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
   children: (state: State) => ReactNode;
-}
+};
 
 class VideoPreloader extends Component<Props, State> {
   public static getDerivedStateFromProps(
@@ -27,9 +27,9 @@ class VideoPreloader extends Component<Props, State> {
     prevState: State
   ): State {
     return {
+      error: null,
       src: nextProps.src === undefined ? undefined : prevState.src,
-      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
-      error: null
+      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING
     };
   }
   public requestId: number | null | undefined;
@@ -39,9 +39,9 @@ class VideoPreloader extends Component<Props, State> {
     super(props);
 
     this.state = {
-      state: STATE_PENDING,
+      error: null,
       src: undefined,
-      error: null
+      state: STATE_PENDING
     };
   }
 
@@ -108,17 +108,17 @@ class VideoPreloader extends Component<Props, State> {
 
   public handleSuccess = (): void => {
     this.setState({
-      state: STATE_SUCCESS,
-      src: this.props.src
+      src: this.props.src,
+      state: STATE_SUCCESS
     });
     this.handleStopFetch();
   };
 
   public handleError = (error?: any): void => {
     this.setState({
-      state: STATE_ERROR,
+      error,
       src: this.props.src,
-      error
+      state: STATE_ERROR
     });
     this.handleStopFetch();
   };

@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from "react";
-import styles from "./ButtonNext.module.css";
+
 import classNames from "classnames";
+import styles from "./ButtonNext.module.css";
 
 export type Props = {
   /** Button id attribute */
@@ -30,17 +31,17 @@ export type Props = {
 };
 
 class ButtonNext extends Component<Props> {
-  static defaultProps = {
-    view: "button",
-    type: "button",
-    theme: "primary",
-    size: "normal",
-    wide: false,
+  public static defaultProps = {
+    disabled: false,
     rounded: true,
-    disabled: false
+    size: "normal",
+    theme: "primary",
+    type: "button",
+    view: "button",
+    wide: false
   };
 
-  render() {
+  public render() {
     const {
       id,
       type,
