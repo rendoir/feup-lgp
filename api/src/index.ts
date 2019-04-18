@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as morgan from 'morgan';
 import { jwtMiddleware } from './_helpers/jwt';
+
 let privateKey; let certificate;
 
 if (process.env.PRODUCTION === 'true') {
