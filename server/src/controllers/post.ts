@@ -1,29 +1,90 @@
 import * as fs from 'fs';
 import * as request from 'request-promise';
 // import * as Twitter from 'twitter';
+
 import {query} from '../db/db';
 
 export function createPost(req, res) {
-    let promises = [];
-    let files;
-    try {
-        const params = req.body.post;
-        files = req.files;
-        promises = postMultiplePosts(params, files, req.user.id);
-    } catch (error) {
-        console.log('\n\nERROR:', error);
-        res.status(400).send(error);
+    if(!req.body.title.trim() || !req.body.title.trim()) {
+        console.log('\n\nERROR: Post title and body cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while creating a new post' });
         return;
     }
 
-    Promise.all(promises).then((result) => {
-        console.log('Result:', result);
-        removeFiles(files);
-        res.status(200).send();
-    }).catch( (error) => {
+    query({
+        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
+        text: 'INSERT INTO posts (author, title, content_text) VALUES ($1, $2, $3) RETURNING id',
+        values: [req.body.author, req.body.title, req.body.text],
+    }).then((result) => {
+        res.send({id: result.rows});
+    }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send(error);
+        res.status(400).send({ message: 'An error ocurred while editing post' });
     });
+}
+
+export function editPost(req, res) {
+    if(!req.body.title.trim() || !req.body.title.trim()) {
+        console.log('\n\nERROR: Post title and body cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while editing post' });
+        return;
+    }
+
+    query({
+        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
+        text: 'UPDATE posts SET title=$2, content_text=$3 WHERE id=$1',
+        values: [req.body.id, req.body.title, req.body.text],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing post' });
+    });
+}
+
+export function deletePost(req, res) {
+    query({
+        text: 'DELETE FROM posts WHERE id=$1', values: [req.body.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting post' });
+    });
+}
+
+export async function getPost(req, res) {
+    const postId = req.params.id;
+    try {
+        const post = await query({
+            text: `SELECT p.*, a.first_name, a.last_name
+                    FROM posts p
+                    INNER JOIN users a
+                    ON p.author = a.id
+                    WHERE
+                        p.id = $1`,
+            values: [postId],
+        });
+        const comments = await query({
+            text: `SELECT c.*, a.first_name, a.last_name
+                    FROM posts p
+                    LEFT JOIN comments c
+                    ON p.id = c.post
+                    INNER JOIN users a
+                    ON c.author = a.id
+                    WHERE
+                        p.id = $1`,
+            values: [postId],
+        });
+        const result = {
+            post: post.rows,
+            comments: comments.rows,
+        };
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post'));
+    }
 }
 
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {

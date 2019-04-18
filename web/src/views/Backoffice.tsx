@@ -6,17 +6,17 @@ interface BackofficeUserCardProps {
   email: string;
   institution: string;
   profession: string;
-  userType?: string; //This parameter can be ommited if it's a regular user
-  banHandler?: any; //Regular and admin users require this handler
-  unbanHandler?: any; //Banned users require this handler
-  turnAdminHandler?: any; //Regular users require this handler
-  expelAdminHandler?: any; //Admin users require this handler
+  userType?: string; // This parameter can be ommited if it's a regular user
+  banHandler?: any; // Regular and admin users require this handler
+  unbanHandler?: any; // Banned users require this handler
+  turnAdminHandler?: any; // Regular users require this handler
+  expelAdminHandler?: any; // Admin users require this handler
 }
 
 interface BackofficeNotificationProps {
   id: number;
   username: string;
-  notificationType: string; //Comment or publication
+  notificationType: string; // Comment or publication
   content: string;
   contentId: number;
   banUserHandler: any;
@@ -36,7 +36,7 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
     super(props);
   }
 
-  getButtons() {
+  public getButtons() {
     const banButton = (
       <button
         className="btn btn-danger btn-block"
@@ -95,7 +95,7 @@ class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
     );
   }
 
-  render() {
+  public render() {
     return (
       <div className="card mb-2">
         <div className="card-header">{this.props.name}</div>
@@ -136,7 +136,7 @@ class BackofficeNotification extends React.Component<
     super(props);
   }
 
-  render() {
+  public render() {
     return (
       <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
@@ -204,61 +204,61 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.state = {
       usersAreaActive: true
     };
-    //Admin menu handlers
+    // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
-    //User card button handlers
+    // User card button handlers
     this.handleUserCardBan = this.handleUserCardBan.bind(this);
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
-    //Notification button handlers
+    // Notification button handlers
     this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
     this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
   }
 
-  handleUsersArea() {
+  public handleUsersArea() {
     this.setState({
       usersAreaActive: true
     });
   }
 
-  handleNotifArea() {
+  public handleNotifArea() {
     this.setState({
       usersAreaActive: false
     });
   }
 
-  handleUserCardBan() {
+  public handleUserCardBan() {
     console.log("BAN USER CARD");
   }
 
-  handleUserCardUnban() {
+  public handleUserCardUnban() {
     console.log("UN-BAN USER CARD");
   }
 
-  handleUserCardTurnAdmin() {
+  public handleUserCardTurnAdmin() {
     console.log("TURN USER CARD");
   }
 
-  handleUserCardExpelAdmin() {
+  public handleUserCardExpelAdmin() {
     console.log("EXPEL USER CARD");
   }
 
-  handleNotifUserBan() {
+  public handleNotifUserBan() {
     console.log("BAN NOTIFICATION");
   }
 
-  handleNotifContentDelete() {
+  public handleNotifContentDelete() {
     console.log("DELETE CONTENT NOTIFICATION");
   }
 
-  handleNotifIgnore() {
+  public handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
   }
 
-  getUsersArea() {
+  public getUsersArea() {
     return (
       <div id="backoffice_users_area" className="col-12 col-md-9">
         {/* User search form */}
@@ -335,7 +335,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     );
   }
 
-  getNotifications() {
+  public getNotifications() {
     return (
       <div
         id="backoffice_notifications_area"

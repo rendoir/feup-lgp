@@ -1,12 +1,12 @@
-import * as React from "react";
 import axios from "axios";
+import * as React from "react";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
 
 interface Props {}
 
 interface State {
-  posts: Array<any>;
+  posts: any[];
 }
 
 class Feed extends React.Component<Props, State> {
@@ -18,7 +18,7 @@ class Feed extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.apiGetFeed();
   }
 
@@ -31,23 +31,25 @@ class Feed extends React.Component<Props, State> {
         }
       })
       .then(res => {
-        //console.log(res.data);
+        // console.log(res.data);
         this.setState({ posts: res.data });
       })
       .catch(() => console.log("Failed to get feed"));
   }
 
   public render() {
-    let posts = this.state.posts.map(info => (
+    const posts = this.state.posts.map((info, idx) => (
       <Post
         key={info.id}
+        id={info.id}
         author={info.first_name + " " + info.last_name}
         text={info.content}
-        image={undefined}
-        hasImage={true}
-        video={undefined}
-        hasVideo={false}
-        comments={undefined}
+        images={undefined}
+        videos={undefined}
+        comments={[]}
+        title=""
+        date=""
+        content_width={screen.width}
       />
     ));
 

@@ -1,4 +1,4 @@
-import { isEmpty, filter } from "lodash";
+import { filter, isEmpty } from "lodash";
 
 function isEmoji(text: string): boolean {
   const pattern = /^[\uD83C-\uDBFF\uDC00-\uDFFF]+$/;
