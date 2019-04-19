@@ -60,11 +60,13 @@ class Post extends Component<Props, State> {
             size={30}
             image="https://picsum.photos/200/200?image=52"
           />
-          <a className={styles.post_author} href={"user/" + this.props.author}>
+          <a className={styles.post_author} href={"/user/" + this.props.author}>
             {" "}
             {this.props.author}
           </a>
-          <p className={styles.post_date}>{this.props.date}</p>
+          <a className={styles.post_date} href={"/post/" + this.props.id}>
+            {this.props.date}
+          </a>
           <div className={`${styles.post_options} btn-group`}>
             <button
               className="w-100 h-100 ml-2"

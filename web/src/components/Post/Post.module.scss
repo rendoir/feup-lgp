@@ -44,6 +44,12 @@
 
 .post_date {
   margin: 0 0 0 auto;
+  color: rgb(110, 110, 110);
+}
+
+.post_date:hover {
+  text-decoration: none;
+  color: black;
 }
 
 .post_options {
