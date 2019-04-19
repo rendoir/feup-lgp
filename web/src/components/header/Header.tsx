@@ -80,6 +80,7 @@ export default class Header extends React.Component {
             <a
               className="nav-link"
               data-toggle="modal"
+              role="button"
               data-target="#post_modal_Create"
             >
               <span className="text-white h3 pl-3">

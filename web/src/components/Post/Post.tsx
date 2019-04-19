@@ -60,12 +60,19 @@ class Post extends Component<Props, State> {
             size={30}
             image="https://picsum.photos/200/200?image=52"
           />
-          <p className={styles.post_author}> {this.props.author} </p>
+          <a className={styles.post_author} href={"user/" + this.props.author}>
+            {" "}
+            {this.props.author}
+          </a>
           <p className={styles.post_date}>{this.props.date}</p>
-          <div className={`${styles.post_options_button_grp} btn-group`}>
-            <a role="button" data-toggle="dropdown">
+          <div className={`${styles.post_options} btn-group`}>
+            <button
+              className="w-100 h-100 ml-2"
+              role="button"
+              data-toggle="dropdown"
+            >
               <i className="fas fa-ellipsis-v" />
-            </a>
+            </button>
             <div className="dropdown-menu dropdown-menu-right">
               <button
                 className="dropdown-item"
@@ -82,9 +89,6 @@ class Post extends Component<Props, State> {
                 data-target="#delete_post_modal"
               >
                 Delete Post
-              </button>
-              <button className="dropdown-item" type="button">
-                etc
               </button>
             </div>
           </div>
