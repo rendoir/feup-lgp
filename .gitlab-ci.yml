@@ -119,6 +119,8 @@ release-web-staging:
     - docker pull $WEB_PRE_IMAGE
     - docker tag $WEB_PRE_IMAGE $WEB_STAGING_IMAGE
     - docker push $WEB_STAGING_IMAGE
+  only:
+    - development
 
 release-api-staging:
   stage: release
@@ -126,6 +128,8 @@ release-api-staging:
     - docker pull $API_PRE_IMAGE
     - docker tag $API_PRE_IMAGE $API_STAGING_IMAGE
     - docker push $API_STAGING_IMAGE
+  only:
+    - development
 
 release-db-staging:
   stage: release
@@ -133,6 +137,8 @@ release-db-staging:
     - docker pull $DB_PRE_IMAGE
     - docker tag $DB_PRE_IMAGE $DB_STAGING_IMAGE
     - docker push $DB_STAGING_IMAGE
+  only:
+    - development
 
 release-web-prod:
   stage: release
