@@ -13,7 +13,7 @@ export async function getFeed(req, res) {
                     WHERE
                         author = $1
                         OR author IN (SELECT followed FROM follows WHERE follower = $1)
-                    ORDER BY date_created
+                    ORDER BY date_created DESC
                     LIMIT 10
                     OFFSET $2`,
             values: [userId, offset],
