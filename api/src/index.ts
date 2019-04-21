@@ -6,20 +6,22 @@ import { config } from 'dotenv';
 import * as express from 'express';
 import * as express_session from 'express-session';
 import * as fs from 'fs';
-import * as https from 'https';
+// import * as https from 'https';
+import * as http from 'http';
 import * as morgan from 'morgan';
 import { jwtMiddleware } from './_helpers/jwt';
+
 let privateKey; let certificate;
 
 if (process.env.PRODUCTION === 'true') {
     console.log('IN PROD');
-    config({path: 'docker/environment.env'});
+    config({path: 'docker/prod.env'});
     config({path: 'docker/secrets.env'});
     privateKey = fs.readFileSync('docker/api.key', 'utf8');
     certificate = fs.readFileSync('docker/api.crt', 'utf8');
 } else {
     console.log('NOT IN PROD');
-    config({ path: '../environment/environment.env' }); // dotenv is used to load env variables
+    config({ path: '../environment/dev.env' }); // dotenv is used to load env variables
     config({ path: '../secrets/secrets.env' });
     privateKey = fs.readFileSync('../secrets/api.key', 'utf8');
     certificate = fs.readFileSync('../secrets/api.crt', 'utf8');
@@ -86,4 +88,5 @@ app.use((err, req, res, next) => {
 });
 
 console.log('PORT: ' + process.env.API_PORT);
-https.createServer(credentials, app).listen(process.env.API_PORT);
+// https.createServer(credentials, app).listen(process.env.API_PORT);
+http.createServer(app).listen(process.env.API_PORT);

@@ -5,7 +5,7 @@ import * as request from 'request-promise';
 import {query} from '../db/db';
 
 export function createPost(req, res) {
-    if(!req.body.title.trim() || !req.body.title.trim()) {
+    if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while creating a new post' });
         return;
@@ -13,7 +13,7 @@ export function createPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'INSERT INTO posts (author, title, content_text) VALUES ($1, $2, $3) RETURNING id',
+        text: 'INSERT INTO posts (author, title, content) VALUES ($1, $2, $3) RETURNING id',
         values: [req.body.author, req.body.title, req.body.text],
     }).then((result) => {
         res.send({id: result.rows});
@@ -24,7 +24,7 @@ export function createPost(req, res) {
 }
 
 export function editPost(req, res) {
-    if(!req.body.title.trim() || !req.body.title.trim()) {
+    if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while editing post' });
         return;
@@ -32,7 +32,7 @@ export function editPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE posts SET title=$2, content_text=$3 WHERE id=$1',
+        text: 'UPDATE posts SET title=$2, content=$3 WHERE id=$1',
         values: [req.body.id, req.body.title, req.body.text],
     }).then((result) => {
         res.status(200).send();

@@ -27,6 +27,10 @@ header {
       background-color: $glintt !important;
     }
 
+    a[role=button] {
+      cursor: pointer;
+    }
+
     //Media queries
     @media (min-width: 768px) {
       #nav-search-input {

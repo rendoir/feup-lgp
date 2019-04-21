@@ -6,20 +6,20 @@ export const STATE_ERROR = "error";
 
 export type ImageState = "pending" | "success" | "error";
 
-export interface State {
+export type State = {
   state: ImageState;
   src: string | undefined;
   error: unknown | null | undefined;
-}
+};
 
-export interface Props {
+export type Props = {
   /** Image src attribute */
   src: string | undefined;
   /** Image onChange event handler */
   onChange?: (state: State) => any;
   /** Handlers that receive an state and returns a Node */
   children: (state: State) => ReactNode;
-}
+};
 
 class ImagePreloader extends Component<Props, State> {
   public static getDerivedStateFromProps(
@@ -27,22 +27,26 @@ class ImagePreloader extends Component<Props, State> {
     prevState: State
   ): State {
     return {
+      error: null,
       src: nextProps.src === undefined ? undefined : prevState.src,
-      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING,
-      error: null
+      state: nextProps.src === prevState.src ? prevState.state : STATE_PENDING
     };
   }
-  public requestId: number | null | undefined;
-  public image: HTMLImageElement | null | undefined;
+  private requestId: number | null | undefined;
+  private image: HTMLImageElement | null | undefined;
 
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      state: STATE_PENDING,
+      error: null,
       src: undefined,
-      error: null
+      state: STATE_PENDING
     };
+  }
+
+  public render() {
+    return this.props.children(this.state);
   }
 
   public componentDidMount(): void {
@@ -69,7 +73,7 @@ class ImagePreloader extends Component<Props, State> {
     this.handleStopFetch();
   }
 
-  public handleStartFetch = (src: string): void => {
+  private handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
       const image = document.createElement("img");
@@ -86,7 +90,7 @@ class ImagePreloader extends Component<Props, State> {
     });
   };
 
-  public handleStopFetch = (): void => {
+  private handleStopFetch = (): void => {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = null;
@@ -95,7 +99,7 @@ class ImagePreloader extends Component<Props, State> {
     this.handleImageClear();
   };
 
-  public handleImageClear = (): void => {
+  private handleImageClear = (): void => {
     if (this.image) {
       this.image.src = "";
       this.image.onload = null;
@@ -105,26 +109,22 @@ class ImagePreloader extends Component<Props, State> {
     }
   };
 
-  public handleSuccess = (): void => {
+  private handleSuccess = (): void => {
     this.setState({
-      state: STATE_SUCCESS,
-      src: this.props.src
-    });
-    this.handleStopFetch();
-  };
-
-  public handleError = (error?: any): void => {
-    this.setState({
-      state: STATE_ERROR,
       src: this.props.src,
-      error
+      state: STATE_SUCCESS
     });
     this.handleStopFetch();
   };
 
-  public render() {
-    return this.props.children(this.state);
-  }
+  private handleError = (error?: any): void => {
+    this.setState({
+      error,
+      src: this.props.src,
+      state: STATE_ERROR
+    });
+    this.handleStopFetch();
+  };
 }
 
 export default ImagePreloader;

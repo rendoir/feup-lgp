@@ -17,10 +17,10 @@ class App extends React.Component {
       <div className="App">
         <Header />
         <Router>
+          <Route exact={true} path="/" component={Feed} />
           <Route exact={true} path="/user/:username" component={Profile} />
           <Route exact={true} path="/post/:id" component={PostView} />
           <Route exact={true} path="/admin" component={Backoffice} />
-          <Route exact={true} path="/" component={Feed} />
           <Route exact={true} path="/shop" component={Shop} />
           <Route exact={true} path="/register" component={RegisterLanding} />
         </Router>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import styles from "./InputNext.module.css";
+
 import classNames from "classnames";
+import styles from "./InputNext.module.css";
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -35,7 +36,7 @@ export type Props = {
   large?: boolean;
   /** input placeholder attribute */
   placeholder?: string;
-  /** input prefix*/
+  /** input prefix */
   prefix?: string;
   /** input disabled attribute */
   disabled?: boolean;
@@ -81,14 +82,14 @@ export type State = {
 };
 
 class InputNext extends Component<Props, State> {
-  input: HTMLInputElement | HTMLTextAreaElement | null | undefined;
-
-  static defaultProps = {
-    type: "text",
-    status: "normal",
+  public static defaultProps = {
+    required: false,
     spellcheck: "false",
-    required: false
+    status: "normal",
+    type: "text"
   };
+
+  private input: HTMLInputElement | HTMLTextAreaElement | null | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -98,182 +99,7 @@ class InputNext extends Component<Props, State> {
     };
   }
 
-  componentDidMount(): void {
-    this.autoFocus();
-  }
-
-  componentDidUpdate(): void {
-    this.autoFocus();
-  }
-
-  handleChange = (event: React.ChangeEvent<HTMLAbstractInputElement>): void => {
-    this.props.onChange(event.target.value, event);
-  };
-
-  handleFocus = (event: React.FocusEvent<HTMLAbstractInputElement>): void => {
-    this.setState({ isFocused: true });
-
-    if (this.props.onFocus) {
-      this.props.onFocus(event);
-    }
-  };
-
-  handleBlur = (event: React.FocusEvent<HTMLAbstractInputElement>): void => {
-    if (this.isAutoFocus()) {
-      event.preventDefault();
-      event.target.focus();
-      return;
-    }
-
-    this.setState({ isFocused: false });
-
-    if (this.props.onBlur) {
-      this.props.onBlur(event);
-    }
-  };
-
-  isAutoFocus(): boolean {
-    return Boolean(this.props.autoFocus) && !this.props.disabled;
-  }
-
-  setInput = (element: any): void => {
-    this.input = element;
-  };
-
-  autoFocus(): void {
-    if (this.isAutoFocus() && this.input) {
-      if (document.activeElement !== this.input) {
-        this.input.focus();
-      }
-    }
-  }
-
-  focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  blur(): void {
-    if (this.input) {
-      this.input.blur();
-    }
-  }
-
-  renderLabel() {
-    const { id, label } = this.props;
-
-    if (!label) {
-      return null;
-    }
-
-    return (
-      <label className={styles.label} htmlFor={id}>
-        {label}
-      </label>
-    );
-  }
-
-  renderHint() {
-    const { hint } = this.props;
-
-    if (!hint) {
-      return null;
-    }
-
-    return <p className={styles.hint}>{hint}</p>;
-  }
-
-  renderPrefix() {
-    const { prefix, id } = this.props;
-
-    if (!prefix) {
-      return null;
-    }
-    const className = classNames(styles.prefix, this.props.prefixClassName);
-
-    return (
-      <label htmlFor={id} className={className}>
-        {prefix}
-      </label>
-    );
-  }
-
-  renderLengthLimitCounter() {
-    const { maxLength, lengthLimitCounter } = this.props;
-
-    if (!maxLength && !lengthLimitCounter) {
-      return null;
-    }
-
-    const length = String(this.props.value).length;
-
-    return (
-      <div className={styles.lengthLimitCounter}>
-        {`${length} ${maxLength ? `/ ${maxLength}` : ""}`}
-      </div>
-    );
-  }
-
-  renderInput() {
-    const {
-      props: {
-        id,
-        name,
-        type,
-        value,
-        disabled,
-        tabIndex,
-        htmlAutoFocus,
-        placeholder,
-        maxLength,
-        spellcheck,
-        rows,
-        cols
-      }
-    } = this;
-
-    const props = {
-      className: classNames(styles.input, this.props.inputClassName),
-      disabled,
-      id,
-      name,
-      placeholder: placeholder ? placeholder : "",
-      type,
-      value,
-      ref: this.setInput,
-      tabIndex,
-      onChange: this.handleChange,
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus
-    };
-
-    if (type === "textarea") {
-      return (
-        <textarea
-          {...props}
-          spellCheck={spellcheck}
-          tabIndex={tabIndex}
-          rows={rows}
-          cols={cols}
-          maxLength={maxLength}
-          autoFocus={htmlAutoFocus}
-        />
-      );
-    }
-
-    return (
-      <input
-        {...props}
-        spellCheck={spellcheck}
-        tabIndex={tabIndex}
-        maxLength={maxLength}
-        autoFocus={htmlAutoFocus}
-      />
-    );
-  }
-
-  render() {
+  public render() {
     const {
       props: { value, disabled, status, large, readOnly },
       state: { isFocused }
@@ -305,6 +131,187 @@ class InputNext extends Component<Props, State> {
         </div>
         {this.renderHint()}
       </div>
+    );
+  }
+
+  public componentDidMount(): void {
+    this.autoFocus();
+  }
+
+  public componentDidUpdate(): void {
+    this.autoFocus();
+  }
+
+  private handleChange = (
+    event: React.ChangeEvent<HTMLAbstractInputElement>
+  ): void => {
+    this.props.onChange(event.target.value, event);
+  };
+
+  private handleFocus = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
+    this.setState({ isFocused: true });
+
+    if (this.props.onFocus) {
+      this.props.onFocus(event);
+    }
+  };
+
+  private handleBlur = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
+    if (this.isAutoFocus()) {
+      event.preventDefault();
+      event.target.focus();
+      return;
+    }
+
+    this.setState({ isFocused: false });
+
+    if (this.props.onBlur) {
+      this.props.onBlur(event);
+    }
+  };
+
+  private isAutoFocus(): boolean {
+    return Boolean(this.props.autoFocus) && !this.props.disabled;
+  }
+
+  private setInput = (element: any): void => {
+    this.input = element;
+  };
+
+  private autoFocus(): void {
+    if (this.isAutoFocus() && this.input) {
+      if (document.activeElement !== this.input) {
+        this.input.focus();
+      }
+    }
+  }
+
+  private focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  private blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
+  private renderLabel() {
+    const { id, label } = this.props;
+
+    if (!label) {
+      return null;
+    }
+
+    return (
+      <label className={styles.label} htmlFor={id}>
+        {label}
+      </label>
+    );
+  }
+
+  private renderHint() {
+    const { hint } = this.props;
+
+    if (!hint) {
+      return null;
+    }
+
+    return <p className={styles.hint}>{hint}</p>;
+  }
+
+  private renderPrefix() {
+    const { prefix, id } = this.props;
+
+    if (!prefix) {
+      return null;
+    }
+    const className = classNames(styles.prefix, this.props.prefixClassName);
+
+    return (
+      <label htmlFor={id} className={className}>
+        {prefix}
+      </label>
+    );
+  }
+
+  private renderLengthLimitCounter() {
+    const { maxLength, lengthLimitCounter } = this.props;
+
+    if (!maxLength && !lengthLimitCounter) {
+      return null;
+    }
+
+    const length = String(this.props.value).length;
+
+    return (
+      <div className={styles.lengthLimitCounter}>
+        {`${length} ${maxLength ? `/ ${maxLength}` : ""}`}
+      </div>
+    );
+  }
+
+  private renderInput() {
+    const {
+      props: {
+        id,
+        name,
+        type,
+        value,
+        disabled,
+        tabIndex,
+        htmlAutoFocus,
+        placeholder,
+        maxLength,
+        spellcheck,
+        rows,
+        cols
+      }
+    } = this;
+
+    const props = {
+      className: classNames(styles.input, this.props.inputClassName),
+      disabled,
+      id,
+      name,
+      onBlur: this.handleBlur,
+      onChange: this.handleChange,
+      onFocus: this.handleFocus,
+      placeholder: placeholder ? placeholder : "",
+      ref: this.setInput,
+      tabIndex,
+      type,
+      value
+    };
+
+    if (type === "textarea") {
+      return (
+        <textarea
+          {...props}
+          spellCheck={spellcheck}
+          tabIndex={tabIndex}
+          rows={rows}
+          cols={cols}
+          maxLength={maxLength}
+          autoFocus={htmlAutoFocus}
+        />
+      );
+    }
+
+    return (
+      <input
+        {...props}
+        spellCheck={spellcheck}
+        tabIndex={tabIndex}
+        maxLength={maxLength}
+        autoFocus={htmlAutoFocus}
+      />
     );
   }
 }

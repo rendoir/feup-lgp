@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import styles from "./Button.module.css";
 
-export interface Props {
+export type Props = {
   /** Button id attribute */
   id?: string;
   /** Button class attribute */
@@ -27,17 +27,17 @@ export interface Props {
   size: "small" | "normal" | "large";
   /** Button onClick event attribute */
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => any;
-}
+};
 
 class Button extends Component<Props> {
   public static defaultProps = {
-    view: "button",
-    type: "button",
-    theme: "primary",
-    size: "normal",
-    wide: false,
+    disabled: false,
     rounded: true,
-    disabled: false
+    size: "normal",
+    theme: "primary",
+    type: "button",
+    view: "button",
+    wide: false
   };
 
   public render() {

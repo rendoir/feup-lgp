@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@import '../../styles/common';
 
 .post {
   border: solid lightgray 1px;
@@ -14,10 +14,6 @@
   border-bottom: solid lightgray 1px;
 }
 
-.post div:last-child {
-  border-bottom: none;
-}
-
 .post_comment_section {
   padding: 0.75rem 1.5rem;
 }
@@ -25,6 +21,11 @@
 .post_author {
   margin: 0 0 0 0.75rem;
   color: $glintt;
+}
+
+.post_author:hover {
+  color: $dark-accent-color;
+  text-decoration: none;
 }
 
 .post_avatar {
@@ -41,12 +42,14 @@
   height: 5vh;
 }
 
-.post_options_button_grp {
-  margin-left: 1%;
-}
-
 .post_date {
   margin: 0 0 0 auto;
+  color: rgb(110, 110, 110);
+}
+
+.post_date:hover {
+  text-decoration: none;
+  color: black;
 }
 
 .post_options {
@@ -89,7 +92,8 @@
 
 .post_actions button,
 .comment_action,
-.submit_comment {
+.submit_comment,
+.post_options button {
   width: 30%;
   background: none;
   border: none;
@@ -126,14 +130,25 @@
 
 .post_actions button:hover,
 .comment_action:hover,
-.submit_comment:hover {
+.submit_comment:hover,
+.post_options button:hover {
   background: rgb(245, 245, 245);
 }
 
 .post_actions button:focus,
 .comment_action:focus,
-.submit_comment:focus {
+.submit_comment:focus,
+.post_options button:focus {
   outline: none;
+}
+
+.post_options button {
+  width: 100% !important;
+}
+
+.post_options {
+  width: 2em;
+  height: 1.5em;
 }
 
 .post_comment .comment_detail i {

@@ -1,12 +1,13 @@
 import React, { Component } from "react";
+
+import { faCamera, faTimes } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
-import { selectFiles } from "../../utils/selectFiles";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import { selectFiles } from "../../utils/selectFiles";
+import { AvatarPlaceholder } from "../../utils/types";
 import Avatar from "../Avatar/Avatar";
 import Icon from "../Icon/Icon";
 import styles from "./AvatarSelector.module.css";
-import { AvatarPlaceholder } from "../../utils/types";
-import { faCamera, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export type Props = {
   className?: string;
@@ -23,7 +24,7 @@ type State = {
 };
 
 class AvatarSelector extends Component<Props, State> {
-  static defaultProps = {
+  public static defaultProps = {
     size: 148
   };
 
@@ -44,43 +45,7 @@ class AvatarSelector extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps: Props): void {
-    if (!nextProps.avatar || typeof nextProps.avatar === "string") {
-      this.setState({ avatar: nextProps.avatar });
-    } else {
-      fileToBase64(nextProps.avatar, avatar => {
-        this.setState({ avatar });
-      });
-    }
-  }
-
-  handleAvatarChangerClick = (): void => {
-    selectFiles(
-      files => {
-        if (files.length) {
-          this.props.onChange(files[0]);
-        }
-      },
-      false,
-      "image/*"
-    );
-  };
-
-  renderRemoveIcon() {
-    const { avatar } = this.props;
-
-    if (avatar && this.props.onRemove) {
-      return (
-        <div className={styles.avatarRemove} onClick={this.props.onRemove}>
-          <Icon icon={faTimes} className={styles.avatarRemoveIcon} size="sm" />
-        </div>
-      );
-    }
-
-    return null;
-  }
-
-  render() {
+  public render() {
     const { title, placeholder, size } = this.props;
     const { avatar } = this.state;
     const className = classNames(styles.container, this.props.className);
@@ -109,6 +74,42 @@ class AvatarSelector extends Component<Props, State> {
         {this.renderRemoveIcon()}
       </div>
     );
+  }
+
+  public componentWillReceiveProps(nextProps: Props): void {
+    if (!nextProps.avatar || typeof nextProps.avatar === "string") {
+      this.setState({ avatar: nextProps.avatar });
+    } else {
+      fileToBase64(nextProps.avatar, avatar => {
+        this.setState({ avatar });
+      });
+    }
+  }
+
+  private handleAvatarChangerClick = (): void => {
+    selectFiles(
+      files => {
+        if (files.length) {
+          this.props.onChange(files[0]);
+        }
+      },
+      false,
+      "image/*"
+    );
+  };
+
+  private renderRemoveIcon() {
+    const { avatar } = this.props;
+
+    if (avatar && this.props.onRemove) {
+      return (
+        <div className={styles.avatarRemove} onClick={this.props.onRemove}>
+          <Icon icon={faTimes} className={styles.avatarRemoveIcon} size="sm" />
+        </div>
+      );
+    }
+
+    return null;
   }
 }
 
