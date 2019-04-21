@@ -29,7 +29,7 @@ class RegisterLanding extends React.Component {
             <div className="col-sm-1 col-md-1 col-lg-1" />
             <h4>Search and Find</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
-              <i className="far fa-search fa-lg" />
+              <i className="fas fa-search fa-lg" />
             </div>
           </div>
           <h2 className="mt-5 mb-5">
