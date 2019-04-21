@@ -73,7 +73,6 @@ class Icon extends Component<Props> {
 
     const props = {
       border,
-      // className: {className},
       icon,
       inverse,
       mask,
@@ -86,6 +85,7 @@ class Icon extends Component<Props> {
     return (
       <FontAwesomeIcon
         {...props}
+        className={className}
         fixedWidth={fixedWidth}
         listItem={listItem}
         rotation={rotation}
