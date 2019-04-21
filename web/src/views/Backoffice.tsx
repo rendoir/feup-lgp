@@ -1,202 +1,13 @@
 import * as React from "react";
+import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
+import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 
-interface BackofficeUserCardProps {
-  name: string;
-  image: string;
-  email: string;
-  institution: string;
-  profession: string;
-  userType?: string; // This parameter can be ommited if it's a regular user
-  banHandler?: any; // Regular and admin users require this handler
-  unbanHandler?: any; // Banned users require this handler
-  turnAdminHandler?: any; // Regular users require this handler
-  expelAdminHandler?: any; // Admin users require this handler
-}
-
-interface BackofficeNotificationProps {
-  id: number;
-  username: string;
-  notificationType: string; // Comment or publication
-  content: string;
-  contentId: number;
-  banUserHandler: any;
-  deleteContentHandler: any;
-  ignoreHandler: any;
-}
-
-interface BackofficeState {
+type BackofficeState = {
   usersAreaActive: boolean;
-}
-
-const BANNED_USER = "banned";
-const ADMIN_USER = "admin";
-
-class BackofficeUserCard extends React.Component<BackofficeUserCardProps, {}> {
-  constructor(props: any) {
-    super(props);
-  }
-
-  public getButtons() {
-    const banButton = (
-      <button
-        className="btn btn-danger btn-block"
-        onClick={this.props.banHandler}
-      >
-        Ban
-      </button>
-    );
-    const unbanButton = (
-      <button
-        className="btn btn-primary btn-block"
-        onClick={this.props.unbanHandler}
-      >
-        Unban
-      </button>
-    );
-    const turnAdminButton = (
-      <button
-        className="btn btn-info btn-block"
-        onClick={this.props.turnAdminHandler}
-      >
-        Turn admin
-      </button>
-    );
-    const expelAdminButton = (
-      <button
-        className="btn btn-primary btn-block"
-        onClick={this.props.expelAdminHandler}
-      >
-        Expel admin
-      </button>
-    );
-
-    let userTypeButton;
-    switch (this.props.userType) {
-      case BANNED_USER:
-        userTypeButton = unbanButton;
-        break;
-
-      case ADMIN_USER:
-        userTypeButton = expelAdminButton;
-        break;
-
-      default:
-        userTypeButton = turnAdminButton;
-        break;
-    }
-
-    return (
-      <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
-        {this.props.userType !== BANNED_USER && (
-          <div className="row mb-3">{banButton}</div>
-        )}
-        <div className="row">{userTypeButton}</div>
-      </div>
-    );
-  }
-
-  public render() {
-    return (
-      <div className="card mb-2">
-        <div className="card-header">{this.props.name}</div>
-        <div className="card-body row col-md d-flex align-items-center pr-lg-2 pr-xl-4">
-          <div className="col-12 col-lg-2 d-flex justify-content-center">
-            <img
-              className="img-fluid img-thumbnail rounded-circle"
-              src={this.props.image}
-              alt="card image"
-            />
-          </div>
-          <div className="col-12 col-lg-8 mb-2 mb-lg-0">
-            <p className="card-text">
-              <strong>Email:</strong> {this.props.email}
-            </p>
-            <p className="card-text">
-              <strong>Institution/College:</strong> {this.props.institution}
-            </p>
-            <p className="card-text">
-              <strong>Profession/Course:</strong> {this.props.profession}
-            </p>
-          </div>
-          {this.getButtons()}
-        </div>
-      </div>
-    );
-  }
-}
+};
 
 const PUBLICATION_NOTIFICATION = "publication";
 const COMMENT_NOTIFICATION = "comment";
-
-class BackofficeNotification extends React.Component<
-  BackofficeNotificationProps,
-  {}
-> {
-  constructor(props: any) {
-    super(props);
-  }
-
-  public render() {
-    return (
-      <div className="container border mb-2 admin_notif">
-        <div className="row d-flex justify-content-between mx-1">
-          <div className="mt-2" style={{ textTransform: "capitalize" }}>
-            <b>{this.props.notificationType} Report</b>
-          </div>
-          <button
-            className="close align-self-end"
-            onClick={this.props.ignoreHandler}
-          >
-            <i className="fas fa-times" />
-          </button>
-        </div>
-
-        <div className="dropdown-divider p" />
-
-        <p className="report_message">
-          <a href={`/user/${this.props.username}`}>{this.props.username}</a>'s{" "}
-          {this.props.notificationType}: <a href="#">"{this.props.content}"</a>{" "}
-          has been reported.
-        </p>
-
-        <div className="col-12 mb-3 mt-2 dropdown d-flex justify-content-end">
-          <button
-            className="btn bg-danger dropdown-toggle p-1 text-white"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Take action
-          </button>
-          <div className="dropdown-menu">
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.banUserHandler}
-            >
-              Ban user
-            </a>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.deleteContentHandler}
-            >
-              Delete content
-            </a>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.ignoreHandler}
-            >
-              Ignore
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
 
 class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
@@ -218,47 +29,79 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
   }
 
-  public handleUsersArea() {
+  public render() {
+    return (
+      <div id="backoffice_container" className="container mt-3 ml-0">
+        <div className="row">
+          {/* Admin menu */}
+          <div className="col-12 col-md-3">
+            <div className="dropdown">
+              <h6 className="dropdown-header">Admin area</h6>
+              <div className="dropdown-divider" />
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
+                Manage users
+              </a>
+              <a
+                id="notifications"
+                className="dropdown-item"
+                onClick={this.handleNotifArea}
+              >
+                Notifications <span className="badge badge-light">4</span>
+              </a>
+            </div>
+          </div>
+          {this.state.usersAreaActive && this.getUsersArea()}
+          {!this.state.usersAreaActive && this.getNotifications()}
+        </div>
+      </div>
+    );
+  }
+
+  private handleUsersArea() {
     this.setState({
       usersAreaActive: true
     });
   }
 
-  public handleNotifArea() {
+  private handleNotifArea() {
     this.setState({
       usersAreaActive: false
     });
   }
 
-  public handleUserCardBan() {
+  private handleUserCardBan() {
     console.log("BAN USER CARD");
   }
 
-  public handleUserCardUnban() {
+  private handleUserCardUnban() {
     console.log("UN-BAN USER CARD");
   }
 
-  public handleUserCardTurnAdmin() {
+  private handleUserCardTurnAdmin() {
     console.log("TURN USER CARD");
   }
 
-  public handleUserCardExpelAdmin() {
+  private handleUserCardExpelAdmin() {
     console.log("EXPEL USER CARD");
   }
 
-  public handleNotifUserBan() {
+  private handleNotifUserBan() {
     console.log("BAN NOTIFICATION");
   }
 
-  public handleNotifContentDelete() {
+  private handleNotifContentDelete() {
     console.log("DELETE CONTENT NOTIFICATION");
   }
 
-  public handleNotifIgnore() {
+  private handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
   }
 
-  public getUsersArea() {
+  private getUsersArea() {
     return (
       <div id="backoffice_users_area" className="col-12 col-md-9">
         {/* User search form */}
@@ -292,9 +135,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               placeholder="Search user"
             />
             <button
-              className="form-control btn btn-secondary my-2 my-sm-0 fas fa-search"
+              className="form-control btn btn-secondary my-2 my-sm-0"
               type="submit"
-            />
+            >
+              <i className="fas fa-search" />
+            </button>
           </form>
         </div>
         {/* User list*/}
@@ -316,7 +161,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             email="alberta.fcup55@fe.up.pt"
             institution="Faculty of Medicine of University of Porto"
             profession="Urology"
-            userType={BANNED_USER}
+            userType={BackofficeUserCard.BANNED_USER}
             unbanHandler={this.handleUserCardUnban}
           />
           {/* Alberta admin */}
@@ -326,7 +171,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             email="alberta.fcup55@fe.up.pt"
             institution="Faculty of Medicine of University of Porto"
             profession="Urology"
-            userType={ADMIN_USER}
+            userType={BackofficeUserCard.ADMIN_USER}
             banHandler={this.handleUserCardBan}
             expelAdminHandler={this.handleUserCardExpelAdmin}
           />
@@ -335,7 +180,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     );
   }
 
-  public getNotifications() {
+  private getNotifications() {
     return (
       <div
         id="backoffice_notifications_area"
@@ -388,38 +233,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           deleteContentHandler={this.handleNotifContentDelete}
           ignoreHandler={this.handleNotifIgnore}
         />
-      </div>
-    );
-  }
-
-  public render() {
-    return (
-      <div id="backoffice_container" className="container mt-3 ml-0">
-        <div className="row">
-          {/* Admin menu */}
-          <div className="col-12 col-md-3">
-            <div className="dropdown">
-              <h6 className="dropdown-header">Admin area</h6>
-              <div className="dropdown-divider" />
-              <a
-                id="manage_users"
-                className="dropdown-item"
-                onClick={this.handleUsersArea}
-              >
-                Manage users
-              </a>
-              <a
-                id="notifications"
-                className="dropdown-item"
-                onClick={this.handleNotifArea}
-              >
-                Notifications <span className="badge badge-light">4</span>
-              </a>
-            </div>
-          </div>
-          {this.state.usersAreaActive && this.getUsersArea()}
-          {!this.state.usersAreaActive && this.getNotifications()}
-        </div>
       </div>
     );
   }

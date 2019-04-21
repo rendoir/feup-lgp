@@ -1,7 +1,8 @@
 import React, { Component } from "react";
+
 import classNames from "classnames";
-import styles from "../Button/Button.module.css";
 import { ColorTheme } from "../../utils/types";
+import styles from "../Button/Button.module.css";
 
 export type Props = {
   /** LinkButton class attribute */
@@ -27,15 +28,15 @@ export type Props = {
 };
 
 class LinkButton extends Component<Props> {
-  static defaultProps = {
+  public static defaultProps = {
+    rounded: true,
+    size: "normal",
     theme: "default",
     view: "button",
-    size: "normal",
-    wide: false,
-    rounded: true
+    wide: false
   };
 
-  render() {
+  public render() {
     const {
       theme,
       size,

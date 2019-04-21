@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/bootstrap": "^4.3.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
     "@fortawesome/free-brands-svg-icons": "^5.8.1",
     "@fortawesome/free-solid-svg-icons": "^5.8.1",
@@ -31,9 +32,7 @@
     "react-scripts": "^2.1.8",
     "react-virtualized": "^9.21.0",
     "redux": "^4.0.1",
-    "redux-starter-kit": "^0.4.3",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-react": "^4.0.0"
+    "redux-starter-kit": "^0.4.3"
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
@@ -50,7 +49,8 @@
     "start": "./node_modules/.bin/npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts build",
     "test": "./node_modules/.bin/react-scripts test",
-    "eject": "./node_modules/.bin/react-scripts eject"
+    "eject": "./node_modules/.bin/react-scripts eject",
+    "lint": "tslint -c tslint.json src/*.tsx src/*/*.tsx src/*/*/*.tsx"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
@@ -65,6 +65,8 @@
     "stylelint-scss": "^3.5.4",
     "ts-loader": "^5.3.3",
     "tslint": "^5.15.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-react": "^4.0.0",
     "typescript": "^3.4.3"
   },
   "husky": {
