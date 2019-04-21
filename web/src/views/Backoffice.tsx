@@ -135,9 +135,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               placeholder="Search user"
             />
             <button
-              className="form-control btn btn-secondary my-2 my-sm-0 fas fa-search"
+              className="form-control btn btn-secondary my-2 my-sm-0"
               type="submit"
-            />
+            >
+              <i className="fas fa-search" />
+            </button>
           </form>
         </div>
         {/* User list*/}
