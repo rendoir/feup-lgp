@@ -1,9 +1,10 @@
-import React, { MouseEvent, ChangeEvent, Component, ReactNode } from "react";
-import { ColorTheme } from "../../utils/types";
+import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
+
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
+import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./Select.module.css";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 
 export type Option = {
   value: string;
@@ -40,74 +41,14 @@ export type Props = {
 };
 
 class Select extends Component<Props> {
-  select: HTMLSelectElement | null | undefined;
-
-  static defaultProps = {
+  public static defaultProps = {
     size: "normal",
     theme: "default"
   };
 
-  handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
-    this.props.onChange(event.target.value);
-  };
+  private select: HTMLSelectElement | null | undefined;
 
-  handleLabelMouseDown = (event: MouseEvent<HTMLLabelElement>): void => {
-    event.preventDefault();
-    if (this.select) {
-      this.select.focus();
-    }
-  };
-
-  setSelect = (select: any): void => {
-    this.select = select;
-  };
-
-  focus(): void {
-    if (this.select && document.activeElement !== this.select) {
-      this.select.focus();
-    }
-  }
-
-  renderOptions(): ReactNode {
-    const options = this.props.options.map(option => {
-      return (
-        <option value={option.value} key={option.value} id={option.title}>
-          {option.value}
-        </option>
-      );
-    });
-
-    if (this.props.placeholder) {
-      options.unshift(
-        <option key="__placeholder__" value="" disabled>
-          {this.props.placeholder}
-        </option>
-      );
-    }
-
-    return options;
-  }
-
-  renderLabel() {
-    const { id, label } = this.props;
-
-    if (!label) {
-      return null;
-    }
-
-    return (
-      <label
-        htmlFor={id}
-        id={label}
-        className={styles.label}
-        onMouseDown={this.handleLabelMouseDown}
-      >
-        {label}
-      </label>
-    );
-  }
-
-  render() {
+  public render() {
     const { id, name, disabled, size, theme } = this.props;
     const className = classNames(
       styles.container,
@@ -142,6 +83,68 @@ class Select extends Component<Props> {
           <Icon icon={faCaretDown} className={styles.arrow} size="lg" />
         </div>
       </div>
+    );
+  }
+
+  private handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
+    this.props.onChange(event.target.value);
+  };
+
+  private handleLabelMouseDown = (
+    event: MouseEvent<HTMLLabelElement>
+  ): void => {
+    event.preventDefault();
+    if (this.select) {
+      this.select.focus();
+    }
+  };
+
+  private setSelect = (select: any): void => {
+    this.select = select;
+  };
+
+  private focus(): void {
+    if (this.select && document.activeElement !== this.select) {
+      this.select.focus();
+    }
+  }
+
+  private renderOptions(): ReactNode {
+    const options = this.props.options.map(option => {
+      return (
+        <option value={option.value} key={option.value} id={option.title}>
+          {option.value}
+        </option>
+      );
+    });
+
+    if (this.props.placeholder) {
+      options.unshift(
+        <option key="__placeholder__" value="" disabled={true}>
+          {this.props.placeholder}
+        </option>
+      );
+    }
+
+    return options;
+  }
+
+  private renderLabel() {
+    const { id, label } = this.props;
+
+    if (!label) {
+      return null;
+    }
+
+    return (
+      <label
+        htmlFor={id}
+        id={label}
+        className={styles.label}
+        onMouseDown={this.handleLabelMouseDown}
+      >
+        {label}
+      </label>
     );
   }
 }

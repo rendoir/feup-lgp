@@ -27,11 +27,13 @@ class PostView extends React.Component<IProps, IState> {
     super(props);
 
     this.state = {
+      comments: [],
+      fetchingInfo: true,
       id: 1,
       post: [
         {
           author: "1",
-          content_text: "",
+          content: "",
           content_document: null,
           content_image: null,
           content_video: null,
@@ -40,9 +42,7 @@ class PostView extends React.Component<IProps, IState> {
           id: "",
           title: ""
         }
-      ],
-      comments: [],
-      fetchingInfo: true
+      ]
     };
   }
 
@@ -51,19 +51,25 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public apiGetPost(id: number) {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post";
     axios
-      .get("https://localhost:8443/post/" + id, {
-        params: {},
+      .get(`${postUrl}/${id}`, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        }
+        },
+        params: {}
       })
       .then(res => {
         this.setState({
-          id: res.data.post[0].id,
-          post: res.data.post,
           comments: res.data.comments,
-          fetchingInfo: false
+          fetchingInfo: false,
+          id: res.data.post[0].id,
+          post: res.data.post
         });
       })
       .catch(() => console.log("Failed to get post info"));
@@ -94,12 +100,11 @@ class PostView extends React.Component<IProps, IState> {
         <Post
           id={Number(this.state.post[0].id)}
           title={this.state.post[0].title}
-          content_width={screen.width / 1.2}
           author={
             this.state.post[0].first_name + " " + this.state.post[0].last_name
           }
           date={this.date()}
-          text={this.state.post[0].content_text}
+          text={this.state.post[0].content}
           videos={this.state.post[0].content_video}
           images={this.state.post[0].content_image}
           comments={this.state.comments}

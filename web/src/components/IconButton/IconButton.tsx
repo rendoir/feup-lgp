@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { ColorTheme, IconSize } from "../../utils/types";
-import ClassNames from "classnames";
-import styles from "./IconButton.module.css";
+
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import ClassNames from "classnames";
+import { ColorTheme, IconSize } from "../../utils/types";
 import Icon from "../Icon/Icon";
+import styles from "./IconButton.module.css";
 
 export type Props = {
   className?: string;
   id?: string;
-  style?: Object;
+  style?: object;
   glyph: IconDefinition;
   size: "small" | "normal" | "large";
   theme: ColorTheme;
@@ -19,45 +20,14 @@ export type Props = {
 };
 
 class IconButton extends Component<Props> {
-  button: HTMLButtonElement | null | undefined;
-
-  static defaultProps = {
-    size: "normal",
+  public static defaultProps = {
+    disabled: false,
     flat: false,
-    theme: "default",
-    disabled: false
+    size: "normal",
+    theme: "default"
   };
 
-  getIconSize(size: string): IconSize {
-    switch (size) {
-      case "small":
-        return "xs";
-
-      case "normal":
-        return "sm";
-
-      case "large":
-        return "lg";
-
-      default:
-        return "sm";
-    }
-  }
-
-  renderIcon() {
-    const { glyph } = this.props;
-    const { size } = this.props;
-
-    return (
-      <Icon
-        icon={glyph}
-        className={styles.icon}
-        size={this.getIconSize(size)}
-      />
-    );
-  }
-
-  render() {
+  public render() {
     const {
       className,
       theme,
@@ -96,6 +66,35 @@ class IconButton extends Component<Props> {
       >
         {this.renderIcon()}
       </button>
+    );
+  }
+
+  private getIconSize(size: string): IconSize {
+    switch (size) {
+      case "small":
+        return "xs";
+
+      case "normal":
+        return "sm";
+
+      case "large":
+        return "lg";
+
+      default:
+        return "sm";
+    }
+  }
+
+  private renderIcon() {
+    const { glyph } = this.props;
+    const { size } = this.props;
+
+    return (
+      <Icon
+        icon={glyph}
+        className={styles.icon}
+        size={this.getIconSize(size)}
+      />
     );
   }
 }

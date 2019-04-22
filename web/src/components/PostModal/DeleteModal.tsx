@@ -23,8 +23,6 @@ interface IProps {
 
   images?: string[];
   videos?: string[];
-
-  content_width: number;
 }
 
 interface IState {
@@ -47,8 +45,8 @@ class DeleteModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
-      title: props.title || "",
-      text: props.text || ""
+      text: props.text || "",
+      title: props.title || ""
     };
 
     // Post manipulation handlers
@@ -63,8 +61,14 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public apiDeletePost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post/delete";
     axios
-      .delete("https://localhost:8443/post/delete", {
+      .delete(postUrl, {
         data: {
           id: this.props.id
         },

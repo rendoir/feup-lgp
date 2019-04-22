@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import classNames from "classnames";
 import styles from "./Tabs.module.css";
 
@@ -10,11 +11,7 @@ export type Props<T> = {
 };
 
 class Tab<T extends string> extends Component<Props<T>> {
-  handleClick = (): void => {
-    this.props.onPick(this.props.id);
-  };
-
-  render() {
+  public render() {
     const { title, active, id } = this.props;
     const className = classNames(styles.tab, {
       [styles.active]: active
@@ -30,6 +27,10 @@ class Tab<T extends string> extends Component<Props<T>> {
       </li>
     );
   }
+
+  private handleClick = (): void => {
+    this.props.onPick(this.props.id);
+  };
 }
 
 export default Tab;

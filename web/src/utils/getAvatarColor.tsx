@@ -1,26 +1,26 @@
 import AvatarColors from "./Color";
 import { AvatarPlaceholder } from "./types";
 
-export interface Color {
+export type Color = {
   type: "color";
   payload: string;
-}
+};
 
-export interface Gradient {
+export type Gradient = {
   type: "gradient";
   payload: {
     from: string;
     to: string;
   };
-}
+};
 
 function getAvatarColor(placeholder: AvatarPlaceholder): Gradient {
   return {
-    type: "gradient",
     payload: {
       from: AvatarColors[placeholder].from,
       to: AvatarColors[placeholder].to
-    }
+    },
+    type: "gradient"
   };
 }
 

@@ -4,7 +4,7 @@ import styles from "./Input.module.css";
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
-export interface Props {
+export type Props = {
   /** Input class attribute */
   className?: string;
   /** input class attribute */
@@ -35,7 +35,7 @@ export interface Props {
   large?: boolean;
   /** input placeholder attribute */
   placeholder?: string;
-  /** input prefix*/
+  /** input prefix */
   prefix?: string;
   /** input disabled attribute */
   disabled?: boolean;
@@ -58,19 +58,19 @@ export interface Props {
   onFocus?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
   /** input onBlur event attribute */
   onBlur?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
-}
+};
 
-export interface State {
+export type State = {
   isFocused: boolean;
-}
+};
 
 class Input extends Component<Props, State> {
   public static defaultProps = {
-    type: "text",
+    spellcheck: "false",
     status: "normal",
-    spellcheck: "false"
+    type: "text"
   };
-  public input?: HTMLInputElement | HTMLTextAreaElement;
+  private input?: HTMLInputElement | HTMLTextAreaElement;
 
   constructor(props: Props) {
     super(props);
@@ -78,151 +78,6 @@ class Input extends Component<Props, State> {
     this.state = {
       isFocused: false
     };
-  }
-
-  public componentDidMount(): void {
-    this.autoFocus();
-  }
-
-  public componentDidUpdate(): void {
-    this.autoFocus();
-  }
-
-  public handleChange = (
-    event: React.ChangeEvent<HTMLAbstractInputElement>
-  ): void => {
-    this.props.onChange(event.target.value, event);
-  };
-
-  public handleFocus = (
-    event: React.FocusEvent<HTMLAbstractInputElement>
-  ): void => {
-    this.setState({ isFocused: true });
-
-    if (this.props.onFocus) {
-      this.props.onFocus(event);
-    }
-  };
-
-  public handleBlur = (
-    event: React.FocusEvent<HTMLAbstractInputElement>
-  ): void => {
-    if (this.isAutoFocus()) {
-      event.preventDefault();
-      event.target.focus();
-      return;
-    }
-
-    this.setState({ isFocused: false });
-
-    if (this.props.onBlur) {
-      this.props.onBlur(event);
-    }
-  };
-
-  public isAutoFocus(): boolean {
-    return Boolean(this.props.autoFocus) && !this.props.disabled;
-  }
-
-  public setInput = (element: any): void => {
-    this.input = element;
-  };
-
-  public autoFocus(): void {
-    if (this.isAutoFocus() && this.input) {
-      if (document.activeElement !== this.input) {
-        this.input.focus();
-      }
-    }
-  }
-
-  public focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  public blur(): void {
-    if (this.input) {
-      this.input.blur();
-    }
-  }
-
-  public renderLabel() {
-    const { id, label } = this.props;
-
-    if (!label) {
-      return null;
-    }
-
-    return (
-      <label className={styles.label} htmlFor={id}>
-        {label}
-      </label>
-    );
-  }
-
-  public renderHint() {
-    const { hint } = this.props;
-
-    if (!hint) {
-      return null;
-    }
-
-    return <p className={styles.hint}>{hint}</p>;
-  }
-
-  public renderPrefix() {
-    const { prefix, id } = this.props;
-
-    if (!prefix) {
-      return null;
-    }
-    const className = classNames(styles.prefix, this.props.prefixClassName);
-
-    return (
-      <label htmlFor={id} className={className}>
-        {prefix}
-      </label>
-    );
-  }
-
-  public renderInput() {
-    const {
-      props: {
-        id,
-        name,
-        type,
-        value,
-        disabled,
-        tabIndex,
-        placeholder,
-        spellcheck
-      }
-    } = this;
-
-    const props = {
-      className: classNames(styles.input, this.props.inputClassName),
-      disabled,
-      id,
-      name,
-      placeholder: placeholder ? placeholder : "",
-      type,
-      value,
-      ref: this.setInput,
-      tabIndex,
-      onChange: this.handleChange,
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus
-    };
-
-    if (type === "textarea") {
-      return (
-        <textarea {...props} spellCheck={spellcheck} tabIndex={tabIndex} />
-      );
-    }
-
-    return <input {...props} spellCheck={spellcheck} tabIndex={tabIndex} />;
   }
 
   public render() {
@@ -256,6 +111,151 @@ class Input extends Component<Props, State> {
         {this.renderHint()}
       </div>
     );
+  }
+
+  public componentDidMount(): void {
+    this.autoFocus();
+  }
+
+  public componentDidUpdate(): void {
+    this.autoFocus();
+  }
+
+  public focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  public blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
+  private handleChange = (
+    event: React.ChangeEvent<HTMLAbstractInputElement>
+  ): void => {
+    this.props.onChange(event.target.value, event);
+  };
+
+  private handleFocus = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
+    this.setState({ isFocused: true });
+
+    if (this.props.onFocus) {
+      this.props.onFocus(event);
+    }
+  };
+
+  private handleBlur = (
+    event: React.FocusEvent<HTMLAbstractInputElement>
+  ): void => {
+    if (this.isAutoFocus()) {
+      event.preventDefault();
+      event.target.focus();
+      return;
+    }
+
+    this.setState({ isFocused: false });
+
+    if (this.props.onBlur) {
+      this.props.onBlur(event);
+    }
+  };
+
+  private isAutoFocus(): boolean {
+    return Boolean(this.props.autoFocus) && !this.props.disabled;
+  }
+
+  private setInput = (element: any): void => {
+    this.input = element;
+  };
+
+  private autoFocus(): void {
+    if (this.isAutoFocus() && this.input) {
+      if (document.activeElement !== this.input) {
+        this.input.focus();
+      }
+    }
+  }
+
+  private renderLabel() {
+    const { id, label } = this.props;
+
+    if (!label) {
+      return null;
+    }
+
+    return (
+      <label className={styles.label} htmlFor={id}>
+        {label}
+      </label>
+    );
+  }
+
+  private renderHint() {
+    const { hint } = this.props;
+
+    if (!hint) {
+      return null;
+    }
+
+    return <p className={styles.hint}>{hint}</p>;
+  }
+
+  private renderPrefix() {
+    const { prefix, id } = this.props;
+
+    if (!prefix) {
+      return null;
+    }
+    const className = classNames(styles.prefix, this.props.prefixClassName);
+
+    return (
+      <label htmlFor={id} className={className}>
+        {prefix}
+      </label>
+    );
+  }
+
+  private renderInput() {
+    const {
+      props: {
+        id,
+        name,
+        type,
+        value,
+        disabled,
+        tabIndex,
+        placeholder,
+        spellcheck
+      }
+    } = this;
+
+    const props = {
+      className: classNames(styles.input, this.props.inputClassName),
+      disabled,
+      id,
+      name,
+      onBlur: this.handleBlur,
+      onChange: this.handleChange,
+      onFocus: this.handleFocus,
+      placeholder: placeholder ? placeholder : "",
+      ref: this.setInput,
+      tabIndex,
+      type,
+      value
+    };
+
+    if (type === "textarea") {
+      return (
+        <textarea {...props} spellCheck={spellcheck} tabIndex={tabIndex} />
+      );
+    }
+
+    return <input {...props} spellCheck={spellcheck} tabIndex={tabIndex} />;
   }
 }
 
