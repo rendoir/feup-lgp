@@ -77,9 +77,14 @@ class DeleteModal extends Component<IProps, IState> {
         }
       })
       .then(res => {
-        console.log("Post deleted");
+        console.log("Post deleted - reloading page");
+        window.location.reload();
       })
       .catch(() => console.log("Failed to delete post"));
+  }
+
+  public validPost() {
+    return Boolean(this.state.title && this.state.text);
   }
 
   public handlePostCreation() {
@@ -120,6 +125,7 @@ class DeleteModal extends Component<IProps, IState> {
             ? this.handlePostCreation
             : this.handlePostDeletion
         }
+        disabled={!this.validPost()}
       >
         {this.mode === CREATE_MODE ? "Create new post" : "Yes"}
       </button>
