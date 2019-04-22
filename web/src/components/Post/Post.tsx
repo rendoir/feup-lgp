@@ -59,6 +59,7 @@ class Post extends Component<Props, State> {
     };
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
+
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
@@ -73,14 +74,21 @@ class Post extends Component<Props, State> {
   }
 
   public apiComments() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post/newcomment";
+
     axios
-      .post("https://localhost:8443/post/newcomment", {
-        author: 1, //When loggin, this is the user logged in
-        post: this.state.post_id,
-        comment: this.state.commentValue,
+      .post(postUrl, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        }
+        },
+        author: 1, //When loggin, this is the user logged in
+        post: this.state.post_id,
+        comment: this.state.commentValue
       })
       .then(res => {
         console.log("Comment created - reloading page...");
@@ -179,15 +187,7 @@ class Post extends Component<Props, State> {
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
-          <div>
-            <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={5}
-              totalItemsCount={this.props.comments.length}
-              pageRangeDisplayed={3}
-              onChange={this.handlePageChange}
-            />
-          </div>
+          {this.getPagination()}
           <form className={styles.post_add_comment}>
             <Avatar
               title={this.props.author}
@@ -249,6 +249,26 @@ class Post extends Component<Props, State> {
     });
 
     return <div className={styles.post_comments}>{commentSection}</div>;
+  }
+
+  private getPagination() {
+    const paginationDiv = [];
+
+    if (this.props.comments.length > 5) {
+      paginationDiv.push(
+        <div>
+          <Pagination
+            activePage={this.state.activePage}
+            itemsCountPerPage={5}
+            totalItemsCount={this.props.comments.length}
+            pageRangeDisplayed={3}
+            onChange={this.handlePageChange}
+          />
+        </div>
+      );
+    }
+
+    return paginationDiv;
   }
 
   private getImages() {
