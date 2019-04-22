@@ -2,6 +2,7 @@
 import axios from "axios";
 import classNames from "classnames";
 import React, { Component } from "react";
+import Pagination from "react-js-pagination";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -36,8 +37,12 @@ interface Props {
 
 interface State {
   post_id: number;
-  isHovered: boolean;
+
   commentValue: string;
+
+  isHovered: boolean;
+
+  activePage: number;
 }
 
 class Post extends Component<Props, State> {
@@ -50,6 +55,7 @@ class Post extends Component<Props, State> {
     this.id = "post_" + this.props.id;
     this.state = {
       post_id: 0,
+      activePage: 1,
       isHovered: false,
       commentValue: ""
     };
@@ -57,6 +63,7 @@ class Post extends Component<Props, State> {
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
   }
 
   public componentDidMount() {
@@ -73,6 +80,11 @@ class Post extends Component<Props, State> {
 
   public handleAddComment() {
     this.apiComments();
+  }
+
+  public handlePageChange(pageNumber: number) {
+    console.log(`active page is ${pageNumber}`);
+    this.setState({ activePage: pageNumber });
   }
 
   public apiComments() {
@@ -241,6 +253,15 @@ class Post extends Component<Props, State> {
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
+          <div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={5}
+              totalItemsCount={this.props.comments.length}
+              pageRangeDisplayed={3}
+              onChange={this.handlePageChange}
+            />
+          </div>
           <form className={styles.post_add_comment}>
             <Avatar
               title={this.props.author}
