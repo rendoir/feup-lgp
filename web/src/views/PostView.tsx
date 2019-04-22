@@ -48,6 +48,7 @@ class PostView extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetPost(this.props.match.params.id);
+    this.apiGetPostUserInteractions(this.props.match.params.id);
   }
 
   public apiGetPost(id: number) {
@@ -59,6 +60,34 @@ class PostView extends React.Component<IProps, IState> {
     postUrl += "/post";
     axios
       .get(`${postUrl}/${id}`, {
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        },
+        params: {}
+      })
+      .then(res => {
+        this.setState({
+          comments: res.data.comments,
+          fetchingInfo: false,
+          id: res.data.post[0].id,
+          post: res.data.post
+        });
+      })
+      .catch(() => console.log("Failed to get post info"));
+  }
+
+  public apiGetPostUserInteractions(id: number) {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post";
+    axios
+      .post(`${postUrl}/user_interactions`, {
+        userId: 1, // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
+        // tslint:disable-next-line:object-literal-sort-keys
+        postId: id,
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         },

@@ -50,6 +50,7 @@ class Post extends Component<Props, State> {
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
   }
+
   public render() {
     return (
       <div className={`${styles.post} mb-4`}>
@@ -115,6 +116,10 @@ class Post extends Component<Props, State> {
           <button>
             <i className="far fa-comment-alt" />
             <span>Comment</span>
+          </button>
+          <button>
+            <i className="fas fa-bell" />
+            <span>Subscribe</span>
           </button>
           <button>
             <i className="fas fa-share-square" />

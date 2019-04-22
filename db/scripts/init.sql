@@ -27,7 +27,7 @@ CREATE TABLE posts (
     content_image TEXT ARRAY,
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
-    -- rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT valid_rate CHECK (price >= 1 AND price <= 10),
+    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT valid_rate CHECK (rate >= 1 AND rate <= 10),
     date_created TIMESTAMP DEFAULT NOW(),
     date_updated TIMESTAMP
 );
@@ -49,6 +49,17 @@ CREATE TABLE categories (
 CREATE TABLE posts_categories (
     post BIGINT REFERENCES posts ON DELETE CASCADE,
     category BIGINT REFERENCES categories ON DELETE CASCADE
+);
+
+CREATE TABLE posts_subscriptions (
+    subscriber BIGINT REFERENCES users ON DELETE CASCADE,
+    post BIGINT REFERENCES posts ON DELETE CASCADE
+);
+
+CREATE TABLE posts_rates (
+    evaluator BIGINT REFERENCES users ON DELETE CASCADE,
+    rate INTEGER NOT NULL CONSTRAINT valid_rate CHECK (rate >= 1 AND rate <= 10),
+    post BIGINT REFERENCES posts ON DELETE CASCADE
 );
 
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
@@ -101,3 +112,9 @@ INSERT INTO comments (author, post, comment) VALUES (2, 7, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (1, 8, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment done by a mere user following the admin');
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
+
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
+
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 7, 1);

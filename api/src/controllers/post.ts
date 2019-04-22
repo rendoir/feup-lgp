@@ -19,7 +19,7 @@ export function createPost(req, res) {
         res.send({id: result.rows});
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing post' });
+        res.status(400).send({ message: 'An error ocurred while creating a new post' });
     });
 }
 
@@ -32,7 +32,7 @@ export function editPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE posts SET title=$2, content=$3 WHERE id=$1',
+        text: 'UPDATE posts SET title = $2, content = $3, date_updated = NOW() WHERE id = $1',
         values: [req.body.id, req.body.title, req.body.text],
     }).then((result) => {
         res.status(200).send();
@@ -80,6 +80,41 @@ export async function getPost(req, res) {
             post: post.rows,
             comments: comments.rows,
         };
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post'));
+    }
+}
+
+export async function getPostUserInteractions(req, res) {
+    const userId = req.body.userId;
+    const postId = req.body.postId;
+    console.log("USER", userId);
+    console.log("POST", postId);
+    try {
+        const rateQuery = await query({
+            text: `SELECT rate
+                    FROM posts_rates
+                    WHERE
+                        evaluator = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+        const subscriptionQuery = await query({
+            text: `SELECT *
+                    FROM posts_subscriptions
+                    WHERE
+                        subscriber = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+        let rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        //TRATAR SIBSCRIPTION A DAR TRUE QUANDO NAO EXISTE
+        console.log("rate: ", rate, "subscription: ", Boolean(subscriptionQuery));
+        const result = {
+            rate: rate,
+            subscription: subscriptionQuery.rows[0],
+        };
+        console.log("RESULTADOOOOO", result);
         res.send(result);
     } catch (error) {
         console.error(error);
