@@ -70,6 +70,10 @@ class Post extends Component<Props, State> {
     this.setState({ post_id: this.props.id });
   }
 
+  public handleEditPost() {
+    console.log("EDIT POST");
+  }
+
   public handleDeletePost() {
     console.log("DELETE POST");
   }

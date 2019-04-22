@@ -14,7 +14,7 @@
   border-bottom: solid lightgray 1px;
 }
 
-.post div:last_child {
+.post div:last-child {
   border-bottom: none;
 }
 
@@ -49,6 +49,10 @@
   margin: 0 0 0 auto;
 }
 
+.post_options {
+  cursor: pointer;
+}
+
 .post_content {
   border-bottom: none;
   padding: 0;
@@ -63,7 +67,7 @@
 .post_content iframe {
   width: 100%;
   text-align: center;
-  display:block;
+  display: block;
   object-fit: cover;
   max-height: 1000px;
 }
@@ -116,7 +120,7 @@
 /* Bellow 512 hide action button icons */
 @media (max-width: 512px) {
   .post_actions button span {
-      display: none;
+    display: none;
   }
 }
 
@@ -130,6 +134,10 @@
 .comment_action:focus,
 .submit_comment:focus {
   outline: none;
+}
+
+.post_comment .comment_detail i {
+  margin-right: 5px;
 }
 
 .post_actions button.liked i {
@@ -164,8 +172,4 @@
   right: 0;
   bottom: -10px;
   font-size: 0.9rem;
-}
-
-.post_comment .comment_detail i {
-  margin-right: 5px;
 }
