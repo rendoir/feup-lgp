@@ -2,6 +2,8 @@
 import { Router } from 'express';
 import * as multer from 'multer';
 import * as controller from '../controllers/post';
+import * as comment_controller from '../controllers/comment';
+
 
 export const postRouter = Router();
 
@@ -100,4 +102,4 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/newcomment', controller.insertComment);
+postRouter.post('/newcomment', comment_controller.createComment);

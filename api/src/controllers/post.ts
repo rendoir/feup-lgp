@@ -88,26 +88,6 @@ export async function getPost(req, res) {
     }
 }
 
-export function insertComment(req, res){
-    console.log("Here!");
-
-    if(!req.body.comment.trim() || !req.body.comment.trim()) {
-        console.log('\n\nERROR: Post body cannot be empty');
-        res.status(400).send({ message: 'An error ocurred while creating a new post' });
-        return;
-    }
-
-    query({
-        text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [req.body.author, req.body.post, req.body.comment],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
-    });
-}
-
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {
         query({

@@ -7,21 +7,21 @@ import {query} from '../db/db';
 export function createComment(req, res) {
     if(!req.body.comment.trim() || !req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
-        res.status(400).send({ message: 'An error ocurred while creating a new comment' });
+        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
         return;
     }
 
     query({
-        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3) RETURNING id',
+        text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
         values: [req.body.author, req.body.post, req.body.comment],
     }).then((result) => {
-        res.send({id: result.rows});
+        res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while creating a new comment' });
+        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
     });
 }
+
 
 export function editPost(req, res) {
     if(!req.body.comment.trim() || !req.body.comment.trim()) {
