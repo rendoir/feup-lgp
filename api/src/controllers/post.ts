@@ -32,8 +32,10 @@ export function editPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE posts SET title=$2, content=$3 WHERE id=$1',
-        values: [req.body.id, req.body.title, req.body.text],
+        text: `UPDATE posts
+                SET title = $2, content = $3, visibility = $4
+                WHERE id = $1`,
+        values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -44,7 +46,7 @@ export function editPost(req, res) {
 
 export function deletePost(req, res) {
     query({
-        text: 'DELETE FROM posts WHERE id=$1', values: [req.body.id],
+        text: 'DELETE FROM posts WHERE id = $1', values: [req.body.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
