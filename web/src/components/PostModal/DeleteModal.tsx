@@ -47,9 +47,9 @@ class DeleteModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      redirect: false,
       text: props.text || "",
-      title: props.title || "",
-      redirect: false
+      title: props.title || ""
     };
 
     // Post manipulation handlers
@@ -97,7 +97,9 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public renderRedirect() {
-    if (this.state.redirect) return <Redirect to={"/"} />;
+    if (this.state.redirect) {
+      return <Redirect to={"/"} />;
+    }
   }
 
   public handleInputChange(event: any) {
