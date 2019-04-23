@@ -77,8 +77,6 @@ class Post extends Component<IProps, IState> {
       activePage: currentPage,
       post_id: this.props.id
     });
-
-    console.log(this.props.comments);
   }
 
   public apiComments() {
@@ -90,17 +88,17 @@ class Post extends Component<IProps, IState> {
     postUrl += "/post/newcomment";
 
     axios
-      .post(postUrl, {
+      .put(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
+        headers: {},
         post: this.state.post_id
       })
       .then(res => {
         console.log("Comment created - reloading page...");
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       })
       .catch(() => console.log("Failed to create comment"));
   }

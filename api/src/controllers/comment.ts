@@ -5,6 +5,8 @@ import * as request from 'request-promise';
 import {query} from '../db/db';
 
 export function createComment(req, res) {
+    console.log(req.body);
+
     if (!req.body.comment.trim() || !req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });

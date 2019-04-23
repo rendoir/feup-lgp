@@ -101,7 +101,7 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/newcomment', comment_controller.createComment);
+postRouter.put('/newcomment', comment_controller.createComment);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post
