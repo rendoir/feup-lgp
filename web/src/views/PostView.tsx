@@ -109,6 +109,7 @@ class PostView extends React.Component<IProps, IState> {
             videos={this.state.post[0].content_video}
             images={this.state.post[0].content_image}
             comments={this.state.comments}
+            visibility={this.state.post[0].visibility}
           />
         </div>
       </div>

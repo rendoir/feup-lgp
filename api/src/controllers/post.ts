@@ -13,8 +13,8 @@ export function createPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'INSERT INTO posts (author, title, content) VALUES ($1, $2, $3) RETURNING id',
-        values: [req.body.author, req.body.title, req.body.text],
+        text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
+        values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         res.send({id: result.rows});
     }).catch((error) => {
@@ -32,8 +32,10 @@ export function editPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE posts SET title=$2, content=$3 WHERE id=$1',
-        values: [req.body.id, req.body.title, req.body.text],
+        text: `UPDATE posts
+                SET title = $2, content = $3, visibility = $4
+                WHERE id = $1`,
+        values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -44,7 +46,7 @@ export function editPost(req, res) {
 
 export function deletePost(req, res) {
     query({
-        text: 'DELETE FROM posts WHERE id=$1', values: [req.body.id],
+        text: 'DELETE FROM posts WHERE id = $1', values: [req.body.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -55,16 +57,36 @@ export function deletePost(req, res) {
 
 export async function getPost(req, res) {
     const postId = req.params.id;
+    const userId = 1; // logged in user
     try {
+        /**
+         * Post must be owned by user
+         * OR post is public
+         * OR post is private to followers and user is a follower of the author
+         */
         const post = await query({
             text: `SELECT p.*, a.first_name, a.last_name
                     FROM posts p
                     INNER JOIN users a
                     ON p.author = a.id
                     WHERE
-                        p.id = $1`,
-            values: [postId],
+                        p.id = $1
+                        AND (p.author = $2
+                            OR p.visibility = 'public'
+                            OR (p.visibility = 'followers'
+                                AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                                )
+                            )`,
+            values: [postId, userId],
         });
+        if (post == null) {
+            res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
+            return;
+        }
+        /**
+         * Although the previous query already checks for permissions,
+         * this query checks again to avoid wrong assumptions.
+         */
         const comments = await query({
             text: `SELECT c.*, a.first_name, a.last_name
                     FROM posts p
@@ -74,8 +96,14 @@ export async function getPost(req, res) {
                     ON c.author = a.id
                     WHERE
                         p.id = $1
+                        AND (p.author = $2
+                            OR p.visibility = 'public'
+                            OR (p.visibility = 'followers'
+                                AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                                )
+                            )
                     ORDER BY c.date_updated ASC;`,
-            values: [postId],
+            values: [postId, userId],
         });
         const result = {
             post: post.rows,

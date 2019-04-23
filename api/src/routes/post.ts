@@ -13,13 +13,10 @@ const upload = multer({dest: 'uploads'});
  * @apiName Publish-A-Post
  * @apiGroup Post
  *
- * @apiParam {Object[]} files       Images to add to the post.
- * @apiParam {Object[]} post        Array of posts.
- * @apiParam {String}   post.name   Name of the page/account to post
- * @apiParam {String}   post.socialNetwork Social network of this post
- * @apiParam {String}   post.type        page or group
- * @apiParam {String}   [post.fb_id]     Id of facebook page/group, when it is a post on facebook
- * @apiParam {String}   post.textContent Text content to be published
+ * @apiParam {Object[]} files       Images to add to the post
+ * @apiParam {String}   name        Name of the page/account to post
+ * @apiParam {String}   text        Text content to be published
+ * @apiParam {String}   visibility  Visibility of the post: public/members/followers/private
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request

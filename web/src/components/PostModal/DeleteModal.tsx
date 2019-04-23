@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 
 import createSequence from "../../utils/createSequence";
 
@@ -28,6 +29,7 @@ interface IProps {
 interface IState {
   title: string;
   text: string;
+  redirect: boolean;
 }
 
 const seq = createSequence();
@@ -45,6 +47,7 @@ class DeleteModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      redirect: false,
       text: props.text || "",
       title: props.title || ""
     };
@@ -77,7 +80,10 @@ class DeleteModal extends Component<IProps, IState> {
         }
       })
       .then(res => {
-        console.log("Post deleted");
+        console.log("Post deleted - reloading page");
+        this.setState({
+          redirect: true
+        });
       })
       .catch(() => console.log("Failed to delete post"));
   }
@@ -88,6 +94,12 @@ class DeleteModal extends Component<IProps, IState> {
 
   public handlePostDeletion() {
     this.apiDeletePost();
+  }
+
+  public renderRedirect() {
+    if (this.state.redirect) {
+      return <Redirect to={"/"} />;
+    }
   }
 
   public handleInputChange(event: any) {
@@ -111,18 +123,17 @@ class DeleteModal extends Component<IProps, IState> {
 
   public getActionButton() {
     return (
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-dismiss="modal"
-        onClick={
-          this.mode === CREATE_MODE
-            ? this.handlePostCreation
-            : this.handlePostDeletion
-        }
-      >
-        {this.mode === CREATE_MODE ? "Create new post" : "Yes"}
-      </button>
+      <div>
+        {this.renderRedirect()}
+        <button
+          type="button"
+          className="btn btn-primary"
+          data-dismiss="modal"
+          onClick={this.handlePostDeletion}
+        >
+          {"Yes"}
+        </button>
+      </div>
     );
   }
 
@@ -137,6 +148,7 @@ class DeleteModal extends Component<IProps, IState> {
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true"
+        data-backdrop="false"
       >
         <div
           className="modal-dialog modal-dialog-centered modal-xl"

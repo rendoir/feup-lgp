@@ -12,24 +12,27 @@ import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-// import { throws } from "assert";
+// import { IconProp } from "@fortawesome/fontawesome-svg-core";
+// import VideoPreloader from "../VideoPreloader/VideoPreloader";
+
+import {
+  faGlobeAfrica,
+  faLock,
+  faQuestion,
+  faUserFriends,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
+import Icon from "../Icon/Icon";
 
 type IProps = {
   id: number;
-
   title: string;
-
   date: string | undefined;
-
   images: string[] | undefined;
-
   videos: string[] | undefined;
-
   author: string;
-
   text: string | undefined;
-
+  visibility: string;
   comments: any[];
 };
 
@@ -127,6 +130,10 @@ class Post extends Component<IProps, IState> {
             {" "}
             {this.props.author}
           </a>
+          <Icon
+            icon={this.getVisibilityIcon(this.props.visibility)}
+            size="lg"
+          />
           <a className={styles.post_date} href={"/post/" + this.props.id}>
             {this.props.date}
           </a>
@@ -301,6 +308,19 @@ class Post extends Component<IProps, IState> {
     });
 
     return renderPageNumbers;
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case "public":
+        return faGlobeAfrica;
+      case "followers":
+        return faUserFriends;
+      case "private":
+        return faLock;
+      default:
+        return faQuestion;
+    }
   }
 
   private getImages() {
