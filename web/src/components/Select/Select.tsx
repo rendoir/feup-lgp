@@ -113,7 +113,7 @@ class Select extends Component<Props> {
     const options = this.props.options.map(option => {
       return (
         <option value={option.value} key={option.value} id={option.title}>
-          {option.value}
+          {option.title}
         </option>
       );
     });
