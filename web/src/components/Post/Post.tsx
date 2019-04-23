@@ -72,10 +72,6 @@ class Post extends Component<IProps, IState> {
     });
   }
 
-  public handleEditPost() {
-    console.log("EDIT POST");
-  }
-
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
@@ -188,7 +184,7 @@ class Post extends Component<IProps, IState> {
         {/* Delete Post */}
         <DeleteModal {...this.props} />
         {/* Comment section*/}
-        <div className={styles.post_comment_section}>
+        <div className={`${styles.post_comment_section} w-100`}>
           {this.getCommentSection()}
           <ul className="pagination">{this.getPagination()}</ul>
           <form className={styles.post_add_comment}>
@@ -258,7 +254,9 @@ class Post extends Component<IProps, IState> {
       );
     });
 
-    return <div className={styles.post_comments}>{commentSection}</div>;
+    return (
+      <div className={`${styles.post_comment} w-100`}>{commentSection}</div>
+    );
   }
 
   private getPagination() {
