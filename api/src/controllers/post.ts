@@ -60,8 +60,8 @@ export async function getPost(req, res) {
     const userId = 1; // logged in user
     try {
         /**
-         * Post must be owned by user 
-         * OR post is public 
+         * Post must be owned by user
+         * OR post is public
          * OR post is private to followers and user is a follower of the author
          */
         const post = await query({
