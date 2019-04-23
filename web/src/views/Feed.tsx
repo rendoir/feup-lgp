@@ -54,6 +54,7 @@ class Feed extends React.Component<Props, State> {
         videos={undefined}
         comments={[]}
         title=""
+        visibility={post.visibility}
         date={post.date_created.replace(/T.*/gi, "")}
       />
     ));

@@ -1,8 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
 
-import createSequence from "../../utils/createSequence";
-
 import "./PostModal.css";
 
 import Avatar from "../Avatar/Avatar";
@@ -10,6 +8,7 @@ import Button from "../Button/Button";
 
 import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 const CREATE_MODE = "Create";
@@ -20,6 +19,7 @@ interface IProps {
   id?: number;
   title?: string;
   text?: string;
+  visibility?: string;
 
   images?: string[];
   videos?: string[];
@@ -28,15 +28,20 @@ interface IProps {
 interface IState {
   title: string;
   text: string;
+  visibility: string;
 }
-
-const seq = createSequence();
 
 class PostModal extends Component<IProps, IState> {
   public mode: string;
 
   public image: any = React.createRef();
   public video: any = React.createRef();
+
+  private visibilityOptions = [
+    { value: "public", title: "Public" },
+    { value: "followers", title: "Followers" },
+    { value: "private", title: "Private" }
+  ];
 
   constructor(props: IProps) {
     super(props);
@@ -46,7 +51,8 @@ class PostModal extends Component<IProps, IState> {
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
       text: props.text || "",
-      title: props.title || ""
+      title: props.title || "",
+      visibility: props.visibility || "private"
     };
 
     // Post manipulation handlers
@@ -61,7 +67,8 @@ class PostModal extends Component<IProps, IState> {
     // Reset field values
     this.setState({
       text: this.props.text || "",
-      title: this.props.title || ""
+      title: this.props.title || "",
+      visibility: this.props.visibility || "private"
     });
   }
 
@@ -80,7 +87,8 @@ class PostModal extends Component<IProps, IState> {
         // tslint:disable-next-line:object-literal-sort-keys
         author: 1, // This is the logged in user
         text: this.state.text,
-        title: this.state.title
+        title: this.state.title,
+        visibility: this.state.visibility
       })
       .then(res => {
         console.log("Post created - reloading page...");
@@ -103,7 +111,8 @@ class PostModal extends Component<IProps, IState> {
         },
         id: this.props.id,
         text: this.state.text,
-        title: this.state.title
+        title: this.state.title,
+        visibility: this.state.visibility
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -113,7 +122,9 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public validPost() {
-    return Boolean(this.state.title && this.state.text);
+    return Boolean(
+      this.state.title && this.state.text && this.state.visibility
+    );
   }
 
   public handlePostCreation() {
@@ -181,6 +192,19 @@ class PostModal extends Component<IProps, IState> {
           >
             Body must be provided
           </div>
+        </div>
+
+        <div className="mb-3">
+          <h5>Visibility</h5>
+          <Select
+            name="visibility_select"
+            id="visibility_select"
+            onChange={visibility => this.setState({ visibility })}
+            value="private"
+            defaultValue="private"
+            placeholder="Visibility"
+            options={this.visibilityOptions}
+          />
         </div>
 
         <div className="mb-3">
