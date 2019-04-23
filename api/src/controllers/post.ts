@@ -107,18 +107,18 @@ export async function getPostUserInteractions(req, res) {
                         subscriber = $1 AND post = $2`,
             values: [userId, postId],
         });
-        let rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
-        //TRATAR SIBSCRIPTION A DAR TRUE QUANDO NAO EXISTE
-        console.log("rate: ", rate, "subscription: ", Boolean(subscriptionQuery));
+
+        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+
         const result = {
-            rate: rate,
-            subscription: subscriptionQuery.rows[0],
+            rate,
+            subscription: Boolean(subscriptionQuery.rows[0]),
         };
         console.log("RESULTADOOOOO", result);
         res.send(result);
     } catch (error) {
         console.error(error);
-        res.status(500).send(new Error('Error retrieving post'));
+        res.status(500).send(new Error('Error retrieving post-user interactions'));
     }
 }
 

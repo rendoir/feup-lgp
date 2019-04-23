@@ -15,7 +15,10 @@ interface IState {
   id: number;
   post: any[];
   comments: any[];
-  fetchingInfo: boolean;
+  fetchingPostInfo: boolean;
+  fetchingPostUserInteractions: boolean;
+  userRate: number;
+  userSubscription: boolean;
 }
 
 const postStyle = {
@@ -28,7 +31,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
-      fetchingInfo: true,
+      fetchingPostInfo: true,
+      fetchingPostUserInteractions: true,
       id: 1,
       post: [
         {
@@ -42,7 +46,9 @@ class PostView extends React.Component<IProps, IState> {
           id: "",
           title: ""
         }
-      ]
+      ],
+      userRate: 1,
+      userSubscription: false
     };
   }
 
@@ -68,7 +74,7 @@ class PostView extends React.Component<IProps, IState> {
       .then(res => {
         this.setState({
           comments: res.data.comments,
-          fetchingInfo: false,
+          fetchingPostInfo: false,
           id: res.data.post[0].id,
           post: res.data.post
         });
@@ -85,20 +91,15 @@ class PostView extends React.Component<IProps, IState> {
     postUrl += "/post";
     axios
       .post(`${postUrl}/user_interactions`, {
-        userId: 1, // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
-        // tslint:disable-next-line:object-literal-sort-keys
         postId: id,
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
-        params: {}
+        userId: 1 // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
       })
       .then(res => {
+        console.log(res.data);
         this.setState({
-          comments: res.data.comments,
-          fetchingInfo: false,
-          id: res.data.post[0].id,
-          post: res.data.post
+          fetchingPostUserInteractions: false,
+          userRate: res.data.rate,
+          userSubscription: res.data.susbscription
         });
       })
       .catch(() => console.log("Failed to get post info"));
@@ -117,7 +118,10 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
+    if (
+      this.state.fetchingPostInfo ||
+      this.state.fetchingPostUserInteractions
+    ) {
       return null;
     }
 

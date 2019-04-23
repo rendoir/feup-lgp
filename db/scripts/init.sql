@@ -114,7 +114,10 @@ INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
 
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 7, 1);
+
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 7, 3);
