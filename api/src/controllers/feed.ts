@@ -18,7 +18,27 @@ export async function getFeed(req, res) {
                     OFFSET $2`,
             values: [userId, offset],
         });
-        res.send(result.rows);
+        let comments = [];
+        for (const post of result.rows) {
+            const comment = await query({
+                text: `SELECT c.*, a.first_name, a.last_name
+                        FROM posts p
+                        LEFT JOIN comments c
+                        ON p.id = c.post
+                        INNER JOIN users a
+                        ON c.author = a.id
+                        WHERE
+                            p.id = $1
+                        ORDER BY c.date_updated ASC;`,
+                values: [post.id],
+            });
+            comments.push(comment.rows);
+        }
+        
+        res.send({
+            'posts': result.rows,
+            'comments': comments
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving feed'));

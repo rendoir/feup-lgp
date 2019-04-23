@@ -7,6 +7,7 @@ type Props = {};
 
 type State = {
   posts: any[];
+  fetchingInfo: boolean;
 };
 
 class Feed extends React.Component<Props, State> {
@@ -14,6 +15,7 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      fetchingInfo: true,
       posts: []
     };
   }
@@ -38,40 +40,20 @@ class Feed extends React.Component<Props, State> {
       })
       .then(res => {
         let posts_coming = res.data;
-        posts_coming.map((post: any, idx: number) => {
-          this.getPostComments(post);
-        });
-        this.setState({ posts: posts_coming });
+
+        posts_coming.posts.map(
+          (post: any, idx: any) => (post.comments = posts_coming.comments[idx])
+        );
+
+        this.setState({ fetchingInfo: false, posts: posts_coming.posts });
       })
       .catch(() => console.log("Failed to get feed"));
-  }
-
-  public getPostComments(post: any) {
-    let postCommentUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      postCommentUrl += `:${process.env.REACT_APP_API_PORT}/post/${
-        post.id
-      }/comments`;
-    } else {
-      postCommentUrl += "/api/post/" + post.id + "/comments";
-    }
-    axios
-      .get(postCommentUrl, {
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
-      .then(res => {
-        Object.assign(post, { comments: res.data });
-      })
-      .catch(() => console.log("Failed to get comment of post" + post.id));
   }
 
   public getPosts() {
     const postsDiv = [];
 
     for (const post of this.state.posts) {
-      console.log(post);
       postsDiv.push(
         <Post
           key={post.id}
@@ -91,6 +73,10 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
+    if (this.state.fetchingInfo) {
+      return null;
+    }
+
     const hardCodedConferences = [
       "Conference 1",
       "Conference 45465",
