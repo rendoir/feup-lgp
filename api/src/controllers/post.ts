@@ -13,13 +13,13 @@ export function createPost(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'INSERT INTO posts (author, title, content) VALUES ($1, $2, $3) RETURNING id',
-        values: [req.body.author, req.body.title, req.body.text],
+        text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
+        values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         res.send({id: result.rows});
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing post' });
+        res.status(400).send({ message: 'An error ocurred while creating post' });
     });
 }
 
