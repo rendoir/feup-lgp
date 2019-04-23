@@ -13,9 +13,9 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import { throws } from "assert";
+// import { throws } from "assert";
 
-type Props = {
+type IProps = {
   id: number;
 
   title: string;
@@ -33,7 +33,7 @@ type Props = {
   comments: any[];
 };
 
-interface State {
+interface IState {
   post_id: number;
 
   commentValue: string;
@@ -43,19 +43,19 @@ interface State {
   activePage: number;
 }
 
-class Post extends Component<Props, State> {
+class Post extends Component<IProps, IState> {
   public static defaultProps = {};
   public id: string;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
     this.id = "post_" + this.props.id;
     this.state = {
-      post_id: 0,
       activePage: 1,
+      commentValue: "",
       isHovered: false,
-      commentValue: ""
+      post_id: 0
     };
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
@@ -67,8 +67,8 @@ class Post extends Component<Props, State> {
 
   public componentDidMount() {
     this.setState({
-      post_id: this.props.id,
-      activePage: Math.ceil(this.props.comments.length / 5)
+      activePage: Math.ceil(this.props.comments.length / 5),
+      post_id: this.props.id
     });
   }
 
@@ -86,12 +86,12 @@ class Post extends Component<Props, State> {
 
     axios
       .post(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        comment: this.state.commentValue,
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         },
-        author: 1, //When loggin, this is the user logged in
-        post: this.state.post_id,
-        comment: this.state.commentValue
+        post: this.state.post_id
       })
       .then(res => {
         console.log("Comment created - reloading page...");
@@ -235,7 +235,7 @@ class Post extends Component<Props, State> {
   }
 
   public handlePageChange(event: any) {
-    var target = event.target || event.srcElement;
+    const target = event.target || event.srcElement;
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
@@ -262,7 +262,9 @@ class Post extends Component<Props, State> {
   }
 
   private getPagination() {
-    if (this.props.comments.length < 6) return;
+    if (this.props.comments.length < 6) {
+      return;
+    }
 
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
@@ -271,12 +273,7 @@ class Post extends Component<Props, State> {
 
     const renderPageNumbers = pageNumbers.map(number => {
       return (
-        <li
-          key={number}
-          className="page-item"
-          //id={number}
-          onClick={this.handlePageChange}
-        >
+        <li key={number} className="page-item" onClick={this.handlePageChange}>
           <a className="page-link">{number}</a>
         </li>
       );
