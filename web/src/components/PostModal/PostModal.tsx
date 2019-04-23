@@ -199,9 +199,11 @@ class PostModal extends Component<IProps, IState> {
           <Select
             name="visibility_select"
             id="visibility_select"
-            onChange={visibility => this.setState({ visibility })}
-            value="private"
-            defaultValue="private"
+            onChange={visibility => {
+              console.log(visibility);
+              this.setState({ visibility });
+            }}
+            value={this.state.visibility}
             placeholder="Visibility"
             options={this.visibilityOptions}
           />
