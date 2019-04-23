@@ -55,16 +55,36 @@ export function deletePost(req, res) {
 
 export async function getPost(req, res) {
     const postId = req.params.id;
+    const userId = 1; // logged in user
     try {
+        /**
+         * Post must be owned by user 
+         * OR post is public 
+         * OR post is private to followers and user is a follower of the author
+         */
         const post = await query({
             text: `SELECT p.*, a.first_name, a.last_name
                     FROM posts p
                     INNER JOIN users a
                     ON p.author = a.id
                     WHERE
-                        p.id = $1`,
-            values: [postId],
+                        p.id = $1
+                        AND (p.author = $2
+                            OR p.visibility = 'public'
+                            OR (p.visibility = 'follower'
+                                AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                                )
+                            )`,
+            values: [postId, userId],
         });
+        if (post == null) {
+            res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
+            return;
+        }
+        /**
+         * Although the previous query already checks for permissions,
+         * this query checks again to avoid wrong assumptions.
+         */
         const comments = await query({
             text: `SELECT c.*, a.first_name, a.last_name
                     FROM posts p
@@ -73,8 +93,14 @@ export async function getPost(req, res) {
                     INNER JOIN users a
                     ON c.author = a.id
                     WHERE
-                        p.id = $1`,
-            values: [postId],
+                        p.id = $1
+                        AND (p.author = $2
+                            OR p.visibility = 'public'
+                            OR (p.visibility = 'follower'
+                                AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                                )
+                            )`,
+            values: [postId, userId],
         });
         const result = {
             post: post.rows,
