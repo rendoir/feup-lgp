@@ -4,7 +4,6 @@ import * as multer from 'multer';
 import * as controller from '../controllers/post';
 import * as comment_controller from '../controllers/comment';
 
-
 export const postRouter = Router();
 
 const upload = multer({dest: 'uploads'});
@@ -94,7 +93,7 @@ postRouter.get('/:id', controller.getPost);
  *
  * @apiParam {String}   post.id   Number of the post
  * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment     
+ * @apiParam {String}   comment Text to write in the comment
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -111,7 +110,7 @@ postRouter.post('/newcomment', comment_controller.createComment);
  *
  * @apiParam {String}   post.id   Number of the post
  * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment     
+ * @apiParam {String}   comment Text to write in the comment
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request

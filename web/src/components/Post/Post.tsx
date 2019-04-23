@@ -66,15 +66,15 @@ class Post extends Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    let current_page;
-    if (this.props.comments == [] || this.props.comments == undefined) {
-      current_page = 1;
+    let currentPage;
+    if (this.props.comments === [] || this.props.comments === undefined) {
+      currentPage = 1;
     } else {
-      current_page = Math.ceil(this.props.comments.length / 5);
+      currentPage = Math.ceil(this.props.comments.length / 5);
     }
 
     this.setState({
-      activePage: current_page,
+      activePage: currentPage,
       post_id: this.props.id
     });
 
@@ -245,7 +245,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public getCommentSection() {
-    if (this.props.comments == [] || this.props.comments == undefined) {
+    if (this.props.comments === [] || this.props.comments === undefined) {
       return <div className={`${styles.post_comment} w-100`} />;
     }
 
@@ -277,22 +277,26 @@ class Post extends Component<IProps, IState> {
 
   private getPagination() {
     if (
-      this.props.comments == [] ||
-      this.props.comments == undefined ||
+      this.props.comments === [] ||
+      this.props.comments === undefined ||
       this.props.comments.length < 6
     ) {
       return;
     }
 
-    const pageNumbers = [];
+    const pageNumbersInd = [];
     for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
-      pageNumbers.push(i);
+      pageNumbersInd.push(i);
     }
 
-    const renderPageNumbers = pageNumbers.map(number => {
+    const renderPageNumbers = pageNumbersInd.map(pageNumber => {
       return (
-        <li key={number} className="page-item" onClick={this.handlePageChange}>
-          <a className="page-link">{number}</a>
+        <li
+          key={pageNumber}
+          className="page-item"
+          onClick={this.handlePageChange}
+        >
+          <a className="page-link">{pageNumber}</a>
         </li>
       );
     });

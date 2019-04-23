@@ -7,7 +7,7 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.date_created, p.date_updated 
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.date_created, p.date_updated
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
                     WHERE
@@ -18,7 +18,7 @@ export async function getFeed(req, res) {
                     OFFSET $2`,
             values: [userId, offset],
         });
-        let comments = [];
+        const comments = [];
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.*, a.first_name, a.last_name
@@ -34,10 +34,9 @@ export async function getFeed(req, res) {
             });
             comments.push(comment.rows);
         }
-        
         res.send({
             'posts': result.rows,
-            'comments': comments
+            'comments': comments,
         });
     } catch (error) {
         console.error(error);

@@ -39,13 +39,13 @@ class Feed extends React.Component<Props, State> {
         params: {}
       })
       .then(res => {
-        let posts_coming = res.data;
+        const postsComing = res.data;
 
-        posts_coming.posts.map(
-          (post: any, idx: any) => (post.comments = posts_coming.comments[idx])
+        postsComing.posts.map(
+          (post: any, idx: any) => (post.comments = postsComing.comments[idx])
         );
 
-        this.setState({ fetchingInfo: false, posts: posts_coming.posts });
+        this.setState({ fetchingInfo: false, posts: postsComing.posts });
       })
       .catch(() => console.log("Failed to get feed"));
   }
