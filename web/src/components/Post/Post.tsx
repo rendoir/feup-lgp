@@ -1,5 +1,6 @@
 // - Import react components
 import React, { Component } from "react";
+import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -28,27 +29,50 @@ type Props = {
   text: string | undefined;
 
   comments: any[];
+
+  userRate?: number;
+
+  userSubscription?: boolean;
 };
 
 type State = {
   isHovered: boolean;
   data: any;
+  userRate: number;
+  userSubscription: boolean;
 };
+
+const cookies = new Cookies();
 
 class Post extends Component<Props, State> {
   public static defaultProps = {};
   public id: string;
+  public userId: number;
 
   constructor(props: Props) {
     super(props);
 
     this.id = "post_" + this.props.id;
+    this.userId = cookies.get("user_id");
+    console.log("Cookie user ID: ", this.userId);
     this.state = {
       data: "",
-      isHovered: false
+      isHovered: false,
+      userRate: this.props.userRate || 0,
+      userSubscription: this.props.userSubscription || false
     };
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
+    this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostSubscription = this.handlePostSubscription.bind(this);
+  }
+
+  public handlePostRate() {
+    console.log("RATE  USER ID: ", this.userId);
+  }
+
+  public handlePostSubscription() {
+    console.log("SUBSCRIBE   USER ID: ", this.userId);
   }
 
   public render() {
@@ -109,7 +133,7 @@ class Post extends Component<Props, State> {
           <span>14 comments</span>
         </div>
         <div className={styles.post_actions}>
-          <button>
+          <button onClick={this.handlePostRate}>
             <i className="fas fa-thumbs-up" />
             <span>Like</span>
           </button>
@@ -117,7 +141,7 @@ class Post extends Component<Props, State> {
             <i className="far fa-comment-alt" />
             <span>Comment</span>
           </button>
-          <button>
+          <button onClick={this.handlePostSubscription}>
             <i className="fas fa-bell" />
             <span>Subscribe</span>
           </button>
