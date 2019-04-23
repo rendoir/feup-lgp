@@ -97,18 +97,20 @@ class PostView extends React.Component<IProps, IState> {
         className="d-flex justify-content-center align-items-center align-self-center"
         style={postStyle}
       >
-        <Post
-          id={Number(this.state.post[0].id)}
-          title={this.state.post[0].title}
-          author={
-            this.state.post[0].first_name + " " + this.state.post[0].last_name
-          }
-          date={this.date()}
-          text={this.state.post[0].content}
-          videos={this.state.post[0].content_video}
-          images={this.state.post[0].content_image}
-          comments={this.state.comments}
-        />
+        <div className="middle col-lg-10">
+          <Post
+            id={Number(this.state.post[0].id)}
+            title={this.state.post[0].title}
+            author={
+              this.state.post[0].first_name + " " + this.state.post[0].last_name
+            }
+            date={this.date()}
+            text={this.state.post[0].content}
+            videos={this.state.post[0].content_video}
+            images={this.state.post[0].content_image}
+            comments={this.state.comments}
+          />
+        </div>
       </div>
     );
   }
