@@ -78,10 +78,7 @@ class DeleteModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post deleted - reloading page");
-        window.location.href = "../../";
-        console.log(window.location.pathname);
-        console.log(window.location.href);
-        window.location.reload();
+        // TODO: Reload to homepage
       })
       .catch(() => console.log("Failed to delete post"));
   }
