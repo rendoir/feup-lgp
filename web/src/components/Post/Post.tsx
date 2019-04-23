@@ -66,10 +66,19 @@ class Post extends Component<IProps, IState> {
   }
 
   public componentDidMount() {
+    let current_page;
+    if (this.props.comments == [] || this.props.comments == undefined) {
+      current_page = 1;
+    } else {
+      current_page = Math.ceil(this.props.comments.length / 5);
+    }
+
     this.setState({
-      activePage: Math.ceil(this.props.comments.length / 5),
+      activePage: current_page,
       post_id: this.props.id
     });
+
+    console.log(this.props.comments);
   }
 
   public apiComments() {
@@ -163,7 +172,7 @@ class Post extends Component<IProps, IState> {
         {this.getVideos()}
         <div className={styles.post_stats}>
           <span>35 likes</span>
-          <span>14 comments</span>
+          <span> {this.props.comments.length} comments</span>
         </div>
         <div className={styles.post_actions}>
           <button>
@@ -236,13 +245,20 @@ class Post extends Component<IProps, IState> {
   }
 
   public getCommentSection() {
-    const indexOfLast = this.state.activePage * 5;
-    const indexOfFirst = indexOfLast - 5;
+    if (this.props.comments == [] || this.props.comments == undefined) {
+      return <div className={`${styles.post_comment} w-100`} />;
+    }
 
-    const currentComments = this.props.comments.slice(
-      indexOfFirst,
-      indexOfLast
-    );
+    let currentComments = [];
+    if (this.props.comments.length < 6) {
+      currentComments = this.props.comments;
+    } else {
+      const indexOfLast = this.state.activePage * 5;
+      const indexOfFirst = indexOfLast - 5;
+
+      currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
+    }
+
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
@@ -260,7 +276,11 @@ class Post extends Component<IProps, IState> {
   }
 
   private getPagination() {
-    if (this.props.comments.length < 6) {
+    if (
+      this.props.comments == [] ||
+      this.props.comments == undefined ||
+      this.props.comments.length < 6
+    ) {
       return;
     }
 

@@ -52,3 +52,25 @@ export function deletePost(req, res) {
         res.status(400).send({ message: 'An error ocurred while deleting a comment' });
     });
 }
+
+export async function getCommentsOfPost(req, res) {
+    const postId = req.params.id;
+    try {
+        const comments = await query({
+            text: `SELECT c.*, a.first_name, a.last_name
+                    FROM posts p
+                    LEFT JOIN comments c
+                    ON p.id = c.post
+                    INNER JOIN users a
+                    ON c.author = a.id
+                    WHERE
+                        p.id = $1
+                    ORDER BY c.date_updated ASC;`,
+            values: [postId],
+        });
+        res.send(comments.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving comments of the post ' + postId));
+    }
+}

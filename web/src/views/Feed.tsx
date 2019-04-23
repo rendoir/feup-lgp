@@ -37,27 +37,60 @@ class Feed extends React.Component<Props, State> {
         params: {}
       })
       .then(res => {
-        // console.log(res.data);
-        this.setState({ posts: res.data });
+        let posts_coming = res.data;
+        posts_coming.map((post: any, idx: number) => {
+          this.getPostComments(post);
+        });
+        this.setState({ posts: posts_coming });
       })
       .catch(() => console.log("Failed to get feed"));
   }
 
-  public render() {
-    const posts = this.state.posts.map(post => (
-      <Post
-        key={post.id}
-        id={post.id}
-        author={post.first_name + " " + post.last_name}
-        text={post.content}
-        images={undefined}
-        videos={undefined}
-        comments={[]}
-        title=""
-        date={post.date_created.replace(/T.*/gi, "")}
-      />
-    ));
+  public getPostComments(post: any) {
+    let postCommentUrl = `${location.protocol}//${location.hostname}`;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+      postCommentUrl += `:${process.env.REACT_APP_API_PORT}/post/${
+        post.id
+      }/comments`;
+    } else {
+      postCommentUrl += "/api/post/" + post.id + "/comments";
+    }
+    axios
+      .get(postCommentUrl, {
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        Object.assign(post, { comments: res.data });
+      })
+      .catch(() => console.log("Failed to get comment of post" + post.id));
+  }
 
+  public getPosts() {
+    const postsDiv = [];
+
+    for (const post of this.state.posts) {
+      console.log(post);
+      postsDiv.push(
+        <Post
+          key={post.id}
+          id={post.id}
+          author={post.first_name + " " + post.last_name}
+          text={post.content}
+          images={undefined}
+          videos={undefined}
+          comments={post.comments || []}
+          title={post.title}
+          date={post.date_created.replace(/T.*/gi, "")}
+        />
+      );
+    }
+
+    return postsDiv;
+  }
+
+  public render() {
     const hardCodedConferences = [
       "Conference 1",
       "Conference 45465",
@@ -78,7 +111,7 @@ class Feed extends React.Component<Props, State> {
             <h5>Conferences</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-8">{posts}</div>
+          <div className="middle col-lg-8">{this.getPosts()}</div>
         </div>
       </div>
     );
