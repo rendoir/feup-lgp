@@ -2,7 +2,6 @@
 import axios from "axios";
 import classNames from "classnames";
 import React, { Component } from "react";
-import Pagination from "react-js-pagination";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -14,6 +13,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import { throws } from "assert";
 
 type Props = {
   id: number;
@@ -66,7 +66,10 @@ class Post extends Component<Props, State> {
   }
 
   public componentDidMount() {
-    this.setState({ post_id: this.props.id });
+    this.setState({
+      post_id: this.props.id,
+      activePage: Math.ceil(this.props.comments.length / 5)
+    });
   }
 
   public handleEditPost() {
@@ -187,7 +190,7 @@ class Post extends Component<Props, State> {
         {/* Comment section*/}
         <div className={styles.post_comment_section}>
           {this.getCommentSection()}
-          {this.getPagination()}
+          <ul className="pagination">{this.getPagination()}</ul>
           <form className={styles.post_add_comment}>
             <Avatar
               title={this.props.author}
@@ -231,13 +234,20 @@ class Post extends Component<Props, State> {
     this.apiComments();
   }
 
-  public handlePageChange(pageNumber: number) {
-    console.log(`active page is ${pageNumber}`);
-    this.setState({ activePage: pageNumber });
+  public handlePageChange(event: any) {
+    var target = event.target || event.srcElement;
+    this.setState({ activePage: Number(target.innerHTML) });
   }
 
   public getCommentSection() {
-    const commentSection = this.props.comments.map((comment, idx) => {
+    const indexOfLast = this.state.activePage * 5;
+    const indexOfFirst = indexOfLast - 5;
+
+    const currentComments = this.props.comments.slice(
+      indexOfFirst,
+      indexOfLast
+    );
+    const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
@@ -252,23 +262,27 @@ class Post extends Component<Props, State> {
   }
 
   private getPagination() {
-    const paginationDiv = [];
+    if (this.props.comments.length < 6) return;
 
-    if (this.props.comments.length > 5) {
-      paginationDiv.push(
-        <div>
-          <Pagination
-            activePage={this.state.activePage}
-            itemsCountPerPage={5}
-            totalItemsCount={this.props.comments.length}
-            pageRangeDisplayed={3}
-            onChange={this.handlePageChange}
-          />
-        </div>
-      );
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
+      pageNumbers.push(i);
     }
 
-    return paginationDiv;
+    const renderPageNumbers = pageNumbers.map(number => {
+      return (
+        <li
+          key={number}
+          className="page-item"
+          //id={number}
+          onClick={this.handlePageChange}
+        >
+          <a className="page-link">{number}</a>
+        </li>
+      );
+    });
+
+    return renderPageNumbers;
   }
 
   private getImages() {
