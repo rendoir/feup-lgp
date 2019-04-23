@@ -3,7 +3,7 @@
   "rules": {
     "interface-over-type-literal": false,
     "jsx-no-lambda": false,
-    "no-console": false,
+    "no-console": false
   },
   "linterOptions": {
     "exclude": [
