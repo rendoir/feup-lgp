@@ -78,13 +78,12 @@ class DeleteModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post deleted - reloading page");
+        window.location.href = "../../";
+        console.log(window.location.pathname);
+        console.log(window.location.href);
         window.location.reload();
       })
       .catch(() => console.log("Failed to delete post"));
-  }
-
-  public validPost() {
-    return Boolean(this.state.title && this.state.text);
   }
 
   public handlePostCreation() {
@@ -120,14 +119,9 @@ class DeleteModal extends Component<IProps, IState> {
         type="button"
         className="btn btn-primary"
         data-dismiss="modal"
-        onClick={
-          this.mode === CREATE_MODE
-            ? this.handlePostCreation
-            : this.handlePostDeletion
-        }
-        disabled={!this.validPost()}
+        onClick={this.handlePostDeletion}
       >
-        {this.mode === CREATE_MODE ? "Create new post" : "Yes"}
+        {"Yes"}
       </button>
     );
   }
@@ -143,6 +137,7 @@ class DeleteModal extends Component<IProps, IState> {
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true"
+        data-backdrop="false"
       >
         <div
           className="modal-dialog modal-dialog-centered modal-xl"
