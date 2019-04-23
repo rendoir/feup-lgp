@@ -71,7 +71,7 @@ export async function getPost(req, res) {
                         p.id = $1
                         AND (p.author = $2
                             OR p.visibility = 'public'
-                            OR (p.visibility = 'follower'
+                            OR (p.visibility = 'followers'
                                 AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
                                 )
                             )`,
@@ -96,7 +96,7 @@ export async function getPost(req, res) {
                         p.id = $1
                         AND (p.author = $2
                             OR p.visibility = 'public'
-                            OR (p.visibility = 'follower'
+                            OR (p.visibility = 'followers'
                                 AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
                                 )
                             )`,
