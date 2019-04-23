@@ -64,8 +64,10 @@ INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('use
 
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 
+INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2019-12-03');
+INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 'public', '2019-12-03');
 INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', '2019-12-02');
-INSERT INTO posts (author, title, content, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', '2019-12-01');
+INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'followers', '2019-12-01');
 INSERT INTO posts (author, title, content) VALUES (1, 'Admin post', 'This is a post done by the admin');
 INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a post done by a mere user following the admin');
 INSERT INTO posts (author, title, content) VALUES (1, 'Admin post', 'This is a post done by the admin');
