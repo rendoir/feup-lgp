@@ -23,7 +23,7 @@ export type Props = {
   /** Select value attribute */
   value?: string;
   /** Select defaultValue attribute */
-  defaultValue: string | undefined;
+  defaultValue?: string | undefined;
   /** Select disabled attribute */
   disabled?: boolean;
   /** Select label */
