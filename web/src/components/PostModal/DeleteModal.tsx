@@ -64,9 +64,6 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public apiDeletePost() {
-    this.setState({
-      redirect: true
-    });
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -84,7 +81,9 @@ class DeleteModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post deleted - reloading page");
-        window.location.reload();
+        this.setState({
+          redirect: true
+        });
       })
       .catch(() => console.log("Failed to delete post"));
   }
