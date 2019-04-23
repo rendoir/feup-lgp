@@ -133,7 +133,7 @@ class Post extends Component<IProps, IState> {
             <button
               className="w-100 h-100 ml-2"
               role="button"
-              data-toggle="dropdown"
+              a-toggle="dropdown"
             >
               <i className="fas fa-ellipsis-v" />
             </button>

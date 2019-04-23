@@ -103,3 +103,23 @@ postRouter.get('/:id', controller.getPost);
  *     }
  */
 postRouter.post('/newcomment', comment_controller.createComment);
+
+/**
+ * @api {post} /api/post/:id/delete_comment Delete a comment
+ * @apiName Delete-A-Comment
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the comment
+ * @apiParam {String}   author.id   Author of the comment
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while deleting a comment'
+ *     }
+ */
+postRouter.delete('/deletecomment', comment_controller.deleteComment);
