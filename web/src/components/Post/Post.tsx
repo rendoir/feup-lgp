@@ -96,9 +96,7 @@ class Post extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Comment created - reloading page...");
-        setTimeout(() => {
-          window.location.reload();
-        }, 5000);
+        window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
   }
@@ -194,7 +192,10 @@ class Post extends Component<IProps, IState> {
         <div className={`${styles.post_comment_section} w-100`}>
           {this.getCommentSection()}
           <ul className="pagination">{this.getPagination()}</ul>
-          <form className={styles.post_add_comment}>
+          <form
+            className={styles.post_add_comment}
+            onSubmit={this.handleAddComment}
+          >
             <Avatar
               title={this.props.author}
               placeholder="empty"
@@ -214,7 +215,6 @@ class Post extends Component<IProps, IState> {
               className={`${styles.submit_comment} px-2 py-1`}
               type="submit"
               value="Submit"
-              onClick={this.handleAddComment}
               disabled={!this.validComment()}
             >
               <i className="fas fa-chevron-circle-right" />
@@ -233,7 +233,8 @@ class Post extends Component<IProps, IState> {
     this.setState({ commentValue: event.target.value });
   }
 
-  public handleAddComment() {
+  public handleAddComment(event: any) {
+    event.preventDefault();
     this.apiComments();
   }
 
