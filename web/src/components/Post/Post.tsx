@@ -99,7 +99,7 @@ class Post extends Component<IProps, IState> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#post_modal_Edit"
+                data-target={`#post_modal_Edit_${this.props.id}`}
               >
                 Edit Post
               </button>
@@ -107,7 +107,7 @@ class Post extends Component<IProps, IState> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#delete_post_modal"
+                data-target={`#delete_post_modal_${this.props.id}`}
               >
                 Delete Post
               </button>

@@ -142,7 +142,7 @@ class DeleteModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id="delete_post_modal"
+        id={`delete_post_modal_${this.props.id}`}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
