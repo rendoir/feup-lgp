@@ -19,10 +19,10 @@ export async function getFeed(req, res) {
                     OFFSET $2`,
             values: [userId, offset],
         });
-        const comments = [];
+        const commentsToSend = [];
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.*, a.first_name, a.last_name
+                text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -33,11 +33,11 @@ export async function getFeed(req, res) {
                         ORDER BY c.date_updated ASC;`,
                 values: [post.id],
             });
-            comments.push(comment.rows);
+            commentsToSend.push(comment.rows);
         }
         res.send({
-            'posts': result.rows,
-            'comments': comments,
+            posts: result.rows,
+            comments: commentsToSend,
         });
     } catch (error) {
         console.error(error);

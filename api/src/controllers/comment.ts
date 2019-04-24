@@ -5,7 +5,6 @@ import * as request from 'request-promise';
 import {query} from '../db/db';
 
 export function createComment(req, res) {
-    
     if (!req.body.comment.trim() || !req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
@@ -57,7 +56,7 @@ export async function getCommentsOfPost(req, res) {
     const postId = req.params.id;
     try {
         const comments = await query({
-            text: `SELECT c.*, a.first_name, a.last_name
+            text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                     FROM posts p
                     LEFT JOIN comments c
                     ON p.id = c.post

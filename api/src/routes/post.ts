@@ -1,8 +1,8 @@
 'use strict';
 import { Router } from 'express';
 import * as multer from 'multer';
-import * as controller from '../controllers/post';
 import * as comment_controller from '../controllers/comment';
+import * as controller from '../controllers/post';
 
 export const postRouter = Router();
 

@@ -38,11 +38,8 @@ type IProps = {
 
 interface IState {
   post_id: number;
-
   commentValue: string;
-
   isHovered: boolean;
-
   activePage: number;
 }
 
@@ -66,54 +63,6 @@ class Post extends Component<IProps, IState> {
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-  }
-
-  public componentDidMount() {
-    let currentPage;
-    if (this.props.comments === [] || this.props.comments === undefined) {
-      currentPage = 1;
-    } else {
-      currentPage = Math.ceil(this.props.comments.length / 5);
-    }
-
-    this.setState({
-      activePage: currentPage,
-      post_id: this.props.id
-    });
-  }
-
-  public apiComments() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/newcomment";
-
-    axios
-      .put(postUrl, {
-        author: 1, // When loggin, this is the user logged in
-        comment: this.state.commentValue,
-        headers: {},
-        post: this.state.post_id
-      })
-      .then(res => {
-        console.log("Comment created - reloading page...");
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to create comment"));
-  }
-
-  public validComment() {
-    return Boolean(this.state.commentValue);
-  }
-
-  public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
-  }
-
-  public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
   }
 
   public render() {
@@ -141,7 +90,7 @@ class Post extends Component<IProps, IState> {
             <button
               className="w-100 h-100 ml-2"
               role="button"
-              a-toggle="dropdown"
+              data-toggle="dropdown"
             >
               <i className="fas fa-ellipsis-v" />
             </button>
@@ -230,6 +179,54 @@ class Post extends Component<IProps, IState> {
         </div>
       </div>
     );
+  }
+
+  public componentDidMount() {
+    let currentPage;
+    if (this.props.comments === [] || this.props.comments === undefined) {
+      currentPage = 1;
+    } else {
+      currentPage = Math.ceil(this.props.comments.length / 5);
+    }
+
+    this.setState({
+      activePage: currentPage,
+      post_id: this.props.id
+    });
+  }
+
+  public apiComments() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post/newcomment";
+
+    axios
+      .put(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        comment: this.state.commentValue,
+        headers: {},
+        post: this.state.post_id
+      })
+      .then(res => {
+        console.log("Comment created - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
+  }
+
+  public validComment() {
+    return Boolean(this.state.commentValue);
+  }
+
+  public getInputRequiredClass(content: string) {
+    return content === "" ? "empty_required_field" : "post_field";
+  }
+
+  public getInputRequiredStyle(content: string) {
+    return content !== "" ? { display: "none" } : {};
   }
 
   public handleDeletePost() {
