@@ -5,8 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon",
+    "build": "tsc",
     "lint": "tslint -p . -c tslint.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run build && mocha --exit"
   },
   "repository": {
     "type": "git",
@@ -38,7 +39,10 @@
     "typescript": "^3.4.3"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
     "nodemon": "^1.18.11",
+    "supertest": "^4.0.2",
     "tslint": "^5.15.0"
   }
 }
