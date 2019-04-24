@@ -45,7 +45,7 @@ CREATE TABLE comments (
     post BIGINT REFERENCES posts ON DELETE CASCADE,
     comment TEXT NOT NULL,
     date_created TIMESTAMP DEFAULT NOW(),
-    date_updated TIMESTAMP
+    date_updated TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE categories (

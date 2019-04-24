@@ -19,14 +19,14 @@ export function createPost(req, res) {
         res.send({id: result.rows});
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while creating post' });
+        res.status(400).send({ message: 'An error ocurred while creating a new post' });
     });
 }
 
 export function editPost(req, res) {
     if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
-        res.status(400).send({ message: 'An error ocurred while editing post' });
+        res.status(400).send({ message: 'An error ocurred while editing a post' });
         return;
     }
 
@@ -40,7 +40,7 @@ export function editPost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing post' });
+        res.status(400).send({ message: 'An error ocurred while editing a post' });
     });
 }
 
@@ -51,7 +51,7 @@ export function deletePost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting post' });
+        res.status(400).send({ message: 'An error ocurred while deleting a ..post' });
     });
 }
 
@@ -65,7 +65,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = await query({
-            text: `SELECT p.*, a.first_name, a.last_name
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.visibility, p.date_created, p.date_updated
                     FROM posts p
                     INNER JOIN users a
                     ON p.author = a.id
@@ -88,7 +88,7 @@ export async function getPost(req, res) {
          * this query checks again to avoid wrong assumptions.
          */
         const comments = await query({
-            text: `SELECT c.*, a.first_name, a.last_name
+            text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                     FROM posts p
                     LEFT JOIN comments c
                     ON p.id = c.post
@@ -101,7 +101,8 @@ export async function getPost(req, res) {
                             OR (p.visibility = 'followers'
                                 AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
                                 )
-                            )`,
+                            )
+                    ORDER BY c.date_updated ASC;`,
             values: [postId, userId],
         });
         const result = {

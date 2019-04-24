@@ -252,12 +252,12 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public render() {
-    const classnameId = "post_modal_" + this.mode;
+    const htmlId = `post_modal_${this.mode}_${this.props.id}`;
 
     return (
       <div
-        id={classnameId}
-        className="modal fade"
+        id={htmlId}
+        className={`modal fade post_modal_${this.mode}`}
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
