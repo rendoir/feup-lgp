@@ -115,7 +115,41 @@ postRouter.put('/newcomment', comment_controller.createComment);
  *      message: 'An error message here'
  *     }
  */
-postRouter.get('/:id/comments', comment_controller.getCommentsOfPost);
+postRouter.put('/comment/newcomment', comment_controller.createNewCommentForComment);
+
+/**
+ * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @apiName Post-A-Comment
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post
+ * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   comment Text to write in the comment
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/comments/:id/like', comment_controller.addALikeToComment);
+
+/**
+ * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @apiName Post-A-Comment
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post
+ * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   comment Text to write in the comment
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.get('/comments/:id', comment_controller.getCommentsOfComment);
 
 /**
  * @api {post} /api/post/:id/delete_comment Delete a comment

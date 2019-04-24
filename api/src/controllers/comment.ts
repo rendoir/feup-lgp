@@ -22,6 +22,24 @@ export function createComment(req, res) {
     });
 }
 
+export function createNewCommentForComment(req, res) {
+    if (!req.body.comment.trim() || !req.body.comment.trim()) {
+        console.log('\n\nERROR: Comment body cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
+        return;
+    }
+
+    query({
+        text: 'INSERT INTO comments (author, post, comment_ref, comment) VALUES ($1, (SELECT post FROM comments WHERE id = $1),$2, $3)',
+        values: [req.body.author, req.body.comment_id, req.body.comment],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
+    });
+}
+
 export function editComment(req, res) {
     if (!req.body.comment.trim() || !req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
@@ -41,6 +59,22 @@ export function editComment(req, res) {
     });
 }
 
+export function addALikeToComment(req, res) {
+    // To change when loggin
+    const commentId = req.params.id;
+    query({
+        text: `UPDATE comments
+                SET likes = likes + 1
+                WHERE id = $1`,
+        values: [commentId],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+    });
+}
+
 export function deleteComment(req, res) {
     query({
         text: 'DELETE FROM comments WHERE id=$1', values: [req.body.id],
@@ -52,24 +86,24 @@ export function deleteComment(req, res) {
     });
 }
 
-export async function getCommentsOfPost(req, res) {
-    const postId = req.params.id;
+export async function getCommentsOfComment(req, res) {
+    const commentId = req.params.id;
     try {
         const comments = await query({
-            text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
-                    FROM posts p
-                    LEFT JOIN comments c
-                    ON p.id = c.post
+            text: `SELECT c1.id, c1.comment, c1.likes, c1.date_updated, c1.date_created, a.first_name, a.last_name
+                    FROM comments c1
+                    LEFT JOIN comments c2
+                    ON c1.comment_ref = c2.id
                     INNER JOIN users a
-                    ON c.author = a.id
+                    ON c1.author = a.id
                     WHERE
-                        p.id = $1
-                    ORDER BY c.date_updated ASC;`,
-            values: [postId],
+                        c2.id = $1
+                    ORDER BY c1.date_updated ASC;`,
+            values: [commentId],
         });
         res.send(comments.rows);
     } catch (error) {
         console.error(error);
-        res.status(500).send(new Error('Error retrieving comments of the post ' + postId));
+        res.status(500).send(new Error('Error retrieving comments of the comment ' + commentId));
     }
 }

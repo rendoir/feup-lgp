@@ -269,6 +269,8 @@ class Post extends Component<IProps, IState> {
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
+          likes={comment.likes}
+          secondLevel={false}
         />
       );
     });
