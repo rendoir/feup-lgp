@@ -53,14 +53,9 @@ class DeleteModal extends Component<IProps, IState> {
     };
 
     // Post manipulation handlers
-    this.handlePostCreation = this.handlePostCreation.bind(this);
     this.handlePostDeletion = this.handlePostDeletion.bind(this);
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
-  }
-
-  public apiCreatePost() {
-    // TODO: call api to create post
   }
 
   public apiDeletePost() {
@@ -81,15 +76,16 @@ class DeleteModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post deleted - reloading page");
-        this.setState({
-          redirect: true
-        });
+        if (window.location.pathname === "/post/" + this.props.id) {
+          this.setState({
+            redirect: true
+          });
+          this.handleRedirect();
+        } else {
+          window.location.reload();
+        }
       })
       .catch(() => console.log("Failed to delete post"));
-  }
-
-  public handlePostCreation() {
-    this.apiCreatePost();
   }
 
   public handlePostDeletion() {
@@ -98,7 +94,7 @@ class DeleteModal extends Component<IProps, IState> {
 
   public renderRedirect() {
     if (this.state.redirect) {
-      return <Redirect to={"/"} />;
+      window.location.href = "/";
     }
   }
 
@@ -121,10 +117,16 @@ class DeleteModal extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
+  public handleRedirect() {
+    if (window.location.pathname === "/post/" + this.props.id) {
+      this.renderRedirect();
+    }
+  }
+
   public getActionButton() {
     return (
       <div>
-        {this.renderRedirect()}
+        {this.handleRedirect()}
         <button
           type="button"
           className="btn btn-primary"
@@ -138,8 +140,6 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public render() {
-    // const className = classNames(styles.container);
-
     return (
       <div
         id="delete_post_modal"
