@@ -100,3 +100,35 @@ postRouter.get('/:id', controller.getPost);
  *     }
  */
 postRouter.post('/user_interactions', controller.getPostUserInteractions);
+
+/**
+ * @api {post} /api/post/subscribe Set a post subscription for a given user
+ * @apiName Subscribe-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   postId   Id of the post
+ * @apiParam {String}   userId   Id of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/subscribe', controller.subscribePost);
+
+/**
+ * @api {post} /api/post/unsubscribe Remove a post subscription for a given user
+ * @apiName Unsubscribe-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   postId   Id of the post
+ * @apiParam {String}   userId   Id of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/unsubscribe', controller.unsubscribePost);

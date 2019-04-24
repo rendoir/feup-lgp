@@ -122,6 +122,36 @@ export async function getPostUserInteractions(req, res) {
     }
 }
 
+export function subscribePost(req, res) {
+    console.log("SUBSCRIBEEE");
+    console.log("USER", req.body.userId);
+    console.log("POST", req.body.postId);
+    query({
+        text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
+        values: [req.body.userId, req.body.postId],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function unsubscribePost(req, res) {
+    console.log("REMOVE SUBSCRIPTION");
+    console.log("USER", req.body.userId);
+    console.log("POST", req.body.postId);
+    query({
+        text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
+        values: [req.body.userId, req.body.postId],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
+    });
+}
+
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {
     return new Promise((resolve, reject) => {
         query({

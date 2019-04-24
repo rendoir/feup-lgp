@@ -53,7 +53,8 @@ CREATE TABLE posts_categories (
 
 CREATE TABLE posts_subscriptions (
     subscriber BIGINT REFERENCES users ON DELETE CASCADE,
-    post BIGINT REFERENCES posts ON DELETE CASCADE
+    post BIGINT REFERENCES posts ON DELETE CASCADE,
+    PRIMARY KEY(subscriber, post)
 );
 
 CREATE TABLE posts_rates (

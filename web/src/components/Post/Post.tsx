@@ -1,4 +1,5 @@
 // - Import react components
+import axios from "axios";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
 
@@ -53,26 +54,21 @@ class Post extends Component<Props, State> {
     super(props);
 
     this.id = "post_" + this.props.id;
-    this.userId = cookies.get("user_id");
-    console.log("Cookie user ID: ", this.userId);
+    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    console.log("Cookie user ID: ", cookies.get("user_id"));
+
     this.state = {
       data: "",
       isHovered: false,
       userRate: this.props.userRate || 0,
-      userSubscription: this.props.userSubscription || false
+      userSubscription: Boolean(this.props.userSubscription) || false
     };
+    console.log("rate: ", this.state.userRate);
+    console.log("subscription: ", this.state.userSubscription);
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
-  }
-
-  public handlePostRate() {
-    console.log("RATE  USER ID: ", this.userId);
-  }
-
-  public handlePostSubscription() {
-    console.log("SUBSCRIBE   USER ID: ", this.userId);
   }
 
   public render() {
@@ -132,24 +128,7 @@ class Post extends Component<Props, State> {
           <span>35 likes</span>
           <span>14 comments</span>
         </div>
-        <div className={styles.post_actions}>
-          <button onClick={this.handlePostRate}>
-            <i className="fas fa-thumbs-up" />
-            <span>Like</span>
-          </button>
-          <button>
-            <i className="far fa-comment-alt" />
-            <span>Comment</span>
-          </button>
-          <button onClick={this.handlePostSubscription}>
-            <i className="fas fa-bell" />
-            <span>Subscribe</span>
-          </button>
-          <button>
-            <i className="fas fa-share-square" />
-            <span>Share</span>
-          </button>
-        </div>
+        {this.getUserInteractionButtons()}
         {/* Post edition modal */}
         <PostModal {...this.props} />
         {/* Delete Post */}
@@ -179,6 +158,38 @@ class Post extends Component<Props, State> {
 
   public handleDeletePost() {
     console.log("DELETE POST");
+  }
+
+  public handlePostRate() {
+    console.log("RATE  USER ID: ", this.userId);
+  }
+
+  public handlePostSubscription() {
+    console.log("SUBSCRIBE   USER ID: ", this.userId);
+    if (this.state.userSubscription) {
+      this.apiSubscription("unsubscribe");
+    } else {
+      this.apiSubscription("subscribe");
+    }
+  }
+
+  public apiSubscription(endpoint: string) {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post";
+    axios
+      .post(`${postUrl}/${endpoint}`, {
+        postId: this.props.id,
+        userId: this.userId
+      })
+      .then(res => {
+        const subscription: boolean = endpoint === "subscribe";
+        this.setState({ userSubscription: subscription });
+      })
+      .catch(() => console.log("Subscription system failed"));
   }
 
   public getCommentSection() {
@@ -238,6 +249,36 @@ class Post extends Component<Props, State> {
     }
 
     return videoDiv;
+  }
+
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handlePostRate}>
+          <i className="fas fa-thumbs-up" />
+          <span>Like</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
+    );
   }
 }
 

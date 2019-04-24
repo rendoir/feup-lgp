@@ -99,10 +99,10 @@ class PostView extends React.Component<IProps, IState> {
         this.setState({
           fetchingPostUserInteractions: false,
           userRate: res.data.rate,
-          userSubscription: res.data.susbscription
+          userSubscription: res.data.subscription
         });
       })
-      .catch(() => console.log("Failed to get post info"));
+      .catch(() => console.log("Failed to get post-user interactions"));
   }
 
   public date() {
