@@ -47,8 +47,3 @@ Github repository with a guide used to implement this app
 
 [React-Router-Dom](https://reacttraining.com/react-router/) \
 Routing solution
-
-Authors
--------
-Arthur Johas Matta - [up201609953@fe.up.pt]  
-João Francisco Veríssimo Dias Esteves - [up201505145@fe.up.pt]  
