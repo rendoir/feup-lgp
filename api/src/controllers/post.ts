@@ -51,7 +51,7 @@ export function deletePost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting a ..post' });
+        res.status(400).send({ message: 'An error ocurred while deleting a post' });
     });
 }
 

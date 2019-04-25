@@ -30,6 +30,7 @@ export type State = {
   comments: any[];
   hrefComment: string;
   isHovered: boolean;
+  redirect: boolean;
 };
 
 class Comment extends Component<Props, State> {
@@ -45,7 +46,8 @@ class Comment extends Component<Props, State> {
       commentValue: "",
       comments: [],
       hrefComment: "",
-      isHovered: false
+      isHovered: false,
+      redirect: false
     };
 
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
@@ -113,7 +115,7 @@ class Comment extends Component<Props, State> {
                     className="dropdown-item"
                     type="button"
                     data-toggle="modal"
-                    data-target="#delete_comment_modal"
+                    data-target={`#delete_comment_modal_${this.props.title}`}
                   >
                     Delete Comment
                   </button>
@@ -163,7 +165,7 @@ class Comment extends Component<Props, State> {
         </div>
 
         <div
-          id="delete_comment_modal"
+          id={`delete_comment_modal_${this.props.title}`}
           className="modal fade"
           tabIndex={-1}
           role="dialog"
@@ -305,7 +307,7 @@ class Comment extends Component<Props, State> {
     axios
       .delete(postUrl, {
         data: {
-          id: this.id
+          id: this.props.title
         },
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
@@ -313,6 +315,14 @@ class Comment extends Component<Props, State> {
       })
       .then(res => {
         console.log("Comment deleted");
+        if (window.location.pathname === "/post/" + this.id) {
+          this.setState({
+            redirect: true
+          });
+          this.handleRedirect();
+        } else {
+          window.location.reload();
+        }
       })
       .catch(() => console.log("Failed to delete comment"));
   }
@@ -321,16 +331,31 @@ class Comment extends Component<Props, State> {
     this.apiDeleteComment();
   }
 
+  public renderRedirect() {
+    if (this.state.redirect) {
+      window.location.href = "/";
+    }
+  }
+
+  public handleRedirect() {
+    if (window.location.pathname === "/post/" + this.id) {
+      this.renderRedirect();
+    }
+  }
+
   public getActionButton() {
     return (
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-dismiss="modal"
-        onClick={this.handleCommentDeletion}
-      >
-        {"Yes"}
-      </button>
+      <div>
+        {this.handleRedirect()}
+        <button
+          type="button"
+          className="btn btn-primary"
+          data-dismiss="modal"
+          onClick={this.handleCommentDeletion}
+        >
+          {"Yes"}
+        </button>
+      </div>
     );
   }
 

@@ -58,8 +58,6 @@ class Post extends Component<IProps, IState> {
       post_id: 0
     };
 
-    this.handleDeletePost = this.handleDeletePost.bind(this);
-
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
@@ -227,10 +225,6 @@ class Post extends Component<IProps, IState> {
 
   public getInputRequiredStyle(content: string) {
     return content !== "" ? { display: "none" } : {};
-  }
-
-  public handleDeletePost() {
-    console.log("DELETE POST");
   }
 
   public changeCommentValue(event: any) {
