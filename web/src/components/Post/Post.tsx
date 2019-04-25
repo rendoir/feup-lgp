@@ -30,15 +30,12 @@ type Props = {
   text: string | undefined;
 
   comments: any[];
-
-  userRate?: number;
-
-  userSubscription?: boolean;
 };
 
 type State = {
   isHovered: boolean;
   data: any;
+  fetchingPostUserInteractions: boolean;
   userRate: number;
   userSubscription: boolean;
 };
@@ -59,9 +56,10 @@ class Post extends Component<Props, State> {
 
     this.state = {
       data: "",
+      fetchingPostUserInteractions: true,
       isHovered: false,
-      userRate: this.props.userRate || 0,
-      userSubscription: Boolean(this.props.userSubscription) || false
+      userRate: 0,
+      userSubscription: false
     };
     console.log("rate: ", this.state.userRate);
     console.log("subscription: ", this.state.userSubscription);
@@ -72,6 +70,12 @@ class Post extends Component<Props, State> {
   }
 
   public render() {
+    if (this.state.fetchingPostUserInteractions) {
+      return null;
+    }
+
+    console.log(this.state);
+
     return (
       <div className={`${styles.post} mb-4`}>
         <div className={styles.post_header}>
@@ -156,6 +160,10 @@ class Post extends Component<Props, State> {
     );
   }
 
+  public componentDidMount() {
+    this.apiGetPostUserInteractions();
+  }
+
   public handleDeletePost() {
     console.log("DELETE POST");
   }
@@ -190,6 +198,29 @@ class Post extends Component<Props, State> {
         this.setState({ userSubscription: subscription });
       })
       .catch(() => console.log("Subscription system failed"));
+  }
+
+  public apiGetPostUserInteractions() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post";
+    axios
+      .post(`${postUrl}/user_interactions`, {
+        postId: this.props.id,
+        userId: 1 // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
+      })
+      .then(res => {
+        console.log(res.data);
+        this.setState({
+          fetchingPostUserInteractions: false,
+          userRate: res.data.rate || 0,
+          userSubscription: res.data.subscription
+        });
+      })
+      .catch(() => console.log("Failed to get post-user interactions"));
   }
 
   public getCommentSection() {

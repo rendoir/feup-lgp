@@ -17,8 +17,6 @@ interface IState {
   comments: any[];
   fetchingPostInfo: boolean;
   fetchingPostUserInteractions: boolean;
-  userRate: number;
-  userSubscription: boolean;
 }
 
 const postStyle = {
@@ -46,15 +44,12 @@ class PostView extends React.Component<IProps, IState> {
           id: "",
           title: ""
         }
-      ],
-      userRate: 1,
-      userSubscription: false
+      ]
     };
   }
 
   public componentDidMount() {
     this.apiGetPost(this.props.match.params.id);
-    this.apiGetPostUserInteractions(this.props.match.params.id);
   }
 
   public apiGetPost(id: number) {
@@ -82,29 +77,6 @@ class PostView extends React.Component<IProps, IState> {
       .catch(() => console.log("Failed to get post info"));
   }
 
-  public apiGetPostUserInteractions(id: number) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post";
-    axios
-      .post(`${postUrl}/user_interactions`, {
-        postId: id,
-        userId: 1 // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
-      })
-      .then(res => {
-        console.log(res.data);
-        this.setState({
-          fetchingPostUserInteractions: false,
-          userRate: res.data.rate,
-          userSubscription: res.data.subscription
-        });
-      })
-      .catch(() => console.log("Failed to get post-user interactions"));
-  }
-
   public date() {
     if (this.state.post[0].date_updated != null) {
       return this.processDate(this.state.post[0].date_updated);
@@ -118,10 +90,7 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (
-      this.state.fetchingPostInfo ||
-      this.state.fetchingPostUserInteractions
-    ) {
+    if (this.state.fetchingPostInfo) {
       return null;
     }
 
@@ -141,8 +110,6 @@ class PostView extends React.Component<IProps, IState> {
           videos={this.state.post[0].content_video}
           images={this.state.post[0].content_image}
           comments={this.state.comments}
-          userRate={this.state.userRate}
-          userSubscription={this.state.userSubscription}
         />
       </div>
     );
