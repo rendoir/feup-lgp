@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 
 import createSequence from "../../utils/createSequence";
 
@@ -28,6 +29,7 @@ interface IProps {
 interface IState {
   title: string;
   text: string;
+  redirect: boolean;
 }
 
 const seq = createSequence();
@@ -45,19 +47,15 @@ class DeleteModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      redirect: false,
       text: props.text || "",
       title: props.title || ""
     };
 
     // Post manipulation handlers
-    this.handlePostCreation = this.handlePostCreation.bind(this);
     this.handlePostDeletion = this.handlePostDeletion.bind(this);
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
-  }
-
-  public apiCreatePost() {
-    // TODO: call api to create post
   }
 
   public apiDeletePost() {
@@ -77,17 +75,27 @@ class DeleteModal extends Component<IProps, IState> {
         }
       })
       .then(res => {
-        console.log("Post deleted");
+        console.log("Post deleted - reloading page");
+        if (window.location.pathname === "/post/" + this.props.id) {
+          this.setState({
+            redirect: true
+          });
+          this.handleRedirect();
+        } else {
+          window.location.reload();
+        }
       })
       .catch(() => console.log("Failed to delete post"));
   }
 
-  public handlePostCreation() {
-    this.apiCreatePost();
-  }
-
   public handlePostDeletion() {
     this.apiDeletePost();
+  }
+
+  public renderRedirect() {
+    if (this.state.redirect) {
+      window.location.href = "/";
+    }
   }
 
   public handleInputChange(event: any) {
@@ -109,34 +117,38 @@ class DeleteModal extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
+  public handleRedirect() {
+    if (window.location.pathname === "/post/" + this.props.id) {
+      this.renderRedirect();
+    }
+  }
+
   public getActionButton() {
     return (
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-dismiss="modal"
-        onClick={
-          this.mode === CREATE_MODE
-            ? this.handlePostCreation
-            : this.handlePostDeletion
-        }
-      >
-        {this.mode === CREATE_MODE ? "Create new post" : "Yes"}
-      </button>
+      <div>
+        {this.handleRedirect()}
+        <button
+          type="button"
+          className="btn btn-primary"
+          data-dismiss="modal"
+          onClick={this.handlePostDeletion}
+        >
+          {"Yes"}
+        </button>
+      </div>
     );
   }
 
   public render() {
-    // const className = classNames(styles.container);
-
     return (
       <div
-        id="delete_post_modal"
+        id={`delete_post_modal_${this.props.id}`}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true"
+        data-backdrop="false"
       >
         <div
           className="modal-dialog modal-dialog-centered modal-xl"
