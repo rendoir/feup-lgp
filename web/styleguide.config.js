@@ -75,6 +75,10 @@ module.exports = {
         "src/components/Scroller/Scroller.tsx",
         "src/components/Modal/Modal.tsx"
       ]
+    },
+    {
+      name: "Post",
+      components: ["src/components/Comment2/*.tsx"]
     }
   ]
 };
