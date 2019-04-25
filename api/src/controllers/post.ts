@@ -51,7 +51,7 @@ export function deletePost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting a ..post' });
+        res.status(400).send({ message: 'An error ocurred while deleting a post' });
     });
 }
 
@@ -88,7 +88,7 @@ export async function getPost(req, res) {
          * this query checks again to avoid wrong assumptions.
          */
         const comments = await query({
-            text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+            text: `SELECT c.id, c.post, c.comment, c.likes, c.date_updated, c.date_created, a.first_name, a.last_name
                     FROM posts p
                     LEFT JOIN comments c
                     ON p.id = c.post

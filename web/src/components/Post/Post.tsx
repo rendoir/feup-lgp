@@ -37,10 +37,10 @@ type IProps = {
 };
 
 interface IState {
-  post_id: number;
+  activePage: number;
   commentValue: string;
   isHovered: boolean;
-  activePage: number;
+  post_id: number;
 }
 
 class Post extends Component<IProps, IState> {
@@ -57,8 +57,6 @@ class Post extends Component<IProps, IState> {
       isHovered: false,
       post_id: 0
     };
-
-    this.handleDeletePost = this.handleDeletePost.bind(this);
 
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
@@ -165,6 +163,7 @@ class Post extends Component<IProps, IState> {
               placeholder="Insert your comment..."
               value={this.state.commentValue}
               onChange={this.changeCommentValue}
+              onKeyDown={this.onEnterPress}
               required={true}
             />
             <button
@@ -195,20 +194,27 @@ class Post extends Component<IProps, IState> {
     });
   }
 
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
+
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/newcomment";
+    postUrl += `/post/${this.state.post_id}/comment/new`;
 
     axios
-      .put(postUrl, {
+      .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
-        post: this.state.post_id
+        post_id: this.state.post_id
       })
       .then(res => {
         console.log("Comment created - reloading page...");
@@ -227,10 +233,6 @@ class Post extends Component<IProps, IState> {
 
   public getInputRequiredStyle(content: string) {
     return content !== "" ? { display: "none" } : {};
-  }
-
-  public handleDeletePost() {
-    console.log("DELETE POST");
   }
 
   public changeCommentValue(event: any) {
@@ -266,9 +268,12 @@ class Post extends Component<IProps, IState> {
       return (
         <Comment
           key={idx}
+          postID={comment.post}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
+          likes={comment.likes}
+          secondLevel={false}
         />
       );
     });

@@ -22,7 +22,7 @@ export async function getFeed(req, res) {
         const commentsToSend = [];
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.likes, c.date_updated, c.date_created, a.first_name, a.last_name
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post

@@ -1,7 +1,6 @@
 'use strict';
 import { Router } from 'express';
 import * as multer from 'multer';
-import * as comment_controller from '../controllers/comment';
 import * as controller from '../controllers/post';
 
 export const postRouter = Router();
@@ -82,57 +81,3 @@ postRouter.delete('/delete', controller.deletePost);
  *     }
  */
 postRouter.get('/:id', controller.getPost);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.put('/newcomment', comment_controller.createComment);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.get('/:id/comments', comment_controller.getCommentsOfPost);
-
-/**
- * @api {post} /api/post/:id/delete_comment Delete a comment
- * @apiName Delete-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the comment
- * @apiParam {String}   author.id   Author of the comment
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error ocurred while deleting a comment'
- *     }
- */
-postRouter.delete('/deletecomment', comment_controller.deleteComment);
