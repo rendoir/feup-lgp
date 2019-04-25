@@ -1,7 +1,97 @@
 import * as React from "react";
+import Cookies from "universal-cookie";
+import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
-class Profile extends React.Component {
+type State = {
+  fetchingUserUserInteractions: boolean;
+  userRate: number;
+  userSubscription: boolean;
+};
+
+const cookies = new Cookies();
+
+class Profile extends React.Component<{}, State> {
+  public id: number; // Id of the profile
+  public observerId: number; // Id of the user visiting the page
+
+  constructor(props: any) {
+    super(props);
+
+    this.id = 3; // Hardcoded while profile page is not complete
+    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+
+    this.state = {
+      fetchingUserUserInteractions: true,
+      userRate: 0,
+      userSubscription: false
+    };
+
+    this.handleUserRate = this.handleUserRate.bind(this);
+    //this.handleUserSubscription = this.handleUserSubscription.bind(this);
+  }
+
+  public componentDidMount() {
+    this.apiGetUserUserInteractions();
+    console.log("JA CHAMOU");
+  }
+
+  public handleUserRate() {
+    console.log("RATE  USER ID: ", this.observerId);
+  }
+
+  /*public handleUserSubscription() {
+    console.log("SUBSCRIBE   USER ID: ", this.userId);
+    if (this.state.userSubscription) {
+      this.apiSubscription("unsubscribe");
+    } else {
+      this.apiSubscription("subscribe");
+    }
+  }
+
+  public apiSubscription(endpoint: string) {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post";
+    axios
+      .post(`${postUrl}/${endpoint}`, {
+        postId: this.props.id,
+        userId: this.userId
+      })
+      .then(res => {
+        console.log("id: ", this.props.id);
+        const subscription: boolean = endpoint === "subscribe";
+        this.setState({ userSubscription: subscription });
+      })
+      .catch(() => console.log("Subscription system failed"));
+  }*/
+
+  public async apiGetUserUserInteractions() {
+    console.log("oiiiii");
+    const interactions = await apiGetUserInteractions(
+      "users",
+      this.observerId,
+      this.id
+    );
+    console.log("RECEBEU INTERAÇOES", interactions);
+    if (interactions != null) {
+      /*this.setState({
+        fetchingUserUserInteractions: false,
+        userRate: res.data.rate || 0,
+        userSubscription: res.data.subscription
+      });*/
+    } else {
+      console.log("errooooooooooooooooo");
+    }
+  }
+
   public render() {
+    if (this.state.fetchingUserUserInteractions) {
+      return null;
+    }
+
     return (
       <div className="Profile">
         <main id="profile" className="container">

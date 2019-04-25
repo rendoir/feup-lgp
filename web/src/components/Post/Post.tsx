@@ -194,6 +194,7 @@ class Post extends Component<Props, State> {
         userId: this.userId
       })
       .then(res => {
+        console.log("id: ", this.props.id);
         const subscription: boolean = endpoint === "subscribe";
         this.setState({ userSubscription: subscription });
       })

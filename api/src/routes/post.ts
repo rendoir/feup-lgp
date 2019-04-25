@@ -50,7 +50,7 @@ postRouter.post('/create', controller.createPost);
 postRouter.post('/edit', controller.editPost);
 
 /**
- * @api {post} /api/post/delete Delete a post
+ * @api {delete} /api/post/delete Delete a post
  * @apiName Delete-A-Post
  * @apiGroup Post
  *
@@ -71,7 +71,7 @@ postRouter.post('/edit', controller.editPost);
 postRouter.delete('/delete', controller.deletePost);
 
 /**
- * @api {post} /api/post Get a post
+ * @api {get} /api/post Get a post
  * @apiName Get-A-Post
  * @apiGroup Post
  *
