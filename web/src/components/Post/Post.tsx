@@ -37,10 +37,10 @@ type IProps = {
 };
 
 interface IState {
-  post_id: number;
+  activePage: number;
   commentValue: string;
   isHovered: boolean;
-  activePage: number;
+  post_id: number;
 }
 
 class Post extends Component<IProps, IState> {
@@ -163,6 +163,7 @@ class Post extends Component<IProps, IState> {
               placeholder="Insert your comment..."
               value={this.state.commentValue}
               onChange={this.changeCommentValue}
+              onKeyDown={this.onEnterPress}
               required={true}
             />
             <button
@@ -192,6 +193,13 @@ class Post extends Component<IProps, IState> {
       post_id: this.props.id
     });
   }
+
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
 
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;

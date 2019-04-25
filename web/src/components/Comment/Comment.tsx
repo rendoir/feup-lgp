@@ -149,6 +149,7 @@ class Comment extends Component<Props, State> {
                         placeholder="Insert your comment..."
                         value={this.state.commentValue}
                         onChange={this.changeCommentValue}
+                        onKeyDown={this.onEnterPress}
                         required={true}
                       />
                       <button
@@ -227,6 +228,13 @@ class Comment extends Component<Props, State> {
     event.preventDefault();
     this.apiComments();
   }
+
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
 
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
