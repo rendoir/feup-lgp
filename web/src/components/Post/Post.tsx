@@ -11,6 +11,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import PostCarousel from "../PostCarousel/PostCarousel";
 
 type Props = {
   id: number;
@@ -56,7 +57,7 @@ class Post extends Component<Props, State> {
   public render() {
     return (
       <div>
-        <div>{this.renderImage()}</div>
+        <div>{this.renderOverlay()}</div>
         <div className={`${styles.post} mb-4`}>
           <div className={styles.post_header}>
             <Avatar
@@ -188,7 +189,7 @@ class Post extends Component<Props, State> {
     } as State);
   }
 
-  private renderImage() {
+  private renderOverlay() {
     if (this.state.clickedImage != undefined) {
       return (
         <div
@@ -206,65 +207,19 @@ class Post extends Component<Props, State> {
   }
 
   private getImages() {
-    const imgDiv = [];
-
     if (this.props.images) {
-      //Carousel
       if (this.props.images.length >= 2) {
-        let images = [];
-        let items = [];
-
-        for (let i = 0; i < this.props.images.length; i++) {
-          items.push(
-            <li
-              data-target={"#imgCarousel" + this.props.id}
-              data-slide-to={i}
-              className={i ? "" : "active"}
-            />
-          );
-          images.push(
-            <div className={"carousel-item " + (i ? "" : "active")}>
-              <div
-                className={styles.post_content_media}
-                onClick={this.handleImageClick.bind(this, this.props.images[i])}
-              >
-                <img src={this.props.images[i]} />
-              </div>
-            </div>
-          );
-        }
-
-        imgDiv.push(
-          <div
-            id={"imgCarousel" + this.props.id}
-            className="carousel slide"
-            data-ride="carousel"
-          >
-            <ol className="carousel-indicators">{items}</ol>
-            <div className="carousel-inner">{images}</div>
-            <a
-              className="carousel-control-prev"
-              href={"#imgCarousel" + this.props.id}
-              role="button"
-              data-slide="prev"
-            >
-              <span className="carousel-control-prev-icon" aria-hidden="true" />
-              <span className="sr-only">Previous</span>
-            </a>
-            <a
-              className="carousel-control-next"
-              href={"#imgCarousel" + this.props.id}
-              role="button"
-              data-slide="next"
-            >
-              <span className="carousel-control-next-icon" aria-hidden="true" />
-              <span className="sr-only">Next</span>
-            </a>
-          </div>
+        return (
+          <PostCarousel
+            id={this.props.id}
+            images={this.props.images}
+            parent={this}
+            handleImageClick={this.handleImageClick}
+          />
         );
       } else if (this.props.images.length == 1) {
         let image = this.props.images[0];
-        imgDiv.push(
+        return (
           <div
             className={styles.post_content_media}
             onClick={this.handleImageClick.bind(this, image)}
@@ -278,8 +233,6 @@ class Post extends Component<Props, State> {
         );
       }
     }
-
-    return imgDiv;
   }
 
   private getVideos() {
