@@ -15,4 +15,4 @@ const onChange = (avatar) => {
   onRemove={() => setState({ avatar: undefined })}
   size={148}
 />
-```
+```;

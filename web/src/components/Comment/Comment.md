@@ -1,5 +1,4 @@
-Comment:
-```jsx
+Comment: ```jsx
 <div>
     <Comment
         title=""
@@ -7,4 +6,4 @@ Comment:
         text="This is a super big comment just to test some stuff and has absolutely no content."
     />
 </div>
-```
+```;

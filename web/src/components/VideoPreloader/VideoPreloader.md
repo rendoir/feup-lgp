@@ -22,4 +22,4 @@ const handleVideoChange = () => {
     }}
   </VideoPreloader>
 </div>;
-```
+```;

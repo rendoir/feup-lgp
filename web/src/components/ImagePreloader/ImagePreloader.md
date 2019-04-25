@@ -22,4 +22,4 @@ const handleImageChange = () => {
     }}
   </ImagePreloader>
 </div>;
-```
+```;
