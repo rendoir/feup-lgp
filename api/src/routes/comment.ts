@@ -108,3 +108,23 @@ commentRouter.get('/:id/likes', controller.getWhoLikedComment);
  *     }
  */
 commentRouter.delete('/:id', controller.deleteComment);
+
+/**
+ * @api {put} /api/post/:id/edit_comment Edit a comment
+ * @apiName Edit-A-Comment
+ * @apiGroup Put
+ *
+ * @apiParam {String}   post.id   Number of the post this comment is related to
+ * @apiParam {String}   comment.id   Number of the comment
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error occurred while deleting a comment'
+ *     }
+ */
+commentRouter.put('/:id', controller.editComment);
