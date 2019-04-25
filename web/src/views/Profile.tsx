@@ -69,29 +69,23 @@ class Profile extends React.Component<{}, State> {
   }*/
 
   public async apiGetUserUserInteractions() {
-    console.log("oiiiii");
-    const interactions = await apiGetUserInteractions(
-      "users",
-      this.observerId,
-      this.id
-    );
-    console.log("RECEBEU INTERAÇOES", interactions);
-    if (interactions != null) {
-      /*this.setState({
-        fetchingUserUserInteractions: false,
-        userRate: res.data.rate || 0,
-        userSubscription: res.data.subscription
-      });*/
-    } else {
-      console.log("errooooooooooooooooo");
-    }
+    apiGetUserInteractions("users", this.observerId, this.id)
+      .then(res => {
+        this.setState({
+          fetchingUserUserInteractions: false,
+          userRate: res.data.rate || 0,
+          userSubscription: res.data.subscription
+        });
+        console.log(this.state);
+      })
+      .catch(() => console.log("Failed to get user-user interactions"));
   }
 
   public render() {
     if (this.state.fetchingUserUserInteractions) {
       return null;
     }
-
+    return "A pagina de perfil retorna este texto porque estava a dar uns erros da google esquisitos por causa do html do profile page";
     return (
       <div className="Profile">
         <main id="profile" className="container">

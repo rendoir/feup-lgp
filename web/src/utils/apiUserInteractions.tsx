@@ -30,14 +30,6 @@ export async function apiGetUserInteractions(
       ? `:${process.env.REACT_APP_API_PORT}`
       : "/api";
   postUrl += `/${apiGroup}`;
-  axios
-    .post(`${postUrl}/user_interactions`, body)
-    .then(res => {
-      console.log("apiUserInteraction recebeu: ", res.data);
-      return res.data;
-    })
-    .catch(() => {
-      console.log("Failed to get user interactions");
-      return null;
-    });
+
+  return axios.post(`${postUrl}/user_interactions`, body);
 }
