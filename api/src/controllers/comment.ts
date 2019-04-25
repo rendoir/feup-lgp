@@ -63,12 +63,27 @@ export function addALikeToComment(req, res) {
     // To change when loggin
     const commentId = req.params.id;
     query({
-        text: `UPDATE comments
-                SET likes = likes + 1
-                WHERE id = $1`,
-        values: [commentId],
+        text: `INSERT INTO likes_a_comment (comment,author) VALUES ($1,$2)`,
+        values: [commentId, req.body.author],
     }).then((result) => {
         res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+    });
+}
+
+export function getWhoLikedComment(req, res) {
+    const commentId = req.params.id;
+    query({
+        text: `SELECT a.first_name, a.last_name
+                FROM likes_a_comment l
+                INNER JOIN users a
+                ON l.author = a.id
+                WHERE l.comment = $1`,
+        values: [commentId],
+    }).then((result) => {
+        res.send(result.rows);
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while editing a comment' });

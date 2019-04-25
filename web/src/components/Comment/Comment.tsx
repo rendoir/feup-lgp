@@ -30,6 +30,7 @@ export type State = {
   comments: any[];
   hrefComment: string;
   isHovered: boolean;
+  likers: any[];
   redirect: boolean;
 };
 
@@ -47,6 +48,7 @@ class Comment extends Component<Props, State> {
       comments: [],
       hrefComment: "",
       isHovered: false,
+      likers: [],
       redirect: false
     };
 
@@ -217,6 +219,7 @@ class Comment extends Component<Props, State> {
       hrefComment: "comment_section_" + this.props.title
     });
     this.apiGetCommentsOfComment(Number(this.props.title));
+    this.apiGetWhoLikedComment(Number(this.props.title));
   }
 
   public handleAddComment(event: any) {
@@ -287,7 +290,7 @@ class Comment extends Component<Props, State> {
 
     axios
       .post(postUrl, {
-        author: 1,
+        author: 2,
         headers: {}
       })
       .then(res => {
@@ -295,6 +298,27 @@ class Comment extends Component<Props, State> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiGetWhoLikedComment(id: number) {
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += "/post/comment/";
+    getUrl += id;
+    getUrl += "/likes";
+
+    axios
+      .get(getUrl)
+      .then(res => {
+        console.log("Comment created - reloading page...");
+        this.setState({
+          likers: res.data
+        });
+      })
+      .catch(() => console.log("Failed to create comment"));
   }
 
   public apiDeleteComment() {
@@ -359,15 +383,43 @@ class Comment extends Component<Props, State> {
     );
   }
 
+  public getLikers() {
+    const likedUsersDiv = this.state.likers.map((liker, idx) => {
+      return (
+        <span key={"user" + idx + "liked-comment"} className="dropdown-item">
+          {liker.first_name} {liker.last_name}
+        </span>
+      );
+    });
+
+    return (
+      <span
+        id={"comment_" + this.state.commentID + " show_likes"}
+        className="dropdown-menu dropdown-menu-right"
+      >
+        {likedUsersDiv}
+      </span>
+    );
+  }
   public getLikes() {
     const likesDiv = [];
+
     if (this.props.likes > 0) {
       likesDiv.push(
         <span
           key={this.state.hrefComment + "_span_like"}
           className={styles.comment_detail}
         >
-          <i className="fas fa-thumbs-up" /> {this.props.likes}
+          <a
+            key={"comment_" + this.state.commentID + " show_likes_button"}
+            role="button"
+            data-toggle="dropdown"
+            data-target={"#comment_" + this.state.commentID + " show_likes"}
+          >
+            <i className="fas fa-thumbs-up" />
+          </a>{" "}
+          {this.props.likes}
+          {this.getLikers()}
         </span>
       );
     }
@@ -377,7 +429,6 @@ class Comment extends Component<Props, State> {
   public renderLevelComments() {
     const commentSection = this.state.comments.map((comment, idx) => {
       const key = "comment" + this.props.title + " " + idx;
-      console.log(key);
       return (
         <Comment
           key={key}

@@ -60,6 +60,27 @@ CREATE TABLE posts_categories (
     category BIGINT REFERENCES categories ON DELETE CASCADE
 );
 
+CREATE TABLE likes_a_comment (
+    comment BIGINT REFERENCES comments ON DELETE CASCADE,
+    author BIGINT REFERENCES users ON DELETE CASCADE
+);
+
+ALTER TABLE IF EXISTS ONLY likes_a_comment
+    ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
+
+CREATE FUNCTION update_likes_comment() RETURNS trigger 
+    LANGUAGE plpgsql
+    AS $$BEGIN
+        UPDATE comments SET likes = likes + 1 WHERE id = NEW.comment;
+        RETURN NEW;
+    END$$;
+
+CREATE TRIGGER update_likes_of_a_comment
+    AFTER INSERT ON likes_a_comment
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_likes_comment();
+
+
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe', 'user');
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user2@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'John', 'User', 'user');

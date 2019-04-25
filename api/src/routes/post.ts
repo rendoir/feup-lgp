@@ -149,6 +149,23 @@ postRouter.post('/comment/:id/like', commentController.addALikeToComment);
  *      message: 'An error message here'
  *     }
  */
+postRouter.get('/comment/:id/likes', commentController.getWhoLikedComment);
+
+/**
+ * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @apiName Post-A-Comment
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post
+ * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   comment Text to write in the comment
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
 postRouter.get('/comment/:id', commentController.getCommentsOfComment);
 
 /**
