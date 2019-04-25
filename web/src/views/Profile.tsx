@@ -17,7 +17,7 @@ class Profile extends React.Component<{}, State> {
   constructor(props: any) {
     super(props);
 
-    this.id = 3; // Hardcoded while profile page is not complete
+    this.id = 2; // Hardcoded while profile page is not complete
     this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
