@@ -363,7 +363,10 @@ class Comment extends Component<Props, State> {
     const likesDiv = [];
     if (this.props.likes > 0) {
       likesDiv.push(
-        <span className={styles.comment_detail}>
+        <span
+          key={this.state.hrefComment + "_span_like"}
+          className={styles.comment_detail}
+        >
           <i className="fas fa-thumbs-up" /> {this.props.likes}
         </span>
       );
@@ -373,9 +376,11 @@ class Comment extends Component<Props, State> {
 
   public renderLevelComments() {
     const commentSection = this.state.comments.map((comment, idx) => {
+      const key = "comment" + this.props.title + " " + idx;
+      console.log(key);
       return (
         <Comment
-          key={"comment" + this.props.title + " " + idx}
+          key={key}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
@@ -398,6 +403,7 @@ class Comment extends Component<Props, State> {
     if (this.state.comments.length > 0) {
       actionSeeRepliesDiv.push(
         <button
+          key={this.state.hrefComment + "_button"}
           className={styles.comment_action}
           role="button"
           data-toggle="collapse"
