@@ -15,6 +15,7 @@ import styles from "./../Post/Post.module.scss";
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
+  postID: number;
   title: string | undefined;
   text: string | undefined;
 
@@ -233,8 +234,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/comment/";
-    postUrl += this.state.commentID;
+    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
 
     axios
       .post(postUrl, {
@@ -264,8 +264,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += "/post/comment/";
-    getUrl += id;
+    getUrl += `/post/${this.props.postID}/comment/${id}`;
 
     axios
       .get(getUrl)
@@ -284,9 +283,9 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/comment/";
-    postUrl += this.state.commentID;
-    postUrl += "/like";
+    postUrl += `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }/like`;
 
     axios
       .post(postUrl, {
@@ -306,9 +305,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += "/post/comment/";
-    getUrl += id;
-    getUrl += "/likes";
+    getUrl += `/post/${this.props.postID}/comment/${id}/likes`;
 
     axios
       .get(getUrl)
@@ -327,7 +324,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/deletecomment";
+    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
     axios
       .delete(postUrl, {
         data: {
@@ -432,6 +429,7 @@ class Comment extends Component<Props, State> {
       return (
         <Comment
           key={key}
+          postID={comment.post}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}

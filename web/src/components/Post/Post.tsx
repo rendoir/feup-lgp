@@ -199,15 +199,14 @@ class Post extends Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/";
-    postUrl += this.state.post_id;
-    postUrl += "/newcomment";
+    postUrl += `/post/${this.state.post_id}/comment/new`;
 
     axios
       .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
-        headers: {}
+        headers: {},
+        post_id: this.state.post_id
       })
       .then(res => {
         console.log("Comment created - reloading page...");
@@ -261,6 +260,7 @@ class Post extends Component<IProps, IState> {
       return (
         <Comment
           key={idx}
+          postID={comment.post}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}

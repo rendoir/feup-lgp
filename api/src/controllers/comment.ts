@@ -13,7 +13,7 @@ export function createComment(req, res) {
 
     query({
         text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [req.body.author, req.params.id, req.body.comment],
+        values: [req.body.author, req.body.post_id, req.body.comment],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -105,7 +105,7 @@ export async function getCommentsOfComment(req, res) {
     const commentId = req.params.id;
     try {
         const comments = await query({
-            text: `SELECT c1.id, c1.comment, c1.likes, c1.date_updated, c1.date_created, a.first_name, a.last_name
+            text: `SELECT c1.id, c1.post, c1.comment, c1.likes, c1.date_updated, c1.date_created, a.first_name, a.last_name
                     FROM comments c1
                     LEFT JOIN comments c2
                     ON c1.comment_ref = c2.id
