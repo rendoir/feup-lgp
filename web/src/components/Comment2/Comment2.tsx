@@ -5,10 +5,9 @@ import {
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
-import React, { PureComponent, ReactNode } from "react";
-import { Icon } from "../../components";
+import React, { MouseEvent, PureComponent, ReactNode } from "react";
+import { Avatar, Icon, InputNext } from "../../components";
 import { AvatarPlaceholder } from "../../utils/types";
-import Avatar from "../Avatar/Avatar";
 import styles from "./Comment2.module.css";
 
 export type Props = {
@@ -20,15 +19,55 @@ export type Props = {
   date: string;
   className?: string;
   onChange?: (message: string) => any;
-  onDelete?: () => any;
   edited: boolean;
+  reply: boolean;
+  replies?: Comment2[];
+  liked: boolean;
+  likes: number;
+  withInput: boolean;
+  withReplyInput: boolean;
 };
 
-class Comment2 extends PureComponent<Props> {
+type State = {
+  likes: number;
+  liked: boolean;
+  message: string;
+};
+
+class Comment2 extends PureComponent<Props, State> {
   private static defaultProps = {
     edited: false,
-    placeholder: "empty"
+    liked: false,
+    likes: 0,
+    message: "",
+    placeholder: "empty",
+    reply: false,
+    withInput: true,
+    withReplyInput: false
   };
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      liked: this.props.liked,
+      likes: this.props.likes,
+      message: ""
+    };
+
+    this.handleLike = this.handleLike.bind(this);
+  }
+
+  public handleLike(event: MouseEvent): void {
+    event.preventDefault();
+
+    this.setState(state => {
+      return {
+        liked: !state.liked,
+        likes: state.liked ? state.likes - 1 : state.likes + 1
+      };
+    });
+  }
 
   public renderAvatar(): ReactNode {
     const { avatar } = this.props;
@@ -55,24 +94,25 @@ class Comment2 extends PureComponent<Props> {
   }
 
   public renderFooter(): ReactNode {
+    const { reply } = this.props;
+
     return (
       <div className={styles.footer}>
         <div className={styles.footerLinks}>
-          <a href="#" className={styles.link}>
+          <a href="#" className={styles.link} onClick={this.handleLike}>
             <Icon icon={faThumbsUp} />
             Like
           </a>
-          |
-          <a href="#" className={styles.link}>
-            <Icon icon={faReply} />
-            Reply
-          </a>
-          |
+          {reply ? null : (
+            <a href="#" className={styles.link}>
+              <Icon icon={faReply} />
+              Reply
+            </a>
+          )}
           <a href="#" className={styles.link}>
             <Icon icon={faEdit} />
             Edit
           </a>
-          |
           <a href="#" className={styles.link}>
             <Icon icon={faTrash} />
             Delete
@@ -80,7 +120,39 @@ class Comment2 extends PureComponent<Props> {
         </div>
         <div className={styles.footerLinks}>
           <Icon icon={faThumbsUp} theme="primary" />
-          145
+          {this.state.likes}
+        </div>
+      </div>
+    );
+  }
+
+  public renderReplies(): ReactNode {
+    const { replies } = this.props;
+
+    if (!replies) {
+      return null;
+    }
+
+    return <div className={styles.replies}>{replies}</div>;
+  }
+
+  public renderInput(): ReactNode {
+    const { withInput, reply } = this.props;
+
+    if (!withInput || reply) {
+      return null;
+    }
+
+    return (
+      <div className={styles.inputWrapper}>
+        {this.renderAvatar()}
+        <div className={styles.input}>
+          <InputNext
+            onChange={message => this.setState({ message })}
+            value={this.state.message}
+            id={"1"}
+            placeholder={"Leave a comment"}
+          />
         </div>
       </div>
     );
@@ -91,12 +163,16 @@ class Comment2 extends PureComponent<Props> {
     const className = classNames(styles.container, this.props.className);
 
     return (
-      <div id={`comment_${id}`} className={className}>
-        {this.renderAvatar()}
-        <div>
-          {this.renderMessage()}
-          {this.renderFooter()}
+      <div className={styles.comments}>
+        <div id={`comment_${id}`} className={className}>
+          {this.renderAvatar()}
+          <div>
+            {this.renderMessage()}
+            {this.renderFooter()}
+            {this.renderReplies()}
+          </div>
         </div>
+        {this.renderInput()}
       </div>
     );
   }

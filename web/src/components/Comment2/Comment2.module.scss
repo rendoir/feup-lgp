@@ -9,6 +9,15 @@ $comment-title-color-hover: darken($color-primary, 10%);
 $comment-title-color: $color-primary;
 $comment-title-font-weight: 800;
 
+.comments {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: center;
+  padding: $comment-padding 0;
+}
+
 .container {
   all: initial;
   display: flex;
@@ -26,7 +35,7 @@ $comment-title-font-weight: 800;
   padding-right: $comment-padding;
   justify-content: flex-start;
   align-items: flex-start;
-  align-content: center;
+  align-content: flex-start;
 }
 
 .wrapper {
@@ -86,4 +95,24 @@ $comment-title-font-weight: 800;
   color: $greyish;
   font-size: $comment-font-size * 0.8;
   float: right;
+}
+
+.replies {
+  padding-top: $comment-padding;
+  margin-left: $comment-padding * 2;
+  max-width: 500px;
+
+  & .wrapper {
+    width: auto;
+  }
+}
+
+.inputWrapper {
+  display: flex;
+  flex-flow: row;;
+  padding: $comment-padding 0;
+}
+
+.input {
+  width: 100%;
 }
