@@ -39,7 +39,6 @@ export type State = {
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
   public id: string;
-  public text: string | undefined;
 
   constructor(props: Props) {
     super(props);
