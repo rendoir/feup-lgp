@@ -14,6 +14,10 @@ import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
+// - Import utils
+import { apiSubscription } from "../../utils/apiSubscription";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
 type Props = {
   id: number;
 
@@ -38,6 +42,8 @@ type State = {
   fetchingPostUserInteractions: boolean;
   userRate: number;
   userSubscription: boolean;
+  waitingRateRequest: boolean;
+  waitingSubscriptionRequest: boolean;
 };
 
 const cookies = new Cookies();
@@ -59,7 +65,9 @@ class Post extends Component<Props, State> {
       fetchingPostUserInteractions: true,
       isHovered: false,
       userRate: 0,
-      userSubscription: false
+      userSubscription: false,
+      waitingRateRequest: false,
+      waitingSubscriptionRequest: false
     };
     console.log("rate: ", this.state.userRate);
     console.log("subscription: ", this.state.userSubscription);
@@ -169,50 +177,49 @@ class Post extends Component<Props, State> {
   }
 
   public handlePostRate() {
-    console.log("RATE  USER ID: ", this.userId);
+    console.log("RATE LOGGED USER ID: ", this.userId);
   }
 
   public handlePostSubscription() {
-    console.log("SUBSCRIBE   USER ID: ", this.userId);
-    if (this.state.userSubscription) {
-      this.apiSubscription("unsubscribe");
-    } else {
-      this.apiSubscription("subscribe");
+    console.log("SUBSCRIBE LOGGED USER ID: ", this.userId);
+
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
     }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+    console.log(this.state);
+    this.apiSubscription(endpoint);
   }
 
   public apiSubscription(endpoint: string) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post";
-    axios
-      .post(`${postUrl}/${endpoint}`, {
-        postId: this.props.id,
-        userId: this.userId
+    apiSubscription("post", endpoint, this.userId, this.props.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
+        console.log("SUBSCRIÇAO BEM SUCEDIDA", this.state);
       })
-      .then(res => {
-        console.log("id: ", this.props.id);
-        const subscription: boolean = endpoint === "subscribe";
-        this.setState({ userSubscription: subscription });
-      })
-      .catch(() => console.log("Subscription system failed"));
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
   }
 
   public apiGetPostUserInteractions() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post";
-    axios
-      .post(`${postUrl}/user_interactions`, {
-        postId: this.props.id,
-        userId: 1 // HARD CODED ATE CENSEGUIR OBTER ID DO USER LOGADO
-      })
+    apiGetUserInteractions("post", this.userId, this.props.id)
       .then(res => {
         console.log(res.data);
         this.setState({
