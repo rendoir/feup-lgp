@@ -39,10 +39,6 @@ class Feed extends React.Component<Props, State> {
   public render() {
     return (
       <div id="Test" className="container my-5">
-        {/*<div className="outside">
-            <img className="object-fit-cover" src="https://via.placeholder.com/800x400"></img>
-        </div>*/}
-
         <Post
           id={1}
           title="Title"
@@ -51,11 +47,38 @@ class Feed extends React.Component<Props, State> {
           comments={[]}
           images={[
             "https://via.placeholder.com/800x400",
-            "https://via.placeholder.com/600x500"
+            "https://via.placeholder.com/400x800"
           ]}
           videos={["https://www.youtube.com/embed/cmpRLQZkTb8"]}
           date={"25-03-2014"}
           text="My text"
+        />
+
+        <Post
+          id={2}
+          title="Title2"
+          author="Author2"
+          children={[]}
+          comments={[]}
+          images={[
+            "https://via.placeholder.com/700x300",
+            "https://via.placeholder.com/300x700"
+          ]}
+          videos={undefined}
+          date={"25-03-2014"}
+          text="My text2"
+        />
+
+        <Post
+          id={3}
+          title="Title3"
+          author="Author3"
+          children={[]}
+          comments={[]}
+          images={["https://via.placeholder.com/500x500"]}
+          videos={undefined}
+          date={"25-03-2014"}
+          text="My text3"
         />
       </div>
     );
