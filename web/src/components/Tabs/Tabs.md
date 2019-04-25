@@ -11,4 +11,4 @@ const handlePick = (current) => setState({ current });
     ]}
     onPick={handlePick}
 />
-```;
+```

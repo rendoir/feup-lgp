@@ -5,4 +5,4 @@ import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
   <LinkIconButton icon={faThumbsUp} href='#' target='_blank' />
   <LinkIconButton icon={faThumbsDown} href='#' target='_blank' />
 </div>
-```;
+```
