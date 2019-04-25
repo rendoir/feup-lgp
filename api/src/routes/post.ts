@@ -1,7 +1,7 @@
 'use strict';
 import { Router } from 'express';
 import * as multer from 'multer';
-import * as comment_controller from '../controllers/comment';
+import * as commentController from '../controllers/comment';
 import * as controller from '../controllers/post';
 
 export const postRouter = Router();
@@ -98,7 +98,24 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.put('/newcomment', comment_controller.createComment);
+postRouter.post('/:id/newcomment', commentController.createComment);
+
+/**
+ * @api {post} /api/post/comment/:id/ Create a new comment on the post
+ * @apiName Post-A-Comment
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post
+ * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   comment Text to write in the comment
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/comment/:id', commentController.createNewCommentForComment);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post
@@ -115,7 +132,7 @@ postRouter.put('/newcomment', comment_controller.createComment);
  *      message: 'An error message here'
  *     }
  */
-postRouter.put('/comment/newcomment', comment_controller.createNewCommentForComment);
+postRouter.post('/comment/:id/like', commentController.addALikeToComment);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post
@@ -132,24 +149,7 @@ postRouter.put('/comment/newcomment', comment_controller.createNewCommentForComm
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/comments/:id/like', comment_controller.addALikeToComment);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.get('/comments/:id', comment_controller.getCommentsOfComment);
+postRouter.get('/comment/:id', commentController.getCommentsOfComment);
 
 /**
  * @api {post} /api/post/:id/delete_comment Delete a comment
@@ -169,4 +169,4 @@ postRouter.get('/comments/:id', comment_controller.getCommentsOfComment);
  *      message: 'An error ocurred while deleting a comment'
  *     }
  */
-postRouter.delete('/deletecomment', comment_controller.deleteComment);
+postRouter.delete('/deletecomment', commentController.deleteComment);

@@ -5,7 +5,7 @@ import * as request from 'request-promise';
 import {query} from '../db/db';
 
 export function createComment(req, res) {
-    if (!req.body.comment.trim() || !req.body.comment.trim()) {
+    if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
         return;
@@ -13,7 +13,7 @@ export function createComment(req, res) {
 
     query({
         text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [req.body.author, req.body.post, req.body.comment],
+        values: [req.body.author, req.params.id, req.body.comment],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -22,26 +22,26 @@ export function createComment(req, res) {
     });
 }
 
-export function createNewCommentForComment(req, res) {
-    if (!req.body.comment.trim() || !req.body.comment.trim()) {
+export async function createNewCommentForComment(req, res) {
+    if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
         return;
     }
 
-    query({
+    try {
+        await query({
         text: 'INSERT INTO comments (author, post, comment_ref, comment) VALUES ($1, (SELECT post FROM comments WHERE id = $1),$2, $3)',
-        values: [req.body.author, req.body.comment_id, req.body.comment],
-    }).then((result) => {
+        values: [req.body.author, req.params.id, req.body.comment]});
         res.status(200).send();
-    }).catch((error) => {
+    } catch (error) {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
-    });
+    }
 }
 
 export function editComment(req, res) {
-    if (!req.body.comment.trim() || !req.body.comment.trim()) {
+    if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while editing a comment' });
         return;

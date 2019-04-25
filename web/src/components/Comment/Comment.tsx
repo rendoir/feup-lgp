@@ -230,13 +230,13 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/comment/newcomment";
+    postUrl += "/post/comment/";
+    postUrl += this.state.commentID;
 
     axios
-      .put(postUrl, {
+      .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
-        comment_id: this.state.commentID,
         headers: {}
       })
       .then(res => {
@@ -261,7 +261,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += "/post/comments/";
+    getUrl += "/post/comment/";
     getUrl += id;
 
     axios
@@ -281,7 +281,7 @@ class Comment extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/comments/";
+    postUrl += "/post/comment/";
     postUrl += this.state.commentID;
     postUrl += "/like";
 
