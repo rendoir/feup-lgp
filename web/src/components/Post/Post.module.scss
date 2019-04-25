@@ -5,7 +5,9 @@
 }
 
 .post_header,
-.post_content,
+.post_content_files,
+.post_content_media,
+.post_content_text,
 .post_stats,
 .post_actions {
   display: flex;
@@ -73,6 +75,15 @@
   padding: 0.75rem 1.5rem;
 }
 
+.post_content_files, .post_content_files {
+  margin: 0;
+  padding: 0.75rem 1.5rem;
+}
+
+.post_content_files i {
+  vertical-align: middle;
+}
+
 .post_content_media img,
 .post_content_media iframe {
   width: 100%;
@@ -118,7 +129,8 @@
 .post_actions button,
 .comment_action,
 .submit_comment,
-.post_options button {
+.post_options button,
+.post_content_files div button {
   width: 30%;
   background: none;
   border: none;
@@ -156,14 +168,16 @@
 .post_actions button:hover,
 .comment_action:hover,
 .submit_comment:hover,
-.post_options button:hover {
+.post_options button:hover,
+.post_content_files div button:hover {
   background: rgb(245, 245, 245);
 }
 
 .post_actions button:focus,
 .comment_action:focus,
 .submit_comment:focus,
-.post_options button:focus {
+.post_options button:focus,
+.post_content_files div button:focus {
   outline: none;
 }
 

@@ -52,6 +52,10 @@ class Feed extends React.Component<Props, State> {
           videos={["https://www.youtube.com/embed/cmpRLQZkTb8"]}
           date={"25-03-2014"}
           text="My text"
+          files={[
+            { name: "File1", type: "Type1", src: "Src1", size: 1 },
+            { name: "File2", type: "Type2", src: "Src2", size: 25 }
+          ]}
         />
 
         <Post

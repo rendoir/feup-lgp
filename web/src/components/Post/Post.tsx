@@ -12,6 +12,7 @@ import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 import PostCarousel from "../PostCarousel/PostCarousel";
+import PostFile from "../PostFile/PostFile";
 
 type Props = {
   id: number;
@@ -29,6 +30,13 @@ type Props = {
   text: string | undefined;
 
   comments: any[];
+
+  files?: {
+    name: string;
+    type: string;
+    src: string;
+    size: number;
+  }[];
 };
 
 type State = {
@@ -112,6 +120,7 @@ class Post extends Component<Props, State> {
           </div>
           {this.getImages()}
           {this.getVideos()}
+          {this.getFiles()}
           <div className={styles.post_stats}>
             <span>35 likes</span>
             <span>14 comments</span>
@@ -254,6 +263,18 @@ class Post extends Component<Props, State> {
     }
 
     return videoDiv;
+  }
+
+  private getFiles() {
+    const filesDiv = [];
+
+    if (this.props.files) {
+      for (const file of this.props.files) {
+        filesDiv.push(<PostFile file={file} />);
+      }
+    }
+
+    return filesDiv;
   }
 }
 
