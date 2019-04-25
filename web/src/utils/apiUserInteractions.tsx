@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getApiURL } from "../utils/apiURL";
 
 export async function apiGetUserInteractions(
   apiGroup: string,
@@ -24,12 +25,6 @@ export async function apiGetUserInteractions(
 
   console.log("user interactions body", body);
 
-  let postUrl = `${location.protocol}//${location.hostname}`;
-  postUrl +=
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-      ? `:${process.env.REACT_APP_API_PORT}`
-      : "/api";
-  postUrl += `/${apiGroup}`;
-
-  return axios.post(`${postUrl}/user_interactions`, body);
+  const apiUrl = getApiURL(`/${apiGroup}/user_interactions`);
+  return axios.post(apiUrl, body);
 }

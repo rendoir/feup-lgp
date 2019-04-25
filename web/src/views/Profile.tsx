@@ -1,11 +1,14 @@
 import * as React from "react";
 import Cookies from "universal-cookie";
+import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
 type State = {
   fetchingUserUserInteractions: boolean;
   userRate: number;
   userSubscription: boolean;
+  waitingRateRequest: boolean;
+  waitingSubscriptionRequest: boolean;
 };
 
 const cookies = new Cookies();
@@ -17,58 +20,65 @@ class Profile extends React.Component<{}, State> {
   constructor(props: any) {
     super(props);
 
-    this.id = 2; // Hardcoded while profile page is not complete
+    this.id = 4; // Hardcoded while profile page is not complete
     this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       fetchingUserUserInteractions: true,
       userRate: 0,
-      userSubscription: false
+      userSubscription: false,
+      waitingRateRequest: false,
+      waitingSubscriptionRequest: false
     };
 
     this.handleUserRate = this.handleUserRate.bind(this);
-    //this.handleUserSubscription = this.handleUserSubscription.bind(this);
+    this.handleUserSubscription = this.handleUserSubscription.bind(this);
   }
 
   public componentDidMount() {
     this.apiGetUserUserInteractions();
-    console.log("JA CHAMOU");
   }
 
   public handleUserRate() {
-    console.log("RATE  USER ID: ", this.observerId);
+    console.log("RATE LOGGED USER ID: ", this.observerId);
   }
 
-  /*public handleUserSubscription() {
-    console.log("SUBSCRIBE   USER ID: ", this.userId);
-    if (this.state.userSubscription) {
-      this.apiSubscription("unsubscribe");
-    } else {
-      this.apiSubscription("subscribe");
+  public handleUserSubscription() {
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
     }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+
+    this.apiSubscription(endpoint);
   }
 
   public apiSubscription(endpoint: string) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post";
-    axios
-      .post(`${postUrl}/${endpoint}`, {
-        postId: this.props.id,
-        userId: this.userId
+    apiSubscription("users", endpoint, this.observerId, this.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
       })
-      .then(res => {
-        console.log("id: ", this.props.id);
-        const subscription: boolean = endpoint === "subscribe";
-        this.setState({ userSubscription: subscription });
-      })
-      .catch(() => console.log("Subscription system failed"));
-  }*/
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
+  }
 
-  public async apiGetUserUserInteractions() {
+  public apiGetUserUserInteractions() {
     apiGetUserInteractions("users", this.observerId, this.id)
       .then(res => {
         this.setState({
@@ -76,16 +86,46 @@ class Profile extends React.Component<{}, State> {
           userRate: res.data.rate || 0,
           userSubscription: res.data.subscription
         });
-        console.log(this.state);
       })
       .catch(() => console.log("Failed to get user-user interactions"));
+  }
+
+  public getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div>
+        <button onClick={this.handleUserRate}>
+          <i className="fas fa-thumbs-up" />
+          <span>Rate (To Be Implemented)</span>
+        </button>
+        <button onClick={this.handleUserSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+      </div>
+    );
   }
 
   public render() {
     if (this.state.fetchingUserUserInteractions) {
       return null;
     }
-    return "A pagina de perfil retorna este texto porque estava a dar uns erros da google esquisitos por causa do html do profile page";
+
+    return (
+      <div>
+        <h3>
+          This text is being shown due to some google errors on the page's html
+        </h3>
+        {this.getUserInteractionButtons()}
+      </div>
+    );
+
     return (
       <div className="Profile">
         <main id="profile" className="container">

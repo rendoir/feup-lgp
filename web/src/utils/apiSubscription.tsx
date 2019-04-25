@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getApiURL } from "../utils/apiURL";
 
 export async function apiSubscription(
   apiGroup: string,
@@ -25,19 +26,6 @@ export async function apiSubscription(
 
   console.log("subscription body", body);
 
-  let postUrl = `${location.protocol}//${location.hostname}`;
-  postUrl +=
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-      ? `:${process.env.REACT_APP_API_PORT}`
-      : "/api";
-  postUrl += `/${apiGroup}`;
-  axios
-    .post(`${postUrl}/${endpoint}`, body)
-    .then(() => {
-      return "boas";
-    })
-    .catch(() => {
-      console.log("Subscription system failed");
-      return false;
-    });
+  const apiUrl = getApiURL(`/${apiGroup}/${endpoint}`);
+  return axios.post(apiUrl, body);
 }
