@@ -65,3 +65,32 @@ before((done) => {
         return done();
     });
 });
+
+describe('Responds with error 404', () => {
+    it('Should return an unauthorized response state', (done) => {
+        request(app)
+            .get('/unknown')
+            // .set('authorization', 'Bearer ' + authToken)
+            .expect(404)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.message).to.have.string(`Endpoint not found`);
+                done();
+            });
+    });
+});
+
+describe('Root GET', () => {
+    it('Should return a welcome message', (done) => {
+        request(app)
+            .get('/')
+            // .set('authorization', 'Bearer ' + authToken)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.text).to.have.string('welcome to node api');
+                done();
+            });
+    });
+});
