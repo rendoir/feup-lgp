@@ -20,7 +20,6 @@ export type Props = {
   text: string | undefined;
 
   author: string | undefined;
-  likes: number;
 
   secondLevel: boolean;
 };
@@ -32,6 +31,7 @@ export type State = {
   hrefComment: string;
   isHovered: boolean;
   likers: any[];
+  likes: number;
   redirect: boolean;
 };
 
@@ -50,6 +50,7 @@ class Comment extends Component<Props, State> {
       hrefComment: "",
       isHovered: false,
       likers: [],
+      likes: 0,
       redirect: false
     };
 
@@ -353,7 +354,7 @@ class Comment extends Component<Props, State> {
       })
       .then(res => {
         console.log("Comment liked - reloading page...");
-        window.location.reload();
+        this.apiGetWhoLikedComment(this.state.commentID);
       })
       .catch(() => console.log("Failed to add like to comment"));
   }
@@ -379,7 +380,7 @@ class Comment extends Component<Props, State> {
       })
       .then(res => {
         console.log("Comment disliked - reloading page...");
-        window.location.reload();
+        this.apiGetWhoLikedComment(this.state.commentID);
       })
       .catch(() => console.log("Failed to delete like from a comment"));
   }
@@ -396,7 +397,8 @@ class Comment extends Component<Props, State> {
       .get(getUrl)
       .then(res => {
         this.setState({
-          likers: res.data
+          likers: res.data,
+          likes: res.data.length
         });
       })
       .catch(() => console.log("Failed to create comment"));
@@ -485,7 +487,7 @@ class Comment extends Component<Props, State> {
   public getLikes() {
     const likesDiv = [];
 
-    if (this.props.likes > 0) {
+    if (this.state.likes > 0) {
       likesDiv.push(
         <span
           key={this.state.hrefComment + "_span_like"}
@@ -499,7 +501,7 @@ class Comment extends Component<Props, State> {
           >
             {this.userLiked()}
           </a>{" "}
-          {this.props.likes}
+          {this.state.likes}
           {this.getLikers()}
         </span>
       );
@@ -517,7 +519,6 @@ class Comment extends Component<Props, State> {
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
-          likes={comment.likes}
           secondLevel={true}
         />
       );
