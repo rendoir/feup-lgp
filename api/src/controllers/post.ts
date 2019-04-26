@@ -65,7 +65,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.visibility, p.date_created, p.date_updated
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                     FROM posts p
                     INNER JOIN users a
                     ON p.author = a.id
@@ -105,15 +105,40 @@ export async function getPost(req, res) {
                     ORDER BY c.date_updated ASC;`,
             values: [postId, userId],
         });
+
+        const likers = await query({
+            text: `SELECT a.id, a.first_name, a.last_name
+                        FROM likes_a_post l
+                        INNER JOIN users a
+                        ON l.author = a.id
+                        WHERE l.post = $1`,
+            values: [postId],
+        });
+
         const result = {
             post: post.rows,
             comments: comments.rows,
+            likers: likers.rows,
         };
         res.send(result);
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
     }
+}
+
+export function addALikeToPost(req, res) {
+    // To change when loggin
+    const postId = req.params.id;
+    query({
+        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
+        values: [postId, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+    });
 }
 
 export function submitFacebookPost(postInfo, files, posterDbId): Promise<any> {

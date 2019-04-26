@@ -76,7 +76,7 @@ export function addALikeToComment(req, res) {
 export function getWhoLikedComment(req, res) {
     const commentId = req.params.id;
     query({
-        text: `SELECT a.first_name, a.last_name
+        text: `SELECT a.id, a.first_name, a.last_name
                 FROM likes_a_comment l
                 INNER JOIN users a
                 ON l.author = a.id

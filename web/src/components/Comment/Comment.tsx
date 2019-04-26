@@ -266,6 +266,25 @@ class Comment extends Component<Props, State> {
     this.apiAddLikeToComment();
   }
 
+  public userLiked() {
+    const userLoggedIn = 2;
+    const divStyle = { color: "black" };
+
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      divStyle.color = "blue";
+    }
+
+    return <i className="fas fa-thumbs-up" style={divStyle} />;
+  }
+
   public apiGetCommentsOfComment(id: number) {
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
@@ -277,7 +296,6 @@ class Comment extends Component<Props, State> {
     axios
       .get(getUrl)
       .then(res => {
-        console.log("Comment created - reloading page...");
         this.setState({
           comments: res.data
         });
@@ -318,7 +336,6 @@ class Comment extends Component<Props, State> {
     axios
       .get(getUrl)
       .then(res => {
-        console.log("Comment created - reloading page...");
         this.setState({
           likers: res.data
         });
@@ -421,7 +438,7 @@ class Comment extends Component<Props, State> {
             data-toggle="dropdown"
             data-target={"#comment_" + this.state.commentID + " show_likes"}
           >
-            <i className="fas fa-thumbs-up" />
+            {this.userLiked()}
           </a>{" "}
           {this.props.likes}
           {this.getLikers()}

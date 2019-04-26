@@ -35,6 +35,7 @@ CREATE TABLE posts (
     content_document TEXT ARRAY,
     -- rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT valid_rate CHECK (price >= 1 AND price <= 10),
     visibility visibility_enum NOT NULL DEFAULT 'public',
+    likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
     date_updated TIMESTAMP
 );
@@ -65,6 +66,9 @@ CREATE TABLE likes_a_comment (
     author BIGINT REFERENCES users ON DELETE CASCADE
 );
 
+/**
+* Likes on a Comment
+*/
 ALTER TABLE IF EXISTS ONLY likes_a_comment
     ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
 
@@ -79,6 +83,53 @@ CREATE TRIGGER update_likes_of_a_comment
     AFTER INSERT ON likes_a_comment
     FOR EACH ROW
     EXECUTE PROCEDURE update_likes_comment();
+
+CREATE FUNCTION delete_likes_comment() RETURNS trigger 
+    LANGUAGE plpgsql
+    AS $$BEGIN
+        UPDATE comments SET likes = likes - 1 WHERE id = OLD.comment;
+        RETURN NEW;
+    END$$;
+
+CREATE TRIGGER delete_likes_of_a_comment
+    AFTER DELETE ON likes_a_comment
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_likes_comment();
+
+/**
+* Likes on a Post
+*/
+CREATE TABLE likes_a_post (
+    post BIGINT REFERENCES posts ON DELETE CASCADE,
+    author BIGINT REFERENCES users ON DELETE CASCADE
+);
+
+ALTER TABLE IF EXISTS ONLY likes_a_post
+    ADD CONSTRAINT likes_a_post_pkey PRIMARY KEY (post, author);
+
+CREATE FUNCTION update_likes_post() RETURNS trigger 
+    LANGUAGE plpgsql
+    AS $$BEGIN
+        UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
+        RETURN NEW;
+    END$$;
+
+CREATE TRIGGER update_likes_of_a_post
+    AFTER INSERT ON likes_a_post
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_likes_post();
+
+CREATE FUNCTION delete_likes_post() RETURNS trigger 
+    LANGUAGE plpgsql
+    AS $$BEGIN
+        UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
+        RETURN NEW;
+    END$$;
+
+CREATE TRIGGER delete_likes_of_a_post
+    AFTER INSERT ON likes_a_post
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_likes_post();
 
 
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
