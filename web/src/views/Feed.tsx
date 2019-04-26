@@ -7,6 +7,7 @@ type Props = {};
 
 type State = {
   posts: any[];
+  fetchingInfo: boolean;
 };
 
 class Feed extends React.Component<Props, State> {
@@ -14,6 +15,7 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      fetchingInfo: true,
       posts: []
     };
   }
@@ -37,26 +39,44 @@ class Feed extends React.Component<Props, State> {
         params: {}
       })
       .then(res => {
-        // console.log(res.data);
-        this.setState({ posts: res.data });
+        const postsComing = res.data;
+
+        postsComing.posts.map(
+          (post: any, idx: any) => (post.comments = postsComing.comments[idx])
+        );
+
+        this.setState({ fetchingInfo: false, posts: postsComing.posts });
       })
       .catch(() => console.log("Failed to get feed"));
   }
 
+  public getPosts() {
+    const postsDiv = [];
+
+    for (const post of this.state.posts) {
+      postsDiv.push(
+        <Post
+          key={post.id}
+          id={post.id}
+          author={post.first_name + " " + post.last_name}
+          text={post.content}
+          images={undefined}
+          videos={undefined}
+          comments={post.comments || []}
+          title={post.title}
+          date={post.date_created.replace(/T.*/gi, "")}
+          visibility={post.visibility}
+        />
+      );
+    }
+
+    return postsDiv;
+  }
+
   public render() {
-    const posts = this.state.posts.map(post => (
-      <Post
-        key={post.id}
-        id={post.id}
-        author={post.first_name + " " + post.last_name}
-        text={post.content}
-        images={undefined}
-        videos={undefined}
-        comments={[]}
-        title=""
-        date={post.date_created.replace(/T.*/gi, "")}
-      />
-    ));
+    if (this.state.fetchingInfo) {
+      return null;
+    }
 
     const hardCodedConferences = [
       "Conference 1",
@@ -78,7 +98,7 @@ class Feed extends React.Component<Props, State> {
             <h5>Conferences</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-8">{posts}</div>
+          <div className="middle col-lg-8">{this.getPosts()}</div>
         </div>
       </div>
     );

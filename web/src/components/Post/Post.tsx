@@ -1,5 +1,6 @@
 // - Import react components
 import axios from "axios";
+import classNames from "classnames";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
 
@@ -12,57 +13,65 @@ import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
+// import { IconProp } from "@fortawesome/fontawesome-svg-core";
+// import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 // - Import utils
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 
-type Props = {
+import {
+  faGlobeAfrica,
+  faLock,
+  faQuestion,
+  faUserFriends,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
+import Icon from "../Icon/Icon";
+
+interface IProps {
   id: number;
-
   title: string;
-
   date: string | undefined;
-
   images: string[] | undefined;
-
   videos: string[] | undefined;
-
   author: string;
-
   text: string | undefined;
-
+  visibility: string;
   comments: any[];
-};
+}
 
-type State = {
+interface IState {
+  post_id: number;
+  commentValue: string;
   isHovered: boolean;
-  data: any;
+  activePage: number;
   fetchingPostUserInteractions: boolean;
   userRate: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
-};
+}
 
 const cookies = new Cookies();
 
-class Post extends Component<Props, State> {
+class Post extends Component<IProps, IState> {
   public static defaultProps = {};
   public id: string;
   public userId: number;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
-      data: "",
+      activePage: 1,
+      commentValue: "",
       fetchingPostUserInteractions: true,
       isHovered: false,
+      post_id: 0,
       userRate: 0,
       userSubscription: false,
       waitingRateRequest: false,
@@ -72,6 +81,9 @@ class Post extends Component<Props, State> {
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
+    this.handleAddComment = this.handleAddComment.bind(this);
+    this.changeCommentValue = this.changeCommentValue.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
   }
 
   public render() {
@@ -92,6 +104,10 @@ class Post extends Component<Props, State> {
             {" "}
             {this.props.author}
           </a>
+          <Icon
+            icon={this.getVisibilityIcon(this.props.visibility)}
+            size="lg"
+          />
           <a className={styles.post_date} href={"/post/" + this.props.id}>
             {this.props.date}
           </a>
@@ -108,7 +124,7 @@ class Post extends Component<Props, State> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#post_modal_Edit"
+                data-target={`#post_modal_Edit_${this.props.id}`}
               >
                 Edit Post
               </button>
@@ -116,7 +132,7 @@ class Post extends Component<Props, State> {
                 className="dropdown-item"
                 type="button"
                 data-toggle="modal"
-                data-target="#delete_post_modal"
+                data-target={`#delete_post_modal_${this.props.id}`}
               >
                 Delete Post
               </button>
@@ -133,7 +149,7 @@ class Post extends Component<Props, State> {
         {this.getVideos()}
         <div className={styles.post_stats}>
           <span>35 likes</span>
-          <span>14 comments</span>
+          <span> {this.props.comments.length} comments</span>
         </div>
         {this.getUserInteractionButtons()}
         {/* Post edition modal */}
@@ -141,9 +157,13 @@ class Post extends Component<Props, State> {
         {/* Delete Post */}
         <DeleteModal {...this.props} />
         {/* Comment section*/}
-        <div className={styles.post_comment_section}>
+        <div className={`${styles.post_comment_section} w-100`}>
           {this.getCommentSection()}
-          <div className={styles.post_add_comment}>
+          <ul className="pagination">{this.getPagination()}</ul>
+          <form
+            className={styles.post_add_comment}
+            onSubmit={this.handleAddComment}
+          >
             <Avatar
               title={this.props.author}
               placeholder="empty"
@@ -151,13 +171,23 @@ class Post extends Component<Props, State> {
               image="https://picsum.photos/200/200?image=52"
             />
             <textarea
-              className="form-control ml-4 mr-3"
+              className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                this.state.commentValue
+              )}`}
               placeholder="Insert your comment..."
+              value={this.state.commentValue}
+              onChange={this.changeCommentValue}
+              required={true}
             />
-            <button className={`${styles.submit_comment} px-2 py-1`}>
+            <button
+              className={`${styles.submit_comment} px-2 py-1`}
+              type="submit"
+              value="Submit"
+              disabled={!this.validComment()}
+            >
               <i className="fas fa-chevron-circle-right" />
             </button>
-          </div>
+          </form>
         </div>
       </div>
     );
@@ -165,6 +195,52 @@ class Post extends Component<Props, State> {
 
   public componentDidMount() {
     this.apiGetPostUserInteractions();
+
+    let currentPage;
+    if (this.props.comments === [] || this.props.comments === undefined) {
+      currentPage = 1;
+    } else {
+      currentPage = Math.ceil(this.props.comments.length / 5);
+    }
+
+    this.setState({
+      activePage: currentPage,
+      post_id: this.props.id
+    });
+  }
+
+  public apiComments() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += "/post/newcomment";
+
+    axios
+      .put(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        comment: this.state.commentValue,
+        headers: {},
+        post: this.state.post_id
+      })
+      .then(res => {
+        console.log("Comment created - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
+  }
+
+  public validComment() {
+    return Boolean(this.state.commentValue);
+  }
+
+  public getInputRequiredClass(content: string) {
+    return content === "" ? "empty_required_field" : "post_field";
+  }
+
+  public getInputRequiredStyle(content: string) {
+    return content !== "" ? { display: "none" } : {};
   }
 
   public handleDeletePost() {
@@ -222,8 +298,36 @@ class Post extends Component<Props, State> {
       .catch(() => console.log("Failed to get post-user interactions"));
   }
 
+  public changeCommentValue(event: any) {
+    this.setState({ commentValue: event.target.value });
+  }
+
+  public handleAddComment(event: any) {
+    event.preventDefault();
+    this.apiComments();
+  }
+
+  public handlePageChange(event: any) {
+    const target = event.target || event.srcElement;
+    this.setState({ activePage: Number(target.innerHTML) });
+  }
+
   public getCommentSection() {
-    const commentSection = this.props.comments.map((comment, idx) => {
+    if (this.props.comments === [] || this.props.comments === undefined) {
+      return <div className={`${styles.post_comment} w-100`} />;
+    }
+
+    let currentComments = [];
+    if (this.props.comments.length < 6) {
+      currentComments = this.props.comments;
+    } else {
+      const indexOfLast = this.state.activePage * 5;
+      const indexOfFirst = indexOfLast - 5;
+
+      currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
+    }
+
+    const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
@@ -234,7 +338,51 @@ class Post extends Component<Props, State> {
       );
     });
 
-    return <div className={styles.post_comments}>{commentSection}</div>;
+    return (
+      <div className={`${styles.post_comment} w-100`}>{commentSection}</div>
+    );
+  }
+
+  private getPagination() {
+    if (
+      this.props.comments === [] ||
+      this.props.comments === undefined ||
+      this.props.comments.length < 6
+    ) {
+      return;
+    }
+
+    const pageNumbersInd = [];
+    for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
+      pageNumbersInd.push(i);
+    }
+
+    const renderPageNumbers = pageNumbersInd.map(pageNumber => {
+      return (
+        <li
+          key={pageNumber}
+          className="page-item"
+          onClick={this.handlePageChange}
+        >
+          <a className="page-link">{pageNumber}</a>
+        </li>
+      );
+    });
+
+    return renderPageNumbers;
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case "public":
+        return faGlobeAfrica;
+      case "followers":
+        return faUserFriends;
+      case "private":
+        return faLock;
+      default:
+        return faQuestion;
+    }
   }
 
   private getImages() {
