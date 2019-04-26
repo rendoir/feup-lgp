@@ -128,6 +128,7 @@ export async function getPost(req, res) {
             post: post.rows,
             comments: comments.rows,
             likers: likers.rows,
+            tags: tags.rows,
         };
         res.send(result);
     } catch (error) {

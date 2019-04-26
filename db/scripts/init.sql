@@ -341,3 +341,19 @@ INSERT INTO tags (name) VALUES ('Urology');
 
 INSERT INTO tags (name) VALUES ('Vascular & Interventional Radiology');
 INSERT INTO tags (name) VALUES ('Vascular Surgery');
+
+
+/**
+* POST - TAGS
+*/
+INSERT INTO posts_tags (post,tag) VALUES (3,10);
+INSERT INTO posts_tags (post,tag) VALUES (3,12);
+INSERT INTO posts_tags (post,tag) VALUES (3,15);
+INSERT INTO posts_tags (post,tag) VALUES (3,20);
+INSERT INTO posts_tags (post,tag) VALUES (4,22);
+INSERT INTO posts_tags (post,tag) VALUES (4,25);
+INSERT INTO posts_tags (post,tag) VALUES (13,26);
+INSERT INTO posts_tags (post,tag) VALUES (13,28);
+INSERT INTO posts_tags (post,tag) VALUES (13,29);
+INSERT INTO posts_tags (post,tag) VALUES (3,30);
+INSERT INTO posts_tags (post,tag) VALUES (3,32);

@@ -137,6 +137,7 @@ class Post extends Component<IProps, IState> {
             </div>
             {this.getImages()}
             {this.getVideos()}
+            {this.getTags()}
             <div className={styles.post_stats}>
               <span
                 key={this.id + "_span_like_button"}
@@ -260,7 +261,7 @@ class Post extends Component<IProps, IState> {
     });
 
     if (foundValue != null) {
-      divStyle.color = "black";
+      divStyle.color = "blue";
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
@@ -268,11 +269,11 @@ class Post extends Component<IProps, IState> {
         </div>
       );
     } else {
-      divStyle.color = "blue";
+      divStyle.color = "black";
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Dislike</span>
+          <span>Like</span>
         </div>
       );
     }
@@ -511,6 +512,36 @@ class Post extends Component<IProps, IState> {
     }
 
     return videoDiv;
+  }
+
+  private getTags() {
+    const tagsDiv = [];
+
+    // sorting tags alphabetically
+    this.props.tags.sort((a, b) =>
+      (a.name || "").toString().localeCompare((b.name || "").toString())
+    );
+
+    if (this.props.tags.length > 0) {
+      for (const tag of this.props.tags) {
+        tagsDiv.push(
+          <span
+            key={"tags_" + tag.name + "post_" + this.props.id}
+            className={`${styles.tags} d-inline badge`}
+          >
+            #{tag.name}
+          </span>
+        );
+      }
+    }
+
+    return (
+      <div className={`${styles.post_tags} w-100 container`}>
+        <div className="row justify-content-center align-items-center">
+          {tagsDiv}
+        </div>
+      </div>
+    );
   }
 }
 
