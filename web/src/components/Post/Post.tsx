@@ -37,20 +37,23 @@ interface IProps {
   videos: string[] | undefined;
   author: string;
   text: string | undefined;
+  likes: number;
   visibility: string;
   comments: any[];
+  likers: any[];
 }
 
 interface IState {
-  post_id: number;
+  activePage: number;
   commentValue: string;
   isHovered: boolean;
-  activePage: number;
   fetchingPostUserInteractions: boolean;
   userRate: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
+  isFetching: boolean;
+  postID: number;
 }
 
 const cookies = new Cookies();
@@ -70,8 +73,9 @@ class Post extends Component<IProps, IState> {
       activePage: 1,
       commentValue: "",
       fetchingPostUserInteractions: true,
+      isFetching: true,
       isHovered: false,
-      post_id: 0,
+      postID: 0,
       userRate: 0,
       userSubscription: false,
       waitingRateRequest: false,
@@ -84,11 +88,13 @@ class Post extends Component<IProps, IState> {
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+
+    this.handleAddLike = this.handleAddLike.bind(this);
   }
 
   public render() {
-    if (this.state.fetchingPostUserInteractions) {
-      return null;
+    if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
+      return <div>Loading...</div>;
     }
 
     return (
@@ -148,7 +154,15 @@ class Post extends Component<IProps, IState> {
         {this.getImages()}
         {this.getVideos()}
         <div className={styles.post_stats}>
-          <span>35 likes</span>
+          <span
+            key={this.id + "_span_like_button"}
+            role="button"
+            data-toggle="dropdown"
+            data-target={"#post_" + this.props.id + " show_likes"}
+          >
+            {this.props.likes} likes
+            {this.getLikes()}
+          </span>
           <span> {this.props.comments.length} comments</span>
         </div>
         {this.getUserInteractionButtons()}
@@ -177,6 +191,7 @@ class Post extends Component<IProps, IState> {
               placeholder="Insert your comment..."
               value={this.state.commentValue}
               onChange={this.changeCommentValue}
+              onKeyDown={this.onEnterPress}
               required={true}
             />
             <button
@@ -202,12 +217,19 @@ class Post extends Component<IProps, IState> {
     } else {
       currentPage = Math.ceil(this.props.comments.length / 5);
     }
-
     this.setState({
       activePage: currentPage,
-      post_id: this.props.id
+      isFetching: false,
+      postID: this.props.id
     });
   }
+
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
 
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
@@ -215,20 +237,51 @@ class Post extends Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/newcomment";
+    postUrl += `/post/${this.state.postID}/comment/new`;
 
     axios
-      .put(postUrl, {
+      .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
-        post: this.state.post_id
+        post_id: this.state.postID
       })
       .then(res => {
         console.log("Comment created - reloading page...");
         window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
+  }
+
+  public userLiked() {
+    const userLoggedIn = 2;
+    const divStyle = { color: "black" };
+
+    const foundValue = this.props.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      divStyle.color = "black";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Like</span>
+        </div>
+      );
+    } else {
+      divStyle.color = "blue";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Dislike</span>
+        </div>
+      );
+    }
   }
 
   public validComment() {
@@ -312,6 +365,68 @@ class Post extends Component<IProps, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
+  public handleAddLike(event: any) {
+    event.preventDefault();
+
+    const userLoggedIn = 2;
+    const foundValue = this.props.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      this.apiDeleteLikeToPost();
+    } else {
+      this.apiAddLikeToPost();
+    }
+  }
+
+  public apiAddLikeToPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.id}/like`;
+
+    axios
+      .post(postUrl, {
+        author: 2,
+        headers: {}
+      })
+      .then(res => {
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiDeleteLikeToPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.id}/like`;
+
+    axios
+      .delete(postUrl, {
+        data: {
+          author: 2
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Post disliked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to delete like from a post"));
+  }
+
   public getCommentSection() {
     if (this.props.comments === [] || this.props.comments === undefined) {
       return <div className={`${styles.post_comment} w-100`} />;
@@ -331,15 +446,45 @@ class Post extends Component<IProps, IState> {
       return (
         <Comment
           key={idx}
+          postID={comment.post}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
+          secondLevel={false}
         />
       );
     });
 
     return (
       <div className={`${styles.post_comment} w-100`}>{commentSection}</div>
+    );
+  }
+
+  public getLikers() {
+    const likedUsersDiv = this.props.likers.map((liker, idx) => {
+      return (
+        <span key={"user" + idx + "liked-post"} className="dropdown-item">
+          {liker.first_name} {liker.last_name}
+        </span>
+      );
+    });
+
+    return likedUsersDiv;
+  }
+
+  public getLikes() {
+    const likesDiv = [];
+    if (this.props.likes > 0) {
+      likesDiv.push(this.getLikers());
+    }
+
+    return (
+      <span
+        id={"post_" + this.props.id + "_span_show_likes"}
+        className="dropdown-menu dropdown-menu-right"
+      >
+        {likesDiv}
+      </span>
     );
   }
 
@@ -439,10 +584,7 @@ class Post extends Component<IProps, IState> {
 
     return (
       <div className={styles.post_actions}>
-        <button onClick={this.handlePostRate}>
-          <i className="fas fa-thumbs-up" />
-          <span>Like</span>
-        </button>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
         <button>
           <i className="far fa-comment-alt" />
           <span>Comment</span>

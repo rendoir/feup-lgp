@@ -42,7 +42,10 @@ class Feed extends React.Component<Props, State> {
         const postsComing = res.data;
 
         postsComing.posts.map(
-          (post: any, idx: any) => (post.comments = postsComing.comments[idx])
+          (post: any, idx: any) => (
+            (post.comments = postsComing.comments[idx]),
+            (post.likers = postsComing.likers[idx])
+          )
         );
 
         this.setState({ fetchingInfo: false, posts: postsComing.posts });
@@ -60,6 +63,8 @@ class Feed extends React.Component<Props, State> {
           id={post.id}
           author={post.first_name + " " + post.last_name}
           text={post.content}
+          likes={post.likes}
+          likers={post.likers}
           images={undefined}
           videos={undefined}
           comments={post.comments || []}
