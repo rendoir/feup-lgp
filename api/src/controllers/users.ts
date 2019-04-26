@@ -122,3 +122,17 @@ export function unsubscribeUser(req, res) {
         res.status(400).send({ message: 'An error ocurred while unsubscribing user' });
     });
 }
+
+export function rateUser(req, res) {
+    console.log("evaluator", req.body.evaluator);
+    console.log("target_user", req.body.target_user);
+    query({
+        text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
+        values: [req.body.evaluator, req.body.rate, req.body.target_user],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while rating an user' });
+    });
+}

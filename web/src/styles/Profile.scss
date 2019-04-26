@@ -295,6 +295,13 @@ $light-border: solid lightgray 1px;
   padding: 0;
   text-shadow: 0 1px 0 #a2a2a2;
 
+  button{
+    font-size: 100%;
+    font-family: inherit;
+    border: 0;
+    padding: 0;
+  }
+
   &-top {
     color: #e7711b;
     padding: 0;

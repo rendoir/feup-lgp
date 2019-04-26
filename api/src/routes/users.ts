@@ -75,3 +75,20 @@ usersRouter.post('/subscribe', controller.subscribeUser);
  *     }
  */
 usersRouter.post('/unsubscribe', controller.unsubscribeUser);
+
+/**
+ * @api {post} /api/users/rate Rate a user
+ * @apiName Rate-User
+ * @apiGroup Users
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   target_user      Id of the user being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.post('/rateUser', controller.rateUser);

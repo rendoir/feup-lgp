@@ -29,7 +29,7 @@ CREATE TABLE follows (
 
 CREATE TABLE users_rates (
     evaluator BIGINT REFERENCES users ON DELETE CASCADE,
-    rate INTEGER NOT NULL CONSTRAINT user_user_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL CONSTRAINT user_user_rate_constraint CHECK (rate >= 1 AND rate <= 5),
     target_user BIGINT REFERENCES users ON DELETE CASCADE
 );
 
