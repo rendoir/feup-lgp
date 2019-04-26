@@ -210,6 +210,16 @@ class Comment extends Component<Props, State> {
                 />
               </div>
               <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  data-dismiss="modal"
+                  onClick={() =>
+                    this.setState({ commentText: this.props.text })
+                  }
+                >
+                  Cancel
+                </button>
                 <div>
                   {this.handleRedirect()}
                   <button
@@ -221,16 +231,6 @@ class Comment extends Component<Props, State> {
                     Save
                   </button>
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  data-dismiss="modal"
-                  onClick={() =>
-                    this.setState({ commentText: this.props.text })
-                  }
-                >
-                  Cancel
-                </button>
               </div>
             </div>
           </div>
