@@ -32,15 +32,18 @@ type IProps = {
   videos: string[] | undefined;
   author: string;
   text: string | undefined;
+  likes: number;
   visibility: string;
   comments: any[];
+  likers: any[];
 };
 
 interface IState {
-  post_id: number;
+  activePage: number;
   commentValue: string;
   isHovered: boolean;
-  activePage: number;
+  isFetching: boolean;
+  postID: number;
 }
 
 class Post extends Component<IProps, IState> {
@@ -51,132 +54,151 @@ class Post extends Component<IProps, IState> {
     super(props);
 
     this.id = "post_" + this.props.id;
+
     this.state = {
       activePage: 1,
       commentValue: "",
+      isFetching: true,
       isHovered: false,
-      post_id: 0
+      postID: 0
     };
-
-    this.handleDeletePost = this.handleDeletePost.bind(this);
 
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+
+    this.handleAddLike = this.handleAddLike.bind(this);
   }
 
   public render() {
+    const { isFetching } = this.state;
+
     return (
-      <div className={`${styles.post} mb-4`}>
-        <div className={styles.post_header}>
-          <Avatar
-            title={this.props.author}
-            placeholder="empty"
-            size={30}
-            image="https://picsum.photos/200/200?image=52"
-          />
-          <a className={styles.post_author} href={"/user/" + this.props.author}>
-            {" "}
-            {this.props.author}
-          </a>
-          <Icon
-            icon={this.getVisibilityIcon(this.props.visibility)}
-            size="lg"
-          />
-          <a className={styles.post_date} href={"/post/" + this.props.id}>
-            {this.props.date}
-          </a>
-          <div className={`${styles.post_options} btn-group`}>
-            <button
-              className="w-100 h-100 ml-2"
-              role="button"
-              data-toggle="dropdown"
-            >
-              <i className="fas fa-ellipsis-v" />
-            </button>
-            <div className="dropdown-menu dropdown-menu-right">
-              <button
-                className="dropdown-item"
-                type="button"
-                data-toggle="modal"
-                data-target={`#post_modal_Edit_${this.props.id}`}
+      <div>
+        {isFetching ? (
+          <div>Loading...</div>
+        ) : (
+          <div className={`${styles.post} mb-4`}>
+            <div className={styles.post_header}>
+              <Avatar
+                title={this.props.author}
+                placeholder="empty"
+                size={30}
+                image="https://picsum.photos/200/200?image=52"
+              />
+              <a
+                className={styles.post_author}
+                href={"/user/" + this.props.author}
               >
-                Edit Post
+                {" "}
+                {this.props.author}
+              </a>
+              <Icon
+                icon={this.getVisibilityIcon(this.props.visibility)}
+                size="lg"
+              />
+              <a className={styles.post_date} href={"/post/" + this.props.id}>
+                {this.props.date}
+              </a>
+              <div className={`${styles.post_options} btn-group`}>
+                <button
+                  className="w-100 h-100 ml-2"
+                  role="button"
+                  data-toggle="dropdown"
+                >
+                  <i className="fas fa-ellipsis-v" />
+                </button>
+                <div className="dropdown-menu dropdown-menu-right">
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    data-toggle="modal"
+                    data-target={`#post_modal_Edit_${this.props.id}`}
+                  >
+                    Edit Post
+                  </button>
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    data-toggle="modal"
+                    data-target={`#delete_post_modal_${this.props.id}`}
+                  >
+                    Delete Post
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className={styles.post_content}>
+              <h4> {this.props.title} </h4>
+            </div>
+            <div className={styles.post_content}>
+              <p> {this.props.text} </p>
+            </div>
+            {this.getImages()}
+            {this.getVideos()}
+            <div className={styles.post_stats}>
+              <span
+                key={this.id + "_span_like_button"}
+                role="button"
+                data-toggle="dropdown"
+                data-target={"#post_" + this.props.id + " show_likes"}
+              >
+                {this.props.likes} likes
+                {this.getLikes()}
+              </span>
+              <span> {this.props.comments.length} comments</span>
+            </div>
+            <div className={styles.post_actions}>
+              <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+              <button>
+                <i className="far fa-comment-alt" />
+                <span>Comment</span>
               </button>
-              <button
-                className="dropdown-item"
-                type="button"
-                data-toggle="modal"
-                data-target={`#delete_post_modal_${this.props.id}`}
-              >
-                Delete Post
+              <button>
+                <i className="fas fa-share-square" />
+                <span>Share</span>
               </button>
             </div>
+            {/* Post edition modal */}
+            <PostModal {...this.props} />
+            {/* Delete Post */}
+            <DeleteModal {...this.props} />
+            {/* Comment section*/}
+            <div className={`${styles.post_comment_section} w-100`}>
+              {this.getCommentSection()}
+              <ul className="pagination">{this.getPagination()}</ul>
+              <form
+                className={styles.post_add_comment}
+                onSubmit={this.handleAddComment}
+              >
+                <Avatar
+                  title={this.props.author}
+                  placeholder="empty"
+                  size={30}
+                  image="https://picsum.photos/200/200?image=52"
+                />
+                <textarea
+                  className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                    this.state.commentValue
+                  )}`}
+                  placeholder="Insert your comment..."
+                  value={this.state.commentValue}
+                  onChange={this.changeCommentValue}
+                  onKeyDown={this.onEnterPress}
+                  required={true}
+                />
+                <button
+                  className={`${styles.submit_comment} px-2 py-1`}
+                  type="submit"
+                  value="Submit"
+                  disabled={!this.validComment()}
+                >
+                  <i className="fas fa-chevron-circle-right" />
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-        <div className={styles.post_content}>
-          <h4> {this.props.title} </h4>
-        </div>
-        <div className={styles.post_content}>
-          <p> {this.props.text} </p>
-        </div>
-        {this.getImages()}
-        {this.getVideos()}
-        <div className={styles.post_stats}>
-          <span>35 likes</span>
-          <span> {this.props.comments.length} comments</span>
-        </div>
-        <div className={styles.post_actions}>
-          <button>
-            <i className="fas fa-thumbs-up" />
-            <span>Like</span>
-          </button>
-          <button>
-            <i className="far fa-comment-alt" />
-            <span>Comment</span>
-          </button>
-          <button>
-            <i className="fas fa-share-square" />
-            <span>Share</span>
-          </button>
-        </div>
-        {/* Post edition modal */}
-        <PostModal {...this.props} />
-        {/* Delete Post */}
-        <DeleteModal {...this.props} />
-        {/* Comment section*/}
-        <div className={`${styles.post_comment_section} w-100`}>
-          {this.getCommentSection()}
-          <ul className="pagination">{this.getPagination()}</ul>
-          <form
-            className={styles.post_add_comment}
-            onSubmit={this.handleAddComment}
-          >
-            <Avatar
-              title={this.props.author}
-              placeholder="empty"
-              size={30}
-              image="https://picsum.photos/200/200?image=52"
-            />
-            <textarea
-              className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
-                this.state.commentValue
-              )}`}
-              placeholder="Insert your comment..."
-              value={this.state.commentValue}
-              onChange={this.changeCommentValue}
-              required={true}
-            />
-            <button
-              className={`${styles.submit_comment} px-2 py-1`}
-              type="submit"
-              value="Submit"
-              disabled={!this.validComment()}
-            >
-              <i className="fas fa-chevron-circle-right" />
-            </button>
-          </form>
-        </div>
+        )}
       </div>
     );
   }
@@ -188,12 +210,19 @@ class Post extends Component<IProps, IState> {
     } else {
       currentPage = Math.ceil(this.props.comments.length / 5);
     }
-
     this.setState({
       activePage: currentPage,
-      post_id: this.props.id
+      isFetching: false,
+      postID: this.props.id
     });
   }
+
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
 
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
@@ -201,20 +230,51 @@ class Post extends Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post/newcomment";
+    postUrl += `/post/${this.state.postID}/comment/new`;
 
     axios
-      .put(postUrl, {
+      .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
-        post: this.state.post_id
+        post_id: this.state.postID
       })
       .then(res => {
         console.log("Comment created - reloading page...");
         window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
+  }
+
+  public userLiked() {
+    const userLoggedIn = 2;
+    const divStyle = { color: "black" };
+
+    const foundValue = this.props.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      divStyle.color = "black";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Like</span>
+        </div>
+      );
+    } else {
+      divStyle.color = "blue";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Dislike</span>
+        </div>
+      );
+    }
   }
 
   public validComment() {
@@ -229,10 +289,6 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
-  public handleDeletePost() {
-    console.log("DELETE POST");
-  }
-
   public changeCommentValue(event: any) {
     this.setState({ commentValue: event.target.value });
   }
@@ -245,6 +301,68 @@ class Post extends Component<IProps, IState> {
   public handlePageChange(event: any) {
     const target = event.target || event.srcElement;
     this.setState({ activePage: Number(target.innerHTML) });
+  }
+
+  public handleAddLike(event: any) {
+    event.preventDefault();
+
+    const userLoggedIn = 2;
+    const foundValue = this.props.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      this.apiDeleteLikeToPost();
+    } else {
+      this.apiAddLikeToPost();
+    }
+  }
+
+  public apiAddLikeToPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.id}/like`;
+
+    axios
+      .post(postUrl, {
+        author: 2,
+        headers: {}
+      })
+      .then(res => {
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiDeleteLikeToPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.id}/like`;
+
+    axios
+      .delete(postUrl, {
+        data: {
+          author: 2
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Post disliked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to delete like from a post"));
   }
 
   public getCommentSection() {
@@ -266,15 +384,45 @@ class Post extends Component<IProps, IState> {
       return (
         <Comment
           key={idx}
+          postID={comment.post}
           title={comment.id}
           author={comment.first_name + " " + comment.last_name}
           text={comment.comment}
+          secondLevel={false}
         />
       );
     });
 
     return (
       <div className={`${styles.post_comment} w-100`}>{commentSection}</div>
+    );
+  }
+
+  public getLikers() {
+    const likedUsersDiv = this.props.likers.map((liker, idx) => {
+      return (
+        <span key={"user" + idx + "liked-post"} className="dropdown-item">
+          {liker.first_name} {liker.last_name}
+        </span>
+      );
+    });
+
+    return likedUsersDiv;
+  }
+
+  public getLikes() {
+    const likesDiv = [];
+    if (this.props.likes > 0) {
+      likesDiv.push(this.getLikers());
+    }
+
+    return (
+      <span
+        id={"post_" + this.props.id + "_span_show_likes"}
+        className="dropdown-menu dropdown-menu-right"
+      >
+        {likesDiv}
+      </span>
     );
   }
 
