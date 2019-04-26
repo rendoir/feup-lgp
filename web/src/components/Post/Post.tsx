@@ -2,6 +2,7 @@
 import axios from "axios";
 import classNames from "classnames";
 import React, { Component } from "react";
+import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -24,6 +25,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../Icon/Icon";
 
+// - Import utils
+import { apiSubscription } from "../../utils/apiSubscription";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
 type IProps = {
   id: number;
   title: string;
@@ -41,31 +46,57 @@ interface IState {
   commentValue: string;
   isHovered: boolean;
   activePage: number;
+  fetchingPostUserInteractions: boolean;
+  userRate: number;
+  userSubscription: boolean;
+  waitingRateRequest: boolean;
+  waitingSubscriptionRequest: boolean;
 }
+
+const cookies = new Cookies();
 
 class Post extends Component<IProps, IState> {
   public static defaultProps = {};
   public id: string;
+  public userId: number;
 
   constructor(props: IProps) {
     super(props);
 
     this.id = "post_" + this.props.id;
+    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    console.log("Cookie user ID: ", cookies.get("user_id"));
+
     this.state = {
       activePage: 1,
       commentValue: "",
+      fetchingPostUserInteractions: true,
       isHovered: false,
+      userRate: 0,
+      userSubscription: false,
+      waitingRateRequest: false,
+      waitingSubscriptionRequest: false,
       post_id: 0
     };
+    console.log("rate: ", this.state.userRate);
+    console.log("subscription: ", this.state.userSubscription);
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
 
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostSubscription = this.handlePostSubscription.bind(this);
   }
 
   public render() {
+    if (this.state.fetchingPostUserInteractions) {
+      return null;
+    }
+
+    console.log(this.state);
+
     return (
       <div className={`${styles.post} mb-4`}>
         <div className={styles.post_header}>
@@ -126,20 +157,7 @@ class Post extends Component<IProps, IState> {
           <span>35 likes</span>
           <span> {this.props.comments.length} comments</span>
         </div>
-        <div className={styles.post_actions}>
-          <button>
-            <i className="fas fa-thumbs-up" />
-            <span>Like</span>
-          </button>
-          <button>
-            <i className="far fa-comment-alt" />
-            <span>Comment</span>
-          </button>
-          <button>
-            <i className="fas fa-share-square" />
-            <span>Share</span>
-          </button>
-        </div>
+        {this.getUserInteractionButtons()}
         {/* Post edition modal */}
         <PostModal {...this.props} />
         {/* Delete Post */}
@@ -182,6 +200,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public componentDidMount() {
+    this.apiGetPostUserInteractions();
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
       currentPage = 1;
@@ -245,6 +264,61 @@ class Post extends Component<IProps, IState> {
   public handlePageChange(event: any) {
     const target = event.target || event.srcElement;
     this.setState({ activePage: Number(target.innerHTML) });
+  }
+
+  public handlePostRate() {
+    console.log("RATE LOGGED USER ID: ", this.userId);
+  }
+
+  public handlePostSubscription() {
+    console.log("SUBSCRIBE LOGGED USER ID: ", this.userId);
+
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
+    }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+    console.log(this.state);
+    this.apiSubscription(endpoint);
+  }
+
+  public apiSubscription(endpoint: string) {
+    apiSubscription("post", endpoint, this.userId, this.props.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
+        console.log("SUBSCRIÇAO BEM SUCEDIDA", this.state);
+      })
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
+  }
+
+  public apiGetPostUserInteractions() {
+    apiGetUserInteractions("post", this.userId, this.props.id)
+      .then(res => {
+        console.log(res.data);
+        this.setState({
+          fetchingPostUserInteractions: false,
+          userRate: res.data.rate || 0,
+          userSubscription: res.data.subscription
+        });
+      })
+      .catch(() => console.log("Failed to get post-user interactions"));
   }
 
   public getCommentSection() {
@@ -362,6 +436,36 @@ class Post extends Component<IProps, IState> {
     }
 
     return videoDiv;
+  }
+
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handlePostRate}>
+          <i className="fas fa-thumbs-up" />
+          <span>Like</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
+    );
   }
 }
 

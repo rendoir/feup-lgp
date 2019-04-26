@@ -56,3 +56,69 @@ export class UserToken {
         return {email: this.email, id: this.id, permission: this.permission};
     }
 }
+
+export async function getUserUserInteractions(req, res) {
+    const observerUser = req.body.observer;
+    const targetUser = req.body.target;
+
+    console.log("observer", observerUser);
+    console.log("target", targetUser);
+    try {
+        const rateQuery = await query({
+            text: `SELECT rate
+                    FROM users_rates
+                    WHERE
+                        evaluator = $1 AND target_user = $2`,
+            values: [observerUser, targetUser],
+        });
+        const subscriptionQuery = await query({
+            text: `SELECT *
+                    FROM follows
+                    WHERE
+                        follower = $1 AND followed = $2`,
+            values: [observerUser, targetUser],
+        });
+
+        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+
+        const result = {
+            rate,
+            subscription: Boolean(subscriptionQuery.rows[0]),
+        };
+        console.log("RESULTADOOOOO", result);
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving user-user interactions'));
+    }
+}
+
+export function subscribeUser(req, res) {
+    console.log("SUBSCRIBEEE");
+    console.log("follower", req.body.follower);
+    console.log("followed", req.body.followed);
+    query({
+        text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
+        values: [req.body.follower, req.body.followed],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing user' });
+    });
+}
+
+export function unsubscribeUser(req, res) {
+    console.log("REMOVE SUBSCRIPTION");
+    console.log("follower", req.body.follower);
+    console.log("followed", req.body.followed);
+    query({
+        text: 'DELETE FROM follows WHERE follower = $1 AND followed = $2',
+        values: [req.body.follower, req.body.followed],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while unsubscribing user' });
+    });
+}

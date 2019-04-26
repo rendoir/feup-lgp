@@ -15,7 +15,8 @@ interface IState {
   id: number;
   post: any[];
   comments: any[];
-  fetchingInfo: boolean;
+  fetchingPostInfo: boolean;
+  fetchingPostUserInteractions: boolean;
 }
 
 const postStyle = {
@@ -28,7 +29,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
-      fetchingInfo: true,
+      fetchingPostInfo: true,
+      fetchingPostUserInteractions: true,
       id: 1,
       post: [
         {
@@ -67,7 +69,7 @@ class PostView extends React.Component<IProps, IState> {
       .then(res => {
         this.setState({
           comments: res.data.comments,
-          fetchingInfo: false,
+          fetchingPostInfo: false,
           id: res.data.post[0].id,
           post: res.data.post
         });
@@ -88,7 +90,7 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
+    if (this.state.fetchingPostInfo) {
       return null;
     }
 
