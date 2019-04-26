@@ -1,0 +1,10 @@
+{
+    "nyc": {
+        "exclude": [
+            "../src/routes"
+        ],
+        "include": [
+            "../src/index.ts"
+        ]
+    }
+}
