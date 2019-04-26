@@ -296,7 +296,21 @@ class Post extends Component<IProps, IState> {
 
   public handleAddLike(event: any) {
     event.preventDefault();
-    this.apiAddLikeToPost();
+
+    const userLoggedIn = 2;
+    const foundValue = this.props.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      this.apiDeleteLikeToPost();
+    } else {
+      this.apiAddLikeToPost();
+    }
   }
 
   public apiAddLikeToPost() {
@@ -316,6 +330,30 @@ class Post extends Component<IProps, IState> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiDeleteLikeToPost() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.id}/like`;
+
+    axios
+      .delete(postUrl, {
+        data: {
+          author: 2
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Post disliked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to delete like from a post"));
   }
 
   public getCommentSection() {

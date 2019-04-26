@@ -114,4 +114,4 @@ postRouter.post('/:id/like', controller.addALikeToPost);
  *      message: 'An error message here'
  *     }
  */
-// postRouter.delete('/:id/like', controller.deleteALikeToPost);
+postRouter.delete('/:id/like', controller.deleteALikeToPost);

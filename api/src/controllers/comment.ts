@@ -101,6 +101,17 @@ export function deleteComment(req, res) {
     });
 }
 
+export function deleteALikeToComment(req, res) {
+    query({
+        text: 'DELETE FROM likes_a_comment WHERE comment=$1 AND author=$2', values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
+    });
+}
+
 export async function getCommentsOfComment(req, res) {
     const commentId = req.params.id;
     try {

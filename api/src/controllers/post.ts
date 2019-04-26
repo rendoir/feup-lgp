@@ -128,16 +128,25 @@ export async function getPost(req, res) {
 }
 
 export function addALikeToPost(req, res) {
-    // To change when loggin
-    const postId = req.params.id;
     query({
         text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
-        values: [postId, req.body.author],
+        values: [req.params.id, req.body.author],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while editing a comment' });
+    });
+}
+
+export function deleteALikeToPost(req, res) {
+    query({
+        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
     });
 }
 

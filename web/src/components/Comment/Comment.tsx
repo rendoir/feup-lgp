@@ -263,7 +263,21 @@ class Comment extends Component<Props, State> {
 
   public handleAddLike(event: any) {
     event.preventDefault();
-    this.apiAddLikeToComment();
+
+    const userLoggedIn = 2;
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      this.apiDeleteLikeToComment();
+    } else {
+      this.apiAddLikeToComment();
+    }
   }
 
   public userLiked() {
@@ -323,6 +337,32 @@ class Comment extends Component<Props, State> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiDeleteLikeToComment() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }/like`;
+
+    axios
+      .delete(postUrl, {
+        data: {
+          author: 2
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Comment disliked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to delete like from a comment"));
   }
 
   public apiGetWhoLikedComment(id: number) {

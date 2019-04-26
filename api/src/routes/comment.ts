@@ -87,7 +87,7 @@ commentRouter.post('/:id/like', controller.addALikeToComment);
  *      message: 'An error message here'
  *     }
  */
-// commentRouter.delete('/:id/like', controller.deleteALikeToComment);
+commentRouter.delete('/:id/like', controller.deleteALikeToComment);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post

@@ -127,7 +127,7 @@ CREATE FUNCTION delete_likes_post() RETURNS trigger
     END$$;
 
 CREATE TRIGGER delete_likes_of_a_post
-    AFTER INSERT ON likes_a_post
+    AFTER DELETE ON likes_a_post
     FOR EACH ROW
     EXECUTE PROCEDURE delete_likes_post();
 
