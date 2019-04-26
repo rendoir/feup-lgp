@@ -1,5 +1,6 @@
 import * as React from "react";
 import Cookies from "universal-cookie";
+import StarRatingComponent from "react-star-rating-component";
 import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
@@ -97,13 +98,30 @@ class Profile extends React.Component<{}, State> {
     const subscribeBtnText = this.state.userSubscription
       ? "Unsubscribe"
       : "Subscribe";
+    const rating = 0.6; // User Rate
+    const userRate = rating * 110;
 
     return (
       <div>
-        <button onClick={this.handleUserRate}>
-          <i className="fas fa-thumbs-up" />
-          <span>Rate (To Be Implemented)</span>
-        </button>
+        <button onClick={this.handleUserRate} />
+        <fieldset className="rate">
+          <div className="star-ratings-css">
+            <div className="star-ratings-css-top" style={{ width: userRate }}>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+            </div>
+            <div className="star-ratings-css-bottom">
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+            </div>
+          </div>
+        </fieldset>
         <button onClick={this.handleUserSubscription}>
           <i className={subscribeIcon} />
           <span>{subscribeBtnText}</span>
