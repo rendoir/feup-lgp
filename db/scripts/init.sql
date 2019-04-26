@@ -54,7 +54,6 @@ CREATE TABLE comments (
     post BIGINT REFERENCES posts ON DELETE CASCADE,
     comment_ref BIGINT REFERENCES comments ON DELETE CASCADE,
     comment TEXT NOT NULL,
-    likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
     date_updated TIMESTAMP DEFAULT NOW()
 );
@@ -86,9 +85,6 @@ CREATE TABLE likes_a_comment (
     author BIGINT REFERENCES users ON DELETE CASCADE
 );
 
-/**
-* Likes on a Comment
-*/
 ALTER TABLE IF EXISTS ONLY likes_a_comment
     ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
 
