@@ -1,6 +1,7 @@
 'use strict';
 
 import { json, urlencoded } from 'body-parser';
+import * as fileUpload from 'express-fileupload';
 // import * as cookie_parser from 'cookie-parser';
 import { config } from 'dotenv';
 import * as express from 'express';
@@ -44,6 +45,7 @@ app.use(morgan('combined'));
 // app.use(cookie_parser());
 app.use(urlencoded({extended: true}));
 app.use(json());
+app.use(fileUpload());
 app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
 app.use(express.static('uploads'));
 
