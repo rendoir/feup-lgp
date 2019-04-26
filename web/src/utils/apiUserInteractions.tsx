@@ -23,8 +23,6 @@ export async function apiGetUserInteractions(
       break;
   }
 
-  console.log("user interactions body", body);
-
   const apiUrl = getApiURL(`/${apiGroup}/user_interactions`);
   return axios.post(apiUrl, body);
 }

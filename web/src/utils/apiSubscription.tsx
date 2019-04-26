@@ -24,8 +24,6 @@ export async function apiSubscription(
       break;
   }
 
-  console.log("subscription body", body);
-
   const apiUrl = getApiURL(`/${apiGroup}/${endpoint}`);
   return axios.post(apiUrl, body);
 }

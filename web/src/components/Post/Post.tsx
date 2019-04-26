@@ -58,7 +58,6 @@ class Post extends Component<Props, State> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log("Cookie user ID: ", cookies.get("user_id"));
 
     this.state = {
       data: "",
@@ -69,8 +68,6 @@ class Post extends Component<Props, State> {
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
-    console.log("rate: ", this.state.userRate);
-    console.log("subscription: ", this.state.userSubscription);
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
@@ -81,8 +78,6 @@ class Post extends Component<Props, State> {
     if (this.state.fetchingPostUserInteractions) {
       return null;
     }
-
-    console.log(this.state);
 
     return (
       <div className={`${styles.post} mb-4`}>
@@ -181,8 +176,6 @@ class Post extends Component<Props, State> {
   }
 
   public handlePostSubscription() {
-    console.log("SUBSCRIBE LOGGED USER ID: ", this.userId);
-
     if (this.state.waitingSubscriptionRequest) {
       console.log(
         "Error trying subscription action! Waiting for response from last request"
@@ -197,7 +190,7 @@ class Post extends Component<Props, State> {
       userSubscription: subscriptionState,
       waitingSubscriptionRequest: true
     });
-    console.log(this.state);
+
     this.apiSubscription(endpoint);
   }
 
@@ -207,7 +200,6 @@ class Post extends Component<Props, State> {
         this.setState({
           waitingSubscriptionRequest: false
         });
-        console.log("SUBSCRIÇAO BEM SUCEDIDA", this.state);
       })
       .catch(() => {
         this.setState({
@@ -221,7 +213,6 @@ class Post extends Component<Props, State> {
   public apiGetPostUserInteractions() {
     apiGetUserInteractions("post", this.userId, this.props.id)
       .then(res => {
-        console.log(res.data);
         this.setState({
           fetchingPostUserInteractions: false,
           userRate: res.data.rate || 0,

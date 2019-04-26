@@ -90,8 +90,6 @@ export async function getPost(req, res) {
 export async function getPostUserInteractions(req, res) {
     const userId = req.body.userId;
     const postId = req.body.postId;
-    console.log("USER", userId);
-    console.log("POST", postId);
     try {
         const rateQuery = await query({
             text: `SELECT rate
@@ -114,7 +112,6 @@ export async function getPostUserInteractions(req, res) {
             rate,
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
-        console.log("RESULTADOOOOO", result);
         res.send(result);
     } catch (error) {
         console.error(error);
@@ -123,9 +120,6 @@ export async function getPostUserInteractions(req, res) {
 }
 
 export function subscribePost(req, res) {
-    console.log("SUBSCRIBEEE");
-    console.log("USER", req.body.userId);
-    console.log("POST", req.body.postId);
     query({
         text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
         values: [req.body.userId, req.body.postId],
@@ -138,9 +132,6 @@ export function subscribePost(req, res) {
 }
 
 export function unsubscribePost(req, res) {
-    console.log("REMOVE SUBSCRIPTION");
-    console.log("USER", req.body.userId);
-    console.log("POST", req.body.postId);
     query({
         text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
         values: [req.body.userId, req.body.postId],
