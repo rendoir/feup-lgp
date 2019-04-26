@@ -57,7 +57,7 @@ CREATE TABLE tags (
 
 CREATE TABLE posts_tags (
     post BIGINT REFERENCES posts ON DELETE CASCADE,
-    category BIGINT REFERENCES categories ON DELETE CASCADE
+    tag BIGINT REFERENCES tags ON DELETE CASCADE
 );
 
 /*
@@ -185,159 +185,159 @@ INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'Thi
 /**
 * tags related to content
 **/
-INSERT INTO tags (nome) VALUES ('Question');
-INSERT INTO tags (nome) VALUES ('Article');
-INSERT INTO tags (nome) VALUES ('Research Paper');
-INSERT INTO tags (nome) VALUES ('Conference Paper');
-INSERT INTO tags (nome) VALUES ('Presentation');
-INSERT INTO tags (nome) VALUES ('Poster');
-INSERT INTO tags (nome) VALUES ('Book');
-INSERT INTO tags (nome) VALUES ('Project');
-INSERT INTO tags (nome) VALUES ('Images');
-INSERT INTO tags (nome) VALUES ('Videos');
+INSERT INTO tags (name) VALUES ('Question');
+INSERT INTO tags (name) VALUES ('Article');
+INSERT INTO tags (name) VALUES ('Research Paper');
+INSERT INTO tags (name) VALUES ('Conference Paper');
+INSERT INTO tags (name) VALUES ('Presentation');
+INSERT INTO tags (name) VALUES ('Poster');
+INSERT INTO tags (name) VALUES ('Book');
+INSERT INTO tags (name) VALUES ('Project');
+INSERT INTO tags (name) VALUES ('Images');
+INSERT INTO tags (name) VALUES ('Videos');
 
-INSERT INTO tags (nome) VALUES ('New preprint');
-INSERT INTO tags (nome) VALUES ('Chapter');
+INSERT INTO tags (name) VALUES ('New preprint');
+INSERT INTO tags (name) VALUES ('Chapter');
 
-INSERT INTO tags (nome) VALUES ('File Available');
-INSERT INTO tags (nome) VALUES ('Full-text available');
+INSERT INTO tags (name) VALUES ('File Available');
+INSERT INTO tags (name) VALUES ('Full-text available');
 
 /**
 * tags related to medical specialities
 **/
-INSERT INTO tags (nome) VALUES ('Abdominal Radiology');
-INSERT INTO tags (nome) VALUES ('Addiction Psychiatry');
-INSERT INTO tags (nome) VALUES ('Adolescent Medicine');
-INSERT INTO tags (nome) VALUES ('Abdominal Radiology');
-INSERT INTO tags (nome) VALUES ('Adult Cardiothoracic Anesthesiology');
-INSERT INTO tags (nome) VALUES ('Adult Reconstructive Orthopaedics');
-INSERT INTO tags (nome) VALUES ('Advanced Heart Failure & Transplant Cardiology');
-INSERT INTO tags (nome) VALUES ('Allergy & Immunology');
-INSERT INTO tags (nome) VALUES ('Anesthesiology');
+INSERT INTO tags (name) VALUES ('Abdominal Radiology');
+INSERT INTO tags (name) VALUES ('Addiction Psychiatry');
+INSERT INTO tags (name) VALUES ('Adolescent Medicine');
+INSERT INTO tags (name) VALUES ('Abdominal Radiology');
+INSERT INTO tags (name) VALUES ('Adult Cardiothoracic Anesthesiology');
+INSERT INTO tags (name) VALUES ('Adult Reconstructive Orthopaedics');
+INSERT INTO tags (name) VALUES ('Advanced Heart Failure & Transplant Cardiology');
+INSERT INTO tags (name) VALUES ('Allergy & Immunology');
+INSERT INTO tags (name) VALUES ('Anesthesiology');
 
-INSERT INTO tags (nome) VALUES ('Biochemical Genetics');
-INSERT INTO tags (nome) VALUES ('Blood Banking - Transfusion Medicine');
+INSERT INTO tags (name) VALUES ('Biochemical Genetics');
+INSERT INTO tags (name) VALUES ('Blood Banking - Transfusion Medicine');
 
-INSERT INTO tags (nome) VALUES ('Cardiothoracic Radiology');
-INSERT INTO tags (nome) VALUES ('Cardiovascular Disease');
-INSERT INTO tags (nome) VALUES ('Chemical Pathology');
-INSERT INTO tags (nome) VALUES ('Child & Adolescent Psychiatry');
-INSERT INTO tags (nome) VALUES ('Child Abuse Pediatrics');
-INSERT INTO tags (nome) VALUES ('Child Neurology');
-INSERT INTO tags (nome) VALUES ('Clinical & Laboratory Immunology');
-INSERT INTO tags (nome) VALUES ('Clinical Cardiac Electrophysiology');
-INSERT INTO tags (nome) VALUES ('Clinical Neurophysiology');
-INSERT INTO tags (nome) VALUES ('Colon & Rectal Surgery');
-INSERT INTO tags (nome) VALUES ('Congenital Cardiac Surgery');
-INSERT INTO tags (nome) VALUES ('Craniofacial Surgery');
-INSERT INTO tags (nome) VALUES ('Critical Care Medicine');
-INSERT INTO tags (nome) VALUES ('Critical Care Medicine');
-INSERT INTO tags (nome) VALUES ('Cytopathology');
+INSERT INTO tags (name) VALUES ('Cardiothoracic Radiology');
+INSERT INTO tags (name) VALUES ('Cardiovascular Disease');
+INSERT INTO tags (name) VALUES ('Chemical Pathology');
+INSERT INTO tags (name) VALUES ('Child & Adolescent Psychiatry');
+INSERT INTO tags (name) VALUES ('Child Abuse Pediatrics');
+INSERT INTO tags (name) VALUES ('Child Neurology');
+INSERT INTO tags (name) VALUES ('Clinical & Laboratory Immunology');
+INSERT INTO tags (name) VALUES ('Clinical Cardiac Electrophysiology');
+INSERT INTO tags (name) VALUES ('Clinical Neurophysiology');
+INSERT INTO tags (name) VALUES ('Colon & Rectal Surgery');
+INSERT INTO tags (name) VALUES ('Congenital Cardiac Surgery');
+INSERT INTO tags (name) VALUES ('Craniofacial Surgery');
+INSERT INTO tags (name) VALUES ('Critical Care Medicine');
+INSERT INTO tags (name) VALUES ('Critical Care Medicine');
+INSERT INTO tags (name) VALUES ('Cytopathology');
 
-INSERT INTO tags (nome) VALUES ('Dermatology');
-INSERT INTO tags (nome) VALUES ('Dermatopathology');
-INSERT INTO tags (nome) VALUES ('Developmental-Behavioral Pediatrics');
+INSERT INTO tags (name) VALUES ('Dermatology');
+INSERT INTO tags (name) VALUES ('Dermatopathology');
+INSERT INTO tags (name) VALUES ('Developmental-Behavioral Pediatrics');
 
-INSERT INTO tags (nome) VALUES ('Emergency Medicine');
-INSERT INTO tags (nome) VALUES ('Endocrinology, Diabetes & Metabolism');
-INSERT INTO tags (nome) VALUES ('Endovascular Surgical Neuroradiology');
-INSERT INTO tags (nome) VALUES ('Endovascular Surgical Neuroradiology');
-INSERT INTO tags (nome) VALUES ('Endovascular Surgical Neuroradiology');
+INSERT INTO tags (name) VALUES ('Emergency Medicine');
+INSERT INTO tags (name) VALUES ('Endocrinology, Diabetes & Metabolism');
+INSERT INTO tags (name) VALUES ('Endovascular Surgical Neuroradiology');
+INSERT INTO tags (name) VALUES ('Endovascular Surgical Neuroradiology');
+INSERT INTO tags (name) VALUES ('Endovascular Surgical Neuroradiology');
 
-INSERT INTO tags (nome) VALUES ('Family Medicine');
-INSERT INTO tags (nome) VALUES ('Family Practice');
-INSERT INTO tags (nome) VALUES ('Female Pelvic Medicine & Reconstructive Surgery');
-INSERT INTO tags (nome) VALUES ('Foot & Ankle Orthopaedics');
-INSERT INTO tags (nome) VALUES ('Forensic Pathology');
-INSERT INTO tags (nome) VALUES ('Forensic Psychiatry');
+INSERT INTO tags (name) VALUES ('Family Medicine');
+INSERT INTO tags (name) VALUES ('Family Practice');
+INSERT INTO tags (name) VALUES ('Female Pelvic Medicine & Reconstructive Surgery');
+INSERT INTO tags (name) VALUES ('Foot & Ankle Orthopaedics');
+INSERT INTO tags (name) VALUES ('Forensic Pathology');
+INSERT INTO tags (name) VALUES ('Forensic Psychiatry');
 
-INSERT INTO tags (nome) VALUES ('Gastroenterology');
-INSERT INTO tags (nome) VALUES ('Geriatric Medicine');
-INSERT INTO tags (nome) VALUES ('Geriatric Psychiatry');
+INSERT INTO tags (name) VALUES ('Gastroenterology');
+INSERT INTO tags (name) VALUES ('Geriatric Medicine');
+INSERT INTO tags (name) VALUES ('Geriatric Psychiatry');
 
-INSERT INTO tags (nome) VALUES ('Hand Surgery');
-INSERT INTO tags (nome) VALUES ('Hematology');
-INSERT INTO tags (nome) VALUES ('Hematology & Oncology');
+INSERT INTO tags (name) VALUES ('Hand Surgery');
+INSERT INTO tags (name) VALUES ('Hematology');
+INSERT INTO tags (name) VALUES ('Hematology & Oncology');
 
-INSERT INTO tags (nome) VALUES ('Infectious Disease');
-INSERT INTO tags (nome) VALUES ('Internal Medicine');
-INSERT INTO tags (nome) VALUES ('Internal Medicine-Pediatrics');
-INSERT INTO tags (nome) VALUES ('Interventional Cardiology');
+INSERT INTO tags (name) VALUES ('Infectious Disease');
+INSERT INTO tags (name) VALUES ('Internal Medicine');
+INSERT INTO tags (name) VALUES ('Internal Medicine-Pediatrics');
+INSERT INTO tags (name) VALUES ('Interventional Cardiology');
 
-INSERT INTO tags (nome) VALUES ('Medical Genetics');
-INSERT INTO tags (nome) VALUES ('Medical Microbiology'); 
-INSERT INTO tags (nome) VALUES ('Medical Toxicology');
-INSERT INTO tags (nome) VALUES ('Molecular Genetic Pathology');
-INSERT INTO tags (nome) VALUES ('Muscoskeletal Radiology');
-INSERT INTO tags (nome) VALUES ('Musculoskeletal Oncology');
+INSERT INTO tags (name) VALUES ('Medical Genetics');
+INSERT INTO tags (name) VALUES ('Medical Microbiology'); 
+INSERT INTO tags (name) VALUES ('Medical Toxicology');
+INSERT INTO tags (name) VALUES ('Molecular Genetic Pathology');
+INSERT INTO tags (name) VALUES ('Muscoskeletal Radiology');
+INSERT INTO tags (name) VALUES ('Musculoskeletal Oncology');
 
-INSERT INTO tags (nome) VALUES ('Neonatal-Perinatal Medicine');
-INSERT INTO tags (nome) VALUES ('Nephrology');
-INSERT INTO tags (nome) VALUES ('Neurological Surgery');
-INSERT INTO tags (nome) VALUES ('Neurology');
-INSERT INTO tags (nome) VALUES ('Neuromuscular Medicine');
-INSERT INTO tags (nome) VALUES ('Neuropathology');
-INSERT INTO tags (nome) VALUES ('Neuroradiology');
-INSERT INTO tags (nome) VALUES ('Nuclear Medicine');
-INSERT INTO tags (nome) VALUES ('Nuclear Radiology');
+INSERT INTO tags (name) VALUES ('Neonatal-Perinatal Medicine');
+INSERT INTO tags (name) VALUES ('Nephrology');
+INSERT INTO tags (name) VALUES ('Neurological Surgery');
+INSERT INTO tags (name) VALUES ('Neurology');
+INSERT INTO tags (name) VALUES ('Neuromuscular Medicine');
+INSERT INTO tags (name) VALUES ('Neuropathology');
+INSERT INTO tags (name) VALUES ('Neuroradiology');
+INSERT INTO tags (name) VALUES ('Nuclear Medicine');
+INSERT INTO tags (name) VALUES ('Nuclear Radiology');
 
-INSERT INTO tags (nome) VALUES ('Obstetric Anesthesiology');
-INSERT INTO tags (nome) VALUES ('Obstetrics & Gynecology');
-INSERT INTO tags (nome) VALUES ('Oncology');
-INSERT INTO tags (nome) VALUES ('Ophthalmic Plastic & Reconstructive Surgery');
-INSERT INTO tags (nome) VALUES ('Ophthalmology');
-INSERT INTO tags (nome) VALUES ('Orthopaedic Sports Medicine');
-INSERT INTO tags (nome) VALUES ('Orthopaedic Surgery');
-INSERT INTO tags (nome) VALUES ('Orthopaedic Surgery of the Spine');
-INSERT INTO tags (nome) VALUES ('Orthopaedic Trauma');
-INSERT INTO tags (nome) VALUES ('Otolaryngology');
-INSERT INTO tags (nome) VALUES ('Otology - Neurotology');
+INSERT INTO tags (name) VALUES ('Obstetric Anesthesiology');
+INSERT INTO tags (name) VALUES ('Obstetrics & Gynecology');
+INSERT INTO tags (name) VALUES ('Oncology');
+INSERT INTO tags (name) VALUES ('Ophthalmic Plastic & Reconstructive Surgery');
+INSERT INTO tags (name) VALUES ('Ophthalmology');
+INSERT INTO tags (name) VALUES ('Orthopaedic Sports Medicine');
+INSERT INTO tags (name) VALUES ('Orthopaedic Surgery');
+INSERT INTO tags (name) VALUES ('Orthopaedic Surgery of the Spine');
+INSERT INTO tags (name) VALUES ('Orthopaedic Trauma');
+INSERT INTO tags (name) VALUES ('Otolaryngology');
+INSERT INTO tags (name) VALUES ('Otology - Neurotology');
 
-INSERT INTO tags (nome) VALUES ('Pain Medicine');
-INSERT INTO tags (nome) VALUES ('Pathology-Anatomic & Clinical');
-INSERT INTO tags (nome) VALUES ('Pediatric Anesthesiology');
-INSERT INTO tags (nome) VALUES ('Pediatric Cardiology');
-INSERT INTO tags (nome) VALUES ('Pediatric Critical Care Medicine');
-INSERT INTO tags (nome) VALUES ('Pediatric Emergency Medicine');
-INSERT INTO tags (nome) VALUES ('Pediatric Endocrinology');
-INSERT INTO tags (nome) VALUES ('Pediatric Gastroenterology');
-INSERT INTO tags (nome) VALUES ('Pediatric Hematology-Oncology');
-INSERT INTO tags (nome) VALUES ('Pediatric Infectious Diseases');
-INSERT INTO tags (nome) VALUES ('Pediatric Nephrology');
-INSERT INTO tags (nome) VALUES ('Pediatric Orthopaedics');
-INSERT INTO tags (nome) VALUES ('Pediatric Otolaryngology');
-INSERT INTO tags (nome) VALUES ('Pediatric Pathology');
-INSERT INTO tags (nome) VALUES ('Pediatric Pulmonology');
-INSERT INTO tags (nome) VALUES ('Pediatric Radiology');
-INSERT INTO tags (nome) VALUES ('Pediatric Rheumatology');
-INSERT INTO tags (nome) VALUES ('Pediatric Sports Medicine');
-INSERT INTO tags (nome) VALUES ('Pediatric Surgery');
-INSERT INTO tags (nome) VALUES ('Pediatric Transplant Hepatology');
-INSERT INTO tags (nome) VALUES ('Pediatric Urology');
-INSERT INTO tags (nome) VALUES ('Pediatrics');
-INSERT INTO tags (nome) VALUES ('Physical Medicine & Rehabilitation');
-INSERT INTO tags (nome) VALUES ('Plastic Surgery');
-INSERT INTO tags (nome) VALUES ('Preventive Medicine');
-INSERT INTO tags (nome) VALUES ('Procedural Dermatology');
-INSERT INTO tags (nome) VALUES ('Psychiatry');
-INSERT INTO tags (nome) VALUES ('Pulmonary Disease');
-INSERT INTO tags (nome) VALUES ('Pulmonary Disease & Critical Care Medicine');
+INSERT INTO tags (name) VALUES ('Pain Medicine');
+INSERT INTO tags (name) VALUES ('Pathology-Anatomic & Clinical');
+INSERT INTO tags (name) VALUES ('Pediatric Anesthesiology');
+INSERT INTO tags (name) VALUES ('Pediatric Cardiology');
+INSERT INTO tags (name) VALUES ('Pediatric Critical Care Medicine');
+INSERT INTO tags (name) VALUES ('Pediatric Emergency Medicine');
+INSERT INTO tags (name) VALUES ('Pediatric Endocrinology');
+INSERT INTO tags (name) VALUES ('Pediatric Gastroenterology');
+INSERT INTO tags (name) VALUES ('Pediatric Hematology-Oncology');
+INSERT INTO tags (name) VALUES ('Pediatric Infectious Diseases');
+INSERT INTO tags (name) VALUES ('Pediatric Nephrology');
+INSERT INTO tags (name) VALUES ('Pediatric Orthopaedics');
+INSERT INTO tags (name) VALUES ('Pediatric Otolaryngology');
+INSERT INTO tags (name) VALUES ('Pediatric Pathology');
+INSERT INTO tags (name) VALUES ('Pediatric Pulmonology');
+INSERT INTO tags (name) VALUES ('Pediatric Radiology');
+INSERT INTO tags (name) VALUES ('Pediatric Rheumatology');
+INSERT INTO tags (name) VALUES ('Pediatric Sports Medicine');
+INSERT INTO tags (name) VALUES ('Pediatric Surgery');
+INSERT INTO tags (name) VALUES ('Pediatric Transplant Hepatology');
+INSERT INTO tags (name) VALUES ('Pediatric Urology');
+INSERT INTO tags (name) VALUES ('Pediatrics');
+INSERT INTO tags (name) VALUES ('Physical Medicine & Rehabilitation');
+INSERT INTO tags (name) VALUES ('Plastic Surgery');
+INSERT INTO tags (name) VALUES ('Preventive Medicine');
+INSERT INTO tags (name) VALUES ('Procedural Dermatology');
+INSERT INTO tags (name) VALUES ('Psychiatry');
+INSERT INTO tags (name) VALUES ('Pulmonary Disease');
+INSERT INTO tags (name) VALUES ('Pulmonary Disease & Critical Care Medicine');
 
-INSERT INTO tags (nome) VALUES ('Radiation Oncology');
-INSERT INTO tags (nome) VALUES ('Radiology-Diagnostic');
-INSERT INTO tags (nome) VALUES ('Rheumatology');
+INSERT INTO tags (name) VALUES ('Radiation Oncology');
+INSERT INTO tags (name) VALUES ('Radiology-Diagnostic');
+INSERT INTO tags (name) VALUES ('Rheumatology');
 
-INSERT INTO tags (nome) VALUES ('Sleep Medicine');
-INSERT INTO tags (nome) VALUES ('Spinal Cord Injury Medicine');
-INSERT INTO tags (nome) VALUES ('Sports Medicine');
-INSERT INTO tags (nome) VALUES ('Surgery-General');
-INSERT INTO tags (nome) VALUES ('Surgical Critical Care');
+INSERT INTO tags (name) VALUES ('Sleep Medicine');
+INSERT INTO tags (name) VALUES ('Spinal Cord Injury Medicine');
+INSERT INTO tags (name) VALUES ('Sports Medicine');
+INSERT INTO tags (name) VALUES ('Surgery-General');
+INSERT INTO tags (name) VALUES ('Surgical Critical Care');
 
-INSERT INTO tags (nome) VALUES ('Thoracic Surgery');
-INSERT INTO tags (nome) VALUES ('Thoracic Surgery-Integrated');
-INSERT INTO tags (nome) VALUES ('Transplant Hepatology');
+INSERT INTO tags (name) VALUES ('Thoracic Surgery');
+INSERT INTO tags (name) VALUES ('Thoracic Surgery-Integrated');
+INSERT INTO tags (name) VALUES ('Transplant Hepatology');
 
-INSERT INTO tags (nome) VALUES ('Urology');
+INSERT INTO tags (name) VALUES ('Urology');
 
-INSERT INTO tags (nome) VALUES ('Vascular & Interventional Radiology');
-INSERT INTO tags (nome) VALUES ('Vascular Surgery');
+INSERT INTO tags (name) VALUES ('Vascular & Interventional Radiology');
+INSERT INTO tags (name) VALUES ('Vascular Surgery');

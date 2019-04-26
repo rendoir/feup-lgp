@@ -36,6 +36,7 @@ type IProps = {
   visibility: string;
   comments: any[];
   likers: any[];
+  tags: any[];
 };
 
 interface IState {

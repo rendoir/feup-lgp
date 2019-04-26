@@ -115,6 +115,15 @@ export async function getPost(req, res) {
             values: [postId],
         });
 
+        const tags = await query({
+             text: `SELECT t.name
+                        FROM tags t
+                        INNER JOIN posts_tags pt
+                        ON pt.tag = t.id
+                        WHERE pt.post = $1`,
+            values: [postId],
+        });
+
         const result = {
             post: post.rows,
             comments: comments.rows,

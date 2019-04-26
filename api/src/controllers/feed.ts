@@ -21,6 +21,7 @@ export async function getFeed(req, res) {
         });
         const commentsToSend = [];
         const likersToSend = [];
+        const tagsToSend = [];
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -42,13 +43,23 @@ export async function getFeed(req, res) {
                         WHERE l.post = $1`,
                 values: [post.id],
             });
+            const tagsPost = await query({
+             text: `SELECT t.name
+                        FROM tags t
+                        INNER JOIN posts_tags pt
+                        ON pt.tag = t.id
+                        WHERE pt.post = $1`,
+                values: [post.id],
+            });
             commentsToSend.push(comment.rows);
             likersToSend.push(likersPost.rows);
+            tagsToSend.push(tagsPost.rows);
         }
         res.send({
             posts: result.rows,
             comments: commentsToSend,
             likers: likersToSend,
+            tags: tagsToSend,
         });
     } catch (error) {
         console.error(error);
