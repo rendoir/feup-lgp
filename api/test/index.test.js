@@ -118,7 +118,6 @@ describe('Create post', () => {
                 expect(err).to.be.null;
                 console.log(res.text);
                 expect(res.text).to.have.property('id');
-                expect(res.text).to.
                 done();
             })
     });
