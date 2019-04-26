@@ -15,7 +15,6 @@ interface IState {
   id: number;
   post: any[];
   comments: any[];
-  fetchingPostUserInteractions: boolean;
   likers: any[];
   fetchingInfo: boolean;
 }
@@ -31,7 +30,6 @@ class PostView extends React.Component<IProps, IState> {
     this.state = {
       comments: [],
       fetchingInfo: true,
-      fetchingPostUserInteractions: true,
       id: 1,
       likers: [],
       post: [
@@ -93,7 +91,7 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.state.fetchingInfo || this.state.fetchingPostUserInteractions) {
+    if (this.state.fetchingInfo) {
       return null;
     }
 
