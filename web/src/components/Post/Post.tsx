@@ -149,10 +149,7 @@ class Post extends Component<IProps, IState> {
               <span> {this.props.comments.length} comments</span>
             </div>
             <div className={styles.post_actions}>
-              <button onClick={this.handleAddLike}>
-                {this.userLiked()}
-                <span>Like</span>
-              </button>
+              <button onClick={this.handleAddLike}>{this.userLiked()}</button>
               <button>
                 <i className="far fa-comment-alt" />
                 <span>Comment</span>
@@ -262,10 +259,22 @@ class Post extends Component<IProps, IState> {
     });
 
     if (foundValue != null) {
+      divStyle.color = "black";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Like</span>
+        </div>
+      );
+    } else {
       divStyle.color = "blue";
+      return (
+        <div>
+          <i className="fas fa-thumbs-up" style={divStyle} />
+          <span>Dislike</span>
+        </div>
+      );
     }
-
-    return <i className="fas fa-thumbs-up" style={divStyle} />;
   }
 
   public validComment() {

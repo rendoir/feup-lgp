@@ -80,12 +80,7 @@ class Comment extends Component<Props, State> {
               </p>
             </div>
             <div className={styles.comment_social}>
-              <button
-                className={styles.comment_action}
-                onClick={this.handleAddLike}
-              >
-                Like
-              </button>
+              {this.getLikeButton()}
               {!this.props.secondLevel && (
                 <button
                   className={styles.comment_action}
@@ -235,6 +230,30 @@ class Comment extends Component<Props, State> {
       this.apiComments();
     }
   };
+
+  public getLikeButton() {
+    const userLoggedIn = 2;
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+    if (foundValue != null) {
+      return (
+        <button className={styles.comment_action} onClick={this.handleAddLike}>
+          Dislike
+        </button>
+      );
+    } else {
+      return (
+        <button className={styles.comment_action} onClick={this.handleAddLike}>
+          Like
+        </button>
+      );
+    }
+  }
 
   public apiComments() {
     let postUrl = `${location.protocol}//${location.hostname}`;
