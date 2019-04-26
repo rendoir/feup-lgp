@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getApiURL } from "./apiURL";
 
-export async function apiSubscription(
+export async function apiRating(
   apiGroup: string,
   endpoint: string,
   userId: number,
@@ -11,8 +11,8 @@ export async function apiSubscription(
   switch (apiGroup) {
     case "users":
       body = {
-        followed: subjectId,
-        follower: userId
+        evaluator: subjectId,
+        target: userId
       };
       break;
 
@@ -24,7 +24,7 @@ export async function apiSubscription(
       break;
   }
 
-  console.log("subscription body", body);
+  console.log("rating body", body);
 
   const apiUrl = getApiURL(`/${apiGroup}/${endpoint}`);
   return axios.post(apiUrl, body);

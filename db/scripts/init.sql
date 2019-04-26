@@ -156,8 +156,8 @@ INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('use
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 INSERT INTO follows (follower, followed) VALUES (1, 3);
 
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 4, 2);
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 8, 4);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 2, 2);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 4, 4);
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2019-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 'public', '2019-12-03');

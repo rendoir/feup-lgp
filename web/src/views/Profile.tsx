@@ -108,13 +108,21 @@ class Profile extends React.Component<{}, State> {
         <fieldset className="rate">
           <div className="star-ratings-css">
             <div className="star-ratings-css-top" style={{ width: userRate }}>
-              <input defaultValue="1" onClick={this.handleUserRate}>
+              <span id="1" onClick={this.handleUserRate}>
                 ★
-              </input>
-              <input defaultValue="2">★</input>
-              <input defaultValue="3">★</input>
-              <input defaultValue="4">★</input>
-              <input defaultValue="5">★</input>
+              </span>
+              <span id="2" onClick={this.handleUserRate}>
+                ★
+              </span>
+              <span id="3" onClick={this.handleUserRate}>
+                ★
+              </span>
+              <span id="4" onClick={this.handleUserRate}>
+                ★
+              </span>
+              <span id="5" onClick={this.handleUserRate}>
+                ★
+              </span>
             </div>
             <div className="star-ratings-css-bottom">
               <span>★</span>
