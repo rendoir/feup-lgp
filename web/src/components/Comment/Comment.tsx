@@ -1,7 +1,6 @@
 // - Import react components
 import axios from "axios";
 // import classNames from "classnames";
-import createSequence from "../../utils/createSequence";
 
 import Avatar from "../Avatar/Avatar";
 
@@ -14,17 +13,27 @@ import "bootstrap/dist/js/bootstrap.js";
 
 import styles from "./../Post/Post.module.scss";
 
-const seq = createSequence();
-
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
+  postID: number;
   title: string | undefined;
   text: string | undefined;
 
   author: string | undefined;
+  likes: number;
+
+  secondLevel: boolean;
 };
 
-export type State = {};
+export type State = {
+  commentID: number;
+  commentValue: string;
+  comments: any[];
+  hrefComment: string;
+  isHovered: boolean;
+  likers: any[];
+  redirect: boolean;
+};
 
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
@@ -33,51 +42,23 @@ class Comment extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.id = "comment_" + seq.next();
+    this.id = "comment_" + this.props.title;
     this.state = {
-      isHovered: false
+      commentID: 0,
+      commentValue: "",
+      comments: [],
+      hrefComment: "",
+      isHovered: false,
+      likers: [],
+      redirect: false
     };
 
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
-  }
 
-  public apiDeleteComment() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/deletecomment";
-    axios
-      .delete(postUrl, {
-        data: {
-          id: this.id
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
-      .then(res => {
-        console.log("Comment deleted");
-      })
-      .catch(() => console.log("Failed to delete comment"));
-  }
+    this.handleAddComment = this.handleAddComment.bind(this);
+    this.changeCommentValue = this.changeCommentValue.bind(this);
 
-  public handleCommentDeletion() {
-    this.apiDeleteComment();
-  }
-
-  public getActionButton() {
-    return (
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-dismiss="modal"
-        onClick={this.handleCommentDeletion}
-      >
-        {"Yes"}
-      </button>
-    );
+    this.handleAddLike = this.handleAddLike.bind(this);
   }
 
   public render() {
@@ -95,13 +76,21 @@ class Comment extends Component<Props, State> {
               <p>
                 <span className={styles.post_author}>{this.props.author}</span>
                 {this.props.text}
+                {this.getLikes()}
               </p>
-              <span className={styles.comment_detail}>
-                <i className="fas fa-thumbs-up" />2
-              </span>
             </div>
             <div className={styles.comment_social}>
-              <button className={styles.comment_action}>Like</button>
+              {this.getLikeButton()}
+              {!this.props.secondLevel && (
+                <button
+                  className={styles.comment_action}
+                  role="button"
+                  data-toggle="collapse"
+                  data-target={"#" + this.state.hrefComment + "_form"}
+                >
+                  Reply
+                </button>
+              )}
               <a className={styles.post_date} href={"/post/" + this.id} />
               <div className={`${styles.post_options} btn-group`}>
                 <button
@@ -124,10 +113,50 @@ class Comment extends Component<Props, State> {
                     className="dropdown-item"
                     type="button"
                     data-toggle="modal"
-                    data-target="#delete_comment_modal"
+                    data-target={`#delete_comment_modal_${this.props.title}`}
                   >
                     Delete Comment
                   </button>
+                </div>
+              </div>
+              <div className={`${styles.post_comment_section} w-100`}>
+                {this.actionRenderLevelComments()}
+                <div className={`${styles.post_comment} w-100`}>
+                  {this.renderLevelComments()}
+                  <div
+                    id={this.state.hrefComment + "_form"}
+                    className="collapse"
+                  >
+                    <form
+                      className={styles.post_add_comment}
+                      onSubmit={this.handleAddComment}
+                    >
+                      <Avatar
+                        title={this.props.author}
+                        placeholder="empty"
+                        size={30}
+                        image="https://picsum.photos/200/200?image=52"
+                      />
+                      <textarea
+                        className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                          this.state.commentValue
+                        )}`}
+                        placeholder="Insert your comment..."
+                        value={this.state.commentValue}
+                        onChange={this.changeCommentValue}
+                        onKeyDown={this.onEnterPress}
+                        required={true}
+                      />
+                      <button
+                        className={`${styles.submit_comment} px-2 py-1`}
+                        type="submit"
+                        value="Submit"
+                        disabled={!this.validComment()}
+                      >
+                        <i className="fas fa-chevron-circle-right" />
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -135,7 +164,7 @@ class Comment extends Component<Props, State> {
         </div>
 
         <div
-          id="delete_comment_modal"
+          id={`delete_comment_modal_${this.props.title}`}
           className="modal fade"
           tabIndex={-1}
           role="dialog"
@@ -179,6 +208,358 @@ class Comment extends Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  public componentDidMount() {
+    this.setState({
+      commentID: Number(this.props.title),
+      hrefComment: "comment_section_" + this.props.title
+    });
+    this.apiGetCommentsOfComment(Number(this.props.title));
+    this.apiGetWhoLikedComment(Number(this.props.title));
+  }
+
+  public handleAddComment(event: any) {
+    event.preventDefault();
+    this.apiComments();
+  }
+
+  public onEnterPress = (e: any) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      this.apiComments();
+    }
+  };
+
+  public getLikeButton() {
+    const userLoggedIn = 2;
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+    if (foundValue != null) {
+      return (
+        <button className={styles.comment_action} onClick={this.handleAddLike}>
+          Dislike
+        </button>
+      );
+    } else {
+      return (
+        <button className={styles.comment_action} onClick={this.handleAddLike}>
+          Like
+        </button>
+      );
+    }
+  }
+
+  public apiComments() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
+
+    axios
+      .post(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        comment: this.state.commentValue,
+        headers: {}
+      })
+      .then(res => {
+        console.log("Comment created - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
+  }
+
+  public changeCommentValue(event: any) {
+    this.setState({ commentValue: event.target.value });
+  }
+
+  public handleAddLike(event: any) {
+    event.preventDefault();
+
+    const userLoggedIn = 2;
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      this.apiDeleteLikeToComment();
+    } else {
+      this.apiAddLikeToComment();
+    }
+  }
+
+  public userLiked() {
+    const userLoggedIn = 2;
+    const divStyle = { color: "black" };
+
+    const foundValue = this.state.likers.find(e => {
+      if (e.id === userLoggedIn.toString()) {
+        return e;
+      } else {
+        return null;
+      }
+    });
+
+    if (foundValue != null) {
+      divStyle.color = "blue";
+    }
+
+    return <i className="fas fa-thumbs-up" style={divStyle} />;
+  }
+
+  public apiGetCommentsOfComment(id: number) {
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += `/post/${this.props.postID}/comment/${id}`;
+
+    axios
+      .get(getUrl)
+      .then(res => {
+        this.setState({
+          comments: res.data
+        });
+      })
+      .catch(() => console.log("Failed to create comment"));
+  }
+
+  public apiAddLikeToComment() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }/like`;
+
+    axios
+      .post(postUrl, {
+        author: 2,
+        headers: {}
+      })
+      .then(res => {
+        console.log("Comment liked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to add like to comment"));
+  }
+
+  public apiDeleteLikeToComment() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }/like`;
+
+    axios
+      .delete(postUrl, {
+        data: {
+          author: 2
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Comment disliked - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to delete like from a comment"));
+  }
+
+  public apiGetWhoLikedComment(id: number) {
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += `/post/${this.props.postID}/comment/${id}/likes`;
+
+    axios
+      .get(getUrl)
+      .then(res => {
+        this.setState({
+          likers: res.data
+        });
+      })
+      .catch(() => console.log("Failed to create comment"));
+  }
+
+  public apiDeleteComment() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
+    axios
+      .delete(postUrl, {
+        data: {
+          id: this.props.title
+        },
+        headers: {
+          /*'Authorization': "Bearer " + getToken()*/
+        }
+      })
+      .then(res => {
+        console.log("Comment deleted");
+        if (window.location.pathname === "/post/" + this.id) {
+          this.setState({
+            redirect: true
+          });
+          this.handleRedirect();
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(() => console.log("Failed to delete comment"));
+  }
+
+  public handleCommentDeletion() {
+    this.apiDeleteComment();
+  }
+
+  public renderRedirect() {
+    if (this.state.redirect) {
+      window.location.href = "/";
+    }
+  }
+
+  public handleRedirect() {
+    if (window.location.pathname === "/post/" + this.id) {
+      this.renderRedirect();
+    }
+  }
+
+  public getActionButton() {
+    return (
+      <div>
+        {this.handleRedirect()}
+        <button
+          type="button"
+          className="btn btn-primary"
+          data-dismiss="modal"
+          onClick={this.handleCommentDeletion}
+        >
+          {"Yes"}
+        </button>
+      </div>
+    );
+  }
+
+  public getLikers() {
+    const likedUsersDiv = this.state.likers.map((liker, idx) => {
+      return (
+        <span key={"user" + idx + "liked-comment"} className="dropdown-item">
+          {liker.first_name} {liker.last_name}
+        </span>
+      );
+    });
+
+    return (
+      <span
+        id={"comment_" + this.state.commentID + " show_likes"}
+        className="dropdown-menu dropdown-menu-right"
+      >
+        {likedUsersDiv}
+      </span>
+    );
+  }
+  public getLikes() {
+    const likesDiv = [];
+
+    if (this.props.likes > 0) {
+      likesDiv.push(
+        <span
+          key={this.state.hrefComment + "_span_like"}
+          className={styles.comment_detail}
+        >
+          <a
+            key={"comment_" + this.state.commentID + " show_likes_button"}
+            role="button"
+            data-toggle="dropdown"
+            data-target={"#comment_" + this.state.commentID + " show_likes"}
+          >
+            {this.userLiked()}
+          </a>{" "}
+          {this.props.likes}
+          {this.getLikers()}
+        </span>
+      );
+    }
+    return likesDiv;
+  }
+
+  public renderLevelComments() {
+    const commentSection = this.state.comments.map((comment, idx) => {
+      const key = "comment" + this.props.title + " " + idx;
+      return (
+        <Comment
+          key={key}
+          postID={comment.post}
+          title={comment.id}
+          author={comment.first_name + " " + comment.last_name}
+          text={comment.comment}
+          likes={comment.likes}
+          secondLevel={true}
+        />
+      );
+    });
+
+    return (
+      <div id={this.state.hrefComment} className="w-100 collapse">
+        {commentSection}
+      </div>
+    );
+  }
+
+  public actionRenderLevelComments() {
+    const actionSeeRepliesDiv = [];
+
+    if (this.state.comments.length > 0) {
+      actionSeeRepliesDiv.push(
+        <button
+          key={this.state.hrefComment + "_button"}
+          className={styles.comment_action}
+          role="button"
+          data-toggle="collapse"
+          data-target={"#" + this.state.hrefComment}
+        >
+          See {this.state.comments.length} Replies
+        </button>
+      );
+    }
+
+    return actionSeeRepliesDiv;
+  }
+
+  public validComment() {
+    return Boolean(this.state.commentValue);
+  }
+
+  public getInputRequiredClass(content: string) {
+    return content === "" ? "empty_required_field" : "post_field";
+  }
+
+  public getInputRequiredStyle(content: string) {
+    return content !== "" ? { display: "none" } : {};
   }
 }
 
