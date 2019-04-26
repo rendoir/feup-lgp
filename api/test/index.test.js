@@ -10,6 +10,18 @@ let futureDate = new Date();
 futureDate.setDate(futureDate.getDate() + 3);
 const futureDateStr = '"' + futureDate.toISOString() + '"';
 
+// let adminId = -1;
+
+const publicPost = {
+    author: -1,
+    title: 'Test Title 1',
+    text: 'Test Content 1',
+    visibility: 'public'
+};
+function assignAuthorsToPosts(adminId) {
+    publicPost.author = adminId;
+}
+
 function loadEnvironment() {
     if (process.env.PRODUCTION === 'true') {
         console.log('IN PROD');
@@ -50,18 +62,19 @@ async function cleanDb() {
 }
 
 async function insertAdminUser() {
-    // return db.query({
-    //     text: `INSERT INTO users (email, pass, permissions)
-    //         VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin')
-    //         RETURNING id`,
-    // }).then((res) => res.rows[0].id);
+    return db.query({
+        text: `INSERT INTO users (email, pass, first_name, last_name, permissions)
+            VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin')
+            RETURNING id`,
+    }).then((res) => res.rows[0].id);
 }
 
 before((done) => {
     loadEnvironment();
     cleanDb()
     .then(insertAdminUser)
-    .then((_adminId) => {
+    .then((adminId) => {
+        assignAuthorsToPosts(adminId);
         return done();
     });
 });
@@ -92,5 +105,21 @@ describe('Root GET', () => {
                 expect(res.text).to.have.string('welcome to node api');
                 done();
             });
+    });
+});
+
+describe('Create post', () => {
+    it('Should submit a new public post', (done) => {
+        request(app)
+            .post('/post/create')
+            .send(publicPost)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                console.log(res.text);
+                expect(res.text).to.have.property('id');
+                expect(res.text).to.
+                done();
+            })
     });
 });

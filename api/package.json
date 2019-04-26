@@ -2,12 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "gnet server",
-  "main": "server.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
     "lint": "tslint -p . -c tslint.json",
-    "test": "npm run build && mocha --exit"
+    "report": "nyc report",
+    "test": "npm run build && nyc --reporter=html mocha --exit"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "nodemon": "^1.18.11",
+    "nyc": "^14.0.0",
     "supertest": "^4.0.2",
     "tslint": "^5.15.0"
   }
