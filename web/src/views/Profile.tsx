@@ -54,7 +54,7 @@ class Profile extends React.Component<{}, State> {
     } else {
       console.log("RATE LOGGED USER ID: ", this.observerId);
       const rateTarget = e.target.id;
-      console.log("TARGET: ", parseInt(rateTarget, 10));
+      console.log("You rated: ", parseInt(rateTarget, 10));
 
       let body = {};
       body = {
@@ -62,8 +62,6 @@ class Profile extends React.Component<{}, State> {
         rate: parseInt(rateTarget, 10),
         target_user: this.id
       };
-      console.log("rating body: ", body);
-      console.log("atual: ", this.state.userRateTotal);
 
       const apiUrl = getApiURL(`/users/rateUser`);
       return axios
@@ -75,8 +73,6 @@ class Profile extends React.Component<{}, State> {
             userRateTotal:
               this.state.userRateTotal + parseInt(rateTarget, 10) * 20
           });
-          console.log("Number Ratings: ", this.state.numberOfRatings);
-          console.log("User Rate: ", this.state.userRateTotal);
         })
         .catch(() => {
           console.log("Rating system failed");
@@ -166,46 +162,37 @@ class Profile extends React.Component<{}, State> {
     console.log("q" + this.state.userRateTotal);
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
-    console.log("r" + userRate);
+    console.log("r" + userRate / 1.1);
 
     if (!this.state.userRated) {
       return (
-        <div className="star-ratings-css-top">
-          <span id="1" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="2" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="3" onClick={this.handleUserRate}>
+        <div className="star-ratings-css-top" id="rate-user">
+          <span id="5" onClick={this.handleUserRate}>
             ★
           </span>
           <span id="4" onClick={this.handleUserRate}>
             ★
           </span>
-          <span id="5" onClick={this.handleUserRate}>
+          <span id="3" onClick={this.handleUserRate}>
             ★
           </span>
+          <span id="2" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <p>Rate this user</p>
         </div>
       );
     } else {
       return (
         <div className="star-ratings-css-top" style={{ width: userRate }}>
-          <span id="1" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="2" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="3" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="4" onClick={this.handleUserRate}>
-            ★
-          </span>
-          <span id="5" onClick={this.handleUserRate}>
-            ★
-          </span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
         </div>
       );
     }

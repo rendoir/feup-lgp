@@ -321,4 +321,22 @@ $light-border: solid lightgray 1px;
     display: block;
     z-index: 0;
   }
+
+  #rate-user{
+    color: #8f8f8f;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  }
+
+  #rate-user span:hover:before,
+  #rate-user span:hover ~ span:before {
+    color: #e7711b;
+    content: "\2605";
+    position: absolute;
+  }
+
+  #rate-user p{
+    color: #000000;
+    font-size: small;
+  }
 }
