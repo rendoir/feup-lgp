@@ -93,7 +93,6 @@ export async function getUserUserInteractions(req, res) {
 
         const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
         const totalRatingsNumber = totalRatingsQuery.rows[0].count;
-        console.log("pls: ", totalRatingsNumber);
         const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
@@ -111,7 +110,7 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
-    console.log("SUBSCRIBEEE");
+    console.log("SUBSCRIBEE");
     console.log("follower", req.body.follower);
     console.log("followed", req.body.followed);
     query({
@@ -141,10 +140,6 @@ export function unsubscribeUser(req, res) {
 }
 
 export function rateUser(req, res) {
-    console.log("evaluator", req.body.evaluator);
-    console.log("rattte:", req.body.rate);
-    console.log("TOTAL: ", req.body.newUserRating);
-    console.log("target_user", req.body.target_user);
     query({
         text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
         values: [req.body.evaluator, req.body.rate, req.body.target_user],

@@ -1,9 +1,9 @@
+import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
 import { apiSubscription } from "../utils/apiSubscription";
-import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 import { getApiURL } from "../utils/apiURL";
-import axios from "axios";
+import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
 type State = {
   fetchingUserUserInteractions: boolean;
@@ -30,10 +30,10 @@ class Profile extends React.Component<{}, State> {
 
     this.state = {
       fetchingUserUserInteractions: true,
+      numberOfRatings: 1,
       userRate: 50,
       userRateTotal: 50,
       userRated: false,
-      numberOfRatings: 1,
       userSubscription: false,
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
@@ -51,43 +51,32 @@ class Profile extends React.Component<{}, State> {
     if (this.state.userRated) {
       console.log("You already rated this user");
     } else {
-      console.log("RATE LOGGED USER ID: ", this.observerId);
       const rateTarget = e.target.id;
-      console.log("You rated: ", parseInt(rateTarget, 10));
 
-      console.log("GOD DAMN IT: ", this.state.numberOfRatings);
-      var incrementRate = Number(this.state.numberOfRatings) + 1;
-      console.log("i beg you: ", incrementRate);
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
       this.setState({
         numberOfRatings: incrementRate
       });
-      console.log("because: ", this.state.numberOfRatings);
-      var userRating =
+      const userRating =
         (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
         incrementRate;
-      console.log("FIM??? ", userRating);
       let body = {};
       body = {
         evaluator: this.observerId,
-        rate: parseInt(rateTarget, 10),
         newUserRating: userRating,
+        rate: parseInt(rateTarget, 10),
         target_user: this.id
       };
-      console.log(
-        "neww: ",
-        (this.state.userRateTotal + parseInt(rateTarget, 10) * 20) /
-          this.state.numberOfRatings
-      );
 
+      console.log("User Rating updated to: ", userRating);
       const apiUrl = getApiURL(`/users/rateUser`);
       return axios
         .post(apiUrl, body)
         .then(() => {
-          console.log("WTF", this.state.numberOfRatings);
           this.setState({
-            userRated: true,
             userRateTotal:
-              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20,
+            userRated: true
           });
         })
         .catch(() => {
@@ -134,23 +123,18 @@ class Profile extends React.Component<{}, State> {
   public apiGetUserUserInteractions() {
     apiGetUserInteractions("users", this.observerId, this.id)
       .then(res => {
-        console.log("FUCK SAKE:", res.data.totalRatingsNumber);
         this.setState({
           fetchingUserUserInteractions: false,
-          userRate: res.data.rate,
           numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
         if (!(this.state.userRate == null)) {
-          console.log("btch", res.data.rate);
           this.setState({
             userRated: true
           });
         }
-        console.log("user rate: ", this.state.userRate);
-        console.log("total ratings: ", this.state.numberOfRatings);
-        console.log("user rating: ", this.state.userRateTotal);
       })
       .catch(() => console.log("Failed to get user-user interactions"));
   }
@@ -187,13 +171,8 @@ class Profile extends React.Component<{}, State> {
   }
 
   public handleStars() {
-    console.log("q" + this.state.userRateTotal);
-    console.log("???? ", this.state.numberOfRatings);
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
-    console.log("usuertotal: ", this.state.userRateTotal);
-    console.log("numberofratings: ", this.state.numberOfRatings);
-    console.log("r" + userRate / 1.1);
 
     if (!this.state.userRated) {
       return (

@@ -76,11 +76,11 @@ class Post extends Component<IProps, IState> {
       fetchingPostUserInteractions: true,
       isFetching: true,
       isHovered: false,
+      postID: 0,
       userRate: 0,
       userSubscription: false,
       waitingRateRequest: false,
-      waitingSubscriptionRequest: false,
-      postID: 0
+      waitingSubscriptionRequest: false
     };
     console.log("rate: ", this.state.userRate);
     console.log("subscription: ", this.state.userSubscription);
@@ -219,33 +219,6 @@ class Post extends Component<IProps, IState> {
             </div>
           </div>
         )}
-      </div>
-    );
-  }
-
-  private getUserInteractionButtons() {
-    const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
-    const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
-
-    return (
-      <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
-        <button onClick={this.handlePostSubscription}>
-          <i className={subscribeIcon} />
-          <span>{subscribeBtnText}</span>
-        </button>
-        <button>
-          <i className="far fa-comment-alt" />
-          <span>Comment</span>
-        </button>
-        <button>
-          <i className="fas fa-share-square" />
-          <span>Share</span>
-        </button>
       </div>
     );
   }
@@ -526,6 +499,33 @@ class Post extends Component<IProps, IState> {
       >
         {likesDiv}
       </span>
+    );
+  }
+
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
     );
   }
 
