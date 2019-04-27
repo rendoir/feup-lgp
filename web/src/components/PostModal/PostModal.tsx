@@ -8,20 +8,20 @@ import "./PostModal.css";
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
 
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
+
 interface IProps {
   /* The following attributes are only required for post edition */
   id?: number;
   title?: string;
   text?: string;
 
-  images?: string[];
-  videos?: string[];
-  files?: {
-    name: string;
-    type: string;
-    src: string;
-    size: number;
-  }[];
+  files?: MyFile[];
 }
 
 interface IState {

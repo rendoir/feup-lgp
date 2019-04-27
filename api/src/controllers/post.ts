@@ -76,9 +76,20 @@ export async function getPost(req, res) {
                         p.id = $1`,
             values: [postId],
         });
+        const files = await query({
+            text: `SELECT f.name, f.mimetype, f.size
+                    FROM posts p
+                    LEFT JOIN files f
+                    ON p.id = f.post
+                    WHERE
+                        p.id = $1`,
+            values: [postId],
+        });
+
         const result = {
             post: post.rows,
             comments: comments.rows,
+            files: files.rows
         };
         res.send(result);
     } catch (error) {
@@ -101,7 +112,9 @@ export function saveFiles(req, res, id) {
 
     for (let key in req.files) {
         let file = req.files[key];
-        let filename = req.files[key].name;
+        let filename = file.name;
+        let filetype = file.mimetype;
+        let filesize = file.size;
         //Move file to uploads
         file.mv('uploads/' + id + '/' + filename, function (err) {
             if (err) 
@@ -109,8 +122,8 @@ export function saveFiles(req, res, id) {
             else {
                 //Add file to database
                 query({
-                    text: 'INSERT INTO files (name, post) VALUES ($1, $2) RETURNING id',
-                    values: [filename, id],
+                    text: 'INSERT INTO files (name, mimeType, size, post) VALUES ($1, $2, $3, $4) RETURNING id',
+                    values: [filename, filetype, filesize, id],
                 }).then(() => {
                     return;
                 }).catch((error) => {

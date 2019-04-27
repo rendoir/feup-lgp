@@ -50,8 +50,6 @@ class Feed extends React.Component<Props, State> {
         id={post.id}
         author={post.first_name + " " + post.last_name}
         text={post.content}
-        images={undefined}
-        videos={undefined}
         comments={[]}
         title=""
         date={post.date_created.replace(/T.*/gi, "")}

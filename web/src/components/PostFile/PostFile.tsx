@@ -7,13 +7,15 @@ import styles from "../Post/Post.module.css";
 // - Import app components
 import Post from "../Post/Post";
 
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
+
 export type Props = {
-  file: {
-    name: string;
-    type: string;
-    src: string;
-    size: number;
-  };
+  file: MyFile;
 };
 
 export type State = {};
@@ -36,8 +38,8 @@ class PostFile extends Component<Props, State> {
               <b className="pointer">{this.props.file.name}</b>
             </div>
             <div className="d-inline-block">
-              <span>{this.props.file.type}</span>
-              <span className="ml-3">{this.props.file.size} MB</span>
+              <span>{this.props.file.mimetype}</span>
+              <span className="ml-3">{this.props.file.size} Bytes</span>
             </div>
           </div>
 

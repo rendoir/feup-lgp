@@ -13,14 +13,11 @@ interface IProps {
 
 interface IState {
   id: number;
-  post: any[];
+  post: any;
   comments: any[];
+  files: any[];
   fetchingInfo: boolean;
 }
-
-const postStyle = {
-  margin: "2rem auto auto auto"
-};
 
 class PostView extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -28,21 +25,17 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
+      files: [],
       fetchingInfo: true,
       id: 1,
-      post: [
-        {
-          author: "1",
-          content: "",
-          content_document: null,
-          content_image: null,
-          content_video: null,
-          date_created: "",
-          date_updated: "",
-          id: "",
-          title: ""
-        }
-      ]
+      post: {
+        author: "1",
+        content: "",
+        date_created: "",
+        date_updated: "",
+        id: "",
+        title: ""
+      }
     };
   }
 
@@ -69,17 +62,18 @@ class PostView extends React.Component<IProps, IState> {
           comments: res.data.comments,
           fetchingInfo: false,
           id: res.data.post[0].id,
-          post: res.data.post
+          post: res.data.post[0],
+          files: res.data.files
         });
       })
       .catch(() => console.log("Failed to get post info"));
   }
 
   public date() {
-    if (this.state.post[0].date_updated != null) {
-      return this.processDate(this.state.post[0].date_updated);
+    if (this.state.post.date_updated != null) {
+      return this.processDate(this.state.post.date_updated);
     } else {
-      return this.processDate(this.state.post[0].date_created);
+      return this.processDate(this.state.post.date_created);
     }
   }
 
@@ -93,22 +87,20 @@ class PostView extends React.Component<IProps, IState> {
     }
 
     return (
-      <div
-        className="d-flex justify-content-center align-items-center align-self-center"
-        style={postStyle}
-      >
-        <Post
-          id={Number(this.state.post[0].id)}
-          title={this.state.post[0].title}
-          author={
-            this.state.post[0].first_name + " " + this.state.post[0].last_name
-          }
-          date={this.date()}
-          text={this.state.post[0].content}
-          videos={this.state.post[0].content_video}
-          images={this.state.post[0].content_image}
-          comments={this.state.comments}
-        />
+      <div className="container my-5">
+        <div className="w-75 mx-auto">
+          <Post
+            id={Number(this.state.post.id)}
+            title={this.state.post.title}
+            author={
+              this.state.post.first_name + " " + this.state.post.last_name
+            }
+            date={this.date()}
+            text={this.state.post.content}
+            comments={this.state.comments}
+            files={this.state.files}
+          />
+        </div>
       </div>
     );
   }

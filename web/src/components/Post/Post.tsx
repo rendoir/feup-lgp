@@ -14,6 +14,13 @@ import VideoPreloader from "../VideoPreloader/VideoPreloader";
 import PostCarousel from "../PostCarousel/PostCarousel";
 import PostFile from "../PostFile/PostFile";
 
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
+
 type Props = {
   id: number;
 
@@ -21,28 +28,23 @@ type Props = {
 
   date: string | undefined;
 
-  images: string[] | undefined;
-
-  videos: string[] | undefined;
-
   author: string;
 
   text: string | undefined;
 
   comments: any[];
 
-  files?: {
-    name: string;
-    type: string;
-    src: string;
-    size: number;
-  }[];
+  files?: MyFile[];
 };
 
 type State = {
   isHovered: boolean;
   clickedImage: string | undefined;
   data: any;
+
+  images: MyFile[];
+  videos: MyFile[];
+  docs: MyFile[];
 };
 
 class Post extends Component<Props, State> {
@@ -56,8 +58,14 @@ class Post extends Component<Props, State> {
     this.state = {
       data: "",
       isHovered: false,
-      clickedImage: undefined
+      clickedImage: undefined,
+
+      images: [],
+      videos: [],
+      docs: []
     };
+
+    this.initFiles();
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
   }
@@ -186,10 +194,12 @@ class Post extends Component<Props, State> {
     return <div className={styles.post_comments}>{commentSection}</div>;
   }
 
-  private handleImageClick(src: String) {
-    this.setState({
-      clickedImage: src
-    } as State);
+  private handleImageClick(src: String | undefined) {
+    if (src) {
+      this.setState({
+        clickedImage: src
+      } as State);
+    }
   }
 
   private handleOverlayClick() {
@@ -216,24 +226,25 @@ class Post extends Component<Props, State> {
   }
 
   private getImages() {
-    if (this.props.images) {
-      if (this.props.images.length >= 2) {
+    if (this.state.images.length) {
+      if (this.state.images.length >= 2) {
         return (
           <PostCarousel
+            key={this.props.id}
             id={this.props.id}
-            images={this.props.images}
+            images={this.state.images}
             parent={this}
             handleImageClick={this.handleImageClick}
           />
         );
-      } else if (this.props.images.length == 1) {
-        let image = this.props.images[0];
+      } else if (this.state.images.length == 1) {
+        let image = this.state.images[0];
         return (
           <div
             className={styles.post_content_media}
-            onClick={this.handleImageClick.bind(this, image)}
+            onClick={this.handleImageClick.bind(this, image.src)}
           >
-            <ImagePreloader src={image}>
+            <ImagePreloader src={image.src}>
               {({ src }) => {
                 return <img src={src} />;
               }}
@@ -247,12 +258,12 @@ class Post extends Component<Props, State> {
   private getVideos() {
     const videoDiv = [];
 
-    if (this.props.videos) {
-      for (const video of this.props.videos) {
+    if (this.state.videos.length) {
+      for (const video of this.state.videos) {
         videoDiv.push(
           <div className={styles.post_content_media}>
             <iframe
-              src={video}
+              src={video.src}
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen={true}
@@ -268,13 +279,32 @@ class Post extends Component<Props, State> {
   private getFiles() {
     const filesDiv = [];
 
-    if (this.props.files) {
-      for (const file of this.props.files) {
-        filesDiv.push(<PostFile file={file} />);
+    if (this.state.docs.length) {
+      for (const file of this.state.docs) {
+        filesDiv.push(<PostFile key={file.name} file={file} />);
       }
     }
 
     return filesDiv;
+  }
+
+  private initFiles() {
+    if (this.props.files) {
+      let src = `${location.protocol}//${location.hostname}`;
+      src +=
+        !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+          ? `:${process.env.REACT_APP_API_PORT}`
+          : "/api";
+      src += "/post/" + this.props.id + "/";
+
+      Array.from(this.props.files).forEach(file => {
+        file.src = src + file.name;
+        if (file.mimetype.startsWith("image")) this.state.images.push(file);
+        else if (file.mimetype.startsWith("video"))
+          this.state.videos.push(file);
+        else this.state.docs.push(file);
+      });
+    }
   }
 }
 

@@ -7,11 +7,18 @@ import styles from "../Post/Post.module.css";
 // - Import app components
 import Post from "../Post/Post";
 
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
+
 export type Props = {
   id: Number;
-  images: string[];
+  images: MyFile[];
   parent: Post;
-  handleImageClick: (image: string) => any;
+  handleImageClick: (image: string | undefined) => any;
 };
 
 export type State = {};
@@ -41,10 +48,10 @@ class PostCarousel extends Component<Props, State> {
             className={styles.post_content_media}
             onClick={this.props.handleImageClick.bind(
               this.props.parent,
-              this.props.images[i]
+              this.props.images[i].src
             )}
           >
-            <img src={this.props.images[i]} />
+            <img src={this.props.images[i].src} />
           </div>
         </div>
       );
