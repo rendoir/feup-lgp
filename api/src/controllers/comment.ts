@@ -43,19 +43,19 @@ export async function createNewCommentForComment(req, res) {
 export function editComment(req, res) {
     if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+        res.status(400).send({ message: 'An error occurred while editing a comment' });
         return;
     }
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE comments SET post=$2, comment=$3 WHERE id=$1',
-        values: [req.body.id, req.body.post, req.body.comment],
-    }).then((result) => {
-        res.status(200).send();
+        text: 'UPDATE comments SET comment=$2 WHERE id=$1',
+        values: [req.body.id, req.body.comment],
+    }).then(() => {
+        res.status(200).send({ newComment: req.body.comment });
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+        res.status(400).send({ message: 'An error occurred while editing a comment' });
     });
 }
 

@@ -26,6 +26,7 @@ export type Props = {
 
 export type State = {
   commentID: number;
+  commentText: string | undefined;
   commentValue: string;
   comments: any[];
   hrefComment: string;
@@ -45,6 +46,7 @@ class Comment extends Component<Props, State> {
     this.id = "comment_" + this.props.title;
     this.state = {
       commentID: 0,
+      commentText: this.props.text,
       commentValue: "",
       comments: [],
       hrefComment: "",
@@ -55,6 +57,7 @@ class Comment extends Component<Props, State> {
     };
 
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
+    this.apiEditComment = this.apiEditComment.bind(this);
 
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
@@ -106,7 +109,10 @@ class Comment extends Component<Props, State> {
                     className="dropdown-item"
                     type="button"
                     data-toggle="modal"
-                    data-target="#edit_comment_modal"
+                    data-target={`#edit_comment_modal_${this.props.title}`}
+                    onClick={() =>
+                      this.setState({ commentText: this.props.text })
+                    }
                   >
                     Edit Comment
                   </button>
@@ -158,6 +164,68 @@ class Comment extends Component<Props, State> {
                       </button>
                     </form>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id={`edit_comment_modal_${this.props.title}`}
+          className="modal fade"
+          role="dialog"
+          aria-labelledby="editCommentModal"
+          aria-hidden="true"
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-xl"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="editCommentModal">
+                  Edit Comment
+                  <button
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </h5>
+              </div>
+              <div className="modal-body">
+                <input
+                  placeholder="Insert your comment here"
+                  className="form-control"
+                  value={this.state.commentText}
+                  onChange={event =>
+                    this.setState({ commentText: event.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  data-dismiss="modal"
+                  onClick={() =>
+                    this.setState({ commentText: this.props.text })
+                  }
+                >
+                  Cancel
+                </button>
+                <div>
+                  {this.handleRedirect()}
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    data-dismiss="modal"
+                    onClick={this.apiEditComment}
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -402,6 +470,33 @@ class Comment extends Component<Props, State> {
         });
       })
       .catch(() => console.log("Failed to create comment"));
+  }
+
+  public apiEditComment() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
+
+    axios
+      .put(postUrl, {
+        comment: this.state.commentText,
+        id: this.state.commentID
+      })
+      .then(res => {
+        console.log(`Comment edited to ${res.data.newComment}`);
+        if (window.location.pathname === "/post/" + this.id) {
+          this.setState({
+            redirect: true
+          });
+          this.handleRedirect();
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(() => console.log("Failed to edit comment"));
   }
 
   public apiDeleteComment() {
