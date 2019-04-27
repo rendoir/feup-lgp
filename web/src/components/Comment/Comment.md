@@ -1,5 +1,4 @@
-Comment:
-```jsx
+Comment: ```jsx
 <div>
     <Comment
         title=""
