@@ -13,7 +13,7 @@ interface IProps {
 
 interface IState {
   id: number;
-  post: any[];
+  post: any;
   comments: any[];
   fetchingInfo: boolean;
 }
@@ -30,19 +30,17 @@ class PostView extends React.Component<IProps, IState> {
       comments: [],
       fetchingInfo: true,
       id: 1,
-      post: [
-        {
-          author: "1",
-          content: "",
-          content_document: null,
-          content_image: null,
-          content_video: null,
-          date_created: "",
-          date_updated: "",
-          id: "",
-          title: ""
-        }
-      ]
+      post: {
+        author: "1",
+        content: "",
+        content_document: null,
+        content_image: null,
+        content_video: null,
+        date_created: "",
+        date_updated: "",
+        id: "",
+        title: ""
+      }
     };
   }
 
@@ -56,19 +54,18 @@ class PostView extends React.Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post";
+    postUrl += `/post/${id}`;
     axios
-      .get(`${postUrl}/${id}`, {
+      .get(postUrl, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        },
-        params: {}
+        }
       })
       .then(res => {
         this.setState({
           comments: res.data.comments,
           fetchingInfo: false,
-          id: res.data.post[0].id,
+          id: res.data.post.id,
           post: res.data.post
         });
       })
@@ -76,10 +73,10 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public date() {
-    if (this.state.post[0].date_updated != null) {
-      return this.processDate(this.state.post[0].date_updated);
+    if (this.state.post.date_updated != null) {
+      return this.processDate(this.state.post.date_updated);
     } else {
-      return this.processDate(this.state.post[0].date_created);
+      return this.processDate(this.state.post.date_created);
     }
   }
 
@@ -99,17 +96,17 @@ class PostView extends React.Component<IProps, IState> {
       >
         <div className="middle col-lg-10">
           <Post
-            id={Number(this.state.post[0].id)}
-            title={this.state.post[0].title}
+            id={Number(this.state.post.id)}
+            title={this.state.post.title}
             author={
-              this.state.post[0].first_name + " " + this.state.post[0].last_name
+              this.state.post.first_name + " " + this.state.post.last_name
             }
             date={this.date()}
-            text={this.state.post[0].content}
-            videos={this.state.post[0].content_video}
-            images={this.state.post[0].content_image}
+            text={this.state.post.content}
+            videos={this.state.post.content_video}
+            images={this.state.post.content_image}
             comments={this.state.comments}
-            visibility={this.state.post[0].visibility}
+            visibility={this.state.post.visibility}
           />
         </div>
       </div>
