@@ -115,3 +115,5 @@ postRouter.post('/:id/like', controller.addALikeToPost);
 postRouter.delete('/:id/like', controller.deleteALikeToPost);
 
 postRouter.get('/:id/:filename', controller.getFile);
+
+postRouter.get('/download/:id/:filename', controller.downloadFile);

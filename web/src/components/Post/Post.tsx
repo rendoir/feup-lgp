@@ -578,7 +578,9 @@ class Post extends Component<IProps, IState> {
 
     if (this.state.docs.length) {
       for (const file of this.state.docs) {
-        filesDiv.push(<PostFile key={file.name} file={file} />);
+        filesDiv.push(
+          <PostFile key={file.name} file={file} id={this.props.id} />
+        );
       }
     }
 
