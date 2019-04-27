@@ -37,13 +37,17 @@ class PostCarousel extends Component<Props, State> {
     for (let i = 0; i < this.props.images.length; i++) {
       items.push(
         <li
+          key={"li_" + this.props.id + "_" + i}
           data-target={"#imgCarousel" + this.props.id}
           data-slide-to={i}
           className={i ? "" : "active"}
         />
       );
       images.push(
-        <div className={"carousel-item " + (i ? "" : "active")}>
+        <div
+          key={"div_" + this.props.id + "_" + i}
+          className={"carousel-item " + (i ? "" : "active")}
+        >
           <div
             className={styles.post_content_media}
             onClick={this.props.handleImageClick.bind(

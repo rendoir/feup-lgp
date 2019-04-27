@@ -44,7 +44,8 @@ class Feed extends React.Component<Props, State> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx])
+            (post.likers = postsComing.likers[idx]),
+            (post.files = postsComing.files[idx])
           )
         );
 
@@ -69,6 +70,7 @@ class Feed extends React.Component<Props, State> {
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
           visibility={post.visibility}
+          files={post.files}
         />
       );
     }
