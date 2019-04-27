@@ -16,14 +16,12 @@ type MyFile = {
 
 export type Props = {
   id: Number;
-  images: MyFile[];
-  parent: Post;
-  handleImageClick: (image: string | undefined) => any;
+  videos: MyFile[];
 };
 
 export type State = {};
 
-class PostCarousel extends Component<Props, State> {
+class PostVideoCarousel extends Component<Props, State> {
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -31,31 +29,25 @@ class PostCarousel extends Component<Props, State> {
   }
 
   private getCarousel() {
-    let images = [];
+    let videos = [];
     let items = [];
 
-    for (let i = 0; i < this.props.images.length; i++) {
+    for (let i = 0; i < this.props.videos.length; i++) {
       items.push(
         <li
           key={"li_" + this.props.id + "_" + i}
-          data-target={"#imgCarousel" + this.props.id}
+          data-target={"#videoCarousel" + this.props.id}
           data-slide-to={i}
           className={i ? "" : "active"}
         />
       );
-      images.push(
+      videos.push(
         <div
           key={"div_" + this.props.id + "_" + i}
           className={"carousel-item " + (i ? "" : "active")}
         >
-          <div
-            className={styles.post_content_media}
-            onClick={this.props.handleImageClick.bind(
-              this.props.parent,
-              this.props.images[i].src
-            )}
-          >
-            <img src={this.props.images[i].src} />
+          <div className={styles.post_content_media}>
+            <video src={this.props.videos[i].src} controls />
           </div>
         </div>
       );
@@ -63,16 +55,16 @@ class PostCarousel extends Component<Props, State> {
 
     return (
       <div
-        id={"imgCarousel" + this.props.id}
-        className="carousel slide"
+        id={"videoCarousel" + this.props.id}
+        className={"carousel slide " + styles.post_video_carousel}
         data-ride="carousel"
         data-interval="false"
       >
         <ol className="carousel-indicators">{items}</ol>
-        <div className="carousel-inner">{images}</div>
+        <div className="carousel-inner">{videos}</div>
         <a
           className="carousel-control-prev"
-          href={"#imgCarousel" + this.props.id}
+          href={"#videoCarousel" + this.props.id}
           role="button"
           data-slide="prev"
         >
@@ -81,7 +73,7 @@ class PostCarousel extends Component<Props, State> {
         </a>
         <a
           className="carousel-control-next"
-          href={"#imgCarousel" + this.props.id}
+          href={"#videoCarousel" + this.props.id}
           role="button"
           data-slide="next"
         >
@@ -99,4 +91,4 @@ class PostCarousel extends Component<Props, State> {
   }
 }
 
-export default PostCarousel;
+export default PostVideoCarousel;

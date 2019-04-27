@@ -13,7 +13,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostCarousel from "../PostCarousel/PostCarousel";
+import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import PostFile from "../PostFile/PostFile";
 
 type MyFile = {
@@ -31,6 +31,7 @@ import {
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../Icon/Icon";
+import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
 type IProps = {
   id: number;
@@ -525,8 +526,8 @@ class Post extends Component<IProps, IState> {
     if (this.state.images.length) {
       if (this.state.images.length >= 2) {
         return (
-          <PostCarousel
-            key={this.props.id}
+          <PostImageCarousel
+            key={"i_" + this.props.id}
             id={this.props.id}
             images={this.state.images}
             parent={this}
@@ -552,24 +553,24 @@ class Post extends Component<IProps, IState> {
   }
 
   private getVideos() {
-    const videoDiv = [];
-
     if (this.state.videos.length) {
-      for (const video of this.state.videos) {
-        videoDiv.push(
-          <div className={styles.post_content_media}>
-            <iframe
-              src={video.src}
-              frameBorder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen={true}
-            />
+      if (this.state.videos.length >= 2) {
+        return (
+          <PostVideoCarousel
+            key={"v_" + this.props.id}
+            id={this.props.id}
+            videos={this.state.videos}
+          />
+        );
+      } else {
+        let video = this.state.videos[0];
+        return (
+          <div className={"overflow-hidden " + styles.post_content_media}>
+            <video src={video.src} controls />
           </div>
         );
       }
     }
-
-    return videoDiv;
   }
 
   private getFiles() {

@@ -2,7 +2,7 @@
 
 ```jsx
 /* Inside a post */
-<PostCarousel
+<PostImageCarousel
     id={this.props.id}
     images={this.props.images}
     parent={this}
