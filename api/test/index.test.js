@@ -5,14 +5,6 @@ const request = require('supertest');
 const db = require('../dist/db/db');
 const dotenv = require("dotenv");
 
-// Hooks for 'nyc' coverage reporter.
-const adminController = require('../dist/controllers/admin');
-const commentController = require('../dist/controllers/comment');
-const feedController = require('../dist/controllers/feed');
-const loginController = require('../dist/controllers/login');
-const postController = require('../dist/controllers/post');
-const usersController = require('../dist/controllers/users');
-
 // now + 3 days
 let futureDate = new Date();
 futureDate.setDate(futureDate.getDate() + 3);
