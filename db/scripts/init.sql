@@ -76,7 +76,7 @@ CREATE TABLE posts_subscriptions (
 
 CREATE TABLE posts_rates (
     evaluator BIGINT REFERENCES users ON DELETE CASCADE,
-    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 5),
+    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
     post BIGINT REFERENCES posts ON DELETE CASCADE
 );
 
@@ -87,30 +87,6 @@ CREATE TABLE likes_a_comment (
 
 ALTER TABLE IF EXISTS ONLY likes_a_comment
     ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
-
-CREATE FUNCTION update_likes_comment() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE comments SET likes = likes + 1 WHERE id = NEW.comment;
-        RETURN NEW;
-    END$$;
-
-CREATE TRIGGER update_likes_of_a_comment
-    AFTER INSERT ON likes_a_comment
-    FOR EACH ROW
-    EXECUTE PROCEDURE update_likes_comment();
-
-CREATE FUNCTION delete_likes_comment() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE comments SET likes = likes - 1 WHERE id = OLD.comment;
-        RETURN NEW;
-    END$$;
-
-CREATE TRIGGER delete_likes_of_a_comment
-    AFTER DELETE ON likes_a_comment
-    FOR EACH ROW
-    EXECUTE PROCEDURE delete_likes_comment();
 
 /**
 * Likes on a Post
@@ -125,28 +101,27 @@ ALTER TABLE IF EXISTS ONLY likes_a_post
 
 CREATE FUNCTION update_likes_post() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
-        RETURN NEW;
-    END$$;
+AS $$BEGIN
+    UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
+    RETURN NEW;
+END$$;
 
 CREATE TRIGGER update_likes_of_a_post
     AFTER INSERT ON likes_a_post
     FOR EACH ROW
-    EXECUTE PROCEDURE update_likes_post();
+EXECUTE PROCEDURE update_likes_post();
 
 CREATE FUNCTION delete_likes_post() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
-        RETURN NEW;
-    END$$;
+AS $$BEGIN
+    UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
+    RETURN NEW;
+END$$;
 
 CREATE TRIGGER delete_likes_of_a_post
     AFTER DELETE ON likes_a_post
     FOR EACH ROW
-    EXECUTE PROCEDURE delete_likes_post();
-
+EXECUTE PROCEDURE delete_likes_post();
 
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe', 'user');
@@ -217,6 +192,14 @@ INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'Thi
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 5');
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 6');
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 7');
+
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 1');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 2');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 3');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 4');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 5');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 6');
+INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 7');
 
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
