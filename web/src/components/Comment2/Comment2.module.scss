@@ -1,0 +1,118 @@
+@import "../../styles/variables";
+
+$comment-font-family: $default-font-family;
+$comment-font-size: $default-font-size;
+$comment-font-color: $default-font-color;
+$comment-background-color: rgba($black, 0.1);
+$comment-padding: $default-padding-small;
+$comment-title-color-hover: darken($color-primary, 10%);
+$comment-title-color: $color-primary;
+$comment-title-font-weight: 800;
+
+.comments {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: center;
+  padding: $comment-padding 0;
+}
+
+.container {
+  all: initial;
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+  font-family: $comment-font-family;
+  font-size: $comment-font-size;
+  color: $comment-font-color;
+  background-color: transparent;
+}
+
+.avatar {
+  padding-right: $comment-padding;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.wrapper {
+  background-color: $comment-background-color;
+  display: flex;
+  flex-flow: column;
+  border-radius: 20px;
+  padding: $comment-padding $comment-padding 0;
+  width: auto;
+  max-width: 500px;
+}
+
+.title {
+  cursor: pointer;
+  color: $comment-title-color;
+  background-color: transparent;
+  font-weight: $comment-title-font-weight;
+  text-decoration: none;
+
+  &:hover {
+    color: $comment-title-color-hover;
+  }
+}
+
+.message {
+  cursor: text;
+}
+
+.footer {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 2px 5px;
+  font-size: $comment-font-size * 0.8;
+}
+
+.footerLinks {
+  color: gray;
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+
+.link {
+  color: gray;
+  text-decoration: none;
+  padding: 0 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.edited {
+  color: $greyish;
+  font-size: $comment-font-size * 0.8;
+  float: right;
+}
+
+.replies {
+  padding-top: $comment-padding;
+  margin-left: $comment-padding * 2;
+  max-width: 500px;
+
+  & .wrapper {
+    width: auto;
+  }
+}
+
+.inputWrapper {
+  display: flex;
+  flex-flow: row;;
+  padding: $comment-padding 0;
+}
+
+.input {
+  width: 100%;
+}

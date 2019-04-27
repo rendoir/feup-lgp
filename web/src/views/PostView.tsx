@@ -15,6 +15,7 @@ interface IState {
   id: number;
   post: any;
   comments: any[];
+  likers: any[];
   fetchingInfo: boolean;
 }
 
@@ -30,6 +31,7 @@ class PostView extends React.Component<IProps, IState> {
       comments: [],
       fetchingInfo: true,
       id: 1,
+      likers: [],
       post: {
         author: "1",
         content: "",
@@ -66,6 +68,7 @@ class PostView extends React.Component<IProps, IState> {
           comments: res.data.comments,
           fetchingInfo: false,
           id: res.data.post.id,
+          likers: res.data.likers,
           post: res.data.post
         });
       })
@@ -102,10 +105,12 @@ class PostView extends React.Component<IProps, IState> {
               this.state.post.first_name + " " + this.state.post.last_name
             }
             date={this.date()}
+            likes={this.state.post.likes}
             text={this.state.post.content}
             videos={this.state.post.content_video}
             images={this.state.post.content_image}
             comments={this.state.comments}
+            likers={this.state.likers}
             visibility={this.state.post.visibility}
           />
         </div>
