@@ -1,6 +1,5 @@
 import * as React from "react";
 import Cookies from "universal-cookie";
-import StarRatingComponent from "react-star-rating-component";
 import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 import { getApiURL } from "../utils/apiURL";
