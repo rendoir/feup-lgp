@@ -55,6 +55,7 @@ class PostCarousel extends Component<Props, State> {
         id={"imgCarousel" + this.props.id}
         className="carousel slide"
         data-ride="carousel"
+        data-interval="false"
       >
         <ol className="carousel-indicators">{items}</ol>
         <div className="carousel-inner">{images}</div>

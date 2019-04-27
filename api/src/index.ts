@@ -45,7 +45,7 @@ app.use(morgan('combined'));
 // app.use(cookie_parser());
 app.use(urlencoded({extended: true}));
 app.use(json());
-app.use(fileUpload());
+app.use(fileUpload({createParentPath: true}));
 app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
 app.use(express.static('uploads'));
 

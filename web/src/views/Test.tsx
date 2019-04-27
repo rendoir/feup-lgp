@@ -37,8 +37,17 @@ class Feed extends React.Component<Props, State> {
   }*/
 
   public render() {
+    let imgurl = `${location.protocol}//${location.hostname}`;
+    imgurl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    imgurl += "/uploads/24.SparkGlow.png";
+
     return (
       <div id="Test" className="container my-5">
+        <img src={imgurl} />
+
         <Post
           id={1}
           title="Title"

@@ -185,6 +185,7 @@ class PostModal extends Component<IProps, IState> {
           <input
             name="title"
             type="text"
+            autoComplete="off"
             className={this.getInputRequiredClass(this.state.title)}
             onChange={this.handleInputChange}
             placeholder="Insert title"
