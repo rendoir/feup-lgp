@@ -106,7 +106,7 @@ export async function getPost(req, res) {
             values: [postId, userId],
         });
         const result = {
-            post: post.rows,
+            post: post.rows[0],
             comments: comments.rows,
         };
         res.send(result);

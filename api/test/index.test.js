@@ -30,6 +30,18 @@ function assignAuthorsToPosts(adminId) {
     publicPost.author = adminId;
 }
 
+/**
+ * Posts aren't compared immediately due to DB posts containing more attributes
+ * and lacking the author's id.
+ * @param {*} p1 
+ * @param {*} p2 
+ */
+function equalPosts(p1, p2) {
+    return p1.title == p2.title
+        && p1.text == p2.content
+        && p1.visibility == p2.visibility;
+}
+
 function loadEnvironment() {
     if (process.env.PRODUCTION === 'true') {
         console.log('IN PROD');
@@ -117,6 +129,8 @@ describe('Root GET', () => {
 });
 
 describe('Create post', () => {
+    let postId = -1;
+
     it('Should submit a new public post', (done) => {
         request(app)
             .post('/post/create')
@@ -125,7 +139,22 @@ describe('Create post', () => {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res.body).to.have.property('id');
+                postId = res.body.id;
                 done();
             })
+    });
+
+    it('Should retrieve the submitted post', (done) => {
+        request(app)
+            .get(`/post/${postId}`)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('post');
+                expect(equalPosts(publicPost, res.body.post)).to.be.true;
+                expect(res.body).to.have.property('comments');
+                expect(res.body.comments).to.be.empty;
+                done();
+            });
     });
 });
