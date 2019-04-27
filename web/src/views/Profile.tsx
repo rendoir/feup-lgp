@@ -56,20 +56,37 @@ class Profile extends React.Component<{}, State> {
       const rateTarget = e.target.id;
       console.log("You rated: ", parseInt(rateTarget, 10));
 
+      console.log("GOD DAMN IT: ", this.state.numberOfRatings);
+      var incrementRate = Number(this.state.numberOfRatings) + 1;
+      console.log("i beg you: ", incrementRate);
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      console.log("because: ", this.state.numberOfRatings);
+      var userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      console.log("FIM??? ", userRating);
       let body = {};
       body = {
         evaluator: this.observerId,
         rate: parseInt(rateTarget, 10),
+        newUserRating: userRating,
         target_user: this.id
       };
+      console.log(
+        "neww: ",
+        (this.state.userRateTotal + parseInt(rateTarget, 10) * 20) /
+          this.state.numberOfRatings
+      );
 
       const apiUrl = getApiURL(`/users/rateUser`);
       return axios
         .post(apiUrl, body)
         .then(() => {
+          console.log("WTF", this.state.numberOfRatings);
           this.setState({
             userRated: true,
-            numberOfRatings: this.state.numberOfRatings + 1,
             userRateTotal:
               this.state.userRateTotal + parseInt(rateTarget, 10) * 20
           });
@@ -118,11 +135,23 @@ class Profile extends React.Component<{}, State> {
   public apiGetUserUserInteractions() {
     apiGetUserInteractions("users", this.observerId, this.id)
       .then(res => {
+        console.log("FUCK SAKE:", res.data.totalRatingsNumber);
         this.setState({
           fetchingUserUserInteractions: false,
-          userRate: res.data.rate || 0,
+          userRate: res.data.rate,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
+        if (!(this.state.userRate == null)) {
+          console.log("btch", res.data.rate);
+          this.setState({
+            userRated: true
+          });
+        }
+        console.log("user rate: ", this.state.userRate);
+        console.log("total ratings: ", this.state.numberOfRatings);
+        console.log("user rating: ", this.state.userRateTotal);
       })
       .catch(() => console.log("Failed to get user-user interactions"));
   }
@@ -160,8 +189,11 @@ class Profile extends React.Component<{}, State> {
 
   public handleStars() {
     console.log("q" + this.state.userRateTotal);
+    console.log("???? ", this.state.numberOfRatings);
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+    console.log("usuertotal: ", this.state.userRateTotal);
+    console.log("numberofratings: ", this.state.numberOfRatings);
     console.log("r" + userRate / 1.1);
 
     if (!this.state.userRated) {

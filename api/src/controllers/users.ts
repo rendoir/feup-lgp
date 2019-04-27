@@ -64,6 +64,18 @@ export async function getUserUserInteractions(req, res) {
     console.log("observer", observerUser);
     console.log("target", targetUser);
     try {
+        const totalRatingsQuery = await query({
+            text: `SELECT count(*)
+                    FROM users_rates
+                    WHERE target_user = $1`,
+            values: [targetUser],
+        });
+        const totalRatingAmountQuery = await query({
+            text: `SELECT SUM(rate) AS total
+                    FROM users_rates
+                    WHERE target_user = $1`,
+            values: [targetUser],
+        });
         const rateQuery = await query({
             text: `SELECT rate
                     FROM users_rates
@@ -80,9 +92,14 @@ export async function getUserUserInteractions(req, res) {
         });
 
         const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        const totalRatingsNumber = totalRatingsQuery.rows[0].count;
+        console.log("pls: ", totalRatingsNumber);
+        const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
             rate,
+            totalRatingsNumber,
+            totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         console.log("RESULTADOOOOO", result);
@@ -125,12 +142,23 @@ export function unsubscribeUser(req, res) {
 
 export function rateUser(req, res) {
     console.log("evaluator", req.body.evaluator);
+    console.log("rattte:", req.body.rate);
+    console.log("TOTAL: ", req.body.newUserRating);
     console.log("target_user", req.body.target_user);
     query({
         text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
         values: [req.body.evaluator, req.body.rate, req.body.target_user],
     }).then((result) => {
-        res.status(200).send();
+
+        query({
+            text: 'UPDATE users SET rate=$1 WHERE id=$2',
+            values: [req.body.newUserRating, req.body.target_user],
+        }).then((result2) => {
+            res.status(200).send();
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the rating of the user' });
+        });
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an user' });

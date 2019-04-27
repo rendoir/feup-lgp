@@ -16,7 +16,7 @@ CREATE TABLE users (
     bio TEXT,
     email TEXT UNIQUE,
     pass TEXT,
-    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT user_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate FLOAT NOT NULL DEFAULT 50 CONSTRAINT user_rate_constraint CHECK (rate >= 1 AND rate <= 100),
     date_created TIMESTAMP DEFAULT NOW(),
     permissions permission_level_enum NOT NULL DEFAULT 'user'
 );
@@ -41,7 +41,7 @@ CREATE TABLE posts (
     content_image TEXT ARRAY,
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
-    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 5),
     visibility visibility_enum NOT NULL DEFAULT 'public',
     likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
@@ -76,7 +76,7 @@ CREATE TABLE posts_subscriptions (
 
 CREATE TABLE posts_rates (
     evaluator BIGINT REFERENCES users ON DELETE CASCADE,
-    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 5),
     post BIGINT REFERENCES posts ON DELETE CASCADE
 );
 
@@ -156,8 +156,9 @@ INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('use
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 INSERT INTO follows (follower, followed) VALUES (1, 3);
 
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 2, 2);
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 4, 4);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 2);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 4, 4);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (3, 2, 4);
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2019-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 'public', '2019-12-03');
@@ -228,6 +229,6 @@ INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
 
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 7, 3);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 4, 3);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 7, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 1, 1);
