@@ -59,7 +59,7 @@ export class UserToken {
 
 export async function getUserUserInteractions(req, res) {
     const observerUser = req.body.observer;
-    const targetUser = req.body.target;
+    const targetUser = req.params.id;
     try {
         const rateQuery = await query({
             text: `SELECT rate
@@ -92,7 +92,7 @@ export async function getUserUserInteractions(req, res) {
 export function subscribeUser(req, res) {
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
-        values: [req.body.follower, req.body.followed],
+        values: [req.body.follower, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -104,7 +104,7 @@ export function subscribeUser(req, res) {
 export function unsubscribeUser(req, res) {
     query({
         text: 'DELETE FROM follows WHERE follower = $1 AND followed = $2',
-        values: [req.body.follower, req.body.followed],
+        values: [req.body.follower, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

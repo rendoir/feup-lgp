@@ -9,20 +9,14 @@ export async function apiGetUserInteractions(
   let body = {};
   switch (apiGroup) {
     case "users":
-      body = {
-        observer: userId,
-        target: subjectId
-      };
+      body = { observer: userId };
       break;
 
     case "post":
-      body = {
-        postId: subjectId,
-        userId
-      };
+      body = { userId };
       break;
   }
 
-  const apiUrl = getApiURL(`/${apiGroup}/user_interactions`);
+  const apiUrl = getApiURL(`/${apiGroup}/${subjectId}/user_interactions`);
   return axios.post(apiUrl, body);
 }

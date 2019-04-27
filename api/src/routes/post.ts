@@ -83,12 +83,12 @@ postRouter.delete('/delete', controller.deletePost);
 postRouter.get('/:id', controller.getPost);
 
 /**
- * @api {post} /api/post/user_interactions Get post-user one-click interactions such as rate or subscription
+ * @api {post} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
  * @apiName Get-Post-User-Interactions
  * @apiGroup Post
  *
- * @apiParam {String}   postId   Id of the post
- * @apiParam {String}   userId   Id of the user
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -96,15 +96,15 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/user_interactions', controller.getPostUserInteractions);
+postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
 
 /**
- * @api {post} /api/post/subscribe Set a post subscription for a given user
+ * @api {post} /api/post/:id/subscribe Set a post subscription for a given user
  * @apiName Subscribe-Post
  * @apiGroup Post
  *
- * @apiParam {String}   postId   Id of the post
- * @apiParam {String}   userId   Id of the user
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -112,15 +112,15 @@ postRouter.post('/user_interactions', controller.getPostUserInteractions);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/subscribe', controller.subscribePost);
+postRouter.post('/:id/subscribe', controller.subscribePost);
 
 /**
- * @api {post} /api/post/unsubscribe Remove a post subscription for a given user
+ * @api {post} /api/post/:id/unsubscribe Remove a post subscription for a given user
  * @apiName Unsubscribe-Post
  * @apiGroup Post
  *
- * @apiParam {String}   postId   Id of the post
- * @apiParam {String}   userId   Id of the user
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -128,7 +128,7 @@ postRouter.post('/subscribe', controller.subscribePost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/unsubscribe', controller.unsubscribePost);
+postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post

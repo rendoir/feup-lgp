@@ -29,12 +29,12 @@ import * as controller from '../controllers/users';
 usersRouter.post('/', controller.registerUser);
 
 /**
- * @api {post} /api/users/user_interactions Get user-user one-click interactions such as rate or subscription
+ * @api {post} /api/users/:id/user_interactions Get user-user one-click interactions such as rate or subscription
  * @apiName Get-User-User-Interactions
  * @apiGroup Users
  *
- * @apiParam {String}   observer   Id of the user visting another user's page
- * @apiParam {String}   target   Id of the user whose page is being visited
+ * @apiParam {number}   observer   Id of the user visting another user's page
+ * @apiParam {number}   id   Id of the user whose page is being visited
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -42,15 +42,15 @@ usersRouter.post('/', controller.registerUser);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/user_interactions', controller.getUserUserInteractions);
+usersRouter.post('/:id/user_interactions', controller.getUserUserInteractions);
 
 /**
- * @api {post} /api/users/subscribe Set a user subscription
+ * @api {post} /api/users/:id/subscribe Set a user subscription
  * @apiName Subscribe-User
  * @apiGroup Users
  *
- * @apiParam {String}   follower   Id of the user that intends to subscribe
- * @apiParam {String}   followed   Id of the user being subscribed
+ * @apiParam {number}   follower   Id of the user that intends to subscribe
+ * @apiParam {number}   id   Id of the user being subscribed
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -58,15 +58,15 @@ usersRouter.post('/user_interactions', controller.getUserUserInteractions);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/subscribe', controller.subscribeUser);
+usersRouter.post('/:id/subscribe', controller.subscribeUser);
 
 /**
- * @api {post} /api/users/unsubscribe Remove a user subscription
+ * @api {post} /api/users/:id/unsubscribe Remove a user subscription
  * @apiName Unsubscribe-User
  * @apiGroup Users
  *
- * @apiParam {String}   follower   Id of the user removing the subscription
- * @apiParam {String}   followed   Id of the user that was being subscribed
+ * @apiParam {number}   follower   Id of the user removing the subscription
+ * @apiParam {number}   id   Id of the user that was being subscribed
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -74,4 +74,4 @@ usersRouter.post('/subscribe', controller.subscribeUser);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/unsubscribe', controller.unsubscribeUser);
+usersRouter.post('/:id/unsubscribe', controller.unsubscribeUser);

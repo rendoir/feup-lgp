@@ -129,7 +129,7 @@ export async function getPost(req, res) {
 
 export async function getPostUserInteractions(req, res) {
     const userId = req.body.userId;
-    const postId = req.body.postId;
+    const postId = req.params.id;
     try {
         const rateQuery = await query({
             text: `SELECT rate
@@ -162,12 +162,24 @@ export async function getPostUserInteractions(req, res) {
 export function subscribePost(req, res) {
     query({
         text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
-        values: [req.body.userId, req.body.postId],
+        values: [req.body.userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function unsubscribePost(req, res) {
+    query({
+        text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
+        values: [req.body.userId, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
     });
 }
 
@@ -180,18 +192,6 @@ export function addALikeToPost(req, res) {
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while liking a post' });
-    });
-}
-
-export function unsubscribePost(req, res) {
-    query({
-        text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
-        values: [req.body.userId, req.body.postId],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
     });
 }
 

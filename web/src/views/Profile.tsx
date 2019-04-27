@@ -14,13 +14,13 @@ type State = {
 const cookies = new Cookies();
 
 class Profile extends React.Component<{}, State> {
-  public id: number; // Id of the profile
+  public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
 
-    this.id = 4; // Hardcoded while profile page is not complete
+    this.id = 3; // Hardcoded while profile page is not complete
     this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
