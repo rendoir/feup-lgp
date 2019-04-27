@@ -130,6 +130,7 @@ class Profile extends React.Component<{}, State> {
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
+        console.log("");
         if (!(this.state.userRate == null)) {
           this.setState({
             userRated: true

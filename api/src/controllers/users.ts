@@ -60,6 +60,8 @@ export class UserToken {
 export async function getUserUserInteractions(req, res) {
     const observerUser = req.body.observer;
     const targetUser = req.params.id;
+    console.log("your user id: ", observerUser);
+    console.log("you want to rate this user: ", targetUser);
     try {
         const totalRatingsQuery = await query({
             text: `SELECT count(*)
