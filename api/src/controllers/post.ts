@@ -48,6 +48,7 @@ export function deletePost(req, res) {
     query({
         text: 'DELETE FROM posts WHERE id = $1', values: [req.body.id],
     }).then((result) => {
+        deleteFolderRecursive('uploads/' + req.body.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -123,7 +124,6 @@ export async function getPost(req, res) {
                         p.id = $1`,
             values: [postId],
         });
-        console.log(files);
         const result = {
             post: post.rows,
             comments: comments.rows,
@@ -196,12 +196,16 @@ export function saveFiles(req, res, id) {
     }
 }
 
-export function removeFiles(files) {
-    if (files && files.length) {
-        files.forEach((file) => {
-            fs.unlink(file.path, (err) => {
-                if (err) { throw err; }
-            });
-        });
+export function deleteFolderRecursive(path) {
+    if (fs.existsSync(path)) {
+      fs.readdirSync(path).forEach(function(file, index){
+        var curPath = path + "/" + file;
+        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
     }
-}
+  };
