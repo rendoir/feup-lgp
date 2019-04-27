@@ -79,13 +79,13 @@ export async function getPost(req, res) {
         const files = await query({
             text: `SELECT f.name, f.mimetype, f.size
                     FROM posts p
-                    LEFT JOIN files f
+                    INNER JOIN files f
                     ON p.id = f.post
                     WHERE
                         p.id = $1`,
             values: [postId],
         });
-
+        console.log(files);
         const result = {
             post: post.rows,
             comments: comments.rows,
