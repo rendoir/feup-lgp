@@ -1,9 +1,15 @@
 import axios from "axios";
 import React, { Component } from "react";
 
-import createSequence from "../../utils/createSequence";
-
 import "./PostModal.css";
+
+import Avatar from "../Avatar/Avatar";
+import Button from "../Button/Button";
+
+import { checkPropTypes } from "prop-types";
+import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import Select from "../Select/Select";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
@@ -20,6 +26,7 @@ interface IProps {
   id?: number;
   title?: string;
   text?: string;
+  visibility?: string;
 
   files?: MyFile[];
 }
@@ -31,12 +38,17 @@ interface IState {
   images: File[];
   videos: File[];
   docs: File[];
+  visibility: string;
 }
-
-const seq = createSequence();
 
 class PostModal extends Component<IProps, IState> {
   public mode: string;
+
+  private visibilityOptions = [
+    { value: "public", title: "Public" },
+    { value: "followers", title: "Followers" },
+    { value: "private", title: "Private" }
+  ];
 
   constructor(props: IProps) {
     super(props);
@@ -49,7 +61,8 @@ class PostModal extends Component<IProps, IState> {
       title: props.title || "",
       images: [],
       videos: [],
-      docs: []
+      docs: [],
+      visibility: props.visibility || "private"
     };
 
     // Post manipulation handlers
@@ -65,7 +78,8 @@ class PostModal extends Component<IProps, IState> {
     // Reset field values
     this.setState({
       text: this.props.text || "",
-      title: this.props.title || ""
+      title: this.props.title || "",
+      visibility: this.props.visibility || "private"
     });
   }
 
@@ -83,6 +97,7 @@ class PostModal extends Component<IProps, IState> {
     formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
+    formData.append("visibility", this.state.visibility);
 
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
@@ -117,7 +132,8 @@ class PostModal extends Component<IProps, IState> {
         },
         id: this.props.id,
         text: this.state.text,
-        title: this.state.title
+        title: this.state.title,
+        visibility: this.state.visibility
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -127,7 +143,9 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public validPost() {
-    return Boolean(this.state.title && this.state.text);
+    return Boolean(
+      this.state.title && this.state.text && this.state.visibility
+    );
   }
 
   public handlePostCreation() {
@@ -218,6 +236,18 @@ class PostModal extends Component<IProps, IState> {
           </div>
         </div>
 
+        <div className="mb-3">
+          <h5>Visibility</h5>
+          <Select
+            name="visibility_select"
+            id="visibility_select"
+            onChange={visibility => this.setState({ visibility })}
+            value={this.state.visibility}
+            placeholder="Visibility"
+            options={this.visibilityOptions}
+          />
+        </div>
+
         <div>
           <h5>Files</h5>
         </div>
@@ -267,12 +297,15 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public render() {
-    const classnameId = "post_modal_" + this.mode;
+    const htmlId =
+      this.mode === CREATE_MODE
+        ? `post_modal_${CREATE_MODE}`
+        : `post_modal_${EDIT_MODE}_${this.props.id}`;
 
     return (
       <div
-        id={classnameId}
-        className="modal fade"
+        id={htmlId}
+        className={`modal fade post_modal_${this.mode}`}
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
