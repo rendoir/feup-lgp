@@ -33,7 +33,7 @@ export function editPost(req, res) {
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: `UPDATE posts
-                SET title = $2, content = $3, visibility = $4
+                SET title = $2, content = $3, visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
@@ -127,6 +127,62 @@ export async function getPost(req, res) {
     }
 }
 
+export async function getPostUserInteractions(req, res) {
+    const userId = req.body.userId;
+    const postId = req.params.id;
+    try {
+        const rateQuery = await query({
+            text: `SELECT rate
+                    FROM posts_rates
+                    WHERE
+                        evaluator = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+        const subscriptionQuery = await query({
+            text: `SELECT *
+                    FROM posts_subscriptions
+                    WHERE
+                        subscriber = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+
+        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+
+        const result = {
+            rate,
+            subscription: Boolean(subscriptionQuery.rows[0]),
+        };
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post-user interactions'));
+    }
+}
+
+export function subscribePost(req, res) {
+    query({
+        text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
+        values: [req.body.userId, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function unsubscribePost(req, res) {
+    query({
+        text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
+        values: [req.body.userId, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
+    });
+}
+
 export function addALikeToPost(req, res) {
     query({
         text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
@@ -135,7 +191,7 @@ export function addALikeToPost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+        res.status(400).send({ message: 'An error ocurred while liking a post' });
     });
 }
 

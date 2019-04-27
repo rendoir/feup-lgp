@@ -47,7 +47,7 @@ postRouter.post('/create', controller.createPost);
 postRouter.post('/edit', controller.editPost);
 
 /**
- * @api {post} /api/post/delete Delete a post
+ * @api {delete} /api/post/delete Delete a post
  * @apiName Delete-A-Post
  * @apiGroup Post
  *
@@ -81,6 +81,54 @@ postRouter.delete('/delete', controller.deletePost);
  *     }
  */
 postRouter.get('/:id', controller.getPost);
+
+/**
+ * @api {post} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
+ * @apiName Get-Post-User-Interactions
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
+
+/**
+ * @api {post} /api/post/:id/subscribe Set a post subscription for a given user
+ * @apiName Subscribe-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/subscribe', controller.subscribePost);
+
+/**
+ * @api {post} /api/post/:id/unsubscribe Remove a post subscription for a given user
+ * @apiName Unsubscribe-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id   Id of the post
+ * @apiParam {number}   userId   Id of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
 
 /**
  * @api {post} /api/post/:id/new_comment Create a new comment on the post
