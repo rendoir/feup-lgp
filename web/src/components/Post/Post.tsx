@@ -16,6 +16,10 @@ import PostModal from "../PostModal/PostModal";
 // import { IconProp } from "@fortawesome/fontawesome-svg-core";
 // import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
+// - Import utils
+import { apiSubscription } from "../../utils/apiSubscription";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
 import {
   faGlobeAfrica,
   faLock,
@@ -25,11 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../Icon/Icon";
 
-// - Import utils
-import { apiSubscription } from "../../utils/apiSubscription";
-import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
-
-type IProps = {
+interface IProps {
   id: number;
   title: string;
   date: string | undefined;
@@ -41,15 +41,15 @@ type IProps = {
   visibility: string;
   comments: any[];
   likers: any[];
-};
+}
 
 interface IState {
-  commentValue: string;
-  isHovered: boolean;
-  isFetching: boolean;
-  postID: number;
   activePage: number;
+  commentValue: string;
   fetchingPostUserInteractions: boolean;
+  isFetching: boolean;
+  isHovered: boolean;
+  postID: number;
   userRate: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
@@ -68,7 +68,6 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log("Cookie user ID: ", cookies.get("user_id"));
 
     this.state = {
       activePage: 1,
@@ -82,149 +81,134 @@ class Post extends Component<IProps, IState> {
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
-    console.log("rate: ", this.state.userRate);
-    console.log("subscription: ", this.state.userSubscription);
 
+    this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
     this.handleAddLike = this.handleAddLike.bind(this);
-    this.handlePostRate = this.handlePostRate.bind(this);
-    this.handlePostSubscription = this.handlePostSubscription.bind(this);
   }
 
   public render() {
-    const { isFetching } = this.state;
-
-    if (this.state.fetchingPostUserInteractions) {
-      return null;
+    if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
+      return <div>Loading...</div>;
     }
 
-    console.log(this.state);
-
     return (
-      <div>
-        {isFetching ? (
-          <div>Loading...</div>
-        ) : (
-          <div className={`${styles.post} mb-4`}>
-            <div className={styles.post_header}>
-              <Avatar
-                title={this.props.author}
-                placeholder="empty"
-                size={30}
-                image="https://picsum.photos/200/200?image=52"
-              />
-              <a
-                className={styles.post_author}
-                href={"/user/" + this.props.author}
+      <div className={`${styles.post} mb-4`}>
+        <div className={styles.post_header}>
+          <Avatar
+            title={this.props.author}
+            placeholder="empty"
+            size={30}
+            image="https://picsum.photos/200/200?image=52"
+          />
+          <a className={styles.post_author} href={"/user/" + this.props.author}>
+            {" "}
+            {this.props.author}
+          </a>
+          <Icon
+            icon={this.getVisibilityIcon(this.props.visibility)}
+            size="lg"
+          />
+          <a className={styles.post_date} href={"/post/" + this.props.id}>
+            {this.props.date}
+          </a>
+          <div className={`${styles.post_options} btn-group`}>
+            <button
+              className="w-100 h-100 ml-2"
+              role="button"
+              data-toggle="dropdown"
+            >
+              <i className="fas fa-ellipsis-v" />
+            </button>
+            <div className="dropdown-menu dropdown-menu-right">
+              <button
+                className="dropdown-item"
+                type="button"
+                data-toggle="modal"
+                data-target={`#post_modal_Edit_${this.props.id}`}
               >
-                {" "}
-                {this.props.author}
-              </a>
-              <Icon
-                icon={this.getVisibilityIcon(this.props.visibility)}
-                size="lg"
-              />
-              <a className={styles.post_date} href={"/post/" + this.props.id}>
-                {this.props.date}
-              </a>
-              <div className={`${styles.post_options} btn-group`}>
-                <button
-                  className="w-100 h-100 ml-2"
-                  role="button"
-                  data-toggle="dropdown"
-                >
-                  <i className="fas fa-ellipsis-v" />
-                </button>
-                <div className="dropdown-menu dropdown-menu-right">
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#post_modal_Edit_${this.props.id}`}
-                  >
-                    Edit Post
-                  </button>
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#delete_post_modal_${this.props.id}`}
-                  >
-                    Delete Post
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className={styles.post_content}>
-              <h4> {this.props.title} </h4>
-            </div>
-            <div className={styles.post_content}>
-              <p> {this.props.text} </p>
-            </div>
-            {this.getImages()}
-            {this.getVideos()}
-            <div className={styles.post_stats}>
-              <span
-                key={this.id + "_span_like_button"}
-                role="button"
-                data-toggle="dropdown"
-                data-target={"#post_" + this.props.id + " show_likes"}
+                Edit Post
+              </button>
+              <button
+                className="dropdown-item"
+                type="button"
+                data-toggle="modal"
+                data-target={`#delete_post_modal_${this.props.id}`}
               >
-                {this.props.likes} likes
-                {this.getLikes()}
-              </span>
-              <span> {this.props.comments.length} comments</span>
-            </div>
-            {this.getUserInteractionButtons()}
-            {/* Post edition modal */}
-            <PostModal {...this.props} />
-            {/* Delete Post */}
-            <DeleteModal {...this.props} />
-            {/* Comment section*/}
-            <div className={`${styles.post_comment_section} w-100`}>
-              {this.getCommentSection()}
-              <ul className="pagination">{this.getPagination()}</ul>
-              <form
-                className={styles.post_add_comment}
-                onSubmit={this.handleAddComment}
-              >
-                <Avatar
-                  title={this.props.author}
-                  placeholder="empty"
-                  size={30}
-                  image="https://picsum.photos/200/200?image=52"
-                />
-                <textarea
-                  className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
-                    this.state.commentValue
-                  )}`}
-                  placeholder="Insert your comment..."
-                  value={this.state.commentValue}
-                  onChange={this.changeCommentValue}
-                  onKeyDown={this.onEnterPress}
-                  required={true}
-                />
-                <button
-                  className={`${styles.submit_comment} px-2 py-1`}
-                  type="submit"
-                  value="Submit"
-                  disabled={!this.validComment()}
-                >
-                  <i className="fas fa-chevron-circle-right" />
-                </button>
-              </form>
+                Delete Post
+              </button>
             </div>
           </div>
-        )}
+        </div>
+        <div className={styles.post_content}>
+          <h4> {this.props.title} </h4>
+        </div>
+        <div className={styles.post_content}>
+          <p> {this.props.text} </p>
+        </div>
+        {this.getImages()}
+        {this.getVideos()}
+        <div className={styles.post_stats}>
+          <span
+            key={this.id + "_span_like_button"}
+            role="button"
+            data-toggle="dropdown"
+            data-target={"#post_" + this.props.id + " show_likes"}
+          >
+            {this.props.likes} likes
+            {this.getLikes()}
+          </span>
+          <span> {this.props.comments.length} comments</span>
+        </div>
+        {this.getUserInteractionButtons()}
+        {/* Post edition modal */}
+        <PostModal {...this.props} />
+        {/* Delete Post */}
+        <DeleteModal {...this.props} />
+        {/* Comment section*/}
+        <div className={`${styles.post_comment_section} w-100`}>
+          {this.getCommentSection()}
+          <ul className="pagination">{this.getPagination()}</ul>
+          <form
+            className={styles.post_add_comment}
+            onSubmit={this.handleAddComment}
+          >
+            <Avatar
+              title={this.props.author}
+              placeholder="empty"
+              size={30}
+              image="https://picsum.photos/200/200?image=52"
+            />
+            <textarea
+              className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                this.state.commentValue
+              )}`}
+              placeholder="Insert your comment..."
+              value={this.state.commentValue}
+              onChange={this.changeCommentValue}
+              onKeyDown={this.onEnterPress}
+              required={true}
+            />
+            <button
+              className={`${styles.submit_comment} px-2 py-1`}
+              type="submit"
+              value="Submit"
+              disabled={!this.validComment()}
+            >
+              <i className="fas fa-chevron-circle-right" />
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   public componentDidMount() {
     this.apiGetPostUserInteractions();
+
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
       currentPage = 1;
@@ -310,6 +294,57 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
+  public handlePostRate() {
+    console.log("RATE LOGGED USER ID: ", this.userId);
+  }
+
+  public handlePostSubscription() {
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
+    }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+
+    this.apiSubscription(endpoint);
+  }
+
+  public apiSubscription(endpoint: string) {
+    apiSubscription("post", endpoint, this.userId, this.props.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
+      })
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
+  }
+
+  public apiGetPostUserInteractions() {
+    apiGetUserInteractions("post", this.userId, this.props.id)
+      .then(res => {
+        this.setState({
+          fetchingPostUserInteractions: false,
+          userRate: res.data.rate || 0,
+          userSubscription: res.data.subscription
+        });
+      })
+      .catch(() => console.log("Failed to get post-user interactions"));
+  }
+
   public changeCommentValue(event: any) {
     this.setState({ commentValue: event.target.value });
   }
@@ -384,61 +419,6 @@ class Post extends Component<IProps, IState> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to delete like from a post"));
-  }
-
-  public handlePostRate() {
-    console.log("RATE LOGGED USER ID: ", this.userId);
-  }
-
-  public handlePostSubscription() {
-    console.log("SUBSCRIBE LOGGED USER ID: ", this.userId);
-
-    if (this.state.waitingSubscriptionRequest) {
-      console.log(
-        "Error trying subscription action! Waiting for response from last request"
-      );
-      return;
-    }
-
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
-    const subscriptionState = !this.state.userSubscription;
-
-    this.setState({
-      userSubscription: subscriptionState,
-      waitingSubscriptionRequest: true
-    });
-    console.log(this.state);
-    this.apiSubscription(endpoint);
-  }
-
-  public apiSubscription(endpoint: string) {
-    apiSubscription("post", endpoint, this.userId, this.props.id)
-      .then(() => {
-        this.setState({
-          waitingSubscriptionRequest: false
-        });
-        console.log("SUBSCRIÇAO BEM SUCEDIDA", this.state);
-      })
-      .catch(() => {
-        this.setState({
-          userSubscription: endpoint === "unsubscribe",
-          waitingSubscriptionRequest: false
-        });
-        console.log("Subscription system failed");
-      });
-  }
-
-  public apiGetPostUserInteractions() {
-    apiGetUserInteractions("post", this.userId, this.props.id)
-      .then(res => {
-        console.log(res.data);
-        this.setState({
-          fetchingPostUserInteractions: false,
-          userRate: res.data.rate || 0,
-          userSubscription: res.data.subscription
-        });
-      })
-      .catch(() => console.log("Failed to get post-user interactions"));
   }
 
   public getCommentSection() {

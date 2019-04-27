@@ -41,7 +41,7 @@ CREATE TABLE posts (
     content_image TEXT ARRAY,
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
-    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 5),
+    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
     visibility visibility_enum NOT NULL DEFAULT 'public',
     likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
@@ -207,6 +207,13 @@ INSERT INTO comments (author, post, comment) VALUES (1, 8, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment done by a mere user following the admin');
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
+
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 7, 3);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 7, 1);
 
 /* SECOND LEVEL COMMENTS */
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 1');

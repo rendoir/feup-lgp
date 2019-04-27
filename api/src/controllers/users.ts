@@ -59,10 +59,7 @@ export class UserToken {
 
 export async function getUserUserInteractions(req, res) {
     const observerUser = req.body.observer;
-    const targetUser = req.body.target;
-
-    console.log("observer", observerUser);
-    console.log("target", targetUser);
+    const targetUser = req.params.id;
     try {
         const totalRatingsQuery = await query({
             text: `SELECT count(*)
@@ -101,7 +98,6 @@ export async function getUserUserInteractions(req, res) {
             totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
-        console.log("RESULTADOOOOO", result);
         res.send(result);
     } catch (error) {
         console.error(error);
@@ -115,7 +111,7 @@ export function subscribeUser(req, res) {
     console.log("followed", req.body.followed);
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
-        values: [req.body.follower, req.body.followed],
+        values: [req.body.follower, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -125,12 +121,9 @@ export function subscribeUser(req, res) {
 }
 
 export function unsubscribeUser(req, res) {
-    console.log("REMOVE SUBSCRIPTION");
-    console.log("follower", req.body.follower);
-    console.log("followed", req.body.followed);
     query({
         text: 'DELETE FROM follows WHERE follower = $1 AND followed = $2',
-        values: [req.body.follower, req.body.followed],
+        values: [req.body.follower, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

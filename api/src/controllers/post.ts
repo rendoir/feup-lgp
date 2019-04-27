@@ -33,7 +33,7 @@ export function editPost(req, res) {
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: `UPDATE posts
-                SET title = $2, content = $3, visibility = $4, date_updated = NOW() 
+                SET title = $2, content = $3, visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
@@ -127,34 +127,9 @@ export async function getPost(req, res) {
     }
 }
 
-export function addALikeToPost(req, res) {
-    query({
-        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
-        values: [req.params.id, req.body.author],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
-    });
-}
-
-export function deleteALikeToPost(req, res) {
-    query({
-        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
-    });
-}
-
 export async function getPostUserInteractions(req, res) {
     const userId = req.body.userId;
-    const postId = req.body.postId;
-    console.log("USER", userId);
-    console.log("POST", postId);
+    const postId = req.params.id;
     try {
         const rateQuery = await query({
             text: `SELECT rate
@@ -177,7 +152,6 @@ export async function getPostUserInteractions(req, res) {
             rate,
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
-        console.log("RESULTADOOOOO", result);
         res.send(result);
     } catch (error) {
         console.error(error);
@@ -186,12 +160,9 @@ export async function getPostUserInteractions(req, res) {
 }
 
 export function subscribePost(req, res) {
-    console.log("SUBSCRIBEEE");
-    console.log("USER", req.body.userId);
-    console.log("POST", req.body.postId);
     query({
         text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
-        values: [req.body.userId, req.body.postId],
+        values: [req.body.userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -201,17 +172,37 @@ export function subscribePost(req, res) {
 }
 
 export function unsubscribePost(req, res) {
-    console.log("REMOVE SUBSCRIPTION");
-    console.log("USER", req.body.userId);
-    console.log("POST", req.body.postId);
     query({
         text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
-        values: [req.body.userId, req.body.postId],
+        values: [req.body.userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
+    });
+}
+
+export function addALikeToPost(req, res) {
+    query({
+        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
+        values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while liking a post' });
+    });
+}
+
+export function deleteALikeToPost(req, res) {
+    query({
+        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
     });
 }
 

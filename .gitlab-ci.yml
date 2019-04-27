@@ -37,6 +37,9 @@ build_web:
     # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
+  only:
+    - merge_requests
+
 build_api:
   stage: build
   script:
@@ -52,6 +55,8 @@ build_api:
   artifacts:
     paths:
     - api/public
+  only:
+    - merge_requests
 
 build_db:
   stage: build
@@ -59,6 +64,8 @@ build_db:
     - cd db
     - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
     - docker push $DB_PRE_IMAGE
+  only:
+    - merge_requests
 
 # build_api_tests:
 #   stage: build
@@ -83,11 +90,15 @@ test_web_linter:
   stage: lint
   script:
     - cd web && npm install && npm run lint
+  only:
+    - merge_requests
 
 test_api_linter:
   stage: lint
   script:
     - cd api && npm install && npm run lint
+  only:
+    - merge_requests
 
 # web_integration_tests:
 #   stage: test
@@ -121,6 +132,7 @@ release-web-staging:
     - docker push $WEB_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-api-staging:
   stage: release
@@ -130,6 +142,7 @@ release-api-staging:
     - docker push $API_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-db-staging:
   stage: release
@@ -139,6 +152,7 @@ release-db-staging:
     - docker push $DB_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-web-prod:
   stage: release
@@ -148,6 +162,7 @@ release-web-prod:
     - docker push $WEB_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 release-api-prod:
   stage: release
@@ -157,6 +172,7 @@ release-api-prod:
     - docker push $API_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 release-db-prod:
   stage: release
@@ -166,6 +182,7 @@ release-db-prod:
     - docker push $DB_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 # deploy:
 #   stage: deploy

@@ -10,22 +10,14 @@ export async function apiSubscription(
   let body = {};
   switch (apiGroup) {
     case "users":
-      body = {
-        followed: subjectId,
-        follower: userId
-      };
+      body = { follower: userId };
       break;
 
     case "post":
-      body = {
-        postId: subjectId,
-        userId
-      };
+      body = { userId };
       break;
   }
 
-  console.log("subscription body", body);
-
-  const apiUrl = getApiURL(`/${apiGroup}/${endpoint}`);
+  const apiUrl = getApiURL(`/${apiGroup}/${subjectId}/${endpoint}`);
   return axios.post(apiUrl, body);
 }
