@@ -16,7 +16,7 @@ CREATE TABLE users (
     bio TEXT,
     email TEXT UNIQUE,
     pass TEXT,
-    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT user_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate FLOAT NOT NULL DEFAULT 50 CONSTRAINT user_rate_constraint CHECK (rate >= 1 AND rate <= 100),
     date_created TIMESTAMP DEFAULT NOW(),
     permissions permission_level_enum NOT NULL DEFAULT 'user'
 );
@@ -29,7 +29,7 @@ CREATE TABLE follows (
 
 CREATE TABLE users_rates (
     evaluator BIGINT REFERENCES users ON DELETE CASCADE,
-    rate INTEGER NOT NULL CONSTRAINT user_user_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL CONSTRAINT user_user_rate_constraint CHECK (rate >= 1 AND rate <= 5),
     target_user BIGINT REFERENCES users ON DELETE CASCADE
 );
 
@@ -99,30 +99,29 @@ CREATE TABLE likes_a_post (
 ALTER TABLE IF EXISTS ONLY likes_a_post
     ADD CONSTRAINT likes_a_post_pkey PRIMARY KEY (post, author);
 
-CREATE FUNCTION update_likes_post() RETURNS trigger 
+CREATE FUNCTION update_likes_post() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
-        RETURN NEW;
-    END$$;
+AS $$BEGIN
+    UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
+    RETURN NEW;
+END$$;
 
 CREATE TRIGGER update_likes_of_a_post
     AFTER INSERT ON likes_a_post
     FOR EACH ROW
-    EXECUTE PROCEDURE update_likes_post();
+EXECUTE PROCEDURE update_likes_post();
 
-CREATE FUNCTION delete_likes_post() RETURNS trigger 
+CREATE FUNCTION delete_likes_post() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$BEGIN
-        UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
-        RETURN NEW;
-    END$$;
+AS $$BEGIN
+    UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
+    RETURN NEW;
+END$$;
 
 CREATE TRIGGER delete_likes_of_a_post
     AFTER DELETE ON likes_a_post
     FOR EACH ROW
-    EXECUTE PROCEDURE delete_likes_post();
-
+EXECUTE PROCEDURE delete_likes_post();
 
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe', 'user');
@@ -132,8 +131,11 @@ INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('use
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 INSERT INTO follows (follower, followed) VALUES (1, 3);
 
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 4, 2);
-INSERT INTO users_rates (evaluator, rate, target_user) VALUES (1, 8, 4);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 2);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 4, 3);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 3);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 3, 4);
+INSERT INTO users_rates (evaluator, rate, target_user) VALUES (3, 1, 4);
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2019-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 'public', '2019-12-03');
@@ -182,14 +184,6 @@ INSERT INTO comments (author, post, comment) VALUES (1, 8, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment done by a mere user following the admin');
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
-INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
-INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
-
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 7, 3);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 7, 1);
-
 /* SECOND LEVEL COMMENTS */
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 1');
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 1, 'This is a 2nd level comment done by the admin 2');
@@ -206,3 +200,11 @@ INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'Thi
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 5');
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 6');
 INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'This is a 2nd level comment done by the admin 7');
+
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
+INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
+
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 4, 3);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 1, 1);

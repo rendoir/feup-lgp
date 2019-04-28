@@ -46,14 +46,14 @@ interface IProps {
 interface IState {
   activePage: number;
   commentValue: string;
-  isHovered: boolean;
   fetchingPostUserInteractions: boolean;
+  isFetching: boolean;
+  isHovered: boolean;
+  postID: number;
   userRate: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
-  isFetching: boolean;
-  postID: number;
 }
 
 const cookies = new Cookies();
@@ -82,13 +82,11 @@ class Post extends Component<IProps, IState> {
       waitingSubscriptionRequest: false
     };
 
-    this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
     this.handleAddLike = this.handleAddLike.bind(this);
   }
 
@@ -296,10 +294,6 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
-  public handleDeletePost() {
-    console.log("DELETE POST");
-  }
-
   public handlePostRate() {
     console.log("RATE LOGGED USER ID: ", this.userId);
   }
@@ -488,6 +482,33 @@ class Post extends Component<IProps, IState> {
     );
   }
 
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
+    );
+  }
+
   private getPagination() {
     if (
       this.props.comments === [] ||
@@ -572,33 +593,6 @@ class Post extends Component<IProps, IState> {
     }
 
     return videoDiv;
-  }
-
-  private getUserInteractionButtons() {
-    const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
-    const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
-
-    return (
-      <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
-        <button>
-          <i className="far fa-comment-alt" />
-          <span>Comment</span>
-        </button>
-        <button onClick={this.handlePostSubscription}>
-          <i className={subscribeIcon} />
-          <span>{subscribeBtnText}</span>
-        </button>
-        <button>
-          <i className="fas fa-share-square" />
-          <span>Share</span>
-        </button>
-      </div>
-    );
   }
 }
 

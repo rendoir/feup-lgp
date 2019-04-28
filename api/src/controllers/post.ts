@@ -579,7 +579,7 @@ export function submitFacebookGroupPost(postInfo, files): Promise<any> {
 /**
  *
  * @param {*} files
- */
+
 export function removeFiles(files) {
     if (files && files.length) {
         files.forEach((file) => {
@@ -589,3 +589,4 @@ export function removeFiles(files) {
         });
     }
 }
+*/
