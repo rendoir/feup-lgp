@@ -11,11 +11,11 @@ import styles from "./Post.module.css";
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
+import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
-import PostFile from "../PostFile/PostFile";
 
 type MyFile = {
   name: string;
@@ -90,24 +90,22 @@ class Post extends Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
-      data: "",
-      isHovered: false,
-      clickedImage: undefined,
-
-      images: [],
-      videos: [],
-      docs: [],
-
       activePage: 1,
+      clickedImage: undefined,
       commentValue: "",
+      data: "",
+      docs: [],
       fetchingPostUserInteractions: true,
+      images: [],
       isFetching: true,
-      postID: 0,
+      isHovered: false,
       numberOfRatings: 1,
+      postID: 0,
       postRated: false,
       userRate: 50,
       userRateTotal: 50,
       userSubscription: false,
+      videos: [],
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
@@ -120,6 +118,7 @@ class Post extends Component<IProps, IState> {
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleAddLike = this.handleAddLike.bind(this);
+    this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
   public render() {
@@ -679,7 +678,7 @@ class Post extends Component<IProps, IState> {
     }
   }
 
-  private handleImageClick(src: String | undefined) {
+  private handleImageClick(src: string | undefined) {
     if (src) {
       this.setState({
         clickedImage: src
@@ -694,12 +693,9 @@ class Post extends Component<IProps, IState> {
   }
 
   private renderOverlay() {
-    if (this.state.clickedImage != undefined) {
+    if (this.state.clickedImage !== undefined) {
       return (
-        <div
-          className={styles.overlay}
-          onClick={this.handleOverlayClick.bind(this)}
-        >
+        <div className={styles.overlay} onClick={this.handleOverlayClick}>
           <ImagePreloader src={this.state.clickedImage}>
             {({ src }) => {
               return <img src={src} />;
@@ -722,8 +718,8 @@ class Post extends Component<IProps, IState> {
             handleImageClick={this.handleImageClick}
           />
         );
-      } else if (this.state.images.length == 1) {
-        let image = this.state.images[0];
+      } else if (this.state.images.length === 1) {
+        const image = this.state.images[0];
         return (
           <div
             className={styles.post_content_media}
@@ -751,10 +747,10 @@ class Post extends Component<IProps, IState> {
           />
         );
       } else {
-        let video = this.state.videos[0];
+        const video = this.state.videos[0];
         return (
           <div className={"overflow-hidden " + styles.post_content_media}>
-            <video src={video.src} controls />
+            <video src={video.src} controls={true} />
           </div>
         );
       }
@@ -786,10 +782,13 @@ class Post extends Component<IProps, IState> {
 
       Array.from(this.props.files).forEach(file => {
         file.src = src + file.name;
-        if (file.mimetype.startsWith("image")) this.state.images.push(file);
-        else if (file.mimetype.startsWith("video"))
+        if (file.mimetype.startsWith("image")) {
+          this.state.images.push(file);
+        } else if (file.mimetype.startsWith("video")) {
           this.state.videos.push(file);
-        else this.state.docs.push(file);
+        } else {
+          this.state.docs.push(file);
+        }
       });
     }
   }

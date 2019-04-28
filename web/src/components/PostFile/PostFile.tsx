@@ -1,6 +1,6 @@
 // - Import react components
-import React, { Component } from "react";
 import axios from "axios";
+import React, { Component } from "react";
 
 // - Import styles
 import styles from "../Post/Post.module.css";
@@ -30,6 +30,9 @@ class PostFile extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+
+    this.handleDownload = this.handleDownload.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
 
   public render() {
@@ -38,12 +41,12 @@ class PostFile extends Component<Props, State> {
         <div className="w-100 d-flex align-items-center">
           <i
             className="far fa-file fa-2x ml-2 pointer"
-            onClick={this.handleDownload.bind(this)}
+            onClick={this.handleDownload}
           />
 
           <div className="ml-3">
             <div>
-              <b className="pointer" onClick={this.handleDownload.bind(this)}>
+              <b className="pointer" onClick={this.handleDownload}>
                 {this.props.file.name}
               </b>
             </div>
@@ -62,19 +65,13 @@ class PostFile extends Component<Props, State> {
   public getButton() {
     if (!this.props.editMode) {
       return (
-        <button
-          className="h-100 w-100 py-1"
-          onClick={this.handleDownload.bind(this)}
-        >
+        <button className="h-100 w-100 py-1" onClick={this.handleDownload}>
           <i className="fas fa-download" />
         </button>
       );
     } else {
       return (
-        <button
-          className="h-100 w-100 py-1"
-          onClick={this.handleRemove.bind(this)}
-        >
+        <button className="h-100 w-100 py-1" onClick={this.handleRemove}>
           <i className="fas fa-trash" />
         </button>
       );
@@ -83,7 +80,9 @@ class PostFile extends Component<Props, State> {
 
   public handleRemove(e: any) {
     e.preventDefault();
-    if (this.props.handleRemove) this.props.handleRemove(this.props.file);
+    if (this.props.handleRemove) {
+      this.props.handleRemove(this.props.file);
+    }
   }
 
   public handleDownload() {

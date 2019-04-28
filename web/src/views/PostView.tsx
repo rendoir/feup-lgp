@@ -26,8 +26,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
-      files: [],
       fetchingInfo: true,
+      files: [],
       id: 1,
       likers: [],
       post: {
@@ -62,10 +62,10 @@ class PostView extends React.Component<IProps, IState> {
         this.setState({
           comments: res.data.comments,
           fetchingInfo: false,
+          files: res.data.files,
           id: res.data.post.id,
           likers: res.data.likers,
-          post: res.data.post,
-          files: res.data.files
+          post: res.data.post
         });
       })
       .catch(() => console.log("Failed to get post info"));

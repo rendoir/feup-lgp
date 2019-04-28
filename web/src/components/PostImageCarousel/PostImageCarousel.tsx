@@ -15,7 +15,7 @@ type MyFile = {
 };
 
 export type Props = {
-  id: Number;
+  id: number;
   images: MyFile[];
   parent: Post;
   handleImageClick: (image: string | undefined) => any;
@@ -30,9 +30,15 @@ class PostImageCarousel extends Component<Props, State> {
     super(props);
   }
 
+  public render() {
+    const carousel = this.getCarousel();
+
+    return <div>{carousel}</div>;
+  }
+
   private getCarousel() {
-    let images = [];
-    let items = [];
+    const images = [];
+    const items = [];
 
     for (let i = 0; i < this.props.images.length; i++) {
       items.push(
@@ -90,12 +96,6 @@ class PostImageCarousel extends Component<Props, State> {
         </a>
       </div>
     );
-  }
-
-  public render() {
-    let carousel = this.getCarousel();
-
-    return <div>{carousel}</div>;
   }
 }
 

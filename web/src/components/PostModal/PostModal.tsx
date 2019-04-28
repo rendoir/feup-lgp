@@ -8,9 +8,9 @@ import Button from "../Button/Button";
 
 import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostFile from "../PostFile/PostFile";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
@@ -60,12 +60,12 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      docs: [],
+      images: [],
+      removedFiles: [],
       text: props.text || "",
       title: props.title || "",
-      images: [],
       videos: [],
-      docs: [],
-      removedFiles: [],
       visibility: props.visibility || "private"
     };
 
@@ -89,7 +89,7 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiCreatePost() {
-    let formData = new FormData();
+    const formData = new FormData();
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -124,7 +124,7 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiEditPost() {
-    let formData = new FormData();
+    const formData = new FormData();
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -134,8 +134,9 @@ class PostModal extends Component<IProps, IState> {
     this.state.docs.forEach((file, i) =>
       formData.append("docs[" + i + "]", file)
     );
-    if (this.state.removedFiles)
+    if (this.state.removedFiles) {
       formData.append("removed", JSON.stringify(this.state.removedFiles));
+    }
     formData.append("id", String(this.props.id));
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
@@ -186,22 +187,28 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public handleFileUpload(files: FileList | null) {
-    if (!files) return;
+    if (!files) {
+      return;
+    }
 
-    let images: File[] = [];
-    let videos: File[] = [];
-    let docs: File[] = [];
+    const images: File[] = [];
+    const videos: File[] = [];
+    const docs: File[] = [];
 
     Array.from(files).forEach(file => {
-      if (file.type.startsWith("image")) images.push(file);
-      else if (file.type.startsWith("video")) videos.push(file);
-      else docs.push(file);
+      if (file.type.startsWith("image")) {
+        images.push(file);
+      } else if (file.type.startsWith("video")) {
+        videos.push(file);
+      } else {
+        docs.push(file);
+      }
     });
 
     this.setState({
-      images: images,
-      videos: videos,
-      docs: docs
+      docs,
+      images,
+      videos
     });
   }
 
@@ -304,7 +311,7 @@ class PostModal extends Component<IProps, IState> {
 
   public handleRemove(fileToRemove: MyFile) {
     if (this.state.removedFiles) {
-      let removed = this.state.removedFiles;
+      const removed = this.state.removedFiles;
       removed.push(fileToRemove);
       this.setState({
         removedFiles: removed
@@ -319,7 +326,9 @@ class PostModal extends Component<IProps, IState> {
     this.state.videos.forEach(file => (label += file.name + " "));
     this.state.docs.forEach(file => (label += file.name + " "));
 
-    if (label === "") label = "Insert images, videos and documents";
+    if (label === "") {
+      label = "Insert images, videos and documents";
+    }
 
     return label;
   }

@@ -15,7 +15,7 @@ type MyFile = {
 };
 
 export type Props = {
-  id: Number;
+  id: number;
   videos: MyFile[];
 };
 
@@ -28,9 +28,15 @@ class PostVideoCarousel extends Component<Props, State> {
     super(props);
   }
 
+  public render() {
+    const carousel = this.getCarousel();
+
+    return <div>{carousel}</div>;
+  }
+
   private getCarousel() {
-    let videos = [];
-    let items = [];
+    const videos = [];
+    const items = [];
 
     for (let i = 0; i < this.props.videos.length; i++) {
       items.push(
@@ -47,7 +53,7 @@ class PostVideoCarousel extends Component<Props, State> {
           className={"carousel-item " + (i ? "" : "active")}
         >
           <div className={styles.post_content_media}>
-            <video src={this.props.videos[i].src} controls />
+            <video src={this.props.videos[i].src} controls={true} />
           </div>
         </div>
       );
@@ -82,12 +88,6 @@ class PostVideoCarousel extends Component<Props, State> {
         </a>
       </div>
     );
-  }
-
-  public render() {
-    let carousel = this.getCarousel();
-
-    return <div>{carousel}</div>;
   }
 }
 
