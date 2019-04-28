@@ -11,11 +11,11 @@ import styles from "./Post.module.css";
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
+import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
-import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
-import PostFile from "../PostFile/PostFile";
 
 type MyFile = {
   name: string;
@@ -50,7 +50,7 @@ interface IProps {
 
   files?: MyFile[];
   likers: any[];
-  tags: any[];
+  tagsPost: any[];
 }
 
 interface IState {
@@ -71,6 +71,7 @@ interface IState {
 
   isFetching: boolean;
   postID: number;
+  tags: any[];
 }
 
 const cookies = new Cookies();
@@ -88,8 +89,9 @@ class Post extends Component<IProps, IState> {
 
     this.state = {
       data: "",
-      isHovered: false,
+      // tslint:disable-next-line: object-literal-sort-keys
       clickedImage: undefined,
+      isHovered: false,
 
       images: [],
       videos: [],
@@ -100,6 +102,7 @@ class Post extends Component<IProps, IState> {
       fetchingPostUserInteractions: true,
       isFetching: true,
       postID: 0,
+      tags: [],
       userRate: 0,
       userSubscription: false,
       waitingRateRequest: false,
@@ -201,7 +204,7 @@ class Post extends Component<IProps, IState> {
           </div>
           {this.getUserInteractionButtons()}
           {/* Post edition modal */}
-          <PostModal {...this.props} />
+          <PostModal {...this.props} tags={this.state.tags} />
           {/* Delete Post */}
           <DeleteModal {...this.props} />
           {/* Comment section*/}
@@ -252,10 +255,18 @@ class Post extends Component<IProps, IState> {
     } else {
       currentPage = Math.ceil(this.props.comments.length / 5);
     }
+
+    const tagsFilter: any[] = [];
+
+    this.props.tagsPost.map(tag => {
+      tagsFilter.push(tag.name);
+    });
+
     this.setState({
       activePage: currentPage,
       isFetching: false,
-      postID: this.props.id
+      postID: this.props.id,
+      tags: tagsFilter
     });
   }
 
@@ -565,7 +576,7 @@ class Post extends Component<IProps, IState> {
     }
   }
 
-  private handleImageClick(src: String | undefined) {
+  private handleImageClick(src: string | undefined) {
     if (src) {
       this.setState({
         clickedImage: src
@@ -580,10 +591,11 @@ class Post extends Component<IProps, IState> {
   }
 
   private renderOverlay() {
-    if (this.state.clickedImage != undefined) {
+    if (this.state.clickedImage !== undefined) {
       return (
         <div
           className={styles.overlay}
+          // tslint:disable-next-line: jsx-no-bind
           onClick={this.handleOverlayClick.bind(this)}
         >
           <ImagePreloader src={this.state.clickedImage}>
@@ -608,8 +620,8 @@ class Post extends Component<IProps, IState> {
             handleImageClick={this.handleImageClick}
           />
         );
-      } else if (this.state.images.length == 1) {
-        let image = this.state.images[0];
+      } else if (this.state.images.length === 1) {
+        const image = this.state.images[0];
         return (
           <div
             className={styles.post_content_media}
@@ -637,10 +649,10 @@ class Post extends Component<IProps, IState> {
           />
         );
       } else {
-        let video = this.state.videos[0];
+        const video = this.state.videos[0];
         return (
           <div className={"overflow-hidden " + styles.post_content_media}>
-            <video src={video.src} controls />
+            <video src={video.src} controls={true} />
           </div>
         );
       }
@@ -672,10 +684,13 @@ class Post extends Component<IProps, IState> {
 
       Array.from(this.props.files).forEach(file => {
         file.src = src + file.name;
-        if (file.mimetype.startsWith("image")) this.state.images.push(file);
-        else if (file.mimetype.startsWith("video"))
+        if (file.mimetype.startsWith("image")) {
+          this.state.images.push(file);
+        } else if (file.mimetype.startsWith("video")) {
           this.state.videos.push(file);
-        else this.state.docs.push(file);
+        } else {
+          this.state.docs.push(file);
+        }
       });
     }
   }
@@ -711,12 +726,12 @@ class Post extends Component<IProps, IState> {
     const tagsDiv = [];
 
     // sorting tags alphabetically
-    this.props.tags.sort((a, b) =>
+    this.props.tagsPost.sort((a, b) =>
       (a.name || "").toString().localeCompare((b.name || "").toString())
     );
 
-    if (this.props.tags.length > 0) {
-      for (const tag of this.props.tags) {
+    if (this.props.tagsPost.length > 0) {
+      for (const tag of this.props.tagsPost) {
         tagsDiv.push(
           <span
             key={"tags_" + tag.name + "post_" + this.props.id}

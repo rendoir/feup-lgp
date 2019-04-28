@@ -24,13 +24,13 @@ type MyFile = {
 
 interface IProps {
   /* The following attributes are only required for post edition */
-  id?: number;
+  id: number;
   title?: string;
   text?: string;
   visibility?: string;
 
   files?: MyFile[];
-  tags?: any[];
+  tags: any[];
 }
 
 interface IState {
@@ -133,6 +133,18 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiEditPost() {
+    const formData = new FormData();
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
+    formData.append("id", this.props.id.toString());
+    formData.append("author", "1");
+    formData.append("text", this.state.text);
+    formData.append("title", this.state.title);
+    formData.append("visibility", this.state.visibility);
+
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -140,14 +152,10 @@ class PostModal extends Component<IProps, IState> {
         : "/api";
     postUrl += "/post/edit";
     axios
-      .post(postUrl, {
+      .post(postUrl, formData, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        },
-        id: this.props.id,
-        text: this.state.text,
-        title: this.state.title,
-        visibility: this.state.visibility
+        }
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -270,7 +278,7 @@ class PostModal extends Component<IProps, IState> {
 
         <div className="mb-3">
           <h5>Tags</h5>
-          <AddTags onChange={this.handleTagsChange} tags={this.state.tags} />
+          <AddTags onChange={this.handleTagsChange} tags={this.props.tags} />
         </div>
 
         <div>

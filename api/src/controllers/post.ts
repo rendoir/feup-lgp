@@ -38,6 +38,7 @@ export function editPost(req, res) {
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
+        saveTags(req, res, req.body.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -251,6 +252,7 @@ export function saveFiles(req, res, id) {
         const filetype = file.mimetype;
         const filesize = file.size;
         // Move file to uploads
+// tslint:disable-next-line: only-arrow-functions
         file.mv('uploads/' + id + '/' + filename, function(err) {
             if (err) {
                 res.status(400).send({ message: 'An error ocurred while creating post: Moving file.' });
@@ -278,7 +280,7 @@ export async function saveTags(req, res, id) {
 
     for (const key in req.body) {
         if (key.includes('tags[')) {
-            const foundValue = allTags.rows.find(e => {
+            const foundValue = allTags.rows.find((e) => {
                 if (e.name === req.body[key]) {
                     return e;
                 } else {
