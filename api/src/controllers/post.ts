@@ -188,7 +188,8 @@ export function saveFiles(req, res, id) {
             else {
                 //Add file to database
                 query({
-                    text: 'INSERT INTO files (name, mimeType, size, post) VALUES ($1, $2, $3, $4) RETURNING id',
+                    text: `INSERT INTO files (name, mimeType, size, post) VALUES ($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT unique_post_file
+                            DO UPDATE SET mimeType = $2, size = $3 WHERE files.post = $4 AND files.name = $1;`,
                     values: [filename, filetype, filesize, id],
                 }).then(() => {
                     return;

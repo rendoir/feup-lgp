@@ -46,7 +46,7 @@ CREATE TABLE files (
     mimeType TEXT NOT NULL,
     size INTEGER NOT NULL,
     post BIGINT REFERENCES posts ON DELETE CASCADE,
-    UNIQUE (name, post)
+    CONSTRAINT unique_post_file UNIQUE (name, post)
 );
 
 CREATE TABLE comments (
