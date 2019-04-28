@@ -278,28 +278,66 @@ export async function saveTags(req, res, id) {
         text: `SELECT id, name FROM tags`,
     });
 
+    const tagsOfPost = await query({
+        text: `SELECT t.id, t.name FROM tags t INNER JOIN posts_tags pt ON pt.tag = t.id WHERE pt.post = $1`,
+        values: [id],
+    });
+
+    const tagsToAdd = [];
+    const tagsToDelete = [];
+
     for (const key in req.body) {
         if (key.includes('tags[')) {
-            const foundValue = allTags.rows.find((e) => {
-                if (e.name === req.body[key]) {
-                    return e;
-                } else {
-                    return null;
-                }
-            });
+            tagsToAdd.push(req.body[key]);
+        }
+    }
 
-            let tagID = 0;
-            if (foundValue != null) {
-                console.log(foundValue);
-                tagID = foundValue.id;
+    for (const tag of tagsOfPost.rows) {
+        if (!tagsToAdd.includes(tag.name)) {
+            tagsToDelete.push(tag);
+        }
+    }
+
+    for (const tag of tagsToDelete) {
+        query({
+            text: 'DELETE FROM posts_tags WHERE post=$1 AND tag=$2',
+            values: [id, tag.id],
+        }).then(() => {
+            return;
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
+        });
+    }
+
+    for (const tag of tagsToAdd) {
+        const foundValue = allTags.rows.find((e: { name: string; }) => {
+            if (e.name === tag) {
+                return e;
             } else {
-                const newTagID = await query({
-                    text: `INSERT INTO tags (name) VALUES ($1) RETURNING id`,
-                    values: [req.body[key]],
-                });
-                tagID = newTagID.rows[0].id;
+                return null;
             }
+        });
 
+        const alreadyValue = tagsOfPost.rows.find((e: { name: string; }) => {
+            if (e.name === tag) {
+                return e;
+            } else {
+                return null;
+            }
+        });
+
+        let tagID = 0;
+        if (foundValue != null) {
+            tagID = foundValue.id;
+        } else {
+            const newTagID = await query({
+                text: `INSERT INTO tags (name) VALUES ($1) RETURNING id`,
+                values: [tag],
+            });
+            tagID = newTagID.rows[0].id;
+        }
+        if (alreadyValue === null || alreadyValue === undefined) {
             query({
                 text: 'INSERT INTO posts_tags (post, tag) VALUES ($1, $2)',
                 values: [id, tagID],
@@ -311,7 +349,6 @@ export async function saveTags(req, res, id) {
             });
         }
     }
-
 }
 
 export function deleteFolderRecursive(path) {

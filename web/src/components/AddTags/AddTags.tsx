@@ -120,6 +120,7 @@ class AddTags extends Component<IProps, IState> {
     const newTags = [...this.state.tags];
     newTags.splice(i, 1);
     this.setState({ tags: newTags });
+    this.props.onChange(this.props.tags, newTags);
   };
 }
 

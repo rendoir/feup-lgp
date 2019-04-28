@@ -737,7 +737,9 @@ class Post extends Component<IProps, IState> {
             key={"tags_" + tag.name + "post_" + this.props.id}
             className={`${styles.tags} d-inline badge`}
           >
-            #{tag.name}
+            <a key={"tags_" + tag.name + "post_" + this.props.id}>
+              #{tag.name}
+            </a>
           </span>
         );
       }
