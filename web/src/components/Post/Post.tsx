@@ -27,6 +27,7 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import { getApiURL } from "../../utils/apiURL";
 import Icon from "../Icon/Icon";
 
 interface IProps {
@@ -46,14 +47,17 @@ interface IProps {
 interface IState {
   activePage: number;
   commentValue: string;
-  isHovered: boolean;
   fetchingPostUserInteractions: boolean;
+  isFetching: boolean;
+  isHovered: boolean;
+  numberOfRatings: number;
+  postID: number;
+  postRated: boolean;
   userRate: number;
+  userRateTotal: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
-  isFetching: boolean;
-  postID: number;
 }
 
 const cookies = new Cookies();
@@ -75,20 +79,21 @@ class Post extends Component<IProps, IState> {
       fetchingPostUserInteractions: true,
       isFetching: true,
       isHovered: false,
+      numberOfRatings: 1,
       postID: 0,
-      userRate: 0,
+      postRated: false,
+      userRate: 50,
+      userRateTotal: 50,
       userSubscription: false,
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
 
-    this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
     this.handleAddLike = this.handleAddLike.bind(this);
   }
 
@@ -154,6 +159,18 @@ class Post extends Component<IProps, IState> {
         {this.getImages()}
         {this.getVideos()}
         <div className={styles.post_stats}>
+          <fieldset className="rate">
+            <div className="star-ratings-css">
+              {this.handleStars()}
+              <div className="star-ratings-css-bottom">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
+            </div>
+          </fieldset>
           <span
             key={this.id + "_span_like_button"}
             role="button"
@@ -253,6 +270,43 @@ class Post extends Component<IProps, IState> {
       .catch(() => console.log("Failed to create comment"));
   }
 
+  public handleStars() {
+    const userRate =
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+
+    if (!this.state.postRated) {
+      return (
+        <div className="star-ratings-css-top" id="rate">
+          <span id="5" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handlePostRate}>
+            ★
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="star-ratings-css-top" style={{ width: userRate }}>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+        </div>
+      );
+    }
+  }
+
   public userLiked() {
     const userLoggedIn = 2;
     const divStyle = { color: "black" };
@@ -296,12 +350,41 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
-  public handleDeletePost() {
-    console.log("DELETE POST");
-  }
+  public handlePostRate(e: any) {
+    if (this.state.postRated) {
+      console.log("You already rated this post");
+    } else {
+      const rateTarget = e.target.id;
 
-  public handlePostRate() {
-    console.log("RATE LOGGED USER ID: ", this.userId);
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      const userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      let body = {};
+      body = {
+        evaluator: this.userId,
+        newPostRating: userRating,
+        rate: parseInt(rateTarget, 10)
+      };
+
+      console.log("Post Rating updated to: ", userRating);
+      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          this.setState({
+            postRated: true,
+            userRateTotal:
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
+          });
+        })
+        .catch(() => {
+          console.log("Rating system failed");
+        });
+    }
   }
 
   public handlePostSubscription() {
@@ -344,9 +427,16 @@ class Post extends Component<IProps, IState> {
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
-          userRate: res.data.rate || 0,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
+          userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
+        if (!(this.state.userRate == null)) {
+          this.setState({
+            postRated: true
+          });
+        }
       })
       .catch(() => console.log("Failed to get post-user interactions"));
   }
@@ -488,6 +578,33 @@ class Post extends Component<IProps, IState> {
     );
   }
 
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
+    );
+  }
+
   private getPagination() {
     if (
       this.props.comments === [] ||
@@ -572,33 +689,6 @@ class Post extends Component<IProps, IState> {
     }
 
     return videoDiv;
-  }
-
-  private getUserInteractionButtons() {
-    const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
-    const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
-
-    return (
-      <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
-        <button>
-          <i className="far fa-comment-alt" />
-          <span>Comment</span>
-        </button>
-        <button onClick={this.handlePostSubscription}>
-          <i className={subscribeIcon} />
-          <span>{subscribeBtnText}</span>
-        </button>
-        <button>
-          <i className="fas fa-share-square" />
-          <span>Share</span>
-        </button>
-      </div>
-    );
   }
 }
 

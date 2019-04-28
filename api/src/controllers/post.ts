@@ -131,6 +131,18 @@ export async function getPostUserInteractions(req, res) {
     const userId = req.body.userId;
     const postId = req.params.id;
     try {
+        const totalRatingsQuery = await query({
+            text: `SELECT count(*)
+                    FROM posts_rates
+                    WHERE post = $1`,
+            values: [postId],
+        });
+        const totalRatingAmountQuery = await query({
+            text: `SELECT SUM(rate) AS total
+                    FROM posts_rates
+                    WHERE post = $1`,
+            values: [postId],
+        });
         const rateQuery = await query({
             text: `SELECT rate
                     FROM posts_rates
@@ -147,9 +159,13 @@ export async function getPostUserInteractions(req, res) {
         });
 
         const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        const totalRatingsNumber = totalRatingsQuery.rows[0].count;
+        const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
             rate,
+            totalRatingsNumber,
+            totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         res.send(result);
@@ -182,6 +198,32 @@ export function unsubscribePost(req, res) {
         res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
     });
 }
+
+export function rate(req, res) {
+    console.log("pls?");
+    console.log("evaluator: ", req.body.evaluator);
+    console.log("rate: ", req.body.rate);
+    console.log("post: ", req.params.id);
+    query({
+        text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
+        values: [req.body.evaluator, req.body.rate, req.params.id],
+    }).then((result) => {
+
+        query({
+            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            values: [req.body.newPostRating, req.params.id],
+        }).then((result2) => {
+            res.status(200).send();
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the rating of the post' });
+        });
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while rating an post' });
+    });
+}
+
 
 export function addALikeToPost(req, res) {
     query({
@@ -579,7 +621,7 @@ export function submitFacebookGroupPost(postInfo, files): Promise<any> {
 /**
  *
  * @param {*} files
- */
+
 export function removeFiles(files) {
     if (files && files.length) {
         files.forEach((file) => {
@@ -589,3 +631,4 @@ export function removeFiles(files) {
         });
     }
 }
+*/

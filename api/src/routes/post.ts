@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import * as multer from 'multer';
 import * as controller from '../controllers/post';
+import {usersRouter} from "./users";
 
 export const postRouter = Router();
 
@@ -163,3 +164,20 @@ postRouter.post('/:id/like', controller.addALikeToPost);
  *     }
  */
 postRouter.delete('/:id/like', controller.deleteALikeToPost);
+
+/**
+ * @api {post} /api/post/:id/rate Rate a post
+ * @apiName Rate-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   post             Id of the post being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/rate', controller.rate);
