@@ -33,8 +33,8 @@ function getAuthorQuery(keywords: string, offset: number, initialDate: number, f
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
-                    (first_name ~ ($3)
-                        OR last_name ~ ($3))
+                    (first_name ~* ($3)
+                        OR last_name ~* ($3))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
@@ -51,8 +51,8 @@ function getUserQuery(keywords: string, offset: number, initialDate: number, fin
         text: `SELECT id, first_name, last_name, rate, date_created
                 FROM users
                 WHERE
-                    (first_name ~ ($2)
-                        OR last_name ~ ($2))
+                    (first_name ~* ($2)
+                        OR last_name ~* ($2))
                     AND date_created >= (SELECT TO_TIMESTAMP($3)) AND date_created <= (SELECT TO_TIMESTAMP($4))
                 LIMIT 10
                 OFFSET $1`,
