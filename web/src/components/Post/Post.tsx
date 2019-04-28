@@ -27,8 +27,8 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
-import Icon from "../Icon/Icon";
 import { getApiURL } from "../../utils/apiURL";
+import Icon from "../Icon/Icon";
 
 interface IProps {
   id: number;
@@ -376,9 +376,9 @@ class Post extends Component<IProps, IState> {
         .post(apiUrl, body)
         .then(() => {
           this.setState({
+            postRated: true,
             userRateTotal:
-              this.state.userRateTotal + parseInt(rateTarget, 10) * 20,
-            postRated: true
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
           });
         })
         .catch(() => {
