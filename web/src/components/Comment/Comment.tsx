@@ -5,6 +5,7 @@ import axios from "axios";
 import Avatar from "../Avatar/Avatar";
 
 import React, { Component } from "react";
+import Cookies from "universal-cookie";
 
 // - Import style
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -12,6 +13,12 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 
 import styles from "./../Post/Post.module.scss";
+
+// - Import utils
+import {
+  apiCheckCommentUserReport,
+  apiReportComment
+} from "../../utils/apiReport";
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
@@ -34,16 +41,22 @@ export type State = {
   likers: any[];
   likes: number;
   redirect: boolean;
+  userReport: boolean;
 };
+
+const cookies = new Cookies();
 
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
   public id: string;
+  public loggedUserId: number;
 
   constructor(props: Props) {
     super(props);
 
     this.id = "comment_" + this.props.title;
+    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+
     this.state = {
       commentID: 0,
       commentText: this.props.text,
@@ -53,12 +66,13 @@ class Comment extends Component<Props, State> {
       isHovered: false,
       likers: [],
       likes: 0,
-      redirect: false
+      redirect: false,
+      userReport: false
     };
 
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
     this.apiEditComment = this.apiEditComment.bind(this);
-
+    this.handleCommentReport = this.handleCommentReport.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
 
@@ -105,25 +119,7 @@ class Comment extends Component<Props, State> {
                   <i className="fas fa-ellipsis-v" />
                 </button>
                 <div className="dropdown-menu dropdown-menu-right">
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#edit_comment_modal_${this.props.title}`}
-                    onClick={() =>
-                      this.setState({ commentText: this.props.text })
-                    }
-                  >
-                    Edit Comment
-                  </button>
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#delete_comment_modal_${this.props.title}`}
-                  >
-                    Delete Comment
-                  </button>
+                  {this.getDropdownButtons()}
                 </div>
               </div>
               <div className={`${styles.post_comment_section} w-100`}>
@@ -286,11 +282,27 @@ class Comment extends Component<Props, State> {
     });
     this.apiGetCommentsOfComment(Number(this.props.title));
     this.apiGetWhoLikedComment(Number(this.props.title));
+    this.apiGetCommentUserReport(Number(this.props.title));
   }
 
   public handleAddComment(event: any) {
     event.preventDefault();
     this.apiComments();
+  }
+
+  public handleCommentReport() {
+    console.log("report comment");
+    this.setState({ userReport: true });
+    this.apiUserReportComment();
+  }
+
+  public async apiUserReportComment() {
+    const reportSuccess: boolean = await apiReportComment(
+      this.state.commentID,
+      this.loggedUserId
+    );
+    console.log("RESUTLADO DO CoMMENT REPORT: ", reportSuccess);
+    this.setState({ userReport: reportSuccess });
   }
 
   public onEnterPress = (e: any) => {
@@ -385,6 +397,15 @@ class Comment extends Component<Props, State> {
     }
 
     return <i className="fas fa-thumbs-up" style={divStyle} />;
+  }
+
+  public async apiGetCommentUserReport(commentId: number) {
+    const userReport: boolean = await apiCheckCommentUserReport(
+      commentId,
+      this.loggedUserId
+    );
+    console.log("fetched user report, value: ", userReport);
+    this.setState({ userReport });
   }
 
   public apiGetCommentsOfComment(id: number) {
@@ -543,6 +564,42 @@ class Comment extends Component<Props, State> {
     if (window.location.pathname === "/post/" + this.id) {
       this.renderRedirect();
     }
+  }
+
+  public getDropdownButtons() {
+    const reportButton = (
+      <button
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        onClick={this.handleCommentReport}
+        disabled={this.state.userReport}
+      >
+        {this.state.userReport ? "Report already issued" : "Report comment"}
+      </button>
+    );
+    const editButton = (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#edit_comment_modal_${this.props.title}`}
+        onClick={() => this.setState({ commentText: this.props.text })}
+      >
+        Edit Comment
+      </button>
+    );
+    const deleteButton = (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#delete_comment_modal_${this.props.title}`}
+      >
+        Delete Comment
+      </button>
+    );
+    const dropdownButtons = [reportButton, editButton, deleteButton];
+    return dropdownButtons;
   }
 
   public getActionButton() {

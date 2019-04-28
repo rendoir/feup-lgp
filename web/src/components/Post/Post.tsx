@@ -17,6 +17,7 @@ import PostModal from "../PostModal/PostModal";
 // import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 // - Import utils
+import { apiCheckPostUserReport, apiReportPost } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 
@@ -49,6 +50,7 @@ interface IState {
   isHovered: boolean;
   fetchingPostUserInteractions: boolean;
   userRate: number;
+  userReport: boolean; // Tells if the logged user has reported this post
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
@@ -77,12 +79,14 @@ class Post extends Component<IProps, IState> {
       isHovered: false,
       postID: 0,
       userRate: 0,
+      userReport: false,
       userSubscription: false,
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
+    this.handlePostReport = this.handlePostReport.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
@@ -126,22 +130,7 @@ class Post extends Component<IProps, IState> {
               <i className="fas fa-ellipsis-v" />
             </button>
             <div className="dropdown-menu dropdown-menu-right">
-              <button
-                className="dropdown-item"
-                type="button"
-                data-toggle="modal"
-                data-target={`#post_modal_Edit_${this.props.id}`}
-              >
-                Edit Post
-              </button>
-              <button
-                className="dropdown-item"
-                type="button"
-                data-toggle="modal"
-                data-target={`#delete_post_modal_${this.props.id}`}
-              >
-                Delete Post
-              </button>
+              {this.getDropdownButtons()}
             </div>
           </div>
         </div>
@@ -210,6 +199,7 @@ class Post extends Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetPostUserInteractions();
+    this.apiGetPostUserReport();
 
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
@@ -300,6 +290,12 @@ class Post extends Component<IProps, IState> {
     console.log("DELETE POST");
   }
 
+  public handlePostReport() {
+    console.log("REPORT POST");
+    this.setState({ userReport: true });
+    this.apiUserReportPost();
+  }
+
   public handlePostRate() {
     console.log("RATE LOGGED USER ID: ", this.userId);
   }
@@ -349,6 +345,24 @@ class Post extends Component<IProps, IState> {
         });
       })
       .catch(() => console.log("Failed to get post-user interactions"));
+  }
+
+  public async apiGetPostUserReport() {
+    const userReport: boolean = await apiCheckPostUserReport(
+      this.props.id,
+      this.userId
+    );
+    console.log("fetched user report, value: ", userReport);
+    this.setState({ userReport });
+  }
+
+  public async apiUserReportPost() {
+    const reportSuccess: boolean = await apiReportPost(
+      this.props.id,
+      this.userId
+    );
+    console.log("RESUTLADO DO POST REPORT: ", reportSuccess);
+    this.setState({ userReport: reportSuccess });
   }
 
   public changeCommentValue(event: any) {
@@ -572,6 +586,41 @@ class Post extends Component<IProps, IState> {
     }
 
     return videoDiv;
+  }
+
+  private getDropdownButtons() {
+    const reportButton = (
+      <button
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        onClick={this.handlePostReport}
+        disabled={this.state.userReport}
+      >
+        {this.state.userReport ? "Report already issued" : "Report post"}
+      </button>
+    );
+    const editButton = (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#post_modal_Edit_${this.props.id}`}
+      >
+        Edit Post
+      </button>
+    );
+    const deleteButton = (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#delete_post_modal_${this.props.id}`}
+      >
+        Delete Post
+      </button>
+    );
+    const dropdownButtons = [reportButton, editButton, deleteButton];
+    return dropdownButtons;
   }
 
   private getUserInteractionButtons() {
