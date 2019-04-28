@@ -10,6 +10,7 @@ export const postRouter = Router();
  * @apiGroup Post
  *
  * @apiParam {Object[]} files       Images to add to the post
+ * @apiParam {Object[]} tags        Tags to add to the post
  * @apiParam {String}   name        Name of the page/account to post
  * @apiParam {String}   text        Text content to be published
  * @apiParam {String}   visibility  Visibility of the post: public/members/followers/private

@@ -30,6 +30,7 @@ interface IProps {
   visibility?: string;
 
   files?: MyFile[];
+  tags?: any[];
 }
 
 interface IState {
@@ -39,11 +40,14 @@ interface IState {
   images: File[];
   videos: File[];
   docs: File[];
+
+  tags: any[];
   visibility: string;
 }
 
 class PostModal extends Component<IProps, IState> {
   public mode: string;
+  public addTags: any;
 
   private visibilityOptions = [
     { value: "public", title: "Public" },
@@ -60,11 +64,14 @@ class PostModal extends Component<IProps, IState> {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
       docs: [],
       images: [],
+      tags: [],
       text: props.text || "",
       title: props.title || "",
       videos: [],
       visibility: props.visibility || "private"
     };
+
+    this.addTags = React.createRef();
 
     // Post manipulation handlers
     this.handlePostCreation = this.handlePostCreation.bind(this);
@@ -86,6 +93,7 @@ class PostModal extends Component<IProps, IState> {
 
   public apiCreatePost() {
     const formData = new FormData();
+
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -95,6 +103,11 @@ class PostModal extends Component<IProps, IState> {
     this.state.docs.forEach((file, i) =>
       formData.append("docs[" + i + "]", file)
     );
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
     formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
@@ -173,20 +186,24 @@ class PostModal extends Component<IProps, IState> {
       return;
     }
 
-    let images: File[] = [];
-    let videos: File[] = [];
-    let docs: File[] = [];
+    const images: File[] = [];
+    const videos: File[] = [];
+    const docs: File[] = [];
 
     Array.from(files).forEach(file => {
-      if (file.type.startsWith("image")) images.push(file);
-      else if (file.type.startsWith("video")) videos.push(file);
-      else docs.push(file);
+      if (file.type.startsWith("image")) {
+        images.push(file);
+      } else if (file.type.startsWith("video")) {
+        videos.push(file);
+      } else {
+        docs.push(file);
+      }
     });
 
     this.setState({
-      images: images,
-      videos: videos,
-      docs: docs
+      docs,
+      images,
+      videos
     });
   }
 
@@ -253,7 +270,7 @@ class PostModal extends Component<IProps, IState> {
 
         <div className="mb-3">
           <h5>Tags</h5>
-          <AddTags />
+          <AddTags onChange={this.handleTagsChange} tags={this.state.tags} />
         </div>
 
         <div>
@@ -305,6 +322,10 @@ class PostModal extends Component<IProps, IState> {
       </button>
     );
   }
+
+  public handleTagsChange = (tags: any, newtags: any) => {
+    this.setState({ tags: newtags });
+  };
 
   public render() {
     const htmlId =

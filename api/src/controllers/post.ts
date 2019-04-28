@@ -16,6 +16,7 @@ export function createPost(req, res) {
         values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         saveFiles(req, res, result.rows[0].id);
+        saveTags(req, res, result.rows[0].id);
         res.send({ id: result.rows[0].id });
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -267,6 +268,48 @@ export function saveFiles(req, res, id) {
             }
         });
     }
+}
+
+export async function saveTags(req, res, id) {
+
+    const allTags = await query({
+        text: `SELECT id, name FROM tags`,
+    });
+
+    for (const key in req.body) {
+        if (key.includes('tags[')) {
+            const foundValue = allTags.rows.find(e => {
+                if (e.name === req.body[key]) {
+                    return e;
+                } else {
+                    return null;
+                }
+            });
+
+            let tagID = 0;
+            if (foundValue != null) {
+                console.log(foundValue);
+                tagID = foundValue.id;
+            } else {
+                const newTagID = await query({
+                    text: `INSERT INTO tags (name) VALUES ($1) RETURNING id`,
+                    values: [req.body[key]],
+                });
+                tagID = newTagID.rows[0].id;
+            }
+
+            query({
+                text: 'INSERT INTO posts_tags (post, tag) VALUES ($1, $2)',
+                values: [id, tagID],
+            }).then(() => {
+                return;
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
+            });
+        }
+    }
+
 }
 
 export function deleteFolderRecursive(path) {

@@ -10,13 +10,14 @@ import styles from "./AddTags.module.css";
 export type Option = {};
 
 export interface IProps {
-  // tags: any[];
+  tags: any[];
+
+  onChange: (valueToChange: any[], value: any[]) => any;
 }
 
 export interface IState {
   tags: any[];
   suggested_tags: any[];
-  tagsInputValue: any;
 }
 
 class AddTags extends Component<IProps, IState> {
@@ -26,8 +27,7 @@ class AddTags extends Component<IProps, IState> {
     super(props);
     this.state = {
       suggested_tags: [],
-      tags: [],
-      tagsInputValue: ""
+      tags: []
     };
   }
 
@@ -84,9 +84,9 @@ class AddTags extends Component<IProps, IState> {
     axios
       .get(getUrl)
       .then(res => {
-        console.log(res.data);
         this.setState({
-          suggested_tags: res.data
+          suggested_tags: res.data,
+          tags: this.props.tags
         });
       })
       .catch(() => console.log("Failed to create comment"));
@@ -110,6 +110,7 @@ class AddTags extends Component<IProps, IState> {
       }
       this.setState({ tags: [...this.state.tags, val] });
       this.tagInput.value = null;
+      this.props.onChange(this.props.tags, [...this.state.tags, val]);
     } else if (e.key === "Backspace" && !val) {
       this.removeTag(this.state.tags.length - 1);
     }

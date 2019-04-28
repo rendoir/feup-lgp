@@ -3,7 +3,6 @@ import {query} from '../db/db';
 
 export function getAllTags(req, res) {
     query(`SELECT * FROM tags`).then((result) => {
-        console.log(result.rows);
         res.send(result.rows);
     }).catch((error) => {
         console.log(error);
