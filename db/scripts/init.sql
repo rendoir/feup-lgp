@@ -38,6 +38,7 @@ CREATE TABLE posts (
     author BIGINT REFERENCES users ON DELETE CASCADE,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
+    content_tokens TSVECTOR, -- full-text search
     content_image TEXT ARRAY,
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
@@ -160,6 +161,9 @@ INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a po
 INSERT INTO posts (author, title, content) VALUES (1, 'Admin post', 'This is a post done by the admin');
 INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a post done by a mere user following the admin');
 INSERT INTO posts (author, title, content) VALUES (3, 'User post', 'This is a post done by a mere user');
+
+-- Initialize full-text search for posts
+UPDATE posts SET content_tokens = to_tsvector(content);
 
 INSERT INTO comments (author, post, comment) VALUES (1, 1, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 2, 'This is a comment done by a mere user following the admin');
