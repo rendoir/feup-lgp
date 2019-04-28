@@ -18,6 +18,9 @@ type MyFile = {
 export type Props = {
   id: number;
   file: MyFile;
+
+  editMode?: boolean;
+  handleRemove?: (file: MyFile) => any;
 };
 
 export type State = {};
@@ -50,17 +53,37 @@ class PostFile extends Component<Props, State> {
             </div>
           </div>
 
-          <div className="ml-auto mr-2">
-            <button
-              className="h-100 w-100 py-1"
-              onClick={this.handleDownload.bind(this)}
-            >
-              <i className="fas fa-download" />
-            </button>
-          </div>
+          <div className="ml-auto mr-2">{this.getButton()}</div>
         </div>
       </div>
     );
+  }
+
+  public getButton() {
+    if (!this.props.editMode) {
+      return (
+        <button
+          className="h-100 w-100 py-1"
+          onClick={this.handleDownload.bind(this)}
+        >
+          <i className="fas fa-download" />
+        </button>
+      );
+    } else {
+      return (
+        <button
+          className="h-100 w-100 py-1"
+          onClick={this.handleRemove.bind(this)}
+        >
+          <i className="fas fa-trash" />
+        </button>
+      );
+    }
+  }
+
+  public handleRemove(e: any) {
+    e.preventDefault();
+    if (this.props.handleRemove) this.props.handleRemove(this.props.file);
   }
 
   public handleDownload() {

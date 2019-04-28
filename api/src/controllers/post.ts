@@ -37,6 +37,7 @@ export function editPost(req, res) {
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
+        editFiles(req,res);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -172,7 +173,6 @@ export function downloadFile(req, res) {
 
 
 export function saveFiles(req, res, id) {
-
     if (!req.files)
         return;
 
@@ -184,7 +184,7 @@ export function saveFiles(req, res, id) {
         //Move file to uploads
         file.mv('uploads/' + id + '/' + filename, function (err) {
             if (err) 
-                res.status(400).send({ message: 'An error ocurred while creating post: Moving file.' });
+                res.status(400).send({ message: 'An error ocurred while creating/editing post: Moving file.' });
             else {
                 //Add file to database
                 query({
@@ -194,11 +194,30 @@ export function saveFiles(req, res, id) {
                     return;
                 }).catch((error) => {
                     console.log('\n\nERROR:', error);
-                    res.status(400).send({ message: 'An error ocurred while creating post: Adding file to database.' });
+                    res.status(400).send({ message: 'An error ocurred while creating/editing post: Adding file to database.' });
                 });
             }
         });
     }
+}
+
+export async function editFiles(req, res) {
+    //Delete files
+    if(req.body.removed) {
+        let removed = JSON.parse(req.body.removed);
+        for(const file of removed) {
+            //Remove file from database
+            await query({
+                text: `DELETE FROM files 
+                       WHERE post = $1 AND name = $2`,
+                values: [req.body.id, file.name],
+            })
+            //Delete file from filesystem
+            fs.unlinkSync("uploads/" + req.body.id + "/" + file.name);
+        }
+    }
+    //Add new files
+    saveFiles(req, res, req.body.id);
 }
 
 export function deleteFolderRecursive(path) {

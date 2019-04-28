@@ -10,6 +10,7 @@ import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import PostFile from "../PostFile/PostFile";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
@@ -39,6 +40,8 @@ interface IState {
   videos: File[];
   docs: File[];
   visibility: string;
+
+  removedFiles?: MyFile[];
 }
 
 class PostModal extends Component<IProps, IState> {
@@ -62,6 +65,7 @@ class PostModal extends Component<IProps, IState> {
       images: [],
       videos: [],
       docs: [],
+      removedFiles: [],
       visibility: props.visibility || "private"
     };
 
@@ -72,6 +76,7 @@ class PostModal extends Component<IProps, IState> {
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleFileUpload = this.handleFileUpload.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
 
   public handlePostCancel() {
@@ -119,6 +124,23 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiEditPost() {
+    let formData = new FormData();
+    this.state.images.forEach((file, i) =>
+      formData.append("images[" + i + "]", file)
+    );
+    this.state.videos.forEach((file, i) =>
+      formData.append("videos[" + i + "]", file)
+    );
+    this.state.docs.forEach((file, i) =>
+      formData.append("docs[" + i + "]", file)
+    );
+    if (this.state.removedFiles)
+      formData.append("removed", JSON.stringify(this.state.removedFiles));
+    formData.append("id", String(this.props.id));
+    formData.append("text", this.state.text);
+    formData.append("title", this.state.title);
+    formData.append("visibility", this.state.visibility);
+
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -126,14 +148,10 @@ class PostModal extends Component<IProps, IState> {
         : "/api";
     postUrl += "/post/edit";
     axios
-      .post(postUrl, {
+      .post(postUrl, formData, {
         headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
-        id: this.props.id,
-        text: this.state.text,
-        title: this.state.title,
-        visibility: this.state.visibility
+          "Content-Type": "multipart/form-data"
+        }
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -251,6 +269,7 @@ class PostModal extends Component<IProps, IState> {
         <div>
           <h5>Files</h5>
         </div>
+        {this.getRemovedFiles()}
         <div className="custom-file">
           <label className="custom-file-label">{this.getFileLabel()}</label>
           <input
@@ -264,6 +283,33 @@ class PostModal extends Component<IProps, IState> {
         </div>
       </form>
     );
+  }
+
+  public getRemovedFiles() {
+    if (this.mode === EDIT_MODE && this.props.files) {
+      const toRemove = this.props.files.map(file =>
+        this.state.removedFiles && !this.state.removedFiles.includes(file) ? (
+          <PostFile
+            key={file.name}
+            id={this.props.id ? this.props.id : 0}
+            file={file}
+            editMode={this.mode === EDIT_MODE}
+            handleRemove={this.handleRemove}
+          />
+        ) : null
+      );
+      return toRemove;
+    }
+  }
+
+  public handleRemove(fileToRemove: MyFile) {
+    if (this.state.removedFiles) {
+      let removed = this.state.removedFiles;
+      removed.push(fileToRemove);
+      this.setState({
+        removedFiles: removed
+      });
+    }
   }
 
   public getFileLabel() {
