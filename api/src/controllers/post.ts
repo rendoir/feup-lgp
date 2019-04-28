@@ -274,6 +274,19 @@ export function saveFiles(req, res, id) {
 
 export async function saveTags(req, res, id) {
 
+    const tagsToAdd = [];
+    const tagsToDelete = [];
+
+    for (const key in req.body) {
+        if (key.includes('tags[')) {
+            tagsToAdd.push(req.body[key]);
+        }
+    }
+
+    if (tagsToAdd.length === 0) {
+        return;
+    }
+
     const allTags = await query({
         text: `SELECT id, name FROM tags`,
     });
@@ -283,13 +296,10 @@ export async function saveTags(req, res, id) {
         values: [id],
     });
 
-    const tagsToAdd = [];
-    const tagsToDelete = [];
+    console.log(tagsToAdd);
 
-    for (const key in req.body) {
-        if (key.includes('tags[')) {
-            tagsToAdd.push(req.body[key]);
-        }
+    if (tagsToAdd === []) {
+        return;
     }
 
     for (const tag of tagsOfPost.rows) {
