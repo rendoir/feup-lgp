@@ -6,8 +6,9 @@ import {query} from '../db/db';
  * Posts must be either public or, if for followers, the logged in user must be a follower of the author,
  * or, if private, the logged in user must be the post's author.
  */
-function getPostQuery(queryKeywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function getPostQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
     const loggedInUser = 1;
+    const queryKeywords = JSON.parse(keywords).join(' & ');
     return {
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
@@ -24,14 +25,16 @@ function getPostQuery(queryKeywords: string, offset: number, initialDate: number
     };
 }
 
-function getAuthorQuery(queryKeywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function getAuthorQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
     const loggedInUser = 1;
+    const queryKeywords = JSON.parse(keywords).join('|');
     return {
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
-                    p.content_tokens @@ to_tsquery($3)
+                    (first_name ~ ($3)
+                        OR last_name ~ ($3))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
@@ -42,11 +45,12 @@ function getAuthorQuery(queryKeywords: string, offset: number, initialDate: numb
     };
 }
 
-function getUserQuery(queryKeywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function getUserQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
     const loggedInUser = 1;
+    const queryKeywords = JSON.parse(keywords).join('|');
     return {
         text: ``,
-        values: [loggedInUser, offset],
+        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
     };
 }
 
@@ -86,16 +90,6 @@ export async function search(req, res) {
         ? new Date(req.query.df).getTime()
         : Date.now());
 
-    console.log('-----------');
-
-    console.log(new Date(null));
-    console.log(req.query.di);
-    console.log(new Date(null).getTime());
-    console.log(initialDate);
-    console.log(finalDate);
-
-    const queryKeywords = JSON.parse(keywords).join(' & ');
-
     const queryGetter = getSpecificQuery(type);
     if (queryGetter == null) {
         res.status(400).send('Invalid search type');
@@ -103,7 +97,7 @@ export async function search(req, res) {
     }
 
     try {
-        const result = await query(queryGetter(queryKeywords, offset, initialDate, finalDate));
+        const result = await query(queryGetter(keywords, offset, initialDate, finalDate));
         res.send(result.rows);
     } catch (error) {
         console.error(error);
