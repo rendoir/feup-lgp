@@ -84,7 +84,6 @@ class AddTags extends Component<IProps, IState> {
     axios
       .get(getUrl)
       .then(res => {
-        console.log(this.props.tags);
         this.setState({
           suggested_tags: res.data,
           tags: this.props.tags
