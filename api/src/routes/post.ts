@@ -1,11 +1,9 @@
 'use strict';
 import { Router } from 'express';
-import * as multer from 'multer';
 import * as controller from '../controllers/post';
 
 export const postRouter = Router();
 
-const upload = multer({dest: 'uploads'});
 
 /**
  * @api {post} /api/post Create a post
@@ -163,3 +161,7 @@ postRouter.post('/:id/like', controller.addALikeToPost);
  *     }
  */
 postRouter.delete('/:id/like', controller.deleteALikeToPost);
+
+postRouter.get('/:id/:filename', controller.getFile);
+
+postRouter.get('/download/:id/:filename', controller.downloadFile);

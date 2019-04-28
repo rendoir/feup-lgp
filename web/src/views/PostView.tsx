@@ -15,14 +15,11 @@ interface IState {
   id: number;
   post: any;
   comments: any[];
+  files: any[];
   likers: any[];
   tags: any[];
   fetchingInfo: boolean;
 }
-
-const postStyle = {
-  margin: "2rem auto auto auto"
-};
 
 class PostView extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -30,15 +27,13 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
+      files: [],
       fetchingInfo: true,
       id: 1,
       likers: [],
       post: {
         author: "1",
         content: "",
-        content_document: null,
-        content_image: null,
-        content_video: null,
         date_created: "",
         date_updated: "",
         id: "",
@@ -69,6 +64,7 @@ class PostView extends React.Component<IProps, IState> {
         this.setState({
           comments: res.data.comments,
           fetchingInfo: false,
+          files: res.data.files,
           id: res.data.post.id,
           likers: res.data.likers,
           post: res.data.post,
@@ -96,11 +92,8 @@ class PostView extends React.Component<IProps, IState> {
     }
 
     return (
-      <div
-        className="d-flex justify-content-center align-items-center align-self-center"
-        style={postStyle}
-      >
-        <div className="middle col-lg-10">
+      <div className="container my-5">
+        <div className="w-75 mx-auto">
           <Post
             id={Number(this.state.post.id)}
             title={this.state.post.title}
@@ -110,9 +103,8 @@ class PostView extends React.Component<IProps, IState> {
             date={this.date()}
             likes={this.state.post.likes}
             text={this.state.post.content}
-            videos={this.state.post.content_video}
-            images={this.state.post.content_image}
             comments={this.state.comments}
+            files={this.state.files}
             likers={this.state.likers}
             tags={this.state.tags}
             visibility={this.state.post.visibility}
