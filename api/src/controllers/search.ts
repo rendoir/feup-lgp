@@ -46,11 +46,17 @@ function getAuthorQuery(keywords: string, offset: number, initialDate: number, f
 }
 
 function getUserQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
-    const loggedInUser = 1;
     const queryKeywords = JSON.parse(keywords).join('|');
     return {
-        text: ``,
-        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
+        text: `SELECT id, first_name, last_name, rate, date_created
+                FROM users
+                WHERE
+                    (first_name ~ ($2)
+                        OR last_name ~ ($2))
+                    AND date_created >= (SELECT TO_TIMESTAMP($3)) AND date_created <= (SELECT TO_TIMESTAMP($4))
+                LIMIT 10
+                OFFSET $1`,
+        values: [offset, queryKeywords, initialDate, finalDate],
     };
 }
 
