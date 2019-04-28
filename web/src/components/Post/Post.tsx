@@ -370,15 +370,11 @@ class Post extends Component<IProps, IState> {
         rate: parseInt(rateTarget, 10)
       };
 
-      console.log("You are: ", this.userId);
-      console.log("Your are rating post number: ", this.props.id);
-      console.log("And you rated: ", rateTarget);
       console.log("Post Rating updated to: ", userRating);
       const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
       return axios
         .post(apiUrl, body)
         .then(() => {
-          console.log("HMMMM");
           this.setState({
             userRateTotal:
               this.state.userRateTotal + parseInt(rateTarget, 10) * 20,
@@ -436,14 +432,6 @@ class Post extends Component<IProps, IState> {
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
-        console.log(
-          "Current NOF: ",
-          this.state.numberOfRatings,
-          " / Rate: ",
-          this.state.userRate,
-          " / Amount: ",
-          this.state.userRateTotal
-        );
         if (!(this.state.userRate == null)) {
           this.setState({
             postRated: true

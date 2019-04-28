@@ -108,7 +108,6 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
-    console.log("SUBSCRIBEE");
     console.log("follower", req.body.follower);
     console.log("followed", req.body.followed);
     query({
