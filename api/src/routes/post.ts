@@ -4,7 +4,6 @@ import * as controller from '../controllers/post';
 
 export const postRouter = Router();
 
-
 /**
  * @api {post} /api/post Create a post
  * @apiName Publish-A-Post

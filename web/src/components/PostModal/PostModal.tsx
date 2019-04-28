@@ -7,6 +7,7 @@ import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
 
 import { checkPropTypes } from "prop-types";
+import AddTags from "../AddTags/AddTags";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
@@ -57,11 +58,11 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      docs: [],
+      images: [],
       text: props.text || "",
       title: props.title || "",
-      images: [],
       videos: [],
-      docs: [],
       visibility: props.visibility || "private"
     };
 
@@ -84,7 +85,7 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiCreatePost() {
-    let formData = new FormData();
+    const formData = new FormData();
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -168,7 +169,9 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public handleFileUpload(files: FileList | null) {
-    if (!files) return;
+    if (!files) {
+      return;
+    }
 
     let images: File[] = [];
     let videos: File[] = [];
@@ -248,6 +251,11 @@ class PostModal extends Component<IProps, IState> {
           />
         </div>
 
+        <div className="mb-3">
+          <h5>Tags</h5>
+          <AddTags />
+        </div>
+
         <div>
           <h5>Files</h5>
         </div>
@@ -273,7 +281,9 @@ class PostModal extends Component<IProps, IState> {
     this.state.videos.forEach(file => (label += file.name + " "));
     this.state.docs.forEach(file => (label += file.name + " "));
 
-    if (label === "") label = "Insert images, videos and documents";
+    if (label === "") {
+      label = "Insert images, videos and documents";
+    }
 
     return label;
   }

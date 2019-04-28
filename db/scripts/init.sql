@@ -77,12 +77,10 @@ CREATE TABLE posts_tags (
     tag BIGINT REFERENCES tags ON DELETE CASCADE
 );
 
-/*
-CREATE TABLE document_tags (
-    post BIGINT REFERENCES posts ON DELETE CASCADE,
-    category BIGINT REFERENCES categories ON DELETE CASCADE
+CREATE TABLE files_tags (
+    file_ref BIGINT REFERENCES files ON DELETE CASCADE,
+    tag BIGINT REFERENCES tags ON DELETE CASCADE
 );
-*/
 
 CREATE TABLE posts_subscriptions (
     subscriber BIGINT REFERENCES users ON DELETE CASCADE,

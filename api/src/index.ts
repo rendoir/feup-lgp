@@ -35,6 +35,7 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    tagsRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
@@ -67,6 +68,7 @@ app.use('/login', loginRouter);
 app.use('/feed', feedRouter);
 app.use('/post', postRouter);
 app.use('/admin', adminRouter);
+app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');

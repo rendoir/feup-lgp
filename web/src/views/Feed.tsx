@@ -45,9 +45,8 @@ class Feed extends React.Component<Props, State> {
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
             (post.likers = postsComing.likers[idx]),
-            (post.tags = postsComing.tags[idx])(
-              (post.files = postsComing.files[idx])
-            )
+            (post.tags = postsComing.tags[idx]),
+            (post.files = postsComing.files[idx])
           )
         );
 
