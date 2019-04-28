@@ -118,7 +118,7 @@ class PostModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post created - reloading page...");
-        window.location.href = "/post/" + res.data.id[0].id;
+        window.location.href = "/post/" + res.data.id;
       })
       .catch(() => console.log("Failed to create post"));
   }

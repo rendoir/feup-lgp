@@ -2,6 +2,7 @@
 import axios from "axios";
 import classNames from "classnames";
 import React, { Component } from "react";
+import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -23,6 +24,10 @@ type MyFile = {
   size: number;
 };
 
+// - Import utils
+import { apiSubscription } from "../../utils/apiSubscription";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
 import {
   faGlobeAfrica,
   faLock,
@@ -30,10 +35,11 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import { getApiURL } from "../../utils/apiURL";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
-type IProps = {
+interface IProps {
   id: number;
   title: string;
   date: string | undefined;
@@ -45,12 +51,11 @@ type IProps = {
 
   files?: MyFile[];
   likers: any[];
-};
+}
 
 interface IState {
   activePage: number;
   commentValue: string;
-  isHovered: boolean;
   clickedImage: string | undefined;
   data: any;
 
@@ -58,18 +63,31 @@ interface IState {
   videos: MyFile[];
   docs: MyFile[];
 
+  fetchingPostUserInteractions: boolean;
   isFetching: boolean;
+  isHovered: boolean;
+  numberOfRatings: number;
   postID: number;
+  postRated: boolean;
+  userRate: number;
+  userRateTotal: number;
+  userSubscription: boolean;
+  waitingRateRequest: boolean;
+  waitingSubscriptionRequest: boolean;
 }
+
+const cookies = new Cookies();
 
 class Post extends Component<IProps, IState> {
   public static defaultProps = {};
   public id: string;
+  public userId: number;
 
   constructor(props: IProps) {
     super(props);
 
     this.id = "post_" + this.props.id;
+    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       data: "",
@@ -82,21 +100,32 @@ class Post extends Component<IProps, IState> {
 
       activePage: 1,
       commentValue: "",
+      fetchingPostUserInteractions: true,
       isFetching: true,
-      postID: 0
+      postID: 0,
+      numberOfRatings: 1,
+      postRated: false,
+      userRate: 50,
+      userRateTotal: 50,
+      userSubscription: false,
+      waitingRateRequest: false,
+      waitingSubscriptionRequest: false
     };
 
     this.initFiles();
 
+    this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
     this.handleAddLike = this.handleAddLike.bind(this);
   }
 
   public render() {
-    const { isFetching } = this.state;
+    if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
+      return <div>Loading...</div>;
+    }
 
     return (
       <div>
@@ -161,6 +190,18 @@ class Post extends Component<IProps, IState> {
           {this.getVideos()}
           {this.getFiles()}
           <div className={styles.post_stats}>
+            <fieldset className="rate">
+              <div className="star-ratings-css">
+                {this.handleStars()}
+                <div className="star-ratings-css-bottom">
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                </div>
+              </div>
+            </fieldset>
             <span
               key={this.id + "_span_like_button"}
               role="button"
@@ -172,17 +213,7 @@ class Post extends Component<IProps, IState> {
             </span>
             <span> {this.props.comments.length} comments</span>
           </div>
-          <div className={styles.post_actions}>
-            <button onClick={this.handleAddLike}>{this.userLiked()}</button>
-            <button>
-              <i className="far fa-comment-alt" />
-              <span>Comment</span>
-            </button>
-            <button>
-              <i className="fas fa-share-square" />
-              <span>Share</span>
-            </button>
-          </div>
+          {this.getUserInteractionButtons()}
           {/* Post edition modal */}
           <PostModal {...this.props} />
           {/* Delete Post */}
@@ -227,6 +258,8 @@ class Post extends Component<IProps, IState> {
   }
 
   public componentDidMount() {
+    this.apiGetPostUserInteractions();
+
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
       currentPage = 1;
@@ -267,6 +300,43 @@ class Post extends Component<IProps, IState> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
+  }
+
+  public handleStars() {
+    const userRate =
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+
+    if (!this.state.postRated) {
+      return (
+        <div className="star-ratings-css-top" id="rate">
+          <span id="5" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handlePostRate}>
+            ★
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="star-ratings-css-top" style={{ width: userRate }}>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+        </div>
+      );
+    }
   }
 
   public userLiked() {
@@ -310,6 +380,97 @@ class Post extends Component<IProps, IState> {
 
   public getInputRequiredStyle(content: string) {
     return content !== "" ? { display: "none" } : {};
+  }
+
+  public handlePostRate(e: any) {
+    if (this.state.postRated) {
+      console.log("You already rated this post");
+    } else {
+      const rateTarget = e.target.id;
+
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      const userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      let body = {};
+      body = {
+        evaluator: this.userId,
+        newPostRating: userRating,
+        rate: parseInt(rateTarget, 10)
+      };
+
+      console.log("Post Rating updated to: ", userRating);
+      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          this.setState({
+            postRated: true,
+            userRateTotal:
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
+          });
+        })
+        .catch(() => {
+          console.log("Rating system failed");
+        });
+    }
+  }
+
+  public handlePostSubscription() {
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
+    }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+
+    this.apiSubscription(endpoint);
+  }
+
+  public apiSubscription(endpoint: string) {
+    apiSubscription("post", endpoint, this.userId, this.props.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
+      })
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
+  }
+
+  public apiGetPostUserInteractions() {
+    apiGetUserInteractions("post", this.userId, this.props.id)
+      .then(res => {
+        this.setState({
+          fetchingPostUserInteractions: false,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
+          userRateTotal: res.data.totalRatingAmount,
+          userSubscription: res.data.subscription
+        });
+        if (!(this.state.userRate == null)) {
+          this.setState({
+            postRated: true
+          });
+        }
+      })
+      .catch(() => console.log("Failed to get post-user interactions"));
   }
 
   public changeCommentValue(event: any) {
@@ -446,6 +607,33 @@ class Post extends Component<IProps, IState> {
       >
         {likesDiv}
       </span>
+    );
+  }
+
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
     );
   }
 

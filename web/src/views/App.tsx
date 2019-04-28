@@ -6,6 +6,7 @@ import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
 import Feed from "./Feed";
+import Login from "./Login";
 import PostView from "./PostView";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
@@ -22,6 +23,7 @@ class App extends React.Component {
           <Route exact={true} path="/post/:id" component={PostView} />
           <Route exact={true} path="/admin" component={Backoffice} />
           <Route exact={true} path="/shop" component={Shop} />
+          <Route exact={true} path="/login" component={Login} />
           <Route exact={true} path="/register" component={RegisterLanding} />
         </Router>
       </div>

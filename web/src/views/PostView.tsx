@@ -51,22 +51,21 @@ class PostView extends React.Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += "/post";
+    postUrl += `/post/${id}`;
     axios
-      .get(`${postUrl}/${id}`, {
+      .get(postUrl, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        },
-        params: {}
+        }
       })
       .then(res => {
         this.setState({
           comments: res.data.comments,
           fetchingInfo: false,
-          id: res.data.post[0].id,
-          post: res.data.post[0],
-          files: res.data.files,
-          likers: res.data.likers
+          id: res.data.post.id,
+          likers: res.data.likers,
+          post: res.data.post,
+          files: res.data.files
         });
       })
       .catch(() => console.log("Failed to get post info"));

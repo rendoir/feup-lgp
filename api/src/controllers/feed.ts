@@ -32,7 +32,7 @@ export async function getFeed(req, res) {
                         ON c.author = a.id
                         WHERE
                             p.id = $1
-                        ORDER BY c.date_updated ASC;`,
+                        ORDER BY c.date_updated ASC`,
                 values: [post.id],
             });
             const likersPost = await query({

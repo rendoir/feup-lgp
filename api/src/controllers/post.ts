@@ -16,7 +16,7 @@ export function createPost(req, res) {
         values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         saveFiles(req, res, result.rows[0].id);
-        res.send({ id: result.rows });
+        res.send({ id: result.rows[0].id });
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating post: Adding post to database.' });
@@ -33,7 +33,7 @@ export function editPost(req, res) {
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: `UPDATE posts
-                SET title = $2, content = $3, visibility = $4
+                SET title = $2, content = $3, visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
@@ -126,7 +126,7 @@ export async function getPost(req, res) {
             values: [postId],
         });
         const result = {
-            post: post.rows,
+            post: post.rows[0],
             comments: comments.rows,
             files: files.rows,
             likers: likers.rows
@@ -138,6 +138,104 @@ export async function getPost(req, res) {
     }
 }
 
+export async function getPostUserInteractions(req, res) {
+    const userId = req.body.userId;
+    const postId = req.params.id;
+    try {
+        const totalRatingsQuery = await query({
+            text: `SELECT count(*)
+                    FROM posts_rates
+                    WHERE post = $1`,
+            values: [postId],
+        });
+        const totalRatingAmountQuery = await query({
+            text: `SELECT SUM(rate) AS total
+                    FROM posts_rates
+                    WHERE post = $1`,
+            values: [postId],
+        });
+        const rateQuery = await query({
+            text: `SELECT rate
+                    FROM posts_rates
+                    WHERE
+                        evaluator = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+        const subscriptionQuery = await query({
+            text: `SELECT *
+                    FROM posts_subscriptions
+                    WHERE
+                        subscriber = $1 AND post = $2`,
+            values: [userId, postId],
+        });
+
+        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        const totalRatingsNumber = totalRatingsQuery.rows[0].count;
+        const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
+
+        const result = {
+            rate,
+            totalRatingsNumber,
+            totalRatingAmount,
+            subscription: Boolean(subscriptionQuery.rows[0]),
+        };
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post-user interactions'));
+    }
+}
+
+export function subscribePost(req, res) {
+    query({
+        text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
+        values: [req.body.userId, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function unsubscribePost(req, res) {
+    query({
+        text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
+        values: [req.body.userId, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
+    });
+}
+
+export function rate(req, res) {
+    console.log("pls?");
+    console.log("evaluator: ", req.body.evaluator);
+    console.log("rate: ", req.body.rate);
+    console.log("post: ", req.params.id);
+    query({
+        text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
+        values: [req.body.evaluator, req.body.rate, req.params.id],
+    }).then((result) => {
+
+        query({
+            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            values: [req.body.newPostRating, req.params.id],
+        }).then((result2) => {
+            res.status(200).send();
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the rating of the post' });
+        });
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while rating an post' });
+    });
+}
+
+
 export function addALikeToPost(req, res) {
     query({
         text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
@@ -146,7 +244,7 @@ export function addALikeToPost(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+        res.status(400).send({ message: 'An error ocurred while liking a post' });
     });
 }
 

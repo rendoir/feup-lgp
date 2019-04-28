@@ -12,22 +12,22 @@ import * as http from 'http';
 import * as morgan from 'morgan';
 import { jwtMiddleware } from './_helpers/jwt';
 
-let privateKey; let certificate;
+// let privateKey; let certificate;
 
 if (process.env.PRODUCTION === 'true') {
     console.log('IN PROD');
     config({path: 'docker/prod.env'});
     config({path: 'docker/secrets.env'});
-    privateKey = fs.readFileSync('docker/api.key', 'utf8');
-    certificate = fs.readFileSync('docker/api.crt', 'utf8');
+    // privateKey = fs.readFileSync('docker/api.key', 'utf8');
+    // certificate = fs.readFileSync('docker/api.crt', 'utf8');
 } else {
     console.log('NOT IN PROD');
     config({ path: '../environment/dev.env' }); // dotenv is used to load env variables
     config({ path: '../secrets/secrets.env' });
-    privateKey = fs.readFileSync('../secrets/api.key', 'utf8');
-    certificate = fs.readFileSync('../secrets/api.crt', 'utf8');
+    // privateKey = fs.readFileSync('../secrets/api.key', 'utf8');
+    // certificate = fs.readFileSync('../secrets/api.crt', 'utf8');
 }
-const credentials = { key: privateKey, cert: certificate };
+// const credentials = { key: privateKey, cert: certificate };
 
 import {
     adminRouter,

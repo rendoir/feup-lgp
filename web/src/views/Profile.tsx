@@ -1,7 +1,225 @@
+import axios from "axios";
 import * as React from "react";
+import Cookies from "universal-cookie";
+import { apiSubscription } from "../utils/apiSubscription";
+import { getApiURL } from "../utils/apiURL";
+import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
-class Profile extends React.Component {
+type State = {
+  fetchingUserUserInteractions: boolean;
+  userRate: number;
+  userRateTotal: number;
+  userRated: boolean;
+  numberOfRatings: number;
+  userSubscription: boolean;
+  waitingRateRequest: boolean;
+  waitingSubscriptionRequest: boolean;
+};
+
+const cookies = new Cookies();
+
+class Profile extends React.Component<{}, State> {
+  public id: number; // Id of the profile's user
+  public observerId: number; // Id of the user visiting the page
+
+  constructor(props: any) {
+    super(props);
+
+    this.id = 3; // Hardcoded while profile page is not complete
+    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+
+    this.state = {
+      fetchingUserUserInteractions: true,
+      numberOfRatings: 1,
+      userRate: 50,
+      userRateTotal: 50,
+      userRated: false,
+      userSubscription: false,
+      waitingRateRequest: false,
+      waitingSubscriptionRequest: false
+    };
+
+    this.handleUserRate = this.handleUserRate.bind(this);
+    this.handleUserSubscription = this.handleUserSubscription.bind(this);
+  }
+
+  public componentDidMount() {
+    this.apiGetUserUserInteractions();
+  }
+
+  public handleUserRate(e: any) {
+    if (this.state.userRated) {
+      console.log("You already rated this user");
+    } else {
+      const rateTarget = e.target.id;
+
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      const userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      let body = {};
+      body = {
+        evaluator: this.observerId,
+        newUserRating: userRating,
+        rate: parseInt(rateTarget, 10)
+      };
+
+      console.log("User Rating updated to: ", userRating);
+      const apiUrl = getApiURL(`/users/${this.id}/rate`);
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          this.setState({
+            userRateTotal:
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20,
+            userRated: true
+          });
+        })
+        .catch(() => {
+          console.log("Rating system failed");
+        });
+    }
+  }
+
+  public handleUserSubscription() {
+    if (this.state.waitingSubscriptionRequest) {
+      console.log(
+        "Error trying subscription action! Waiting for response from last request"
+      );
+      return;
+    }
+
+    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const subscriptionState = !this.state.userSubscription;
+
+    this.setState({
+      userSubscription: subscriptionState,
+      waitingSubscriptionRequest: true
+    });
+
+    this.apiSubscription(endpoint);
+  }
+
+  public apiSubscription(endpoint: string) {
+    apiSubscription("users", endpoint, this.observerId, this.id)
+      .then(() => {
+        this.setState({
+          waitingSubscriptionRequest: false
+        });
+      })
+      .catch(() => {
+        this.setState({
+          userSubscription: endpoint === "unsubscribe",
+          waitingSubscriptionRequest: false
+        });
+        console.log("Subscription system failed");
+      });
+  }
+
+  public apiGetUserUserInteractions() {
+    apiGetUserInteractions("users", this.observerId, this.id)
+      .then(res => {
+        this.setState({
+          fetchingUserUserInteractions: false,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
+          userRateTotal: res.data.totalRatingAmount,
+          userSubscription: res.data.subscription
+        });
+        if (!(this.state.userRate == null)) {
+          this.setState({
+            userRated: true
+          });
+        }
+      })
+      .catch(() => console.log("Failed to get user-user interactions"));
+  }
+
+  public getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div>
+        <button />
+        <fieldset className="rate">
+          <div className="star-ratings-css">
+            {this.handleStars()}
+            <div className="star-ratings-css-bottom">
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+            </div>
+          </div>
+        </fieldset>
+        <button onClick={this.handleUserSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+      </div>
+    );
+  }
+
+  public handleStars() {
+    const userRate =
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+
+    if (!this.state.userRated) {
+      return (
+        <div className="star-ratings-css-top" id="rate">
+          <span id="5" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handleUserRate}>
+            ★
+          </span>
+          <p>Rate this user</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="star-ratings-css-top" style={{ width: userRate }}>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+        </div>
+      );
+    }
+  }
   public render() {
+    if (this.state.fetchingUserUserInteractions) {
+      return null;
+    }
+
+    return (
+      <div>
+        <h3>
+          This text is being shown due to some google errors on the page's html
+        </h3>
+        {this.getUserInteractionButtons()}
+      </div>
+    );
+
     return (
       <div className="Profile">
         <main id="profile" className="container">
