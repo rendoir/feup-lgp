@@ -5,9 +5,9 @@ services:
 stages:
   - build
   - lint
+  - test
   - release
   # - deploy
-  # - test
 
 variables:
   DOCKER_HOST: tcp://docker:2375
@@ -37,6 +37,9 @@ build_web:
     # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
+  only:
+    - merge_requests
+
 build_api:
   stage: build
   script:
@@ -52,6 +55,8 @@ build_api:
   artifacts:
     paths:
     - api/public
+  only:
+    - merge_requests
 
 build_db:
   stage: build
@@ -59,18 +64,20 @@ build_db:
     - cd db
     - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
     - docker push $DB_PRE_IMAGE
+  only:
+    - merge_requests
 
-# build_api_tests:
-#   stage: build
-#   script:
-#     - mkdir -p api/docker
-#     - mv environment/prod.env api/docker/prod.env
-#     - cd api
-#     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
-#     - echo "$API_KEY" | tr -d '\r' > docker/api.key
-#     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-#     - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
-#     - docker push $API_TEST_IMAGE
+build_api_tests:
+  stage: build
+  script:
+    - mkdir -p api/docker
+    - mv environment/prod.env api/docker/prod.env
+    - cd api
+    # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
+    # - echo "$API_KEY" | tr -d '\r' > docker/api.key
+    - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
+    - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
+    - docker push $API_TEST_IMAGE
 
 # build_e2e_tests:
 #   stage: build
@@ -83,11 +90,15 @@ test_web_linter:
   stage: lint
   script:
     - cd web && npm install && npm run lint
+  only:
+    - merge_requests
 
 test_api_linter:
   stage: lint
   script:
     - cd api && npm install && npm run lint
+  only:
+    - merge_requests
 
 # web_integration_tests:
 #   stage: test
@@ -102,16 +113,16 @@ test_api_linter:
 #     - sleep 5
 #     - docker-compose up --exit-code-from e2e
 
-# api_unit_tests:
-#   stage: test
-#   script:
-#     - cd api
-#     - chmod +x ../scripts/write_api_compose.sh
-#     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
-#     - docker-compose pull
-#     - docker-compose up -d db
-#     - sleep 5
-#     - docker-compose up --exit-code-from apitest
+api_unit_tests:
+  stage: test
+  script:
+    - cd api
+    - chmod +x ../scripts/write_api_compose.sh
+    - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
+    - docker-compose pull
+    - docker-compose up -d db
+    - sleep 5
+    - docker-compose up --exit-code-from apitest
 
 release-web-staging:
   stage: release
@@ -121,6 +132,7 @@ release-web-staging:
     - docker push $WEB_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-api-staging:
   stage: release
@@ -130,6 +142,7 @@ release-api-staging:
     - docker push $API_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-db-staging:
   stage: release
@@ -139,6 +152,7 @@ release-db-staging:
     - docker push $DB_STAGING_IMAGE
   only:
     - development
+    - merge_requests
 
 release-web-prod:
   stage: release
@@ -148,6 +162,7 @@ release-web-prod:
     - docker push $WEB_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 release-api-prod:
   stage: release
@@ -157,6 +172,7 @@ release-api-prod:
     - docker push $API_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 release-db-prod:
   stage: release
@@ -166,6 +182,7 @@ release-db-prod:
     - docker push $DB_PROD_IMAGE
   only:
     - master
+    - merge_requests
 
 # deploy:
 #   stage: deploy

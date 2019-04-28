@@ -2,15 +2,17 @@
   "name": "server",
   "version": "1.0.0",
   "description": "gnet server",
-  "main": "server.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "nodemon",
+    "build": "tsc",
     "lint": "tslint -p . -c tslint.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "report": "nyc report",
+    "test": "npm run build && nyc --reporter=html mocha --exit"
   },
   "repository": {
     "type": "git",
-    "url": "https://git.fe.up.pt/lgp2019/lgp-3/lgp-3a.git"
+    "url": "https://gitlab.com/alexandreaam/lgp-3a"
   },
   "keywords": [
     "gnet",
@@ -38,7 +40,11 @@
     "typescript": "^3.4.3"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
     "nodemon": "^1.18.11",
+    "nyc": "^13.1.0",
+    "supertest": "^4.0.2",
     "tslint": "^5.15.0"
   }
 }
