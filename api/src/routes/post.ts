@@ -171,7 +171,8 @@ postRouter.delete('/:id/like', controller.deleteALikeToPost);
  *
  * @apiParam {number}   id   Id of the post being reported
  * @apiParam {number}   reporter   Id of the user issuing the report
- *
+ * @apiParam {string}   reason   Reason of the report
+ * 
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

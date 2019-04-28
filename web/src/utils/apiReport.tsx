@@ -8,7 +8,7 @@ export async function apiCheckPostUserReport(
   userId: number
 ): Promise<boolean> {
   const apiURL = getApiURL(`/post/${postId}/check_report`);
-  return await apiGetResult(apiURL, userId);
+  return await apiCheckContentUserReport(apiURL, userId);
 }
 
 export async function apiCheckCommentUserReport(
@@ -16,33 +16,37 @@ export async function apiCheckCommentUserReport(
   userId: number
 ): Promise<boolean> {
   const apiURL = getApiURL(`/post/0/comment/${commentId}/check_report`);
-  return await apiGetResult(apiURL, userId);
+  return await apiCheckContentUserReport(apiURL, userId);
 }
 
-// - Issue a content report (Returns true if report was issued successfully, false if it wasn't)
-
-export async function apiReportPost(
-  postId: number,
-  reporterId: number
-): Promise<boolean> {
-  const apiURL = getApiURL(`/post/${postId}/report`);
-  return await apiGetResult(apiURL, reporterId);
-}
-
-export async function apiReportComment(
-  commentId: number,
-  reporterId: number
-): Promise<boolean> {
-  const apiURL = getApiURL(`/post/0/comment/${commentId}/report`);
-  return await apiGetResult(apiURL, reporterId);
-}
-
-async function apiGetResult(apiURL: string, userId: number) {
+async function apiCheckContentUserReport(apiURL: string, reporter: number) {
   try {
-    const res = await axios.post(apiURL, { reporter: userId });
+    const res = await axios.post(apiURL, { reporter });
     return res.data.report;
   } catch (error) {
     console.log(error);
     return false;
   }
+}
+
+// - Issue a content report
+
+export async function apiReportPost(
+  postId: number,
+  reporterId: number,
+  reason: string
+) {
+  const apiURL = getApiURL(`/post/${postId}/report`);
+  const body = { reporter: reporterId, reason };
+  axios.post(apiURL, body).catch(() => console.log("Failed to report post"));
+}
+
+export async function apiReportComment(
+  commentId: number,
+  reporterId: number,
+  reason: string
+) {
+  const apiURL = getApiURL(`/post/0/comment/${commentId}/report`);
+  const body = { reporter: reporterId, reason };
+  axios.post(apiURL, body).catch(() => console.log("Failed to report comment"));
 }

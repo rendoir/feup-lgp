@@ -13,11 +13,13 @@ import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
+import ReportModal from "../PostModal/ReportModal";
+
 // import { IconProp } from "@fortawesome/fontawesome-svg-core";
 // import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 // - Import utils
-import { apiCheckPostUserReport, apiReportPost } from "../../utils/apiReport";
+import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 
@@ -87,6 +89,7 @@ class Post extends Component<IProps, IState> {
 
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handlePostReport = this.handlePostReport.bind(this);
+    this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
@@ -159,6 +162,11 @@ class Post extends Component<IProps, IState> {
         <PostModal {...this.props} />
         {/* Delete Post */}
         <DeleteModal {...this.props} />
+        {/* Report Post */}
+        <ReportModal
+          postId={this.props.id}
+          reportCancelHandler={this.handleReportCancel}
+        />
         {/* Comment section*/}
         <div className={`${styles.post_comment_section} w-100`}>
           {this.getCommentSection()}
@@ -292,7 +300,10 @@ class Post extends Component<IProps, IState> {
 
   public handlePostReport() {
     this.setState({ userReport: true });
-    this.apiUserReportPost();
+  }
+
+  public handleReportCancel() {
+    this.setState({ userReport: false });
   }
 
   public handlePostRate() {
@@ -352,14 +363,6 @@ class Post extends Component<IProps, IState> {
       this.userId
     );
     this.setState({ userReport });
-  }
-
-  public async apiUserReportPost() {
-    const reportSuccess: boolean = await apiReportPost(
-      this.props.id,
-      this.userId
-    );
-    this.setState({ userReport: reportSuccess });
   }
 
   public changeCommentValue(event: any) {
@@ -591,6 +594,8 @@ class Post extends Component<IProps, IState> {
         key={0}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
+        data-toggle="modal"
+        data-target={`#report_post_modal_${this.props.id}`}
         onClick={this.handlePostReport}
         disabled={this.state.userReport}
       >

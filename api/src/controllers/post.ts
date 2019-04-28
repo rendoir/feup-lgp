@@ -207,9 +207,15 @@ export function deleteALikeToPost(req, res) {
 }
 
 export async function reportPost(req, res) {
+    if (!req.body.reason.trim()) {
+        console.log('\n\nERROR: Report reason cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while creating a new post report' });
+        return;
+    }
+
     query({
-        text: `INSERT INTO content_reports (reporter, content_id, content_type) VALUES ($1, $2, 'post')`,
-        values: [req.body.reporter, req.params.id],
+        text: `INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES ($1, $2, 'post', $3)`,
+        values: [req.body.reporter, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
     }).catch((error) => {
@@ -227,7 +233,7 @@ export async function checkPostUserReport(req, res) {
                         reporter = $1 AND content_id = $2 AND content_type = 'post'`,
             values: [req.body.reporter, req.params.id],
         });
-
+        console.log("REPORT POST", reportQuery.rows);
         const result = { report: Boolean(reportQuery.rows[0]) };
         res.send(result);
     } catch (error) {

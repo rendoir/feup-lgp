@@ -7,6 +7,9 @@ import Avatar from "../Avatar/Avatar";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
 
+// - Import app components
+import ReportModal from "../PostModal/ReportModal";
+
 // - Import style
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap/dist/css/bootstrap.css";
@@ -15,10 +18,7 @@ import "bootstrap/dist/js/bootstrap.js";
 import styles from "./../Post/Post.module.scss";
 
 // - Import utils
-import {
-  apiCheckCommentUserReport,
-  apiReportComment
-} from "../../utils/apiReport";
+import { apiCheckCommentUserReport } from "../../utils/apiReport";
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
@@ -73,6 +73,7 @@ class Comment extends Component<Props, State> {
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
     this.apiEditComment = this.apiEditComment.bind(this);
     this.handleCommentReport = this.handleCommentReport.bind(this);
+    this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
 
@@ -271,6 +272,11 @@ class Comment extends Component<Props, State> {
             </div>
           </div>
         </div>
+
+        <ReportModal
+          commentId={Number(this.props.title)}
+          reportCancelHandler={this.handleReportCancel}
+        />
       </div>
     );
   }
@@ -292,15 +298,10 @@ class Comment extends Component<Props, State> {
 
   public handleCommentReport() {
     this.setState({ userReport: true });
-    this.apiUserReportComment();
   }
 
-  public async apiUserReportComment() {
-    const reportSuccess: boolean = await apiReportComment(
-      this.state.commentID,
-      this.loggedUserId
-    );
-    this.setState({ userReport: reportSuccess });
+  public handleReportCancel() {
+    this.setState({ userReport: false });
   }
 
   public onEnterPress = (e: any) => {
@@ -569,6 +570,8 @@ class Comment extends Component<Props, State> {
         key={0}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
+        data-toggle="modal"
+        data-target={`#report_comment_modal_${this.props.title}`}
         onClick={this.handleCommentReport}
         disabled={this.state.userReport}
       >

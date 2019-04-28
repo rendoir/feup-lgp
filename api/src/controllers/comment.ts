@@ -135,9 +135,15 @@ export async function getCommentsOfComment(req, res) {
 }
 
 export function reportComment(req, res) {
+    if (!req.body.reason.trim()) {
+        console.log('\n\nERROR: Report reason cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while creating a new comment report' });
+        return;
+    }
+
     query({
-        text: `INSERT INTO content_reports (reporter, content_id, content_type) VALUES ($1, $2, 'comment')`,
-        values: [req.body.reporter, req.params.id],
+        text: `INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES ($1, $2, 'comment', $3)`,
+        values: [req.body.reporter, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
     }).catch((error) => {
@@ -155,7 +161,7 @@ export async function checkCommentUserReport(req, res) {
                         reporter = $1 AND content_id = $2 AND content_type = 'comment'`,
             values: [req.body.reporter, req.params.id],
         });
-
+        console.log("REPORT COMENTARIO", reportQuery.rows);
         const result = { report: Boolean(reportQuery.rows[0]) };
         res.send(result);
     } catch (error) {

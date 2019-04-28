@@ -155,6 +155,7 @@ commentRouter.put('/:id', controller.editComment);
  * @apiParam {number}   post_id   Id of post owning the comment being reported
  * (post_id parameter is useless, it's only required due to the comment api route URL)
  * @apiParam {number}   reporter   Id of the user issuing the report
+ * @apiParam {string}   reason   Reason of the report
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request

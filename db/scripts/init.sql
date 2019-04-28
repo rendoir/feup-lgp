@@ -68,6 +68,7 @@ CREATE TABLE content_reports (
     reporter BIGINT REFERENCES users ON DELETE CASCADE,
     content_id BIGINT NOT NULL,
     content_type content_type_enum NOT NULL,
+    description TEXT NOT NULL,
     admin_review BOOLEAN DEFAULT FALSE,
     date_reported TIMESTAMP DEFAULT NOW(),
     UNIQUE (reporter, content_id, content_type)
@@ -176,8 +177,8 @@ INSERT INTO posts (author, title, content) VALUES (1, 'Admin post', 'This is a p
 INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a post done by a mere user following the admin');
 INSERT INTO posts (author, title, content) VALUES (3, 'User post', 'This is a post done by a mere user');
 
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 2, 'post');
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 3, 'post');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'post', 'Insulted my son');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'post', 'Chauvinist content');
 
 INSERT INTO comments (author, post, comment) VALUES (1, 1, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 2, 'This is a comment done by a mere user following the admin');
@@ -200,10 +201,10 @@ INSERT INTO comments (author, post, comment) VALUES (1, 8, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment done by a mere user following the admin');
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 2, 'comment');
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 3, 'comment');
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 12, 'comment');
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 13, 'comment');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'comment', 'Insults my family');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'comment', 'Says hitler did nothing wrong');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 12, 'comment', 'Insults my dog');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 13, 'comment', 'Insults my mom');
 
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
