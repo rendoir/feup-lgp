@@ -43,7 +43,8 @@ class PostView extends React.Component<IProps, IState> {
         date_updated: "",
         id: "",
         title: ""
-      }
+      },
+      tags: []
     };
   }
 
