@@ -92,7 +92,7 @@ class PostModal extends Component<IProps, IState> {
       })
       .then(res => {
         console.log("Post created - reloading page...");
-        window.location.href = "/post/" + res.data.id[0].id;
+        window.location.href = "/post/" + res.data.id;
       })
       .catch(() => console.log("Failed to create post"));
   }
@@ -252,7 +252,10 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public render() {
-    const htmlId = `post_modal_${this.mode}_${this.props.id}`;
+    const htmlId =
+      this.mode === CREATE_MODE
+        ? `post_modal_${CREATE_MODE}`
+        : `post_modal_${EDIT_MODE}_${this.props.id}`;
 
     return (
       <div

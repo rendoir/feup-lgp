@@ -5,9 +5,9 @@ services:
 stages:
   - build
   - lint
+  - test
   - release
   # - deploy
-  # - test
 
 variables:
   DOCKER_HOST: tcp://docker:2375
@@ -67,17 +67,17 @@ build_db:
   only:
     - merge_requests
 
-# build_api_tests:
-#   stage: build
-#   script:
-#     - mkdir -p api/docker
-#     - mv environment/prod.env api/docker/prod.env
-#     - cd api
-#     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
-#     - echo "$API_KEY" | tr -d '\r' > docker/api.key
-#     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-#     - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
-#     - docker push $API_TEST_IMAGE
+build_api_tests:
+  stage: build
+  script:
+    - mkdir -p api/docker
+    - mv environment/prod.env api/docker/prod.env
+    - cd api
+    # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
+    # - echo "$API_KEY" | tr -d '\r' > docker/api.key
+    - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
+    - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
+    - docker push $API_TEST_IMAGE
 
 # build_e2e_tests:
 #   stage: build
@@ -113,16 +113,16 @@ test_api_linter:
 #     - sleep 5
 #     - docker-compose up --exit-code-from e2e
 
-# api_unit_tests:
-#   stage: test
-#   script:
-#     - cd api
-#     - chmod +x ../scripts/write_api_compose.sh
-#     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
-#     - docker-compose pull
-#     - docker-compose up -d db
-#     - sleep 5
-#     - docker-compose up --exit-code-from apitest
+api_unit_tests:
+  stage: test
+  script:
+    - cd api
+    - chmod +x ../scripts/write_api_compose.sh
+    - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
+    - docker-compose pull
+    - docker-compose up -d db
+    - sleep 5
+    - docker-compose up --exit-code-from apitest
 
 release-web-staging:
   stage: release

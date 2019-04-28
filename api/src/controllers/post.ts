@@ -16,7 +16,7 @@ export function createPost(req, res) {
         text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
         values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
-        res.send({id: result.rows});
+        res.send({id: result.rows[0].id});
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating a new post' });
@@ -116,7 +116,7 @@ export async function getPost(req, res) {
         });
 
         const result = {
-            post: post.rows,
+            post: post.rows[0],
             comments: comments.rows,
             likers: likers.rows,
         };
