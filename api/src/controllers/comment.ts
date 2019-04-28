@@ -161,7 +161,7 @@ export async function checkCommentUserReport(req, res) {
                         reporter = $1 AND content_id = $2 AND content_type = 'comment'`,
             values: [req.body.reporter, req.params.id],
         });
-        console.log("REPORT COMENTARIO", reportQuery.rows);
+
         const result = { report: Boolean(reportQuery.rows[0]) };
         res.send(result);
     } catch (error) {

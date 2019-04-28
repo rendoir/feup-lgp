@@ -233,7 +233,7 @@ export async function checkPostUserReport(req, res) {
                         reporter = $1 AND content_id = $2 AND content_type = 'post'`,
             values: [req.body.reporter, req.params.id],
         });
-        console.log("REPORT POST", reportQuery.rows);
+        
         const result = { report: Boolean(reportQuery.rows[0]) };
         res.send(result);
     } catch (error) {
