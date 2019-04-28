@@ -135,11 +135,8 @@ export async function getCommentsOfComment(req, res) {
 }
 
 export function reportComment(req, res) {
-    console.log("report comment");
-    console.log("reporter: ", req.body.reporter);
-    console.log("content id: ", req.params.id);
     query({
-        text: `INSERT INTO content_reports (reporter, content_id, content_type) VALUES ($1, $2, "comment")`,
+        text: `INSERT INTO content_reports (reporter, content_id, content_type) VALUES ($1, $2, 'comment')`,
         values: [req.body.reporter, req.params.id],
     }).then((result) => {
         res.status(200).send({ report: true });
@@ -155,12 +152,11 @@ export async function checkCommentUserReport(req, res) {
             text: `SELECT *
                     FROM content_reports
                     WHERE
-                        reporter = $1 AND content_id = $2 AND content_type = "comment"`,
+                        reporter = $1 AND content_id = $2 AND content_type = 'comment'`,
             values: [req.body.reporter, req.params.id],
         });
 
         const result = { report: Boolean(reportQuery.rows[0]) };
-        console.log("COMMENT ", req.params.id, " REPORT BY USER ", req.body.reporter, ": ", result);
         res.send(result);
     } catch (error) {
         console.error(error);

@@ -70,7 +70,7 @@ CREATE TABLE content_reports (
     content_type content_type_enum NOT NULL,
     admin_review BOOLEAN DEFAULT FALSE,
     date_reported TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY(reporter, content_id, content_type)
+    UNIQUE (reporter, content_id, content_type)
 );
 
 CREATE TABLE categories (
@@ -176,8 +176,8 @@ INSERT INTO posts (author, title, content) VALUES (1, 'Admin post', 'This is a p
 INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a post done by a mere user following the admin');
 INSERT INTO posts (author, title, content) VALUES (3, 'User post', 'This is a post done by a mere user');
 
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 2, "post");
-INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 3, "post");
+INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 2, 'post');
+INSERT INTO content_reports (reporter, content_id, content_type) VALUES (1, 3, 'post');
 
 INSERT INTO comments (author, post, comment) VALUES (1, 1, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 2, 'This is a comment done by a mere user following the admin');

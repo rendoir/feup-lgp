@@ -291,7 +291,6 @@ class Post extends Component<IProps, IState> {
   }
 
   public handlePostReport() {
-    console.log("REPORT POST");
     this.setState({ userReport: true });
     this.apiUserReportPost();
   }
@@ -352,7 +351,6 @@ class Post extends Component<IProps, IState> {
       this.props.id,
       this.userId
     );
-    console.log("fetched user report, value: ", userReport);
     this.setState({ userReport });
   }
 
@@ -361,7 +359,6 @@ class Post extends Component<IProps, IState> {
       this.props.id,
       this.userId
     );
-    console.log("RESUTLADO DO POST REPORT: ", reportSuccess);
     this.setState({ userReport: reportSuccess });
   }
 
@@ -591,6 +588,7 @@ class Post extends Component<IProps, IState> {
   private getDropdownButtons() {
     const reportButton = (
       <button
+        key={0}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
         onClick={this.handlePostReport}
@@ -601,6 +599,7 @@ class Post extends Component<IProps, IState> {
     );
     const editButton = (
       <button
+        key={1}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -611,6 +610,7 @@ class Post extends Component<IProps, IState> {
     );
     const deleteButton = (
       <button
+        key={2}
         className="dropdown-item"
         type="button"
         data-toggle="modal"

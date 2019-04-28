@@ -291,7 +291,6 @@ class Comment extends Component<Props, State> {
   }
 
   public handleCommentReport() {
-    console.log("report comment");
     this.setState({ userReport: true });
     this.apiUserReportComment();
   }
@@ -301,7 +300,6 @@ class Comment extends Component<Props, State> {
       this.state.commentID,
       this.loggedUserId
     );
-    console.log("RESUTLADO DO CoMMENT REPORT: ", reportSuccess);
     this.setState({ userReport: reportSuccess });
   }
 
@@ -404,7 +402,6 @@ class Comment extends Component<Props, State> {
       commentId,
       this.loggedUserId
     );
-    console.log("fetched user report, value: ", userReport);
     this.setState({ userReport });
   }
 
@@ -569,6 +566,7 @@ class Comment extends Component<Props, State> {
   public getDropdownButtons() {
     const reportButton = (
       <button
+        key={0}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
         onClick={this.handleCommentReport}
@@ -579,6 +577,7 @@ class Comment extends Component<Props, State> {
     );
     const editButton = (
       <button
+        key={1}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -590,6 +589,7 @@ class Comment extends Component<Props, State> {
     );
     const deleteButton = (
       <button
+        key={2}
         className="dropdown-item"
         type="button"
         data-toggle="modal"

@@ -25,7 +25,6 @@ export async function apiReportPost(
   postId: number,
   reporterId: number
 ): Promise<boolean> {
-  console.log("reportar post ", postId, " , reporter: ", reporterId);
   const apiURL = getApiURL(`/post/${postId}/report`);
   return await apiGetResult(apiURL, reporterId);
 }
@@ -34,21 +33,13 @@ export async function apiReportComment(
   commentId: number,
   reporterId: number
 ): Promise<boolean> {
-  console.log("reportar coment ", commentId, " , reporter: ", reporterId);
   const apiURL = getApiURL(`/post/0/comment/${commentId}/report`);
   return await apiGetResult(apiURL, reporterId);
 }
 
 async function apiGetResult(apiURL: string, userId: number) {
-  console.log("oiiiii");
   try {
     const res = await axios.post(apiURL, { reporter: userId });
-    console.log(res.data);
-    if (res.data.report) {
-      console.log("bem");
-    } else {
-      console.log("mal");
-    }
     return res.data.report;
   } catch (error) {
     console.log(error);
