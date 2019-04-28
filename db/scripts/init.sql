@@ -41,7 +41,7 @@ CREATE TABLE posts (
     content_image TEXT ARRAY,
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
-    rate INTEGER NOT NULL DEFAULT 1 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL DEFAULT 50 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 100),
     visibility visibility_enum NOT NULL DEFAULT 'public',
     likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
@@ -76,7 +76,7 @@ CREATE TABLE posts_subscriptions (
 
 CREATE TABLE posts_rates (
     evaluator BIGINT REFERENCES users ON DELETE CASCADE,
-    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 10),
+    rate INTEGER NOT NULL CONSTRAINT user_post_rate_constraint CHECK (rate >= 1 AND rate <= 5),
     post BIGINT REFERENCES posts ON DELETE CASCADE
 );
 
@@ -204,7 +204,7 @@ INSERT INTO comments (author, post, comment_ref, comment) VALUES (1, 10, 2, 'Thi
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 1);
 INSERT INTO posts_subscriptions (subscriber, post) VALUES (1, 2);
 
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 3, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (1, 4, 3);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 3, 2);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 4, 3);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
-INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 1, 1);
+INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 1);

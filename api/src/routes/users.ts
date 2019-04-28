@@ -91,4 +91,4 @@ usersRouter.post('/:id/unsubscribe', controller.unsubscribeUser);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/rateUser', controller.rateUser);
+usersRouter.post('/:id/rate', controller.rate);

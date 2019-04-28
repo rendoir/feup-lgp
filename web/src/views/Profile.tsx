@@ -64,12 +64,11 @@ class Profile extends React.Component<{}, State> {
       body = {
         evaluator: this.observerId,
         newUserRating: userRating,
-        rate: parseInt(rateTarget, 10),
-        target_user: this.id
+        rate: parseInt(rateTarget, 10)
       };
 
       console.log("User Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/users/rateUser`);
+      const apiUrl = getApiURL(`/users/${this.id}/rate`);
       return axios
         .post(apiUrl, body)
         .then(() => {
@@ -130,7 +129,6 @@ class Profile extends React.Component<{}, State> {
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
-        console.log("");
         if (!(this.state.userRate == null)) {
           this.setState({
             userRated: true
@@ -177,7 +175,7 @@ class Profile extends React.Component<{}, State> {
 
     if (!this.state.userRated) {
       return (
-        <div className="star-ratings-css-top" id="rate-user">
+        <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handleUserRate}>
             ★
           </span>

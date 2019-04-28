@@ -28,6 +28,7 @@ import {
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../Icon/Icon";
+import { getApiURL } from "../../utils/apiURL";
 
 interface IProps {
   id: number;
@@ -49,8 +50,11 @@ interface IState {
   fetchingPostUserInteractions: boolean;
   isFetching: boolean;
   isHovered: boolean;
+  numberOfRatings: number;
   postID: number;
+  postRated: boolean;
   userRate: number;
+  userRateTotal: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
@@ -75,8 +79,11 @@ class Post extends Component<IProps, IState> {
       fetchingPostUserInteractions: true,
       isFetching: true,
       isHovered: false,
+      numberOfRatings: 1,
       postID: 0,
-      userRate: 0,
+      postRated: false,
+      userRate: 50,
+      userRateTotal: 50,
       userSubscription: false,
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
@@ -152,6 +159,18 @@ class Post extends Component<IProps, IState> {
         {this.getImages()}
         {this.getVideos()}
         <div className={styles.post_stats}>
+          <fieldset className="rate">
+            <div className="star-ratings-css">
+              {this.handleStars()}
+              <div className="star-ratings-css-bottom">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
+            </div>
+          </fieldset>
           <span
             key={this.id + "_span_like_button"}
             role="button"
@@ -251,6 +270,43 @@ class Post extends Component<IProps, IState> {
       .catch(() => console.log("Failed to create comment"));
   }
 
+  public handleStars() {
+    const userRate =
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+
+    if (!this.state.postRated) {
+      return (
+        <div className="star-ratings-css-top" id="rate">
+          <span id="5" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handlePostRate}>
+            ★
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="star-ratings-css-top" style={{ width: userRate }}>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+        </div>
+      );
+    }
+  }
+
   public userLiked() {
     const userLoggedIn = 2;
     const divStyle = { color: "black" };
@@ -294,8 +350,45 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
-  public handlePostRate() {
-    console.log("RATE LOGGED USER ID: ", this.userId);
+  public handlePostRate(e: any) {
+    if (this.state.postRated) {
+      console.log("You already rated this post");
+    } else {
+      const rateTarget = e.target.id;
+
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      const userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      let body = {};
+      body = {
+        evaluator: this.userId,
+        newPostRating: userRating,
+        rate: parseInt(rateTarget, 10)
+      };
+
+      console.log("You are: ", this.userId);
+      console.log("Your are rating post number: ", this.props.id);
+      console.log("And you rated: ", rateTarget);
+      console.log("Post Rating updated to: ", userRating);
+      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          console.log("HMMMM");
+          this.setState({
+            userRateTotal:
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20,
+            postRated: true
+          });
+        })
+        .catch(() => {
+          console.log("Rating system failed");
+        });
+    }
   }
 
   public handlePostSubscription() {
@@ -338,9 +431,24 @@ class Post extends Component<IProps, IState> {
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
-          userRate: res.data.rate || 0,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
+          userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
+        console.log(
+          "Current NOF: ",
+          this.state.numberOfRatings,
+          " / Rate: ",
+          this.state.userRate,
+          " / Amount: ",
+          this.state.userRateTotal
+        );
+        if (!(this.state.userRate == null)) {
+          this.setState({
+            postRated: true
+          });
+        }
       })
       .catch(() => console.log("Failed to get post-user interactions"));
   }

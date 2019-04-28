@@ -134,15 +134,15 @@ export function unsubscribeUser(req, res) {
     });
 }
 
-export function rateUser(req, res) {
+export function rate(req, res) {
     query({
         text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
-        values: [req.body.evaluator, req.body.rate, req.body.target_user],
+        values: [req.body.evaluator, req.body.rate, req.params.id],
     }).then((result) => {
 
         query({
             text: 'UPDATE users SET rate=$1 WHERE id=$2',
-            values: [req.body.newUserRating, req.body.target_user],
+            values: [req.body.newUserRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
         }).catch((error) => {
