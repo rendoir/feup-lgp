@@ -37,7 +37,7 @@ export default class SearchResults extends React.Component<Props, State> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           likes={post.likes}
-          likers={post.likers}
+          likers={post.likers || []}
           comments={post.comments || []}
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
