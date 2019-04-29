@@ -74,10 +74,8 @@ export default class SearchSimple extends React.Component<Props, State> {
     // tslint:disable-next-line: no-conditional-assignment
     while ((temp = pattern.exec(search)) != null) {
       if (!temp[0].startsWith("--")) {
-        console.log(temp[0]);
         keywords.push(temp[0]);
       } else if (temp[1] === "type") {
-        console.log("else");
         type = (temp[2] as unknown) as SearchType;
       } else if (temp[1] === "di") {
         di = temp[2];
