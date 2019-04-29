@@ -11,12 +11,19 @@ import styles from "./Post.module.css";
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
+import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import ReportModal from "../PostModal/ReportModal";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
-// import { IconProp } from "@fortawesome/fontawesome-svg-core";
-// import VideoPreloader from "../VideoPreloader/VideoPreloader";
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
 
 // - Import utils
 import { apiCheckPostUserReport } from "../../utils/apiReport";
@@ -30,34 +37,46 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import { getApiURL } from "../../utils/apiURL";
 import Icon from "../Icon/Icon";
+import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
 interface IProps {
   id: number;
   title: string;
   date: string | undefined;
-  images: string[] | undefined;
-  videos: string[] | undefined;
   author: string;
   text: string | undefined;
   likes: number;
   visibility: string;
   comments: any[];
+
+  files?: MyFile[];
   likers: any[];
 }
 
 interface IState {
   activePage: number;
   commentValue: string;
-  isHovered: boolean;
+  clickedImage: string | undefined;
+  data: any;
+
+  images: MyFile[];
+  videos: MyFile[];
+  docs: MyFile[];
+
   fetchingPostUserInteractions: boolean;
+  isFetching: boolean;
+  isHovered: boolean;
+  numberOfRatings: number;
+  postID: number;
+  postRated: boolean;
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
+  userRateTotal: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
-  isFetching: boolean;
-  postID: number;
 }
 
 const cookies = new Cookies();
@@ -75,19 +94,28 @@ class Post extends Component<IProps, IState> {
 
     this.state = {
       activePage: 1,
+      clickedImage: undefined,
       commentValue: "",
+      data: "",
+      docs: [],
       fetchingPostUserInteractions: true,
+      images: [],
       isFetching: true,
       isHovered: false,
+      numberOfRatings: 1,
       postID: 0,
-      userRate: 0,
+      postRated: false,
+      userRate: 50,
+      userRateTotal: 50,
       userReport: false,
       userSubscription: false,
+      videos: [],
       waitingRateRequest: false,
       waitingSubscriptionRequest: false
     };
 
-    this.handleDeletePost = this.handleDeletePost.bind(this);
+    this.initFiles();
+
     this.handlePostReport = this.handlePostReport.bind(this);
     this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
@@ -95,8 +123,8 @@ class Post extends Component<IProps, IState> {
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
     this.handleAddLike = this.handleAddLike.bind(this);
+    this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
   public render() {
@@ -105,101 +133,120 @@ class Post extends Component<IProps, IState> {
     }
 
     return (
-      <div className={`${styles.post} mb-4`}>
-        <div className={styles.post_header}>
-          <Avatar
-            title={this.props.author}
-            placeholder="empty"
-            size={30}
-            image="https://picsum.photos/200/200?image=52"
-          />
-          <a className={styles.post_author} href={"/user/" + this.props.author}>
-            {" "}
-            {this.props.author}
-          </a>
-          <Icon
-            icon={this.getVisibilityIcon(this.props.visibility)}
-            size="lg"
-          />
-          <a className={styles.post_date} href={"/post/" + this.props.id}>
-            {this.props.date}
-          </a>
-          <div className={`${styles.post_options} btn-group`}>
-            <button
-              className="w-100 h-100 ml-2"
-              role="button"
-              data-toggle="dropdown"
-            >
-              <i className="fas fa-ellipsis-v" />
-            </button>
-            <div className="dropdown-menu dropdown-menu-right">
-              {this.getDropdownButtons()}
-            </div>
-          </div>
-        </div>
-        <div className={styles.post_content}>
-          <h4> {this.props.title} </h4>
-        </div>
-        <div className={styles.post_content}>
-          <p> {this.props.text} </p>
-        </div>
-        {this.getImages()}
-        {this.getVideos()}
-        <div className={styles.post_stats}>
-          <span
-            key={this.id + "_span_like_button"}
-            role="button"
-            data-toggle="dropdown"
-            data-target={"#post_" + this.props.id + " show_likes"}
-          >
-            {this.props.likes} likes
-            {this.getLikes()}
-          </span>
-          <span> {this.props.comments.length} comments</span>
-        </div>
-        {this.getUserInteractionButtons()}
-        {/* Post edition modal */}
-        <PostModal {...this.props} />
-        {/* Delete Post */}
-        <DeleteModal {...this.props} />
-        {/* Report Post */}
-        <ReportModal
-          postId={this.props.id}
-          reportCancelHandler={this.handleReportCancel}
-        />
-        {/* Comment section*/}
-        <div className={`${styles.post_comment_section} w-100`}>
-          {this.getCommentSection()}
-          <ul className="pagination">{this.getPagination()}</ul>
-          <form
-            className={styles.post_add_comment}
-            onSubmit={this.handleAddComment}
-          >
+      <div>
+        <div>{this.renderOverlay()}</div>
+        <div className={`${styles.post} mb-4`}>
+          <div className={styles.post_header}>
             <Avatar
               title={this.props.author}
               placeholder="empty"
               size={30}
               image="https://picsum.photos/200/200?image=52"
             />
-            <textarea
-              className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
-                this.state.commentValue
-              )}`}
-              placeholder="Insert your comment..."
-              value={this.state.commentValue}
-              onChange={this.changeCommentValue}
-              onKeyDown={this.onEnterPress}
-              required={true}
-            />
-            <button
-              className={`${styles.submit_comment} px-2 py-1`}
-              type="submit"
-              value="Submit"
-              disabled={!this.validComment()}
+            <a
+              className={styles.post_author}
+              href={"/user/" + this.props.author}
             >
-              <i className="fas fa-chevron-circle-right" />
-            </button>
-          </form>
+              {" "}
+              {this.props.author}
+            </a>
+            <Icon
+              icon={this.getVisibilityIcon(this.props.visibility)}
+              size="lg"
+            />
+            <a className={styles.post_date} href={"/post/" + this.props.id}>
+              {this.props.date}
+            </a>
+            <div className={`${styles.post_options} btn-group`}>
+              <button
+                className="w-100 h-100 ml-2"
+                role="button"
+                data-toggle="dropdown"
+              >
+                <i className="fas fa-ellipsis-v" />
+              </button>
+              <div className="dropdown-menu dropdown-menu-right">
+                {this.getDropdownButtons()}
+              </div>
+            </div>
+          </div>
+          <div className={styles.post_content_text}>
+            <h4> {this.props.title} </h4>
+          </div>
+          <div className={styles.post_content_text}>
+            <p> {this.props.text} </p>
+          </div>
+          {this.getImages()}
+          {this.getVideos()}
+          {this.getFiles()}
+          <div className={styles.post_stats}>
+            <fieldset className="rate">
+              <div className="star-ratings-css">
+                {this.handleStars()}
+                <div className="star-ratings-css-bottom">
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                </div>
+              </div>
+            </fieldset>
+            <span
+              key={this.id + "_span_like_button"}
+              role="button"
+              data-toggle="dropdown"
+              data-target={"#post_" + this.props.id + " show_likes"}
+            >
+              {this.props.likes} likes
+              {this.getLikes()}
+            </span>
+            <span> {this.props.comments.length} comments</span>
+          </div>
+          {this.getUserInteractionButtons()}
+          {/* Post edition modal */}
+          <PostModal {...this.props} />
+          {/* Delete Post */}
+          <DeleteModal {...this.props} />
+          {/* Report Post */}
+          <ReportModal
+            postId={this.props.id}
+            reportCancelHandler={this.handleReportCancel}
+          />
+          {/* Comment section*/}
+          <div className={`${styles.post_comment_section} w-100`}>
+            {this.getCommentSection()}
+            <ul className="pagination">{this.getPagination()}</ul>
+            <form
+              className={styles.post_add_comment}
+              onSubmit={this.handleAddComment}
+            >
+              <Avatar
+                title={this.props.author}
+                placeholder="empty"
+                size={30}
+                image="https://picsum.photos/200/200?image=52"
+              />
+              <textarea
+                className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
+                  this.state.commentValue
+                )}`}
+                placeholder="Insert your comment..."
+                value={this.state.commentValue}
+                onChange={this.changeCommentValue}
+                onKeyDown={this.onEnterPress}
+                required={true}
+              />
+              <button
+                className={`${styles.submit_comment} px-2 py-1`}
+                type="submit"
+                value="Submit"
+                disabled={!this.validComment()}
+              >
+                <i className="fas fa-chevron-circle-right" />
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     );
@@ -251,6 +298,43 @@ class Post extends Component<IProps, IState> {
       .catch(() => console.log("Failed to create comment"));
   }
 
+  public handleStars() {
+    const userRate =
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+
+    if (!this.state.postRated) {
+      return (
+        <div className="star-ratings-css-top" id="rate">
+          <span id="5" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handlePostRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handlePostRate}>
+            ★
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="star-ratings-css-top" style={{ width: userRate }}>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+          <span>★</span>
+        </div>
+      );
+    }
+  }
+
   public userLiked() {
     const userLoggedIn = 2;
     const divStyle = { color: "black" };
@@ -294,10 +378,6 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
-  public handleDeletePost() {
-    console.log("DELETE POST");
-  }
-
   public handlePostReport() {
     this.setState({ userReport: true });
   }
@@ -306,8 +386,41 @@ class Post extends Component<IProps, IState> {
     this.setState({ userReport: false });
   }
 
-  public handlePostRate() {
-    console.log("RATE LOGGED USER ID: ", this.userId);
+  public handlePostRate(e: any) {
+    if (this.state.postRated) {
+      console.log("You already rated this post");
+    } else {
+      const rateTarget = e.target.id;
+
+      const incrementRate = Number(this.state.numberOfRatings) + 1;
+      this.setState({
+        numberOfRatings: incrementRate
+      });
+      const userRating =
+        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate;
+      let body = {};
+      body = {
+        evaluator: this.userId,
+        newPostRating: userRating,
+        rate: parseInt(rateTarget, 10)
+      };
+
+      console.log("Post Rating updated to: ", userRating);
+      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          this.setState({
+            postRated: true,
+            userRateTotal:
+              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
+          });
+        })
+        .catch(() => {
+          console.log("Rating system failed");
+        });
+    }
   }
 
   public handlePostSubscription() {
@@ -350,9 +463,16 @@ class Post extends Component<IProps, IState> {
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
-          userRate: res.data.rate || 0,
+          numberOfRatings: res.data.totalRatingsNumber,
+          userRate: res.data.rate,
+          userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
         });
+        if (!(this.state.userRate == null)) {
+          this.setState({
+            postRated: true
+          });
+        }
       })
       .catch(() => console.log("Failed to get post-user interactions"));
   }
@@ -502,6 +622,33 @@ class Post extends Component<IProps, IState> {
     );
   }
 
+  private getUserInteractionButtons() {
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
+
+    return (
+      <div className={styles.post_actions}>
+        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
+        <button onClick={this.handlePostSubscription}>
+          <i className={subscribeIcon} />
+          <span>{subscribeBtnText}</span>
+        </button>
+        <button>
+          <i className="far fa-comment-alt" />
+          <span>Comment</span>
+        </button>
+        <button>
+          <i className="fas fa-share-square" />
+          <span>Share</span>
+        </button>
+      </div>
+    );
+  }
+
   private getPagination() {
     if (
       this.props.comments === [] ||
@@ -544,48 +691,83 @@ class Post extends Component<IProps, IState> {
     }
   }
 
-  private getImages() {
-    const imgDiv = [];
+  private handleImageClick(src: string | undefined) {
+    if (src) {
+      this.setState({
+        clickedImage: src
+      } as IState);
+    }
+  }
 
-    if (this.props.images) {
-      // if exists
-      for (const image of this.props.images) {
-        imgDiv.push(
-          <div className={styles.post_content}>
-            <ImagePreloader src={image}>
+  private handleOverlayClick() {
+    this.setState({
+      clickedImage: undefined
+    } as IState);
+  }
+
+  private renderOverlay() {
+    if (this.state.clickedImage !== undefined) {
+      return (
+        <div className={styles.overlay} onClick={this.handleOverlayClick}>
+          <ImagePreloader src={this.state.clickedImage}>
+            {({ src }) => {
+              return <img src={src} />;
+            }}
+          </ImagePreloader>
+        </div>
+      );
+    }
+  }
+
+  private getImages() {
+    if (this.state.images.length) {
+      if (this.state.images.length >= 2) {
+        return (
+          <PostImageCarousel
+            key={"i_" + this.props.id}
+            id={this.props.id}
+            images={this.state.images}
+            parent={this}
+            handleImageClick={this.handleImageClick}
+          />
+        );
+      } else if (this.state.images.length === 1) {
+        const image = this.state.images[0];
+        return (
+          <div
+            className={styles.post_content_media}
+            onClick={this.handleImageClick.bind(this, image.src)}
+          >
+            <ImagePreloader src={image.src}>
               {({ src }) => {
-                return <img src={src} width="100" />;
+                return <img src={src} />;
               }}
             </ImagePreloader>
           </div>
         );
       }
     }
-
-    return imgDiv;
   }
 
   private getVideos() {
-    const videoDiv = [];
-
-    if (this.props.videos) {
-      // if exists
-      for (const video of this.props.videos) {
-        videoDiv.push(
-          <div className={styles.post_content}>
-            <iframe
-              width="100"
-              src={video}
-              frameBorder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen={true}
-            />
+    if (this.state.videos.length) {
+      if (this.state.videos.length >= 2) {
+        return (
+          <PostVideoCarousel
+            key={"v_" + this.props.id}
+            id={this.props.id}
+            videos={this.state.videos}
+          />
+        );
+      } else {
+        const video = this.state.videos[0];
+        return (
+          <div className={"overflow-hidden " + styles.post_content_media}>
+            <video src={video.src} controls={true} />
           </div>
         );
       }
     }
-
-    return videoDiv;
   }
 
   private getDropdownButtons() {
@@ -628,31 +810,40 @@ class Post extends Component<IProps, IState> {
     return dropdownButtons;
   }
 
-  private getUserInteractionButtons() {
-    const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
-    const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+  private getFiles() {
+    const filesDiv = [];
 
-    return (
-      <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
-        <button>
-          <i className="far fa-comment-alt" />
-          <span>Comment</span>
-        </button>
-        <button onClick={this.handlePostSubscription}>
-          <i className={subscribeIcon} />
-          <span>{subscribeBtnText}</span>
-        </button>
-        <button>
-          <i className="fas fa-share-square" />
-          <span>Share</span>
-        </button>
-      </div>
-    );
+    if (this.state.docs.length) {
+      for (const file of this.state.docs) {
+        filesDiv.push(
+          <PostFile key={file.name} file={file} id={this.props.id} />
+        );
+      }
+    }
+
+    return filesDiv;
+  }
+
+  private initFiles() {
+    if (this.props.files) {
+      let src = `${location.protocol}//${location.hostname}`;
+      src +=
+        !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+          ? `:${process.env.REACT_APP_API_PORT}`
+          : "/api";
+      src += "/post/" + this.props.id + "/";
+
+      Array.from(this.props.files).forEach(file => {
+        file.src = src + file.name;
+        if (file.mimetype.startsWith("image")) {
+          this.state.images.push(file);
+        } else if (file.mimetype.startsWith("video")) {
+          this.state.videos.push(file);
+        } else {
+          this.state.docs.push(file);
+        }
+      });
+    }
   }
 }
 

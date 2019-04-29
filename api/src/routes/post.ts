@@ -1,11 +1,10 @@
 'use strict';
 import { Router } from 'express';
-import * as multer from 'multer';
 import * as controller from '../controllers/post';
+import {usersRouter} from "./users";
 
 export const postRouter = Router();
 
-const upload = multer({dest: 'uploads'});
 
 /**
  * @api {post} /api/post Create a post
@@ -196,3 +195,52 @@ postRouter.post('/:id/report', controller.reportPost);
  *     }
  */
 postRouter.post('/:id/check_report', controller.checkPostUserReport);
+
+/**
+ * @api {post} /api/post/:id/:filename Gets the contents of a file
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the post
+ * @apiParam {String}   filename   Name of the file in the post
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.get('/:id/:filename', controller.getFile);
+
+/**
+ * @api {post} /api/post/download/:id/:filename Downloads a file
+ * @apiName Download-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the post
+ * @apiParam {String}   filename   Name of the file in the post
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.get('/download/:id/:filename', controller.downloadFile);
+
+/**
+ * @api {post} /api/post/:id/rate Rate a post
+ * @apiName Rate-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   post             Id of the post being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/rate', controller.rate);
