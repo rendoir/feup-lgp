@@ -37,7 +37,7 @@ export function editPost(req, res) {
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
-        editFiles(req,res);
+        editFiles(req, res);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -129,7 +129,7 @@ export async function getPost(req, res) {
             post: post.rows[0],
             comments: comments.rows,
             files: files.rows,
-            likers: likers.rows
+            likers: likers.rows,
         };
         res.send(result);
     } catch (error) {
@@ -169,12 +169,12 @@ export async function getPostUserInteractions(req, res) {
             values: [userId, postId],
         });
 
-        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        const rateValue = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
         const totalRatingsNumber = totalRatingsQuery.rows[0].count;
         const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
-            rate,
+            rate: rateValue,
             totalRatingsNumber,
             totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
@@ -211,10 +211,10 @@ export function unsubscribePost(req, res) {
 }
 
 export function rate(req, res) {
-    console.log("pls?");
-    console.log("evaluator: ", req.body.evaluator);
-    console.log("rate: ", req.body.rate);
-    console.log("post: ", req.params.id);
+    console.log('pls?');
+    console.log('evaluator: ', req.body.evaluator);
+    console.log('rate: ', req.body.rate);
+    console.log('post: ', req.params.id);
     query({
         text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
         values: [req.body.evaluator, req.body.rate, req.params.id],
@@ -234,7 +234,6 @@ export function rate(req, res) {
         res.status(400).send({ message: 'An error ocurred while rating an post' });
     });
 }
-
 
 export function addALikeToPost(req, res) {
     query({
@@ -259,70 +258,109 @@ export function deleteALikeToPost(req, res) {
     });
 }
 
+export async function reportPost(req, res) {
+    if (!req.body.reason.trim()) {
+        console.log('\n\nERROR: Report reason cannot be empty');
+        res.status(400).send({ message: 'An error ocurred while creating a new post report' });
+        return;
+    }
+
+    query({
+        text: `INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES ($1, $2, 'post', $3)`,
+        values: [req.body.reporter, req.params.id, req.body.reason],
+    }).then((result) => {
+        res.status(200).send({ report: true });
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while reporting a post' });
+    });
+}
+
+export async function checkPostUserReport(req, res) {
+    try {
+        const reportQuery = await query({
+            text: `SELECT *
+                    FROM content_reports
+                    WHERE
+                        reporter = $1 AND content_id = $2 AND content_type = 'post'`,
+            values: [req.body.reporter, req.params.id],
+        });
+
+        const result = { report: Boolean(reportQuery.rows[0]) };
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Error retrieving post report' });
+    }
+}
+
 export function getFile(req, res) {
-    //TODO verify if user can access the post req.params.id
+    // TODO verify if user can access the post req.params.id
     res.sendFile(process.env.PWD + '/uploads/' + req.params.id + '/' + req.params.filename);
 }
 
 export function downloadFile(req, res) {
-    //TODO verify if user can access the post req.params.id
+    // TODO verify if user can access the post req.params.id
     res.download(process.env.PWD + '/uploads/' + req.params.id + '/' + req.params.filename);
 }
 
-
 export function saveFiles(req, res, id) {
-    if (!req.files)
+    if (!req.files) {
         return;
+    }
 
-    for (let key in req.files) {
-        let file = req.files[key];
-        let filename = file.name;
-        let filetype = file.mimetype;
-        let filesize = file.size;
-        //Move file to uploads
-        file.mv('uploads/' + id + '/' + filename, function (err) {
-            if (err) 
-                res.status(400).send({ message: 'An error ocurred while creating/editing post: Moving file.' });
-            else {
-                //Add file to database
-                query({
-                    text: `INSERT INTO files (name, mimeType, size, post) VALUES ($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT unique_post_file
-                            DO UPDATE SET mimeType = $2, size = $3 WHERE files.post = $4 AND files.name = $1;`,
-                    values: [filename, filetype, filesize, id],
-                }).then(() => {
-                    return;
-                }).catch((error) => {
-                    console.log('\n\nERROR:', error);
-                    res.status(400).send({ message: 'An error ocurred while creating/editing post: Adding file to database.' });
-                });
-            }
-        });
+    for (const key in req.files) {
+        if (req.files.hasOwnProperty(key)) {
+            const file = req.files[key];
+            const filename = file.name;
+            const filetype = file.mimetype;
+            const filesize = file.size;
+            // Move file to uploads
+            file.mv('uploads/' + id + '/' + filename, (err) => {
+                if (err) {
+                    res.status(400).send({ message: 'An error ocurred while creating/editing post: Moving file.' });
+                } else {
+                    // Add file to database
+                    query({
+                        text: `INSERT INTO files (name, mimeType, size, post)
+                                VALUES ($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT unique_post_file
+                                DO UPDATE SET mimeType = $2, size = $3 WHERE files.post = $4 AND files.name = $1;`,
+                        values: [filename, filetype, filesize, id],
+                    }).then(() => {
+                        return;
+                    }).catch((error) => {
+                        console.log('\n\nERROR:', error);
+                        res.status(400).send({ message: 'An error ocurred while creating/editing post: Adding file to database.' });
+                    });
+                }
+            });
+        }
     }
 }
 
 export async function editFiles(req, res) {
-    //Delete files
-    if(req.body.removed) {
-        let removed = JSON.parse(req.body.removed);
-        for(const file of removed) {
-            //Remove file from database
+    // Delete files
+    if (req.body.removed) {
+        const removed = JSON.parse(req.body.removed);
+        for (const file of removed) {
+            // Remove file from database
             await query({
-                text: `DELETE FROM files 
+                text: `DELETE FROM files
                        WHERE post = $1 AND name = $2`,
                 values: [req.body.id, file.name],
-            })
-            //Delete file from filesystem
-            fs.unlinkSync("uploads/" + req.body.id + "/" + file.name);
+            });
+            // Delete file from filesystem
+            fs.unlinkSync('uploads/' + req.body.id + '/' + file.name);
         }
     }
-    //Add new files
+    // Add new files
     saveFiles(req, res, req.body.id);
 }
 
 export function deleteFolderRecursive(path) {
     if (fs.existsSync(path)) {
-      fs.readdirSync(path).forEach(function(file, index){
-        var curPath = path + "/" + file;
+      fs.readdirSync(path).forEach((file, index) => {
+        const curPath = path + '/' + file;
         if (fs.lstatSync(curPath).isDirectory()) { // recurse
           deleteFolderRecursive(curPath);
         } else { // delete file
@@ -331,4 +369,4 @@ export function deleteFolderRecursive(path) {
       });
       fs.rmdirSync(path);
     }
-  };
+}

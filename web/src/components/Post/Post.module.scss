@@ -16,6 +16,10 @@
   border-bottom: solid lightgray 1px;
 }
 
+.report_content {
+  background-color: $color-danger !important;
+}
+
 .post_comment_section {
   padding: 0.75rem 1.5rem;
 }

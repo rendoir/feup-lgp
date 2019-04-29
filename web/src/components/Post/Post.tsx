@@ -15,6 +15,7 @@ import PostFile from "../PostFile/PostFile";
 import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
+import ReportModal from "../PostModal/ReportModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 type MyFile = {
@@ -25,6 +26,7 @@ type MyFile = {
 };
 
 // - Import utils
+import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 
@@ -70,6 +72,7 @@ interface IState {
   postID: number;
   postRated: boolean;
   userRate: number;
+  userReport: boolean; // Tells if the logged user has reported this post
   userRateTotal: number;
   userSubscription: boolean;
   waitingRateRequest: boolean;
@@ -104,6 +107,7 @@ class Post extends Component<IProps, IState> {
       postRated: false,
       userRate: 50,
       userRateTotal: 50,
+      userReport: false,
       userSubscription: false,
       videos: [],
       waitingRateRequest: false,
@@ -112,6 +116,8 @@ class Post extends Component<IProps, IState> {
 
     this.initFiles();
 
+    this.handlePostReport = this.handlePostReport.bind(this);
+    this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
@@ -160,22 +166,7 @@ class Post extends Component<IProps, IState> {
                 <i className="fas fa-ellipsis-v" />
               </button>
               <div className="dropdown-menu dropdown-menu-right">
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  data-toggle="modal"
-                  data-target={`#post_modal_Edit_${this.props.id}`}
-                >
-                  Edit Post
-                </button>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  data-toggle="modal"
-                  data-target={`#delete_post_modal_${this.props.id}`}
-                >
-                  Delete Post
-                </button>
+                {this.getDropdownButtons()}
               </div>
             </div>
           </div>
@@ -217,6 +208,11 @@ class Post extends Component<IProps, IState> {
           <PostModal {...this.props} />
           {/* Delete Post */}
           <DeleteModal {...this.props} />
+          {/* Report Post */}
+          <ReportModal
+            postId={this.props.id}
+            reportCancelHandler={this.handleReportCancel}
+          />
           {/* Comment section*/}
           <div className={`${styles.post_comment_section} w-100`}>
             {this.getCommentSection()}
@@ -258,6 +254,7 @@ class Post extends Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetPostUserInteractions();
+    this.apiGetPostUserReport();
 
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
@@ -381,6 +378,14 @@ class Post extends Component<IProps, IState> {
     return content !== "" ? { display: "none" } : {};
   }
 
+  public handlePostReport() {
+    this.setState({ userReport: true });
+  }
+
+  public handleReportCancel() {
+    this.setState({ userReport: false });
+  }
+
   public handlePostRate(e: any) {
     if (this.state.postRated) {
       console.log("You already rated this post");
@@ -470,6 +475,14 @@ class Post extends Component<IProps, IState> {
         }
       })
       .catch(() => console.log("Failed to get post-user interactions"));
+  }
+
+  public async apiGetPostUserReport() {
+    const userReport: boolean = await apiCheckPostUserReport(
+      this.props.id,
+      this.userId
+    );
+    this.setState({ userReport });
   }
 
   public changeCommentValue(event: any) {
@@ -755,6 +768,46 @@ class Post extends Component<IProps, IState> {
         );
       }
     }
+  }
+
+  private getDropdownButtons() {
+    const reportButton = (
+      <button
+        key={0}
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        data-toggle="modal"
+        data-target={`#report_post_modal_${this.props.id}`}
+        onClick={this.handlePostReport}
+        disabled={this.state.userReport}
+      >
+        {this.state.userReport ? "Report already issued" : "Report post"}
+      </button>
+    );
+    const editButton = (
+      <button
+        key={1}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#post_modal_Edit_${this.props.id}`}
+      >
+        Edit Post
+      </button>
+    );
+    const deleteButton = (
+      <button
+        key={2}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#delete_post_modal_${this.props.id}`}
+      >
+        Delete Post
+      </button>
+    );
+    const dropdownButtons = [reportButton, editButton, deleteButton];
+    return dropdownButtons;
   }
 
   private getFiles() {
