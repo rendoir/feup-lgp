@@ -2,7 +2,7 @@ import * as React from "react";
 import "./Header.css";
 
 import PostModal from "../PostModal/PostModal";
-import Search from "../Search/Search";
+import SearchSimple from "../SearchSimple/SearchSimple";
 
 export default class Header extends React.Component {
   public render() {
@@ -44,7 +44,7 @@ export default class Header extends React.Component {
                 </a>
               </li>
             </ul>
-            <Search />
+            <SearchSimple />
             <a
               className="nav-link"
               data-toggle="modal"
