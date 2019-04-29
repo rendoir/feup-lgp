@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Header from "../components/header/Header";
 import "../styles/App.css";
@@ -21,14 +21,16 @@ class App extends React.Component {
         <Router>
           <ErrorBoundary>
             <Header />
-            <Route exact={true} path="/" component={Feed} />
-            <Route path="/user/:username" component={Profile} />
-            <Route path="/post/:id" component={PostView} />
-            <Route path="/admin" component={Backoffice} />
-            <Route path="/shop" component={Shop} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={RegisterLanding} />
-            <Route path="/search" component={SearchResults} />
+            <Switch>
+              <Route exact={true} path="/" component={Feed} />
+              <Route path="/user/:username" component={Profile} />
+              <Route path="/post/:id" component={PostView} />
+              <Route path="/admin" component={Backoffice} />
+              <Route path="/shop" component={Shop} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={RegisterLanding} />
+              <Route path="/search" component={SearchResults} />
+            </Switch>
           </ErrorBoundary>
         </Router>
       </div>

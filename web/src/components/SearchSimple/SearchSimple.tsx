@@ -1,10 +1,9 @@
 import axios from "axios";
 import * as React from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 
 import "./SearchSimple.scss";
 
-type Props = {};
 type State = {
   search: string;
   redirect: boolean;
@@ -27,8 +26,8 @@ type SearchParameters = {
   [key: string]: SearchType | string[] | string | undefined;
 };
 
-export default class SearchSimple extends React.Component<Props, State> {
-  constructor(props: Props) {
+class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
+  constructor(props: RouteComponentProps<any>) {
     super(props);
     this.state = {
       authorPosts: [],
@@ -41,6 +40,13 @@ export default class SearchSimple extends React.Component<Props, State> {
     this.submitSearch = this.submitSearch.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
+
+  public componentDidUpdate(prevProps: RouteComponentProps<any>) {
+    if (this.props.location !== prevProps.location) {
+      this.setState({ redirect: false });
+    }
+  }
+
   public render() {
     return (
       <div id="search-comp">
@@ -148,7 +154,7 @@ export default class SearchSimple extends React.Component<Props, State> {
       return (
         <Redirect
           to={{
-            pathname: "/search",
+            pathname: "/search/",
             state: {
               authorPosts: this.state.authorPosts,
               posts: this.state.posts,
@@ -160,3 +166,5 @@ export default class SearchSimple extends React.Component<Props, State> {
     }
   }
 }
+
+export default withRouter(SearchSimple);
