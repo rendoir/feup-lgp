@@ -60,7 +60,7 @@ export async function getFeed(req, res) {
             posts: result.rows,
             comments: commentsToSend,
             likers: likersToSend,
-            files: filesToSend
+            files: filesToSend,
         });
     } catch (error) {
         console.error(error);
