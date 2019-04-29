@@ -3,13 +3,13 @@ import { Router } from 'express';
 export const adminRouter = Router();
 import * as controller from '../controllers/admin';
 
-adminRouter.use((req, res, next) => {
-    if (req.user && req.user.permission !== 'admin') {
-        return res.status(401).send({
-            message: `You don't have permission to access this endpoint. You must have admin clearance or higher` });
-    }
-    next();
-});
+// adminRouter.use((req, res, next) => {
+//     if (req.user && req.user.permission !== 'admin') {
+//         return res.status(401).send({
+//             message: `You don't have permission to access this endpoint. You must have admin clearance or higher` });
+//     }
+//     next();
+// });
 
 /**
  * @api {post} /api/admin/users Add user to whitelist
