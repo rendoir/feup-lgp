@@ -27,8 +27,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       comments: [],
-      files: [],
       fetchingInfo: true,
+      files: [],
       id: 1,
       likers: [],
       post: {

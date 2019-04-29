@@ -145,3 +145,40 @@ commentRouter.delete('/:id', controller.deleteComment);
  *     }
  */
 commentRouter.put('/:id', controller.editComment);
+
+/**
+ * @api {post} /api/post/:post_id/comment/:id/report Report a comment
+ * @apiName Report-Comment
+ * @apiGroup Comment
+ *
+ * @apiParam {number}   id   Id of the comment being reported
+ * @apiParam {number}   post_id   Id of post owning the comment being reported
+ * (post_id parameter is useless, it's only required due to the comment api route URL)
+ * @apiParam {number}   reporter   Id of the user issuing the report
+ * @apiParam {string}   reason   Reason of the report
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+commentRouter.post('/:id/report', controller.reportComment);
+
+/**
+ * @api {post} /api/post/:post_id/comment/:id/check_report Check if a comment as been reported by a given user
+ * @apiName Check-Comment-Report
+ * @apiGroup Comment
+ *
+ * @apiParam {number}   id   Id of the comment whose report we want to verify
+ * @apiParam {number}   post_id   Id of post owning the comment whose report we want to verify
+ * (post_id parameter is useless, it's only required due to the comment api route URL)
+ * @apiParam {number}   reporter   Id of the user we want to verify if reported the comment
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+commentRouter.post('/:id/check_report', controller.checkCommentUserReport);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getApiURL } from "../utils/apiURL";
+import { getApiURL } from "./apiURL";
 
 export async function apiSubscription(
   apiGroup: string,

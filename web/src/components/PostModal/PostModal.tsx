@@ -9,6 +9,7 @@ import Button from "../Button/Button";
 import { checkPropTypes } from "prop-types";
 import AddTags from "../AddTags/AddTags";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
@@ -43,6 +44,8 @@ interface IState {
 
   tags: any[];
   visibility: string;
+
+  removedFiles?: MyFile[];
 }
 
 class PostModal extends Component<IProps, IState> {
@@ -64,6 +67,7 @@ class PostModal extends Component<IProps, IState> {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
       docs: [],
       images: [],
+      removedFiles: [],
       tags: [],
       text: props.text || "",
       title: props.title || "",
@@ -80,6 +84,7 @@ class PostModal extends Component<IProps, IState> {
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleFileUpload = this.handleFileUpload.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
 
   public handlePostCancel() {
@@ -93,7 +98,6 @@ class PostModal extends Component<IProps, IState> {
 
   public apiCreatePost() {
     const formData = new FormData();
-
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -139,7 +143,19 @@ class PostModal extends Component<IProps, IState> {
       formData.append("tags[" + i + "]", tag)
     );
 
-    formData.append("id", this.props.id.toString());
+    this.state.images.forEach((file, i) =>
+      formData.append("images[" + i + "]", file)
+    );
+    this.state.videos.forEach((file, i) =>
+      formData.append("videos[" + i + "]", file)
+    );
+    this.state.docs.forEach((file, i) =>
+      formData.append("docs[" + i + "]", file)
+    );
+    if (this.state.removedFiles) {
+      formData.append("removed", JSON.stringify(this.state.removedFiles));
+    }
+    formData.append("id", String(this.props.id));
     formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
@@ -155,6 +171,7 @@ class PostModal extends Component<IProps, IState> {
       .post(postUrl, formData, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
+          "Content-Type": "multipart/form-data"
         }
       })
       .then(res => {
@@ -284,6 +301,7 @@ class PostModal extends Component<IProps, IState> {
         <div>
           <h5>Files</h5>
         </div>
+        {this.getRemovedFiles()}
         <div className="custom-file">
           <label className="custom-file-label">{this.getFileLabel()}</label>
           <input
@@ -297,6 +315,33 @@ class PostModal extends Component<IProps, IState> {
         </div>
       </form>
     );
+  }
+
+  public getRemovedFiles() {
+    if (this.mode === EDIT_MODE && this.props.files) {
+      const toRemove = this.props.files.map(file =>
+        this.state.removedFiles && !this.state.removedFiles.includes(file) ? (
+          <PostFile
+            key={file.name}
+            id={this.props.id ? this.props.id : 0}
+            file={file}
+            editMode={this.mode === EDIT_MODE}
+            handleRemove={this.handleRemove}
+          />
+        ) : null
+      );
+      return toRemove;
+    }
+  }
+
+  public handleRemove(fileToRemove: MyFile) {
+    if (this.state.removedFiles) {
+      const removed = this.state.removedFiles;
+      removed.push(fileToRemove);
+      this.setState({
+        removedFiles: removed
+      });
+    }
   }
 
   public getFileLabel() {
