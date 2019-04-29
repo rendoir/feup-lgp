@@ -75,8 +75,32 @@ function getSpecificQuery(type: string)
     }
 }
 
+async function runQueries(type, keywords, offset, initialDate, finalDate): Promise<{}> {
+    const res = {
+        authorPosts: [],
+        posts: [],
+        users: [],
+    };
+    switch (type) {
+        case 'post':
+            res.posts = (await query(getPostQuery(keywords, offset, initialDate, finalDate))).rows;
+            break;
+        case 'author':
+            res.authorPosts = (await query(getAuthorQuery(keywords, offset, initialDate, finalDate))).rows;
+            break;
+        case 'user':
+            res.users = (await query(getUserQuery(keywords, offset, initialDate, finalDate))).rows;
+            break;
+        default:
+            res.posts = (await query(getPostQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.authorPosts = (await query(getAuthorQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.users = (await query(getUserQuery(keywords, offset, initialDate, finalDate))).rows;
+    }
+    return res;
+}
+
 /**
- * TODO: Integrate conferences and files search
+ * TODO: Integrate conferences
  * @param req
  * @param res
  */
@@ -103,8 +127,8 @@ export async function search(req, res) {
     }
 
     try {
-        const result = await query(queryGetter(keywords, offset, initialDate, finalDate));
-        res.send(result.rows);
+        const result = await runQueries(type, keywords, offset, initialDate, finalDate);
+        res.send(result);
     } catch (error) {
         console.error(error);
         res.status(500).send('Search error');

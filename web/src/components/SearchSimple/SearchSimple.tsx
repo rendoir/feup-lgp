@@ -1,11 +1,16 @@
 import axios from "axios";
 import * as React from "react";
+import { Redirect } from "react-router-dom";
 
 import "./SearchSimple.scss";
 
 type Props = {};
 type State = {
   search: string;
+  redirect: boolean;
+  authorPosts: any[];
+  posts: any[];
+  users: any[];
 };
 
 enum SearchType {
@@ -26,7 +31,11 @@ export default class SearchSimple extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      search: ""
+      authorPosts: [],
+      posts: [],
+      redirect: false,
+      search: "",
+      users: []
     };
 
     this.submitSearch = this.submitSearch.bind(this);
@@ -34,23 +43,26 @@ export default class SearchSimple extends React.Component<Props, State> {
   }
   public render() {
     return (
-      <form
-        id="search-comp"
-        className="form-inline my-2 my-lg-0"
-        onSubmit={this.submitSearch}
-      >
-        <input
-          id="search-input"
-          className="form-control mr-sm-2"
-          type="text"
-          name="search"
-          onChange={this.handleInputChange}
-          placeholder="Search"
-        />
-        <button className="btn btn-secondary my-2 my-sm-0" type="submit">
-          <i className="fas fa-search" />
-        </button>
-      </form>
+      <div id="search-comp">
+        <form
+          id="search-comp"
+          className="form-inline my-2 my-lg-0"
+          onSubmit={this.submitSearch}
+        >
+          <input
+            id="search-input"
+            className="form-control mr-sm-2"
+            type="text"
+            name="search"
+            onChange={this.handleInputChange}
+            placeholder="Search"
+          />
+          <button className="btn btn-secondary my-2 my-sm-0" type="submit">
+            <i className="fas fa-search" />
+          </button>
+        </form>
+        {this.renderRedirect()}
+      </div>
     );
   }
 
@@ -111,7 +123,12 @@ export default class SearchSimple extends React.Component<Props, State> {
         }
       })
       .then(res => {
-        console.log(res.data);
+        this.setState({
+          authorPosts: res.data.authorPosts,
+          posts: res.data.posts,
+          redirect: true,
+          users: res.data.users
+        });
       });
   }
 
@@ -124,5 +141,22 @@ export default class SearchSimple extends React.Component<Props, State> {
     const partialState: any = {};
     partialState[field] = value;
     this.setState(partialState);
+  }
+
+  private renderRedirect() {
+    if (this.state.redirect) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/search",
+            state: {
+              authorPosts: this.state.authorPosts,
+              posts: this.state.posts,
+              users: this.state.users
+            }
+          }}
+        />
+      );
+    }
   }
 }

@@ -3,12 +3,19 @@ import * as React from "react";
 import Post from "../components/Post/Post";
 
 type Props = {
+  location: any;
+};
+type State = {
+  authorPosts: any[];
   posts: any[];
+  users: any[];
 };
 
-export default class SearchResults extends React.Component<Props> {
+export default class SearchResults extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = this.props.location.state;
+    console.log(this.state);
   }
 
   public render() {
@@ -21,7 +28,7 @@ export default class SearchResults extends React.Component<Props> {
 
   private getPosts() {
     const postDivs = [];
-    for (const post of this.props.posts) {
+    for (const post of this.state.posts) {
       postDivs.push(
         <Post
           key={post.id}
