@@ -296,12 +296,12 @@ export async function checkPostUserReport(req, res) {
 
 export function getFile(req, res) {
     // TODO verify if user can access the post req.params.id
-    res.sendFile(process.env.PWD + '/uploads/' + req.params.id + '/' + req.params.filename);
+    res.sendFile(process.cwd() + '/uploads/' + req.params.id + '/' + req.params.filename);
 }
 
 export function downloadFile(req, res) {
     // TODO verify if user can access the post req.params.id
-    res.download(process.env.PWD + '/uploads/' + req.params.id + '/' + req.params.filename);
+    res.download(process.cwd() + '/uploads/' + req.params.id + '/' + req.params.filename);
 }
 
 export function saveFiles(req, res, id) {
