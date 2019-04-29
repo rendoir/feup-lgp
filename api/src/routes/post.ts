@@ -1,10 +1,9 @@
 'use strict';
 import { Router } from 'express';
 import * as controller from '../controllers/post';
-import {usersRouter} from "./users";
+import {usersRouter} from './users';
 
 export const postRouter = Router();
-
 
 /**
  * @api {post} /api/post Create a post
@@ -171,7 +170,7 @@ postRouter.delete('/:id/like', controller.deleteALikeToPost);
  * @apiParam {number}   id   Id of the post being reported
  * @apiParam {number}   reporter   Id of the user issuing the report
  * @apiParam {string}   reason   Reason of the report
- * 
+ *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
