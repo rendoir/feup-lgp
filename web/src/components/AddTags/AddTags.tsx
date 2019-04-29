@@ -48,11 +48,12 @@ class AddTags extends Component<IProps, IState> {
               </button>
             </li>
           ))}
-          <li className={styles.input_tag__tags__input}>
+          <li id="tags_input" className={styles.input_tag__tags__input}>
             <input
               type="text"
               className={this.getInputRequiredClass("tags")}
               list="suggested-tags"
+              placeholder="Search for or write a new tag and click enter."
               onKeyDown={this.onSpacePress}
               ref={c => {
                 this.tagInput = c;
