@@ -143,6 +143,7 @@ class ReportModal extends Component<IProps, IState> {
                 className="close"
                 data-dismiss="modal"
                 aria-label="Close"
+                onClick={this.props.reportCancelHandler}
               >
                 <span aria-hidden="true">&times;</span>
               </button>
