@@ -3,24 +3,29 @@ import * as request from 'request-promise';
 
 import { query } from '../db/db';
 
-export function createPost(req, res) {
+export async function createPost(req, res) {
     if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while creating a new post: Invalid post.' });
         return;
     }
 
-    query({
-        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
-        values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
-    }).then((result) => {
-        saveFiles(req, res, result.rows[0].id);
-        res.send({ id: result.rows[0].id });
-    }).catch((error) => {
+    try {
+        const post = (await query({
+            // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
+            text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
+            values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
+        })).rows[0];
+        saveFiles(req, res, post.id);
+        await query({
+            text: 'UPDATE posts SET content_tokens = to_tsvector(content) WHERE id = $1',
+            values: [post.id],
+        });
+        res.send({ id: post.id });
+    } catch (error) {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while creating post: Adding post to database.' });
-    });
+        res.status(400).send({ message: 'An error ocurred while creating a post' });
+    }
 }
 
 export function editPost(req, res) {

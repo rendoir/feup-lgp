@@ -158,6 +158,7 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
             state: {
               authorPosts: this.state.authorPosts,
               posts: this.state.posts,
+              postsAreaActive: true,
               users: this.state.users
             }
           }}
