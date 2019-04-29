@@ -72,7 +72,7 @@ interface IState {
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
-  tags: [];
+  tags: any[];
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
   userRateTotal: number;
