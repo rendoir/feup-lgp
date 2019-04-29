@@ -10,7 +10,9 @@ type State = {
   authorPosts: any[];
   posts: any[];
   postsAreaActive: boolean;
+  postsAuthorAreaActive: boolean;
   users: any[];
+  usersAreaActive: boolean;
 };
 
 export default class SearchResults extends React.Component<Props, State> {
@@ -18,6 +20,7 @@ export default class SearchResults extends React.Component<Props, State> {
     super(props);
     this.state = this.props.location.state;
     this.handlePostsArea = this.handlePostsArea.bind(this);
+    this.handlePostsAuthorArea = this.handlePostsAuthorArea.bind(this);
     this.handleUsersArea = this.handleUsersArea.bind(this);
   }
 
@@ -31,7 +34,10 @@ export default class SearchResults extends React.Component<Props, State> {
               <h6 className="dropdown-header">Search results</h6>
               <div className="dropdown-divider" />
               <a className="dropdown-item" onClick={this.handlePostsArea}>
-                Posts
+                Posts by Content
+              </a>
+              <a className="dropdown-item" onClick={this.handlePostsAuthorArea}>
+                Posts by Author
               </a>
               <a className="dropdown-item" onClick={this.handleUsersArea}>
                 Users
@@ -39,7 +45,8 @@ export default class SearchResults extends React.Component<Props, State> {
             </div>
           </div>
           {this.state.postsAreaActive && this.getPostsArea()}
-          {!this.state.postsAreaActive && this.getUsersArea()}
+          {this.state.postsAuthorAreaActive && this.getPostsAuthorArea()}
+          {this.state.usersAreaActive && this.getUsersArea()}
         </div>
       </div>
     );
@@ -47,13 +54,25 @@ export default class SearchResults extends React.Component<Props, State> {
 
   private handlePostsArea() {
     this.setState({
-      postsAreaActive: true
+      postsAreaActive: true,
+      postsAuthorAreaActive: false,
+      usersAreaActive: false
+    });
+  }
+
+  private handlePostsAuthorArea() {
+    this.setState({
+      postsAreaActive: false,
+      postsAuthorAreaActive: true,
+      usersAreaActive: false
     });
   }
 
   private handleUsersArea() {
     this.setState({
-      postsAreaActive: false
+      postsAreaActive: false,
+      postsAuthorAreaActive: false,
+      usersAreaActive: true
     });
   }
 
@@ -61,6 +80,14 @@ export default class SearchResults extends React.Component<Props, State> {
     return (
       <div id="search-res-posts-area" className="col-12 col-md-9">
         {this.getPosts()}
+      </div>
+    );
+  }
+
+  private getPostsAuthorArea() {
+    return (
+      <div id="search-res-posts-author-area" className="col-12 col-md-9">
+        {this.getPostsByAuthor()}
       </div>
     );
   }
@@ -95,10 +122,31 @@ export default class SearchResults extends React.Component<Props, State> {
     return postElements;
   }
 
+  private getPostsByAuthor() {
+    const postElements = [];
+    for (const post of this.state.authorPosts) {
+      postElements.push(
+        <Post
+          key={post.id}
+          id={post.id}
+          author={post.first_name + " " + post.last_name}
+          text={post.content}
+          likes={post.likes}
+          likers={post.likers || []}
+          comments={post.comments || []}
+          title={post.title}
+          date={post.date_created.replace(/T.*/gi, "")}
+          visibility={post.visibility}
+        />
+      );
+    }
+    return postElements;
+  }
+
   private getUsers() {
     const userElements = [];
     for (const user of this.state.users) {
-      userElements.push(<UserCard {...user} />);
+      userElements.push(<UserCard key={user.id} {...user} />);
     }
     return userElements;
   }
