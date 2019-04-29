@@ -60,8 +60,8 @@ export class UserToken {
 export async function getUserUserInteractions(req, res) {
     const observerUser = req.body.observer;
     const targetUser = req.params.id;
-    console.log("your user id: ", observerUser);
-    console.log("you want to rate this user: ", targetUser);
+    console.log('your user id: ', observerUser);
+    console.log('you want to rate this user: ', targetUser);
     try {
         const totalRatingsQuery = await query({
             text: `SELECT count(*)
@@ -90,12 +90,12 @@ export async function getUserUserInteractions(req, res) {
             values: [observerUser, targetUser],
         });
 
-        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        const rateVal = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
         const totalRatingsNumber = totalRatingsQuery.rows[0].count;
         const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
-            rate,
+            rate: rateVal,
             totalRatingsNumber,
             totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
@@ -108,8 +108,8 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
-    console.log("follower", req.body.follower);
-    console.log("followed", req.body.followed);
+    console.log('follower', req.body.follower);
+    console.log('followed', req.body.followed);
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
         values: [req.body.follower, req.params.id],
