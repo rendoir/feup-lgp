@@ -55,13 +55,7 @@ export default class Header extends React.Component {
                 <i className="fas fa-plus-square" />
               </span>
             </a>
-            <PostModal
-              id={0}
-              title=""
-              text=""
-              images={undefined}
-              videos={undefined}
-            />
+            <PostModal id={0} title="" text="" />
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-user-md" />

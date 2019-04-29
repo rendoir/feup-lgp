@@ -120,12 +120,6 @@ export async function search(req, res) {
         ? new Date(req.query.df).getTime()
         : Date.now());
 
-    const queryGetter = getSpecificQuery(type);
-    if (queryGetter == null) {
-        res.status(400).send('Invalid search type');
-        return;
-    }
-
     try {
         const result = await runQueries(type, keywords, offset, initialDate, finalDate);
         res.send(result);

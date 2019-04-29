@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
+import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
 import PostView from "./PostView";
@@ -18,15 +19,17 @@ class App extends React.Component {
     return (
       <div className="App">
         <Router>
-          <Header />
-          <Route exact={true} path="/" component={Feed} />
-          <Route exact={true} path="/user/:username" component={Profile} />
-          <Route exact={true} path="/post/:id" component={PostView} />
-          <Route exact={true} path="/admin" component={Backoffice} />
-          <Route exact={true} path="/shop" component={Shop} />
-          <Route exact={true} path="/login" component={Login} />
-          <Route exact={true} path="/register" component={RegisterLanding} />
-          <Route exact={true} path="/search" component={SearchResults} />
+          <ErrorBoundary>
+            <Header />
+            <Route exact={true} path="/" component={Feed} />
+            <Route path="/user/:username" component={Profile} />
+            <Route path="/post/:id" component={PostView} />
+            <Route path="/admin" component={Backoffice} />
+            <Route path="/shop" component={Shop} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={RegisterLanding} />
+            <Route path="/search" component={SearchResults} />
+          </ErrorBoundary>
         </Router>
       </div>
     );

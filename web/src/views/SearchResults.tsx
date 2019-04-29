@@ -29,6 +29,7 @@ export default class SearchResults extends React.Component<Props, State> {
   private getPosts() {
     const postDivs = [];
     for (const post of this.state.posts) {
+      console.log(post);
       postDivs.push(
         <Post
           key={post.id}
@@ -37,8 +38,6 @@ export default class SearchResults extends React.Component<Props, State> {
           text={post.content}
           likes={post.likes}
           likers={post.likers}
-          images={undefined}
-          videos={undefined}
           comments={post.comments || []}
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
