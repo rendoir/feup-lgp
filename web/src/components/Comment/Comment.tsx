@@ -41,7 +41,7 @@ export type State = {
   likers: any[];
   likes: number;
   redirect: boolean;
-  userReport: boolean;
+  userReport: boolean; // Tells if the logged user has reported this post
 };
 
 const cookies = new Cookies();
