@@ -60,7 +60,7 @@ export default class SearchResults extends React.Component<Props, State> {
         {
           authorPosts: [],
           posts: [],
-          postsAreaActive: true,
+          postsAreaActive: false,
           postsAuthorAreaActive: false,
           searchParams: queryString.parse(
             this.props.location.search
@@ -120,10 +120,14 @@ export default class SearchResults extends React.Component<Props, State> {
         }
       })
       .then(res => {
+        const r = res.data;
         this.setState({
-          authorPosts: res.data.authorPosts,
-          posts: res.data.posts,
-          users: res.data.users
+          authorPosts: r.authorPosts,
+          posts: r.posts,
+          postsAreaActive: r.retrievePosts || r.retrieveAll,
+          postsAuthorAreaActive: r.retrievePostsByAuthor,
+          users: r.users,
+          usersAreaActive: r.retrieveUsers
         });
       });
   }

@@ -6,10 +6,10 @@ import {query} from '../db/db';
  * Posts must be either public or, if for followers, the logged in user must be a follower of the author,
  * or, if private, the logged in user must be the post's author.
  */
-function getPostQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function postQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
     const queryKeywords = JSON.parse(keywords).join(' & ');
-    return {
+    return query({
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
@@ -22,13 +22,13 @@ function getPostQuery(keywords: string, offset: number, initialDate: number, fin
                 LIMIT 10
                 OFFSET $2`,
         values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
-    };
+    });
 }
 
-function getAuthorQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function authorQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
     const queryKeywords = JSON.parse(keywords).join('|');
-    return {
+    return query({
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
@@ -42,12 +42,12 @@ function getAuthorQuery(keywords: string, offset: number, initialDate: number, f
                 LIMIT 10
                 OFFSET $2`,
         values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
-    };
+    });
 }
 
-function getUserQuery(keywords: string, offset: number, initialDate: number, finalDate: number): {text: string, values: any[]} {
+function userQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
     const queryKeywords = JSON.parse(keywords).join('|');
-    return {
+    return query({
         text: `SELECT id, first_name, last_name, rate, date_created
                 FROM users
                 WHERE
@@ -57,7 +57,7 @@ function getUserQuery(keywords: string, offset: number, initialDate: number, fin
                 LIMIT 10
                 OFFSET $1`,
         values: [offset, queryKeywords, initialDate, finalDate],
-    };
+    });
 }
 
 async function runQueries(type, keywords, offset, initialDate, finalDate): Promise<{}> {
@@ -65,21 +65,29 @@ async function runQueries(type, keywords, offset, initialDate, finalDate): Promi
         authorPosts: [],
         posts: [],
         users: [],
+        retrieveAll: false,
+        retrievePosts: false,
+        retrievePostsByAuthor: false,
+        retrieveUsers: false,
     };
     switch (type) {
         case 'post':
-            res.posts = (await query(getPostQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.posts = (await postQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.retrievePosts = true;
             break;
         case 'author':
-            res.authorPosts = (await query(getAuthorQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.authorPosts = (await authorQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.retrievePostsByAuthor = true;
             break;
         case 'user':
-            res.users = (await query(getUserQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.users = (await userQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.retrieveUsers = true;
             break;
         default:
-            res.posts = (await query(getPostQuery(keywords, offset, initialDate, finalDate))).rows;
-            res.authorPosts = (await query(getAuthorQuery(keywords, offset, initialDate, finalDate))).rows;
-            res.users = (await query(getUserQuery(keywords, offset, initialDate, finalDate))).rows;
+            res.posts = (await postQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.authorPosts = (await authorQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.users = (await userQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.retrieveAll = true;
     }
     return res;
 }
@@ -99,7 +107,7 @@ export async function search(req, res) {
         return;
     }
 
-    const type: string = req.query.t;
+    const type: string = JSON.parse(req.query.t);
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
         ? new Date(req.query.df).getTime() / 1000
