@@ -86,7 +86,7 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
     let df;
 
     // Matches variables | keywords.
-    const pattern = /--([^=]+)=([^\s]+)|([^-]{2}[^\s]+[^\s]+)/g;
+    const pattern = /--([^=]+)=([^\s]+)|([^-\s]{2}[^\s]*)/g;
     let temp;
 
     // tslint:disable-next-line: no-conditional-assignment
