@@ -6,15 +6,15 @@ import {query} from '../db/db';
  * Posts must be either public or, if for followers, the logged in user must be a follower of the author,
  * or, if private, the logged in user must be the post's author.
  */
-function postQuery(keywords: string, tags: string[], offset: number, initialDate: number, finalDate: number) {
+function postQuery(keywords: string[], tags: string[], offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
-    const queryKeywords = JSON.parse(keywords).join(' & ');
+    const queryKeywords = keywords.join(' & ');
     return query({
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
-                    p.content_tokens @@ to_tsquery($3)
+                    (p.content_tokens @@ TO_TSQUERY($3) OR $3 LIKE '')
                     AND $6::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
@@ -28,9 +28,9 @@ function postQuery(keywords: string, tags: string[], offset: number, initialDate
     });
 }
 
-function authorQuery(keywords: string, tags: string[], offset: number, initialDate: number, finalDate: number) {
+function authorQuery(keywords: string[], tags: string[], offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
-    const queryKeywords = JSON.parse(keywords).join('|');
+    const queryKeywords = keywords.join('|');
     return query({
         text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                 FROM posts p
@@ -51,8 +51,8 @@ function authorQuery(keywords: string, tags: string[], offset: number, initialDa
     });
 }
 
-function userQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
-    const queryKeywords = JSON.parse(keywords).join('|');
+function userQuery(keywords: string[], offset: number, initialDate: number, finalDate: number) {
+    const queryKeywords = keywords.join('|');
     return query({
         text: `SELECT id, first_name, last_name, rate, date_created
                 FROM users
@@ -151,14 +151,8 @@ async function runQueries(type, keywords, tags, offset, initialDate, finalDate):
 export async function search(req, res) {
     const offset: number = req.query.o;
 
-    const keywords: string = req.query.k;
-    if (keywords == null) {
-        console.error('No search keywords provided');
-        res.status(400).send('Invalid search keywords');
-        return;
-    }
-
-    const tags: string = req.query.tags ? JSON.parse(req.query.tags) : [];
+    const keywords: string[] = req.query.k ? JSON.parse(req.query.k) : [];
+    const tags: string[] = req.query.tags ? JSON.parse(req.query.tags) : [];
     const type: string = req.query.t ? JSON.parse(req.query.t) : null;
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
