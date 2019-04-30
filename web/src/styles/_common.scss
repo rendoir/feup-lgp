@@ -70,7 +70,7 @@ body {
       color: #e7711b;
       padding: 0;
       position: absolute;
-      z-index: 1;
+      z-index: 0;
       display: block;
       top: 0;
       left: 0;
@@ -79,7 +79,7 @@ body {
     &-bottom {
       padding: 0;
       display: block;
-      z-index: 0;
+      z-index: -1;
     }
 
     #rate{
