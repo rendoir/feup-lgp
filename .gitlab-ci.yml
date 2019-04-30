@@ -5,7 +5,7 @@ services:
 stages:
   - build
   - lint
-  - test
+  # - test
   - release
   # - deploy
 
@@ -103,16 +103,16 @@ test_api_linter:
 #     - sleep 5
 #     - docker-compose up --exit-code-from e2e
 
-api_unit_tests:
-  stage: test
-  script:
-    - cd api
-    - chmod +x ../scripts/write_api_compose.sh
-    - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
-    - docker-compose pull
-    - docker-compose up -d db
-    - sleep 20
-    - docker-compose up --exit-code-from apitest
+# api_unit_tests:
+#   stage: test
+#   script:
+#     - cd api
+#     - chmod +x ../scripts/write_api_compose.sh
+#     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
+#     - docker-compose pull
+#     - docker-compose up -d db
+#     - sleep 20
+#     - docker-compose up --exit-code-from apitest
 
 release-web-staging:
   stage: release
