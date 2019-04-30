@@ -106,7 +106,7 @@ class PostView extends React.Component<IProps, IState> {
             comments={this.state.comments}
             files={this.state.files}
             likers={this.state.likers}
-            tagsPost={this.state.tags}
+            tags={this.state.tags}
             visibility={this.state.post.visibility}
           />
         </div>

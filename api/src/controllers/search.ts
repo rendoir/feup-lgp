@@ -60,6 +60,45 @@ function userQuery(keywords: string, offset: number, initialDate: number, finalD
     });
 }
 
+// Add comments, tags, etc. of posts to response.
+async function addPostDetails(posts: any[]) {
+    for (const post of posts) {
+        const comments = await query({
+            text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                    FROM posts p
+                    LEFT JOIN comments c
+                    ON p.id = c.post
+                    INNER JOIN users a
+                    ON c.author = a.id
+                    WHERE
+                        p.id = $1
+                    ORDER BY c.date_updated ASC`,
+            values: [post.id],
+        });
+        const tagsPost = await query({
+            text: `SELECT t.name
+                    FROM tags t
+                    INNER JOIN posts_tags pt
+                    ON pt.tag = t.id
+                    WHERE pt.post = $1`,
+            values: [post.id],
+        });
+        const files = await query({
+            text: `SELECT f.name, f.mimetype, f.size
+                    FROM posts p
+                    INNER JOIN files f
+                    ON p.id = f.post
+                    WHERE
+                        p.id = $1`,
+            values: [post.id],
+        });
+
+        post.comments = comments.rows;
+        post.tags = tagsPost.rows;
+        post.files = files.rows;
+    }
+}
+
 async function runQueries(type, keywords, offset, initialDate, finalDate): Promise<{}> {
     const res = {
         authorPosts: [],
@@ -89,6 +128,12 @@ async function runQueries(type, keywords, offset, initialDate, finalDate): Promi
             res.users = (await userQuery(keywords, offset, initialDate, finalDate)).rows;
             res.retrieveAll = true;
     }
+    if (res.posts) {
+        await addPostDetails(res.posts);
+    }
+    if (res.authorPosts) {
+        await addPostDetails(res.authorPosts);
+    }
     return res;
 }
 
@@ -107,7 +152,7 @@ export async function search(req, res) {
         return;
     }
 
-    const type: string = JSON.parse(req.query.t);
+    const type: string = req.query.t ? JSON.parse(req.query.t) : null;
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
         ? new Date(req.query.df).getTime() / 1000

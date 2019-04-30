@@ -53,7 +53,7 @@ interface IProps {
 
   files?: MyFile[];
   likers: any[];
-  tagsPost: any[];
+  tags: any[];
 }
 
 interface IState {
@@ -269,7 +269,7 @@ class Post extends Component<IProps, IState> {
 
     const tagsFilter: any[] = [];
 
-    this.props.tagsPost.map(tag => {
+    this.props.tags.map(tag => {
       tagsFilter.push(tag.name);
     });
 
@@ -862,12 +862,12 @@ class Post extends Component<IProps, IState> {
     const tagsDiv: any[] = [];
 
     // sorting tags alphabetically
-    this.props.tagsPost.sort((a, b) =>
+    this.props.tags.sort((a, b) =>
       (a.name || "").toString().localeCompare((b.name || "").toString())
     );
 
-    if (this.props.tagsPost.length > 0) {
-      for (const tag of this.props.tagsPost) {
+    if (this.props.tags.length > 0) {
+      for (const tag of this.props.tags) {
         tagsDiv.push(
           <span
             key={"tags_" + tag.name + "post_" + this.props.id}

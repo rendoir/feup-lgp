@@ -71,7 +71,7 @@ class Feed extends React.Component<Props, State> {
           visibility={post.visibility}
           comments={post.comments}
           likers={post.likers}
-          tagsPost={post.tags}
+          tags={post.tags}
           files={post.files}
         />
       );

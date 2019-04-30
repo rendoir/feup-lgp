@@ -191,6 +191,7 @@ export default class SearchResults extends React.Component<Props, State> {
           text={post.content}
           likes={post.likes}
           likers={post.likers || []}
+          tags={post.tags || []}
           comments={post.comments || []}
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
@@ -212,6 +213,7 @@ export default class SearchResults extends React.Component<Props, State> {
           text={post.content}
           likes={post.likes}
           likers={post.likers || []}
+          tags={post.tags || []}
           comments={post.comments || []}
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
