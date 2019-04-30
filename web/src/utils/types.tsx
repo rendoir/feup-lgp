@@ -43,3 +43,23 @@ export type ClientRect = {
   width: number;
   height: number;
 };
+
+export type PeerType = "user" | "group" | "sip";
+
+export type Peer = {
+  id: number;
+  type: PeerType;
+  key?: string;
+};
+
+export type PeerInfoType = "user" | "group" | "channel" | "sip";
+
+export type PeerInfo = {
+  peer: Peer;
+  type: PeerInfoType;
+  title: string;
+  userName?: string | null;
+  avatar?: string | null;
+  bigAvatar?: string | null;
+  placeholder: AvatarPlaceholder;
+};

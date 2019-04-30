@@ -71,9 +71,10 @@ module.exports = {
         "src/components/AvatarSelector/*.tsx",
         "src/components/ImagePreloader/*.tsx",
         "src/components/Icon/*.tsx",
-        "src/components/Tabs/Tabs.tsx",
-        "src/components/Scroller/Scroller.tsx",
-        "src/components/Modal/Modal.tsx"
+        "src/components/Modal/Modal.tsx",
+        "src/components/Scroller/*.tsx",
+        "src/components/Switcher/*.tsx",
+        "src/components/Tabs/Tabs.tsx"
       ]
     },
     {

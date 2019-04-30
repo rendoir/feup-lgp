@@ -1,22 +1,28 @@
-export type Filterable<T> = T[];
+import { List } from "immutable";
+
+export type Filterable<T> = List<T>;
 
 function normalize(text: string) {
   return text.toLowerCase().replace(/ë/g, "e");
 }
 
-export function filterByQuery<T, C = Filterable<T>>(
+export function filterByQuery<T>(
   query: string,
-  items: C,
+  items: Filterable<T>,
   getValue: (item: T) => string
-): C {
+): Filterable<T> {
   const normalQuery = normalize(query);
 
-  return items.map((item: T) => {
-    const value = normalize(getValue(item));
+  return items
+    .map((item: T) => {
+      const value = normalize(getValue(item));
 
-    return {
-      item,
-      score: value.indexOf(normalQuery)
-    };
-  });
+      return {
+        item,
+        score: value.indexOf(normalQuery)
+      };
+    })
+    .filter(({ score }: any) => score !== -1)
+    .sort((a: any, b: any) => a.score - b.score)
+    .map(({ item }: any) => item);
 }
