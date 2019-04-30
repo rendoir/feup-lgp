@@ -881,7 +881,9 @@ class Post extends Component<IProps, IState> {
           </span>
         );
       }
-    } else return;
+    } else {
+      return;
+    }
 
     return (
       <div className={`${styles.post_tags} w-100 container`}>
