@@ -52,7 +52,7 @@ class PostFile extends Component<Props, State> {
             </div>
             <div className="d-inline-block">
               <span>{this.props.file.mimetype}</span>
-              <span className="ml-3">{this.props.file.size} Bytes</span>
+              <span className="ml-3">{this.getSize(this.props.file.size)}</span>
             </div>
           </div>
 
@@ -60,6 +60,12 @@ class PostFile extends Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  public getSize(size: number) {
+    if (size < 1024) return size + " B";
+    else if (size < 1048576) return (size / 1024).toFixed(2) + " KB";
+    else return (size / 1048576).toFixed(2) + " MB";
   }
 
   public getButton() {

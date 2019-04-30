@@ -705,6 +705,7 @@ class Post extends Component<IProps, IState> {
 
   private handleImageClick(src: string | undefined) {
     if (src) {
+      document.body.style.overflow = "hidden";
       this.setState({
         clickedImage: src
       } as IState);
@@ -712,6 +713,7 @@ class Post extends Component<IProps, IState> {
   }
 
   private handleOverlayClick() {
+    document.body.style.overflow = "scroll";
     this.setState({
       clickedImage: undefined
     } as IState);
@@ -879,7 +881,7 @@ class Post extends Component<IProps, IState> {
           </span>
         );
       }
-    }
+    } else return;
 
     return (
       <div className={`${styles.post_tags} w-100 container`}>
