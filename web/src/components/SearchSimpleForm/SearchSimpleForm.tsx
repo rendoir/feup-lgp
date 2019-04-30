@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import "./SearchSimple.scss";
 
@@ -24,7 +24,10 @@ type SearchParameters = {
   df?: string; // final date
 };
 
-class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
+class SearchSimpleForm extends React.Component<
+  RouteComponentProps<any>,
+  State
+> {
   constructor(props: RouteComponentProps<any>) {
     super(props);
     this.state = {
@@ -159,4 +162,4 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
   // }
 }
 
-export default withRouter(SearchSimple);
+export default withRouter(SearchSimpleForm);
