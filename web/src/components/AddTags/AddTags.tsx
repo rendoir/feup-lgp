@@ -115,6 +115,7 @@ class AddTags extends Component<IProps, IState> {
     } else if (e.key === "Backspace" && !val) {
       this.removeTag(this.state.tags.length - 1);
     }
+    e.preventDefault();
   };
 
   public removeTag = (i: any) => {
