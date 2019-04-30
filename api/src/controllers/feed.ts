@@ -21,6 +21,7 @@ export async function getFeed(req, res) {
         });
         const commentsToSend = [];
         const likersToSend = [];
+        const tagsToSend = [];
         const filesToSend = [];
         for (const post of result.rows) {
             const comment = await query({
@@ -43,6 +44,14 @@ export async function getFeed(req, res) {
                         WHERE l.post = $1`,
                 values: [post.id],
             });
+            const tagsPost = await query({
+                text: `SELECT t.name
+                        FROM tags t
+                        INNER JOIN posts_tags pt
+                        ON pt.tag = t.id
+                        WHERE pt.post = $1`,
+                values: [post.id],
+            });
             const files = await query({
                 text: `SELECT f.name, f.mimetype, f.size
                         FROM posts p
@@ -54,13 +63,15 @@ export async function getFeed(req, res) {
             });
             commentsToSend.push(comment.rows);
             likersToSend.push(likersPost.rows);
+            tagsToSend.push(tagsPost.rows);
             filesToSend.push(files.rows);
         }
         res.send({
             posts: result.rows,
             comments: commentsToSend,
             likers: likersToSend,
-            files: filesToSend
+            tags: tagsToSend,
+            files: filesToSend,
         });
     } catch (error) {
         console.error(error);

@@ -1,10 +1,10 @@
 'use strict';
 
 import { json, urlencoded } from 'body-parser';
-import * as fileUpload from 'express-fileupload';
-// import * as cookie_parser from 'cookie-parser';
 import { config } from 'dotenv';
 import * as express from 'express';
+import * as fileUpload from 'express-fileupload';
+// import * as cookie_parser from 'cookie-parser';
 import * as express_session from 'express-session';
 import * as fs from 'fs';
 // import * as https from 'https';
@@ -35,6 +35,7 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    tagsRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
@@ -67,6 +68,7 @@ app.use('/login', loginRouter);
 app.use('/feed', feedRouter);
 app.use('/post', postRouter);
 app.use('/admin', adminRouter);
+app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
