@@ -33,7 +33,7 @@ export default class Header extends React.Component {
                 </a>
               </li>
               <li className="nav-item active">
-                <a className="nav-link" href="users/1">
+                <a className="nav-link" href="user/1">
                   Profile <span className="sr-only">(current)</span>
                 </a>
               </li>
