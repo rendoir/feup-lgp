@@ -229,7 +229,7 @@ class Post extends Component<IProps, IState> {
                 title={this.props.author}
                 placeholder="empty"
                 size={30}
-                image="https://picsum.photos/200/200?image=52"
+                image="http://cosmicgirlgames.com/images/games/morty.gif"
               />
               <textarea
                 className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
