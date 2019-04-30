@@ -60,21 +60,6 @@ function getUserQuery(keywords: string, offset: number, initialDate: number, fin
     };
 }
 
-function getSpecificQuery(type: string)
-: (queryKeywords: string, offset: number, initialDate: number, finalDate: number) => {text: string, values: any[]} {
-    switch (type) {
-        case 'post':
-            return getPostQuery;
-        case 'author':
-            return getAuthorQuery;
-        case 'user':
-            return getUserQuery;
-        default:
-            console.error('Invalid search type: ' + type);
-            return null;
-    }
-}
-
 async function runQueries(type, keywords, offset, initialDate, finalDate): Promise<{}> {
     const res = {
         authorPosts: [],
@@ -115,10 +100,10 @@ export async function search(req, res) {
     }
 
     const type: string = req.query.t;
-    const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime();
+    const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
-        ? new Date(req.query.df).getTime()
-        : Date.now());
+        ? new Date(req.query.df).getTime() / 1000
+        : Date.now() / 1000);
 
     try {
         const result = await runQueries(type, keywords, offset, initialDate, finalDate);

@@ -56,8 +56,6 @@ export default class SearchResults extends React.Component<Props, State> {
 
   public componentDidUpdate(prevProps) {
     if (this.props.location !== prevProps.location) {
-      console.log(this.props);
-      console.log(prevProps);
       this.setState(
         {
           authorPosts: [],
