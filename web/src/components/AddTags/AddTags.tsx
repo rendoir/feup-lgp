@@ -44,7 +44,7 @@ class AddTags extends Component<IProps, IState> {
                   this.removeTag(i);
                 }}
               >
-                <i className="far fa-times fa-xs" />
+                <i className="fa fa-times fa-xs" />
               </button>
             </li>
           ))}
@@ -112,6 +112,7 @@ class AddTags extends Component<IProps, IState> {
       this.setState({ tags: [...this.state.tags, val] });
       this.tagInput.value = null;
       this.props.onChange(this.props.tags, [...this.state.tags, val]);
+      e.preventDefault();
     } else if (e.key === "Backspace" && !val) {
       this.removeTag(this.state.tags.length - 1);
     }
