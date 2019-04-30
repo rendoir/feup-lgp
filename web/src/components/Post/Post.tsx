@@ -566,7 +566,7 @@ class Post extends Component<IProps, IState> {
       return <div className={`${styles.post_comment} w-100`} />;
     }
 
-    let currentComments = [];
+    let currentComments: any[] = [];
     if (this.props.comments.length < 6) {
       currentComments = this.props.comments;
     } else {
@@ -607,7 +607,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public getLikes() {
-    const likesDiv = [];
+    const likesDiv: any[] = [];
     if (this.props.likes > 0) {
       likesDiv.push(this.getLikers());
     }
@@ -658,7 +658,7 @@ class Post extends Component<IProps, IState> {
       return;
     }
 
-    const pageNumbersInd = [];
+    const pageNumbersInd: number[] = [];
     for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
       pageNumbersInd.push(i);
     }
@@ -811,7 +811,7 @@ class Post extends Component<IProps, IState> {
   }
 
   private getFiles() {
-    const filesDiv = [];
+    const filesDiv: any[] = [];
 
     if (this.state.docs.length) {
       for (const file of this.state.docs) {

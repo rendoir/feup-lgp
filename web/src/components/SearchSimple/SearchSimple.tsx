@@ -1,11 +1,9 @@
-import axios from "axios";
 import * as React from "react";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 
 import "./SearchSimple.scss";
 
 type State = {
-  paramsUrl: string;
   search: string;
   redirect: boolean;
   authorPosts: any[];
@@ -20,11 +18,10 @@ enum SearchType {
 }
 
 type SearchParameters = {
-  keywords: string[];
+  k: string[];
   type?: SearchType;
   di?: string; // initial date
   df?: string; // final date
-  [key: string]: SearchType | string[] | string | undefined;
 };
 
 class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
@@ -32,7 +29,6 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
     super(props);
     this.state = {
       authorPosts: [],
-      paramsUrl: "",
       posts: [],
       redirect: false,
       search: "",
@@ -69,20 +65,32 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
             <i className="fas fa-search" />
           </button>
         </form>
-        {this.renderRedirect()}
       </div>
     );
+  }
+
+  private assembleUrlQuery(params: SearchParameters) {
+    return Object.keys(params)
+      .filter(k => params[k])
+      .map(k => {
+        return (
+          encodeURIComponent(k) +
+          "=" +
+          encodeURIComponent(JSON.stringify(params[k]))
+        );
+      })
+      .join("&");
   }
 
   private submitSearch(event: any) {
     event.preventDefault();
     const searchParams = this.processSearchString(this.state.search);
-    this.apiSubmitSearch(searchParams);
+    this.redirectToResults(searchParams);
   }
 
   // e.g. "bananas --type=post apples --di=20/04/2016 --df=22/05/2019"
   private processSearchString(search: string): SearchParameters {
-    const keywords = [];
+    const keywords: string[] = [];
     let type;
     let di;
     let df;
@@ -109,47 +117,15 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
     const params = {
       df,
       di,
-      keywords,
+      k: keywords,
       type
     };
-
-    this.setState({
-      paramsUrl: Object.keys(params)
-        .map(k => {
-          return (
-            encodeURIComponent(k) + "=" + encodeURIComponent((params as any)[k])
-          );
-        })
-        .join("&")
-    });
 
     return params;
   }
 
-  private apiSubmitSearch(searchParams: SearchParameters) {
-    let searchUrl = `${location.protocol}//${location.hostname}`;
-    searchUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    searchUrl += "/search";
-    axios
-      .get(searchUrl, {
-        params: {
-          df: searchParams.df,
-          di: searchParams.di,
-          k: JSON.stringify(searchParams.keywords),
-          t: searchParams.type
-        }
-      })
-      .then(res => {
-        this.setState({
-          authorPosts: res.data.authorPosts,
-          posts: res.data.posts,
-          redirect: true,
-          users: res.data.users
-        });
-      });
+  private redirectToResults(searchParams: SearchParameters) {
+    this.props.history.push(`/search?${this.assembleUrlQuery(searchParams)}`);
   }
 
   private handleInputChange(event: any) {
@@ -163,24 +139,24 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
     this.setState(partialState);
   }
 
-  private renderRedirect() {
-    if (this.state.redirect) {
-      return (
-        <Redirect
-          to={{
-            pathname: "/search/",
-            search: this.state.paramsUrl,
-            state: {
-              authorPosts: this.state.authorPosts,
-              posts: this.state.posts,
-              postsAreaActive: true,
-              users: this.state.users
-            }
-          }}
-        />
-      );
-    }
-  }
+  // private renderRedirect() {
+  //   if (this.state.redirect) {
+  //     return (
+  //       <Redirect
+  //         to={{
+  //           pathname: "/search",
+  //           search: this.state.paramsUrl,
+  //           state: {
+  //             authorPosts: this.state.authorPosts,
+  //             posts: this.state.posts,
+  //             postsAreaActive: true,
+  //             users: this.state.users
+  //           }
+  //         }}
+  //       />
+  //     );
+  //   }
+  // }
 }
 
 export default withRouter(SearchSimple);

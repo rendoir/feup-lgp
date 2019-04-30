@@ -1,3 +1,5 @@
+import axios from "axios";
+import queryString from "query-string";
 import * as React from "react";
 
 import Post from "../components/Post/Post";
@@ -11,17 +13,68 @@ type State = {
   posts: any[];
   postsAreaActive: boolean;
   postsAuthorAreaActive: boolean;
+  searchParams: SearchParameters;
   users: any[];
   usersAreaActive: boolean;
+};
+
+enum SearchType {
+  post,
+  author,
+  user
+}
+
+type SearchParameters = {
+  k: string[]; // keywords
+  type?: SearchType;
+  di?: string; // initial date
+  df?: string; // final date
 };
 
 export default class SearchResults extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = this.props.location.state;
+    this.state = {
+      authorPosts: [],
+      posts: [],
+      postsAreaActive: true,
+      postsAuthorAreaActive: false,
+      searchParams: queryString.parse(
+        this.props.location.search
+      ) as SearchParameters,
+      users: [],
+      usersAreaActive: false
+    };
     this.handlePostsArea = this.handlePostsArea.bind(this);
     this.handlePostsAuthorArea = this.handlePostsAuthorArea.bind(this);
     this.handleUsersArea = this.handleUsersArea.bind(this);
+  }
+
+  public componentDidMount() {
+    this.apiSubmitSearch();
+  }
+
+  public componentDidUpdate(prevProps) {
+    if (this.props.location !== prevProps.location) {
+      console.log(this.props);
+      console.log(prevProps);
+      this.setState(
+        {
+          authorPosts: [],
+          posts: [],
+          postsAreaActive: true,
+          postsAuthorAreaActive: false,
+          searchParams: queryString.parse(
+            this.props.location.search
+          ) as SearchParameters,
+          users: [],
+          usersAreaActive: false
+        },
+        () => {
+          this.apiSubmitSearch();
+        }
+      );
+    }
   }
 
   public render() {
@@ -50,6 +103,31 @@ export default class SearchResults extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private apiSubmitSearch() {
+    let searchUrl = `${location.protocol}//${location.hostname}`;
+    searchUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    searchUrl += "/search";
+    axios
+      .get(searchUrl, {
+        params: {
+          df: this.state.searchParams.df,
+          di: this.state.searchParams.di,
+          k: this.state.searchParams.k,
+          t: this.state.searchParams.type
+        }
+      })
+      .then(res => {
+        this.setState({
+          authorPosts: res.data.authorPosts,
+          posts: res.data.posts,
+          users: res.data.users
+        });
+      });
   }
 
   private handlePostsArea() {
@@ -101,9 +179,8 @@ export default class SearchResults extends React.Component<Props, State> {
   }
 
   private getPosts() {
-    const postElements = [];
+    const postElements: any[] = [];
     for (const post of this.state.posts) {
-      console.log(post);
       postElements.push(
         <Post
           key={post.id}
@@ -123,7 +200,7 @@ export default class SearchResults extends React.Component<Props, State> {
   }
 
   private getPostsByAuthor() {
-    const postElements = [];
+    const postElements: any[] = [];
     for (const post of this.state.authorPosts) {
       postElements.push(
         <Post
@@ -144,7 +221,7 @@ export default class SearchResults extends React.Component<Props, State> {
   }
 
   private getUsers() {
-    const userElements = [];
+    const userElements: any[] = [];
     for (const user of this.state.users) {
       userElements.push(<UserCard key={user.id} {...user} />);
     }

@@ -37,8 +37,8 @@ class PostImageCarousel extends Component<Props, State> {
   }
 
   private getCarousel() {
-    const images = [];
-    const items = [];
+    const images: any[] = [];
+    const items: any[] = [];
 
     for (let i = 0; i < this.props.images.length; i++) {
       items.push(

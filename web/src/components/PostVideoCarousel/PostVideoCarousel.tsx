@@ -35,8 +35,8 @@ class PostVideoCarousel extends Component<Props, State> {
   }
 
   private getCarousel() {
-    const videos = [];
-    const items = [];
+    const videos: any[] = [];
+    const items: any[] = [];
 
     for (let i = 0; i < this.props.videos.length; i++) {
       items.push(
