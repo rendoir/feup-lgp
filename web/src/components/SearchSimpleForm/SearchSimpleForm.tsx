@@ -5,7 +5,6 @@ import "./SearchSimpleForm.scss";
 
 type State = {
   search: string;
-  redirect: boolean;
   authorPosts: any[];
   posts: any[];
   users: any[];
@@ -19,6 +18,7 @@ enum SearchType {
 
 type SearchParameters = {
   k: string[];
+  tags?: string[];
   type?: SearchType;
   di?: string; // initial date
   df?: string; // final date
@@ -33,19 +33,12 @@ class SearchSimpleForm extends React.Component<
     this.state = {
       authorPosts: [],
       posts: [],
-      redirect: false,
       search: "",
       users: []
     };
 
     this.submitSearch = this.submitSearch.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
-  }
-
-  public componentDidUpdate(prevProps: RouteComponentProps<any>) {
-    if (this.props.location !== prevProps.location) {
-      this.setState({ redirect: false });
-    }
   }
 
   public render() {
@@ -94,17 +87,20 @@ class SearchSimpleForm extends React.Component<
   // e.g. "bananas --type=post apples --di=20/04/2016 --df=22/05/2019"
   private processSearchString(search: string): SearchParameters {
     const keywords: string[] = [];
+    const tags: string[] = [];
     let type;
     let di;
     let df;
 
-    // Matches variables | keywords.
-    const pattern = /--([^=]+)=([^\s]+)|([^-\s]{2}[^\s]*)/g;
+    // Matches variables | keywords | tags.
+    const pattern = /--([^=]+)=([^\s]+)|#([^\s]+)|([^#\s]+)/g;
     let temp;
 
     // tslint:disable-next-line: no-conditional-assignment
     while ((temp = pattern.exec(search)) != null) {
-      if (!temp[0].startsWith("--")) {
+      if (temp[3]) {
+        tags.push(temp[3]);
+      } else if (!temp[0].startsWith("--")) {
         keywords.push(temp[0]);
       } else if (temp[1] === "type") {
         type = (temp[2] as unknown) as SearchType;
@@ -121,6 +117,7 @@ class SearchSimpleForm extends React.Component<
       df,
       di,
       k: keywords,
+      tags,
       type
     };
 
@@ -141,25 +138,6 @@ class SearchSimpleForm extends React.Component<
     partialState[field] = value;
     this.setState(partialState);
   }
-
-  // private renderRedirect() {
-  //   if (this.state.redirect) {
-  //     return (
-  //       <Redirect
-  //         to={{
-  //           pathname: "/search",
-  //           search: this.state.paramsUrl,
-  //           state: {
-  //             authorPosts: this.state.authorPosts,
-  //             posts: this.state.posts,
-  //             postsAreaActive: true,
-  //             users: this.state.users
-  //           }
-  //         }}
-  //       />
-  //     );
-  //   }
-  // }
 }
 
 export default withRouter(SearchSimpleForm);

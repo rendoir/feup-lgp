@@ -99,7 +99,7 @@ async function addPostDetails(posts: any[]) {
     }
 }
 
-async function runQueries(type, keywords, offset, initialDate, finalDate): Promise<{}> {
+async function runQueries(type, keywords, tags, offset, initialDate, finalDate): Promise<{}> {
     const res = {
         authorPosts: [],
         posts: [],
@@ -152,6 +152,7 @@ export async function search(req, res) {
         return;
     }
 
+    const tags: string = req.query.type ? JSON.parse(req.query.tags) : null;
     const type: string = req.query.t ? JSON.parse(req.query.t) : null;
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
@@ -159,7 +160,7 @@ export async function search(req, res) {
         : Date.now() / 1000);
 
     try {
-        const result = await runQueries(type, keywords, offset, initialDate, finalDate);
+        const result = await runQueries(type, keywords, tags, offset, initialDate, finalDate);
         res.send(result);
     } catch (error) {
         console.error(error);

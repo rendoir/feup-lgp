@@ -26,6 +26,7 @@ enum SearchType {
 
 type SearchParameters = {
   k: string[]; // keywords
+  tags?: string[];
   type?: SearchType;
   di?: string; // initial date
   df?: string; // final date
@@ -116,7 +117,8 @@ export default class SearchResults extends React.Component<Props, State> {
           df: this.state.searchParams.df,
           di: this.state.searchParams.di,
           k: this.state.searchParams.k,
-          t: this.state.searchParams.type
+          t: this.state.searchParams.type,
+          tags: this.state.searchParams.tags
         }
       })
       .then(res => {
