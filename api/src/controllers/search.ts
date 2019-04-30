@@ -2,11 +2,11 @@
 import {query} from '../db/db';
 
 /**
- * Get posts matching keywords.
+ * Get posts matching keywords and tags (desired tags must be a subset of the actual tags).
  * Posts must be either public or, if for followers, the logged in user must be a follower of the author,
  * or, if private, the logged in user must be the post's author.
  */
-function postQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
+function postQuery(keywords: string, tags: string[], offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
     const queryKeywords = JSON.parse(keywords).join(' & ');
     return query({
@@ -15,17 +15,20 @@ function postQuery(keywords: string, offset: number, initialDate: number, finalD
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
                     p.content_tokens @@ to_tsquery($3)
+                    AND $6::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
+                                        FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
+                                        WHERE pt.post = p.id))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
                 LIMIT 10
                 OFFSET $2`,
-        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
+        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate, tags],
     });
 }
 
-function authorQuery(keywords: string, offset: number, initialDate: number, finalDate: number) {
+function authorQuery(keywords: string, tags: string[], offset: number, initialDate: number, finalDate: number) {
     const loggedInUser = 1;
     const queryKeywords = JSON.parse(keywords).join('|');
     return query({
@@ -35,13 +38,16 @@ function authorQuery(keywords: string, offset: number, initialDate: number, fina
                 WHERE
                     (first_name ~* ($3)
                         OR last_name ~* ($3))
+                    AND $6::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
+                                        FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
+                                        WHERE pt.post = p.id))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
                 LIMIT 10
                 OFFSET $2`,
-        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate],
+        values: [loggedInUser, offset, queryKeywords, initialDate, finalDate, tags],
     });
 }
 
@@ -111,11 +117,11 @@ async function runQueries(type, keywords, tags, offset, initialDate, finalDate):
     };
     switch (type) {
         case 'post':
-            res.posts = (await postQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.posts = (await postQuery(keywords, tags, offset, initialDate, finalDate)).rows;
             res.retrievePosts = true;
             break;
         case 'author':
-            res.authorPosts = (await authorQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.authorPosts = (await authorQuery(keywords, tags, offset, initialDate, finalDate)).rows;
             res.retrievePostsByAuthor = true;
             break;
         case 'user':
@@ -123,8 +129,8 @@ async function runQueries(type, keywords, tags, offset, initialDate, finalDate):
             res.retrieveUsers = true;
             break;
         default:
-            res.posts = (await postQuery(keywords, offset, initialDate, finalDate)).rows;
-            res.authorPosts = (await authorQuery(keywords, offset, initialDate, finalDate)).rows;
+            res.posts = (await postQuery(keywords, tags, offset, initialDate, finalDate)).rows;
+            res.authorPosts = (await authorQuery(keywords, tags, offset, initialDate, finalDate)).rows;
             res.users = (await userQuery(keywords, offset, initialDate, finalDate)).rows;
             res.retrieveAll = true;
     }
@@ -152,7 +158,7 @@ export async function search(req, res) {
         return;
     }
 
-    const tags: string = req.query.type ? JSON.parse(req.query.tags) : null;
+    const tags: string = req.query.tags ? JSON.parse(req.query.tags) : [];
     const type: string = req.query.t ? JSON.parse(req.query.t) : null;
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
