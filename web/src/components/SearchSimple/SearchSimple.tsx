@@ -5,6 +5,7 @@ import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import "./SearchSimple.scss";
 
 type State = {
+  paramsUrl: string;
   search: string;
   redirect: boolean;
   authorPosts: any[];
@@ -31,6 +32,7 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
     super(props);
     this.state = {
       authorPosts: [],
+      paramsUrl: "",
       posts: [],
       redirect: false,
       search: "",
@@ -104,12 +106,24 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
       }
     }
 
-    return {
+    const params = {
       df,
       di,
       keywords,
       type
     };
+
+    this.setState({
+      paramsUrl: Object.keys(params)
+        .map(k => {
+          return (
+            encodeURIComponent(k) + "=" + encodeURIComponent((params as any)[k])
+          );
+        })
+        .join("&")
+    });
+
+    return params;
   }
 
   private apiSubmitSearch(searchParams: SearchParameters) {
@@ -155,6 +169,7 @@ class SearchSimple extends React.Component<RouteComponentProps<any>, State> {
         <Redirect
           to={{
             pathname: "/search/",
+            search: this.state.paramsUrl,
             state: {
               authorPosts: this.state.authorPosts,
               posts: this.state.posts,
