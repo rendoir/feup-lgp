@@ -1,11 +1,11 @@
 import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
+import Avatar from "../components/Avatar/Avatar";
+import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
 import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
-import Avatar from "../components/Avatar/Avatar";
-import Post from "../components/Post/Post";
 
 type State = {
   fetchingUserUserInteractions: boolean;
@@ -36,8 +36,8 @@ class Profile extends React.Component<{}, State> {
     this.state = {
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
-      numberOfRatings: 1,
       info: [],
+      numberOfRatings: 1,
       posts: [],
       userRate: 50,
       userRateTotal: 50,
@@ -241,8 +241,8 @@ class Profile extends React.Component<{}, State> {
 
         this.setState({
           fetchingInfo: false,
-          posts: postsComing.posts,
-          info: postsComing.info
+          info: postsComing.info,
+          posts: postsComing.posts
         });
         console.log(postsComing.info[0][0].bio);
       })

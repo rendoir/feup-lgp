@@ -245,5 +245,3 @@ export async function getProfilePosts(req, res) {
         res.status(500).send(new Error('Error retrieving post'));
     }
 }
-
-
