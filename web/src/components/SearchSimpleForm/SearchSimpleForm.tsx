@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import "./SearchSimple.scss";
+import "./SearchSimpleForm.scss";
 
 type State = {
   search: string;
