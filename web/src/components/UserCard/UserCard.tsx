@@ -1,7 +1,10 @@
 import React from "react";
 import Avatar from "../Avatar/Avatar";
 
+import "./UserCard.scss";
+
 type Props = {
+  id: number;
   first_name: string;
   last_name: string;
   rate: any;
@@ -15,16 +18,20 @@ class UserCard extends React.Component<Props> {
 
   public render() {
     return (
-      <div className="card mb-2">
-        <div className="card-body row col-md d-flex">
-          <Avatar
-            title={this.props.first_name + " " + this.props.last_name}
-            placeholder="empty"
-            size={50}
-            image="https://picsum.photos/200/200?image=52"
-          />
-          {this.props.first_name + " " + this.props.last_name}
-        </div>
+      <div id="user-card-comp" className="card mb-2">
+        <a href={"/user/" + this.props.id}>
+          <div className="card-body col-md d-flex align-items-center">
+            <Avatar
+              title={this.props.first_name + " " + this.props.last_name}
+              placeholder="empty"
+              size={50}
+              image="https://picsum.photos/200/200?image=52"
+            />
+            <div className="ml-3 username">
+              {this.props.first_name + " " + this.props.last_name}
+            </div>
+          </div>
+        </a>
       </div>
       // <div className="card mb-2">
       //     <div className="card-header">{this.props.first_name + ' ' + this.props.last_name}</div>
