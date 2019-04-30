@@ -53,6 +53,7 @@ interface IProps {
 
   files?: MyFile[];
   likers: any[];
+  tagsPost: any[];
 }
 
 interface IState {
@@ -71,6 +72,7 @@ interface IState {
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
+  tags: any[];
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
   userRateTotal: number;
@@ -105,6 +107,7 @@ class Post extends Component<IProps, IState> {
       numberOfRatings: 1,
       postID: 0,
       postRated: false,
+      tags: [],
       userRate: 50,
       userRateTotal: 50,
       userReport: false,
@@ -179,6 +182,7 @@ class Post extends Component<IProps, IState> {
           {this.getImages()}
           {this.getVideos()}
           {this.getFiles()}
+          {this.getTags()}
           <div className={styles.post_stats}>
             <fieldset className="rate">
               <div className="star-ratings-css">
@@ -205,7 +209,7 @@ class Post extends Component<IProps, IState> {
           </div>
           {this.getUserInteractionButtons()}
           {/* Post edition modal */}
-          <PostModal {...this.props} />
+          <PostModal {...this.props} tags={this.state.tags} />
           {/* Delete Post */}
           <DeleteModal {...this.props} />
           {/* Report Post */}
@@ -262,10 +266,18 @@ class Post extends Component<IProps, IState> {
     } else {
       currentPage = Math.ceil(this.props.comments.length / 5);
     }
+
+    const tagsFilter: any[] = [];
+
+    this.props.tagsPost.map(tag => {
+      tagsFilter.push(tag.name);
+    });
+
     this.setState({
       activePage: currentPage,
       isFetching: false,
-      postID: this.props.id
+      postID: this.props.id,
+      tags: tagsFilter
     });
   }
 
@@ -348,7 +360,7 @@ class Post extends Component<IProps, IState> {
     });
 
     if (foundValue != null) {
-      divStyle.color = "black";
+      divStyle.color = "blue";
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
@@ -356,11 +368,11 @@ class Post extends Component<IProps, IState> {
         </div>
       );
     } else {
-      divStyle.color = "blue";
+      divStyle.color = "black";
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Dislike</span>
+          <span>Like</span>
         </div>
       );
     }
@@ -844,6 +856,38 @@ class Post extends Component<IProps, IState> {
         }
       });
     }
+  }
+
+  private getTags() {
+    const tagsDiv: any[] = [];
+
+    // sorting tags alphabetically
+    this.props.tagsPost.sort((a, b) =>
+      (a.name || "").toString().localeCompare((b.name || "").toString())
+    );
+
+    if (this.props.tagsPost.length > 0) {
+      for (const tag of this.props.tagsPost) {
+        tagsDiv.push(
+          <span
+            key={"tags_" + tag.name + "post_" + this.props.id}
+            className={`${styles.tags} d-inline badge`}
+          >
+            <a key={"tags_" + tag.name + "post_" + this.props.id}>
+              #{tag.name}
+            </a>
+          </span>
+        );
+      }
+    }
+
+    return (
+      <div className={`${styles.post_tags} w-100 container`}>
+        <div className="row justify-content-center align-items-center">
+          {tagsDiv}
+        </div>
+      </div>
+    );
   }
 }
 

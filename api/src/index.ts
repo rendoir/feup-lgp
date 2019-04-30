@@ -36,6 +36,7 @@ import {
     loginRouter,
     postRouter,
     searchRouter,
+    tagsRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
@@ -68,6 +69,7 @@ app.use('/login', loginRouter);
 app.use('/feed', feedRouter);
 app.use('/post', postRouter);
 app.use('/admin', adminRouter);
+app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.use('/search', searchRouter);
 app.get('/', (req, res) => {

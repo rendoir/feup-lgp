@@ -17,6 +17,7 @@ interface IState {
   comments: any[];
   files: any[];
   likers: any[];
+  tags: any[];
   fetchingInfo: boolean;
 }
 
@@ -37,7 +38,8 @@ class PostView extends React.Component<IProps, IState> {
         date_updated: "",
         id: "",
         title: ""
-      }
+      },
+      tags: []
     };
   }
 
@@ -65,7 +67,8 @@ class PostView extends React.Component<IProps, IState> {
           files: res.data.files,
           id: res.data.post.id,
           likers: res.data.likers,
-          post: res.data.post
+          post: res.data.post,
+          tags: res.data.tags
         });
       })
       .catch(() => console.log("Failed to get post info"));
@@ -103,6 +106,7 @@ class PostView extends React.Component<IProps, IState> {
             comments={this.state.comments}
             files={this.state.files}
             likers={this.state.likers}
+            tagsPost={this.state.tags}
             visibility={this.state.post.visibility}
           />
         </div>

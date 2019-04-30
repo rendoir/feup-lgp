@@ -7,6 +7,7 @@ import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
 
 import { checkPropTypes } from "prop-types";
+import AddTags from "../AddTags/AddTags";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
@@ -24,12 +25,13 @@ type MyFile = {
 
 interface IProps {
   /* The following attributes are only required for post edition */
-  id?: number;
+  id: number;
   title?: string;
   text?: string;
   visibility?: string;
 
   files?: MyFile[];
+  tags: any[];
 }
 
 interface IState {
@@ -39,6 +41,8 @@ interface IState {
   images: File[];
   videos: File[];
   docs: File[];
+
+  tags: any[];
   visibility: string;
 
   removedFiles?: MyFile[];
@@ -46,6 +50,7 @@ interface IState {
 
 class PostModal extends Component<IProps, IState> {
   public mode: string;
+  public addTags: any;
 
   private visibilityOptions = [
     { value: "public", title: "Public" },
@@ -63,11 +68,14 @@ class PostModal extends Component<IProps, IState> {
       docs: [],
       images: [],
       removedFiles: [],
+      tags: [],
       text: props.text || "",
       title: props.title || "",
       videos: [],
       visibility: props.visibility || "private"
     };
+
+    this.addTags = React.createRef();
 
     // Post manipulation handlers
     this.handlePostCreation = this.handlePostCreation.bind(this);
@@ -99,6 +107,11 @@ class PostModal extends Component<IProps, IState> {
     this.state.docs.forEach((file, i) =>
       formData.append("docs[" + i + "]", file)
     );
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
     formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
@@ -125,6 +138,11 @@ class PostModal extends Component<IProps, IState> {
 
   public apiEditPost() {
     const formData = new FormData();
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
     this.state.images.forEach((file, i) =>
       formData.append("images[" + i + "]", file)
     );
@@ -138,6 +156,7 @@ class PostModal extends Component<IProps, IState> {
       formData.append("removed", JSON.stringify(this.state.removedFiles));
     }
     formData.append("id", String(this.props.id));
+    formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
@@ -151,6 +170,7 @@ class PostModal extends Component<IProps, IState> {
     axios
       .post(postUrl, formData, {
         headers: {
+          /*'Authorization': "Bearer " + getToken()*/
           "Content-Type": "multipart/form-data"
         }
       })
@@ -273,6 +293,11 @@ class PostModal extends Component<IProps, IState> {
           />
         </div>
 
+        <div className="mb-3">
+          <h5>Tags</h5>
+          <AddTags onChange={this.handleTagsChange} tags={this.props.tags} />
+        </div>
+
         <div>
           <h5>Files</h5>
         </div>
@@ -350,6 +375,10 @@ class PostModal extends Component<IProps, IState> {
       </button>
     );
   }
+
+  public handleTagsChange = (tags: any, newtags: any) => {
+    this.setState({ tags: newtags });
+  };
 
   public render() {
     const htmlId =
