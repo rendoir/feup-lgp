@@ -146,10 +146,7 @@ class Post extends Component<IProps, IState> {
               size={30}
               image="https://picsum.photos/200/200?image=52"
             />
-            <a
-              className={styles.post_author}
-              href={"/user/" + this.props.author}
-            >
+            <a className={styles.post_author} href={"/user/" + this.props.id}>
               {" "}
               {this.props.author}
             </a>
