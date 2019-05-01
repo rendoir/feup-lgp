@@ -277,10 +277,10 @@ class Profile extends React.Component<IProps, State> {
   }
 
   public getProfileTown() {
-    if (this.state.info.town) {
+    if (this.state.info.home_town) {
       return (
         <li>
-          <i className="fas fa-home" /> Lives in {this.state.info.town}
+          <i className="fas fa-home" /> Lives in {this.state.info.home_town}
         </li>
       );
     }
