@@ -72,6 +72,7 @@ module.exports = {
       components: [
         "src/components/Avatar/*.tsx",
         "src/components/AvatarSelector/*.tsx",
+        "src/components/ImageEdit/ImageEdit.tsx",
         "src/components/ImagePreloader/*.tsx",
         "src/components/Icon/*.tsx",
         "src/components/Modal/Modal.tsx",
