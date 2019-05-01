@@ -22,7 +22,7 @@ class Range extends PureComponent<Props> {
     value: 0
   };
 
-  render() {
+  public render() {
     const { min, max, step, value, orientation } = this.props;
     const className = classNames(styles.container, this.props.className);
 

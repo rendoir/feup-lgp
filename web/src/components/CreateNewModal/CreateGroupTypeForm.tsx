@@ -1,12 +1,12 @@
 import React, { ChangeEvent } from "react";
 import Radio from "../Radio/Radio";
 import RadioGroup from "../Radio/RadioGroup";
-import styles from "./CreatNewModal.module.css";
+import styles from "./CreateNewModal.module.css";
 
 type Props = {
   id: string;
   maxGroupSize: number;
-  type: "group" | "channel";
+  type: "post" | "conference";
   onChange: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -15,24 +15,21 @@ function CreateGroupTypeForm(props: Props) {
     <div className={styles.type}>
       <RadioGroup name={"type"} onChange={props.onChange} value={props.type}>
         <Radio
-          value={"group"}
+          value={"post"}
           htmlAutoFocus={true}
           id={`${props.id}_type_group`}
         >
-          <p className={styles.typeLabel}>CreateNewModal.group.type.title</p>
+          Post
         </Radio>
-        <div className={styles.typeHint} id={"CreateNewModal.group.type.hint"}>
-          {String(props.maxGroupSize)}
+        <div className={styles.typeHint}>
+          Post are the basic mechanism used to share knowledge.
         </div>
         <br />
-        <Radio value={"channel"} id={`${props.id}_type_channel`}>
-          <p className={styles.typeLabel}>CreateNewModal.channel.type.title</p>
+        <Radio value={"conference"} id={`${props.id}_type_channel`}>
+          Conference
         </Radio>
-        <div
-          className={styles.typeHint}
-          id={"CreateNewModal.channel.type.hint"}
-        >
-          CreateNewModal.channel.type.hint
+        <div className={styles.typeHint}>
+          Conferences are formal meetings for discussion of a particular topic.
         </div>
       </RadioGroup>
     </div>

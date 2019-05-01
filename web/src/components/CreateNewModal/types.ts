@@ -27,11 +27,11 @@ export type SelectorStateCreator<T> = {
 };
 
 export type Request = {
-  type: "group" | "channel";
+  type: "post" | "conference";
   title: string;
   shortname: string;
   about: string;
-  avatar?: File | null;
+  avatar?: File;
   members: ISelectorState<PeerInfo>;
 };
 
@@ -44,7 +44,7 @@ export type Props = {
   error?: string | null;
   pending: boolean;
   request: Request;
-  shortnamePrefix?: string | null;
+  shortnamePrefix?: string;
   autoFocus: boolean;
   maxGroupSize: number;
   isPublicGroupEnabled: boolean;

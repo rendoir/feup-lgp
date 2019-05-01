@@ -81,6 +81,10 @@ module.exports = {
       ]
     },
     {
+      name: "Plug & Play Modals",
+      components: ["src/components/CreateNewModal/CreateNewModal.tsx"]
+    },
+    {
       name: "Post",
       components: ["src/components/Comment2/*.tsx"]
     }

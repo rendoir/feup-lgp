@@ -8,7 +8,7 @@ import styles from "./CreateNewModal.module.css";
 
 export type Props = {
   id: string;
-  type: "group" | "channel";
+  type: "post" | "conference";
   title: string;
   shortname?: string;
   shortnamePrefix?: string;
@@ -61,15 +61,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={className}>
-        {this.renderAvatar()}
+        {type === "conference" ? this.renderAvatar() : null}
         <form id={id} autoComplete={"off"} className={styles.form}>
           <InputNext
             className={styles.input}
             id={`${id}_title`}
             name={"title"}
             onChange={this.props.onChange}
-            placeholder={`CreateNewModal.${type}.info.title.placeholder`}
-            label={`CreateNewModal.${type}.info.title.label`}
+            placeholder={`${type} title`}
+            label={`Title`}
             value={title}
             htmlAutoFocus={true}
           />
@@ -78,8 +78,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_about`}
             name={"about"}
             onChange={this.props.onChange}
-            placeholder={`CreateNewModal.${type}.info.description.placeholder`}
-            label={`CreateNewModal.${type}.info.description.label`}
+            placeholder={`Write a short description of this ${type}`}
+            label={`Description`}
             type={"textarea"}
             value={about || ""}
             maxLength={aboutMaxLength}
@@ -160,21 +160,23 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={styles.shortnameWrapper}>
-        <Switcher
-          id={`${id}_public_switcher`}
-          name={`${id}_public_switcher`}
-          value={this.state.isPublic}
-          onChange={this.handlePublicToggle}
-          label={`CreateNewModal.${type}.public`}
-          className={styles.switcher}
-        />
+        <div className={styles.switcher}>
+          <Switcher
+            id={`${id}_public_switcher`}
+            name={`${id}_public_switcher`}
+            value={this.state.isPublic}
+            onChange={this.handlePublicToggle}
+            label={`Make this ${type} public`}
+            description={"Privacy settings"}
+          />
+        </div>
         <InputNext
           id={`${id}_shortname`}
           name={"shortname"}
           value={shortname || ""}
           prefix={this.props.shortnamePrefix}
           disabled={!this.state.isPublic}
-          label={`CreateNewModal.${type}.info.shortname`}
+          label={`Public URL`}
           ref={this.setShortnameInput}
           onChange={this.props.onChange}
         />
