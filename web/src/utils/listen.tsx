@@ -1,7 +1,7 @@
 import { isPassiveListenerSupports } from "./isPassiveListenerSupports";
 
 export function listen(
-  target: Element | Document,
+  target: Element | Document | Window,
   eventType: string,
   listener: EventListener,
   options: {
