@@ -640,7 +640,7 @@ class Comment extends Component<Props, State> {
     );
   }
   public getLikes() {
-    const likesDiv = [];
+    const likesDiv: any[] = [];
 
     if (this.state.likes > 0) {
       likesDiv.push(
@@ -687,7 +687,7 @@ class Comment extends Component<Props, State> {
   }
 
   public actionRenderLevelComments() {
-    const actionSeeRepliesDiv = [];
+    const actionSeeRepliesDiv: any[] = [];
 
     if (this.state.comments.length > 0) {
       actionSeeRepliesDiv.push(

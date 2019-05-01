@@ -56,7 +56,7 @@ class Feed extends React.Component<Props, State> {
   }
 
   public getPosts() {
-    const postsDiv = [];
+    const postsDiv: any[] = [];
 
     for (const post of this.state.posts) {
       postsDiv.push(
@@ -71,7 +71,7 @@ class Feed extends React.Component<Props, State> {
           visibility={post.visibility}
           comments={post.comments}
           likers={post.likers}
-          tagsPost={post.tags}
+          tags={post.tags}
           files={post.files}
         />
       );
