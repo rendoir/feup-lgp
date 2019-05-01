@@ -159,8 +159,9 @@ export async function getProfilePosts(req, res) {
     const userId = req.params.id; const userloggedId = 1; // logged in user
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated,
+            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
                     FROM posts p
+                        INNER JOIN users a ON (p.author = a.id)
 					WHERE p.author = $1 AND
 							(p.visibility = 'public'
 							OR (p.visibility= 'private' AND p.author = $2)
