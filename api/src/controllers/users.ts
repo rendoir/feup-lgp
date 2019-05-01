@@ -160,9 +160,7 @@ export async function getProfilePosts(req, res) {
     try {
         const result = await query({
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated,
-                          a.bio, a.home_town, a.university, a.work, a.work_field
                     FROM posts p
-                        INNER JOIN users a ON (p.author = a.id)
 					WHERE p.author = $1 AND
 							(p.visibility = 'public'
 							OR (p.visibility= 'private' AND p.author = $2)
@@ -236,7 +234,7 @@ export async function getProfilePosts(req, res) {
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
-            info: profileInfo.rows[0],
+            user: profileInfo.rows[0],
         });
     } catch (error) {
         console.error(error);

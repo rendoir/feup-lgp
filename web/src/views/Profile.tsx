@@ -238,36 +238,6 @@ class Profile extends React.Component<IProps, State> {
       .catch(() => console.log("Failed to get user-user interactions"));
   }
 
-  private getUserInteractionButtons() {
-    const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
-    const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
-
-    return (
-      <div>
-        <fieldset className="rate">
-          <div className="star-ratings-css">
-            {this.handleStars()}
-            <div className="star-ratings-css-bottom">
-              <span>★</span>
-              <span>★</span>
-              <span>★</span>
-              <span>★</span>
-              <span>★</span>
-            </div>
-          </div>
-        </fieldset>
-        <button onClick={this.handleUserSubscription}>
-          <i className={subscribeIcon} />
-          <span>{subscribeBtnText}</span>
-        </button>
-      </div>
-    );
-  }
-
   private handleStars() {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
@@ -332,7 +302,7 @@ class Profile extends React.Component<IProps, State> {
         this.setState({
           fetchingInfo: false,
           posts: postsComing.posts,
-          user: postsComing.info
+          user: postsComing.user
         });
       })
       .catch(() => console.log("Failed to get posts"));
