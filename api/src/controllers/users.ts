@@ -157,6 +157,7 @@ export function rate(req, res) {
 
 export async function getProfilePosts(req, res) {
     const userId = req.params.id; const userloggedId = 1; // logged in user
+    const offset = req.query.offset;
     try {
         const result = await query({
             text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
@@ -168,8 +169,9 @@ export async function getProfilePosts(req, res) {
 							OR (p.visibility = 'followers'
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
 								OR $1=$2))
-                           `,
-            values: [userId, userloggedId],
+                    LIMIT 10
+                    OFFSET $3`,
+            values: [userId, userloggedId, offset],
         });
         if (result == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
