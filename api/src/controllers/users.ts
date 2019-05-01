@@ -179,7 +179,6 @@ export async function getProfilePosts(req, res) {
         const likersToSend = [];
         const tagsToSend = [];
         const filesToSend = [];
-        const infoPerfilToSend = [];
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -223,7 +222,7 @@ export async function getProfilePosts(req, res) {
             tagsToSend.push(tagsPost.rows);
             filesToSend.push(files.rows);
         }
-        const infoPerfil = await query({
+        const profileInfo = await query({
             text: `SELECT *
                 FROM users
                 WHERE id = $1
@@ -236,7 +235,7 @@ export async function getProfilePosts(req, res) {
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
-            info: infoPerfil.rows[0],
+            info: profileInfo.rows[0],
         });
     } catch (error) {
         console.error(error);
