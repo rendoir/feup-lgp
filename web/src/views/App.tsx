@@ -19,7 +19,7 @@ class App extends React.Component {
         <Header />
         <Router>
           <Route exact={true} path="/" component={Feed} />
-          <Route exact={true} path="/user/:username" component={Profile} />
+          <Route exact={true} path="/user/:id" component={Profile} />
           <Route exact={true} path="/post/:id" component={PostView} />
           <Route exact={true} path="/admin" component={Backoffice} />
           <Route exact={true} path="/shop" component={Shop} />

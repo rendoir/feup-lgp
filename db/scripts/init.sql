@@ -23,6 +23,10 @@ CREATE TABLE users (
     pass TEXT,
     rate FLOAT NOT NULL DEFAULT 50 CONSTRAINT user_rate_constraint CHECK (rate >= 1 AND rate <= 100),
     date_created TIMESTAMP DEFAULT NOW(),
+    home_town TEXT,
+    university TEXT,
+    work TEXT,
+    work_field TEXT,
     permissions permission_level_enum NOT NULL DEFAULT 'user'
 );
 
@@ -149,10 +153,12 @@ CREATE TRIGGER delete_likes_of_a_post
     FOR EACH ROW
 EXECUTE PROCEDURE delete_likes_post();
 
-INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin');
-INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe', 'user');
-INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user2@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'John', 'User', 'user');
-INSERT INTO users (email, pass, first_name, last_name, permissions) VALUES ('user3@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Michael', 'Meyers', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('adminooooo@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
+INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe','ICBAS', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user2@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'John', 'User', 'FMUC', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user3@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Michael', 'Meyers', 'ICBAS', 'user');
+
+
 
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 INSERT INTO follows (follower, followed) VALUES (1, 3);

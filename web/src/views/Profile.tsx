@@ -1,9 +1,19 @@
 import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
+import Avatar from "../components/Avatar/Avatar";
+import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
 import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+
+interface IProps {
+  match: {
+    params: {
+      id: number;
+    };
+  };
+}
 
 type State = {
   fetchingUserUserInteractions: boolean;
@@ -14,23 +24,28 @@ type State = {
   userSubscription: boolean;
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
+  posts: any[];
+  info: any;
+  fetchingInfo: boolean;
 };
 
 const cookies = new Cookies();
 
-class Profile extends React.Component<{}, State> {
+class Profile extends React.Component<IProps, State> {
   public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
-
-    this.id = 3; // Hardcoded while profile page is not complete
-    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
+    this.observerId = 2; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
+      fetchingInfo: true,
       fetchingUserUserInteractions: true,
+      info: {},
       numberOfRatings: 1,
+      posts: [],
       userRate: 50,
       userRateTotal: 50,
       userRated: false,
@@ -44,6 +59,7 @@ class Profile extends React.Component<{}, State> {
   }
 
   public componentDidMount() {
+    this.apiGetFeedUser();
     this.apiGetUserUserInteractions();
   }
 
@@ -148,7 +164,6 @@ class Profile extends React.Component<{}, State> {
 
     return (
       <div>
-        <button />
         <fieldset className="rate">
           <div className="star-ratings-css">
             {this.handleStars()}
@@ -191,7 +206,6 @@ class Profile extends React.Component<{}, State> {
           <span id="1" onClick={this.handleUserRate}>
             ★
           </span>
-          <p>Rate this user</p>
         </div>
       );
     } else {
@@ -206,19 +220,139 @@ class Profile extends React.Component<{}, State> {
       );
     }
   }
+
+  public apiGetFeedUser() {
+    let profileUrl = `${location.protocol}//${location.hostname}`;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
+    } else {
+      profileUrl += "/api/users/" + this.id;
+    }
+    axios
+      .get(profileUrl, {
+        headers: {},
+        params: {}
+      })
+      .then(res => {
+        const postsComing = res.data;
+        console.log(postsComing);
+
+        postsComing.posts.map(
+          (post: any, idx: any) => (
+            (post.comments = postsComing.comments[idx]),
+            (post.likers = postsComing.likers[idx]),
+            (post.tags = postsComing.tags[idx]),
+            (post.files = postsComing.files[idx])
+          )
+        );
+
+        this.setState({
+          fetchingInfo: false,
+          info: postsComing.info,
+          posts: postsComing.posts
+        });
+      })
+      .catch(() => console.log("Failed to get posts"));
+  }
+
+  public getProfileName() {
+    if (this.state.info.first_name && this.state.info.last_name) {
+      return (
+        <span>
+          {" "}
+          {this.state.info.first_name} {this.state.info.last_name}{" "}
+        </span>
+      );
+    }
+  }
+
+  public getProfileEmail() {
+    if (this.state.info.email) {
+      return (
+        <li>
+          <i className="fas fa-envelope" /> {this.state.info.email}
+        </li>
+      );
+    }
+  }
+
+  public getProfileTown() {
+    if (this.state.info.town) {
+      return (
+        <li>
+          <i className="fas fa-home" /> Lives in {this.state.info.town}
+        </li>
+      );
+    }
+  }
+
+  public getProfileBio() {
+    if (this.state.info.bio) {
+      return this.state.info.bio;
+    }
+  }
+
+  public getProfileUniv() {
+    if (this.state.info.university) {
+      return (
+        <li>
+          <i className="fas fa-graduation-cap" /> {this.state.info.university}
+        </li>
+      );
+    }
+  }
+
+  public getProfileWork() {
+    if (this.state.info.work) {
+      return (
+        <li>
+          <i className="fas fa-briefcase" /> {this.state.info.work}
+        </li>
+      );
+    }
+  }
+  public getWorkField() {
+    return this.state.info.work_field;
+  }
+
+  public getProfilePosts() {
+    const postsDiv = [];
+
+    for (const post of this.state.posts) {
+      console.log("TAgs: ", post.tags);
+      console.log("Files: ", post.files);
+      postsDiv.push(
+        <Post
+          key={post.id}
+          id={post.id}
+          author={post.first_name + " " + post.last_name}
+          text={post.content}
+          likes={post.likes}
+          likers={post.likers}
+          comments={post.comments || []}
+          tagsPost={post.tags}
+          title={post.title}
+          date={post.date_created.replace(/T.*/gi, "")}
+          visibility={post.visibility}
+          files={post.files}
+        />
+      );
+    }
+
+    return postsDiv;
+  }
+
   public render() {
     if (this.state.fetchingUserUserInteractions) {
       return null;
     }
 
-    return (
-      <div>
-        <h3>
-          This text is being shown due to some google errors on the page's html
-        </h3>
-        {this.getUserInteractionButtons()}
-      </div>
-    );
+    const subscribeIcon = this.state.userSubscription
+      ? "fas fa-bell-slash"
+      : "fas fa-bell";
+    const subscribeBtnText = this.state.userSubscription
+      ? "Unsubscribe"
+      : "Subscribe";
 
     return (
       <div className="Profile">
@@ -226,277 +360,65 @@ class Profile extends React.Component<{}, State> {
           <div id="top-div" className="w-100 mt-5">
             <aside className="profile-card">
               <header>
-                <img id="cover-img" src="http://via.placeholder.com/800x200" />
-                <img id="avatar-img" src="http://via.placeholder.com/150x150" />
-                <h1>John Doe</h1>
-                <h2>Cardiologist</h2>
-                <div className="rating">
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star-half-alt" />
-                  <i className="far fa-star" />
+                <img
+                  id="cover-img"
+                  src="https://www.freewebheaders.com/wordpress/wp-content/gallery/cactus-flowers/pink-cactus-flowers-header-9414.jpg"
+                />
+                <div id="avatar-img">
+                  <Avatar
+                    title="Admin Admino"
+                    placeholder="empty"
+                    size={250}
+                    image="http://cosmicgirlgames.com/images/games/morty.gif"
+                  />
                 </div>
+                <h1>{this.getProfileName()}</h1>
+                <h2>{this.getWorkField()}</h2>
               </header>
 
               <div className="mx-5 my-4">
-                <p>
-                  Cardiologist at the London Hospital. I am a certified surgeon
-                  with over 30 years of experience.
-                </p>
+                <p>{this.getProfileBio()}</p>
+              </div>
+
+              <div className="mx-5 my-4">
+                <fieldset className="rate">
+                  <div className="star-ratings-css">
+                    {this.handleStars()}
+                    <div className="star-ratings-css-bottom">
+                      <span>★</span>
+                      <span>★</span>
+                      <span>★</span>
+                      <span>★</span>
+                      <span>★</span>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div className="mx-5 my-4">
+                <div className="buttonSubscribe">
+                  <button
+                    id="subscribeBtn"
+                    onClick={this.handleUserSubscription}
+                  >
+                    <i className={subscribeIcon} />
+                    <span>{subscribeBtnText}</span>
+                  </button>
+                </div>
               </div>
             </aside>
           </div>
           <div id="bottom-div" className="w-100 mt-5">
             <div id="left-div" className="p-3">
               <ul className="p-0 m-0">
-                <li>
-                  <i className="fas fa-briefcase" />
-                  Cardiologist at London Hospital
-                </li>
-                <li>
-                  <i className="fas fa-graduation-cap" />
-                  Studies Neurobiology at FMUP
-                </li>
-                <li>
-                  <i className="fas fa-graduation-cap" />
-                  Studied Cardiology at FMUP
-                </li>
-                <li>
-                  <i className="fas fa-home" />
-                  Lives in London, England
-                </li>
-                <li>
-                  <i className="fas fa-home" />
-                  From Liverpool, England
-                </li>
-                <li>
-                  <i className="fas fa-envelope" />
-                  johndoe@mail.com
-                </li>
-                <li>
-                  <i className="far fa-window-maximize" />
-                  www.johndoe.com
-                </li>
+                {this.getProfileWork()}
+                {this.getProfileUniv()}
+                {this.getProfileTown()}
+                {this.getProfileEmail()}
               </ul>
             </div>
             <div id="right-div">
-              <div className="post mb-4">
-                <div className="post-header">
-                  <img
-                    className="post-avatar"
-                    src="http://via.placeholder.com/50x50"
-                  />
-                  <p className="post-author">John Doe</p>
-                  <p className="post-date">02-03-2019</p>
-                </div>
-                <div className="post-content">
-                  <p>
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum."
-                  </p>
-                </div>
-                <div className="post-stats">
-                  <span>12 likes</span>
-                  <span>6 comments</span>
-                </div>
-                <div className="post-actions">
-                  <button>
-                    <i className="fas fa-thumbs-up" />
-                    <span>Like</span>
-                  </button>
-                  <button>
-                    <i className="far fa-comment-alt" />
-                    <span>Comment</span>
-                  </button>
-                  <button>
-                    <i className="fas fa-share-square" />
-                    <span>Share</span>
-                  </button>
-                </div>
-                <div className="post-comment-section">
-                  <div className="post-comments" />
-                  <div className="post-add-comment">
-                    <div>
-                      <img
-                        className="post-avatar"
-                        src="http://via.placeholder.com/50x50"
-                      />
-                    </div>
-                    <textarea
-                      className="form-control ml-4 mr-3"
-                      placeholder="Insert your comment..."
-                    />
-                    <button className="submit-comment px-2 py-1">
-                      <i className="fas fa-chevron-circle-right" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="post mb-4">
-                <div className="post-header">
-                  <img
-                    className="post-avatar"
-                    src="http://via.placeholder.com/50x50"
-                  />
-                  <p className="post-author">John Doe</p>
-                  <p className="post-date">20-02-2019</p>
-                </div>
-                <div className="post-content">
-                  <p>Look at this awesome photo</p>
-                </div>
-                <div className="post-content">
-                  <img src="http://via.placeholder.com/800x400" />
-                </div>
-                <div className="post-stats">
-                  <span>35 likes</span>
-                  <span>14 comments</span>
-                </div>
-                <div className="post-actions">
-                  <button className="liked">
-                    <i className="fas fa-thumbs-up" />
-                    <span>Like</span>
-                  </button>
-                  <button>
-                    <i className="far fa-comment-alt" />
-                    <span>Comment</span>
-                  </button>
-                  <button>
-                    <i className="fas fa-share-square" />
-                    <span>Share</span>
-                  </button>
-                </div>
-                <div className="post-comment-section">
-                  <div className="post-comments">
-                    <div className="post-comment my-3">
-                      <div className="comment-header">
-                        <div>
-                          <img
-                            className="post-avatar"
-                            src="http://via.placeholder.com/50x50"
-                          />
-                        </div>
-                        <div>
-                          <div className="comment-text">
-                            <p>
-                              <span className="post-author">John Doe</span>This
-                              is a comment.
-                            </p>
-                          </div>
-                          <div className="comment-social">
-                            <button className="comment-action">Like</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="post-comment my-3">
-                      <div className="comment-header">
-                        <div>
-                          <img
-                            className="post-avatar"
-                            src="http://via.placeholder.com/50x50"
-                          />
-                        </div>
-                        <div>
-                          <div className="comment-text">
-                            <p>
-                              <span className="post-author">John Doe</span>This
-                              is a super big comment just to test some stuff and
-                              has absolutely no content.
-                            </p>
-                            <span className="comment-detail">
-                              <i className="fas fa-thumbs-up" />2
-                            </span>
-                          </div>
-                          <div className="comment-social">
-                            <button className="comment-action">Like</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="post-add-comment">
-                    <div>
-                      <img
-                        className="post-avatar"
-                        src="http://via.placeholder.com/50x50"
-                      />
-                    </div>
-                    <textarea
-                      className="form-control ml-4 mr-3"
-                      placeholder="Insert your comment..."
-                    />
-                    <button className="submit-comment px-2 py-1">
-                      <i className="fas fa-chevron-circle-right" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="post mb-4">
-                <div className="post-header">
-                  <img
-                    className="post-avatar"
-                    src="http://via.placeholder.com/50x50"
-                  />
-                  <p className="post-author">John Doe</p>
-                  <p className="post-date">01-01-2019</p>
-                </div>
-                <div className="post-content">
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube.com/embed/Y6U728AZnV0"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen={true}
-                  />
-                </div>
-                <div className="post-stats">
-                  <span>48 likes</span>
-                  <span>21 comments</span>
-                </div>
-                <div className="post-actions">
-                  <button>
-                    <i className="fas fa-thumbs-up" />
-                    <span>Like</span>
-                  </button>
-                  <button>
-                    <i className="far fa-comment-alt" />
-                    <span>Comment</span>
-                  </button>
-                  <button>
-                    <i className="fas fa-share-square" />
-                    <span>Share</span>
-                  </button>
-                </div>
-                <div className="post-comment-section">
-                  <div className="post-comments" />
-                  <div className="post-add-comment">
-                    <div>
-                      <img
-                        className="post-avatar"
-                        src="http://via.placeholder.com/50x50"
-                      />
-                    </div>
-                    <textarea
-                      className="form-control ml-4 mr-3"
-                      placeholder="Insert your comment..."
-                    />
-                    <button className="submit-comment px-2 py-1">
-                      <i className="fas fa-chevron-circle-right" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <div className="col-lg-14">{this.getProfilePosts()}</div>
             </div>
           </div>
         </main>
