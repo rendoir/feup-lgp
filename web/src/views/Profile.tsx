@@ -7,6 +7,14 @@ import { apiSubscription } from "../utils/apiSubscription";
 import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 
+interface IProps {
+  match: {
+    params: {
+      id: number;
+    };
+  };
+}
+
 type State = {
   fetchingUserUserInteractions: boolean;
   userRate: number;
@@ -17,26 +25,25 @@ type State = {
   waitingRateRequest: boolean;
   waitingSubscriptionRequest: boolean;
   posts: any[];
-  info: any[];
+  info: any;
   fetchingInfo: boolean;
 };
 
 const cookies = new Cookies();
 
-class Profile extends React.Component<{}, State> {
+class Profile extends React.Component<IProps, State> {
   public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
-
-    this.id = 3; // Hardcoded while profile page is not complete
-    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
+    this.observerId = 2; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
-      info: [],
+      info: {},
       numberOfRatings: 1,
       posts: [],
       userRate: 50,
@@ -217,9 +224,9 @@ class Profile extends React.Component<{}, State> {
   public apiGetFeedUser() {
     let profileUrl = `${location.protocol}//${location.hostname}`;
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/1`;
+      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
     } else {
-      profileUrl += "/api/users/1";
+      profileUrl += "/api/users/" + this.id;
     }
     axios
       .get(profileUrl, {
@@ -244,55 +251,68 @@ class Profile extends React.Component<{}, State> {
           info: postsComing.info,
           posts: postsComing.posts
         });
-        console.log(postsComing.info[0][0].bio);
       })
       .catch(() => console.log("Failed to get posts"));
   }
 
   public getProfileName() {
-    const infoz = this.state.info.map((info, i) => {
+    if (this.state.info.first_name && this.state.info.last_name) {
       return (
-        <span key={i}>
-          {info[0].first_name} {info[0].last_name}
+        <span>
+          {" "}
+          {this.state.info.first_name} {this.state.info.last_name}{" "}
         </span>
       );
-    });
-    return infoz;
+    }
   }
 
   public getProfileEmail() {
-    const infoz = this.state.info.map((info, i) => {
-      return <span key={i}>{info[0].email}</span>;
-    });
-    return infoz;
+    if (this.state.info.email) {
+      return (
+        <li>
+          <i className="fas fa-envelope" /> {this.state.info.email}
+        </li>
+      );
+    }
   }
 
   public getProfileTown() {
-    const infoz = this.state.info.map((info, i) => {
-      return <span key={i}>{info[0].home_town}</span>;
-    });
-    return infoz;
+    if (this.state.info.town) {
+      return (
+        <li>
+          <i className="fas fa-home" /> Lives in {this.state.info.town}
+        </li>
+      );
+    }
   }
 
   public getProfileBio() {
-    const infoz = this.state.info.map((info, i) => {
-      return <span key={i}>{info[0].bio}</span>;
-    });
-    return infoz;
+    if (this.state.info.bio) {
+      return this.state.info.bio;
+    }
   }
 
   public getProfileUniv() {
-    const infoz = this.state.info.map((info, i) => {
-      return <span key={i}>{info[0].university}</span>;
-    });
-    return infoz;
+    if (this.state.info.university) {
+      return (
+        <li>
+          <i className="fas fa-graduation-cap" /> {this.state.info.university}
+        </li>
+      );
+    }
   }
 
   public getProfileWork() {
-    const infoz = this.state.info.map((info, i) => {
-      return <span key={i}>{info[0].work}</span>;
-    });
-    return infoz;
+    if (this.state.info.work) {
+      return (
+        <li>
+          <i className="fas fa-briefcase" /> {this.state.info.work}
+        </li>
+      );
+    }
+  }
+  public getWorkField() {
+    return this.state.info.work_field;
   }
 
   public getProfilePosts() {
@@ -353,7 +373,7 @@ class Profile extends React.Component<{}, State> {
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
-                <h2>Cardiologist</h2>
+                <h2>{this.getWorkField()}</h2>
               </header>
 
               <div className="mx-5 my-4">
@@ -391,26 +411,10 @@ class Profile extends React.Component<{}, State> {
           <div id="bottom-div" className="w-100 mt-5">
             <div id="left-div" className="p-3">
               <ul className="p-0 m-0">
-                <li>
-                  <i className="fas fa-briefcase" />
-                  {this.getProfileWork()}
-                </li>
-                <li>
-                  <i className="fas fa-graduation-cap" />
-                  {this.getProfileUniv()}
-                </li>
-                <li>
-                  <i className="fas fa-graduation-cap" />
-                  Studied Cardiology at FMUP
-                </li>
-                <li>
-                  <i className="fas fa-home" />
-                  Lives in {this.getProfileTown()}
-                </li>
-                <li>
-                  <i className="fas fa-envelope" />
-                  {this.getProfileEmail()}
-                </li>
+                {this.getProfileWork()}
+                {this.getProfileUniv()}
+                {this.getProfileTown()}
+                {this.getProfileEmail()}
               </ul>
             </div>
             <div id="right-div">

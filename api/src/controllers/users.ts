@@ -230,15 +230,13 @@ export async function getProfilePosts(req, res) {
              `,
             values: [userId],
         });
-        infoPerfilToSend.push(infoPerfil.rows);
-
         res.send({
             posts: result.rows,
             comments: commentsToSend,
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
-            info: infoPerfilToSend,
+            info: infoPerfil.rows[0],
         });
     } catch (error) {
         console.error(error);
