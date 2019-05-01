@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import classNames from "classnames";
 import styles from "./InputNext.module.css";
 
-type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
+export type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
 export type Props = {
   /** Input class attribute */
@@ -142,6 +142,18 @@ class InputNext extends Component<Props, State> {
     this.autoFocus();
   }
 
+  public focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  public blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
   private handleChange = (
     event: React.ChangeEvent<HTMLAbstractInputElement>
   ): void => {
@@ -187,18 +199,6 @@ class InputNext extends Component<Props, State> {
       if (document.activeElement !== this.input) {
         this.input.focus();
       }
-    }
-  }
-
-  private focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  private blur(): void {
-    if (this.input) {
-      this.input.blur();
     }
   }
 

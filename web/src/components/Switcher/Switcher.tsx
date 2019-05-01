@@ -17,7 +17,7 @@ export type Props = {
 };
 
 class Switcher extends PureComponent<Props> {
-  private static defaultProps = {
+  public static defaultProps = {
     danger: false,
     disabled: false,
     value: false
