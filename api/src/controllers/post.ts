@@ -32,7 +32,6 @@ export function editPost(req, res) {
     }
 
     query({
-        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: `UPDATE posts
                 SET title = $2, content = $3, content_tokens = TO_TSVECTOR($3), visibility = $4, date_updated = NOW()
                 WHERE id = $1`,

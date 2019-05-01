@@ -162,8 +162,7 @@ export async function getProfilePosts(req, res) {
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated,
                           a.bio, a.home_town, a.university, a.work, a.work_field
                     FROM posts p
-                    INNER JOIN users a
-                    ON p.author = a.id
+                        INNER JOIN users a ON (p.author = a.id)
 					WHERE p.author = $1 AND
 							(p.visibility = 'public'
 							OR (p.visibility= 'private' AND p.author = $2)
@@ -225,7 +224,7 @@ export async function getProfilePosts(req, res) {
             filesToSend.push(files.rows);
         }
         const profileInfo = await query({
-            text: `SELECT *
+            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
                 FROM users
                 WHERE id = $1
              `,
