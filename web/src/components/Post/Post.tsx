@@ -50,10 +50,10 @@ interface IProps {
   likes: number;
   visibility: string;
   comments: any[];
-
   files?: MyFile[];
   likers: any[];
   tags: any[];
+  user_id: number;
 }
 
 interface IState {
@@ -93,7 +93,7 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-
+    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -146,7 +146,10 @@ class Post extends Component<IProps, IState> {
               size={30}
               image="https://picsum.photos/200/200?image=52"
             />
-            <a className={styles.post_author} href={"/user/" + this.props.id}>
+            <a
+              className={styles.post_author}
+              href={"/user/" + this.props.user_id}
+            >
               {" "}
               {this.props.author}
             </a>
