@@ -11,15 +11,12 @@ export async function createPost(req, res) {
 
     try {
         const post = (await query({
-            text: 'INSERT INTO posts (author, title, content, visibility) VALUES ($1, $2, $3, $4) RETURNING id',
+            text: `INSERT INTO posts (author, title, content, content_tokens, visibility)
+            VALUES ($1, $2, $3, TO_TSVECTOR($3), $4) RETURNING id`,
             values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
         })).rows[0];
         saveFiles(req, res, post.id);
         saveTags(req, res, post.id);
-        await query({
-            text: 'UPDATE posts SET content_tokens = to_tsvector(content) WHERE id = $1',
-            values: [post.id],
-        });
         res.send({ id: post.id });
     } catch (error) {
         console.log('\n\nERROR:', error);
@@ -37,7 +34,7 @@ export function editPost(req, res) {
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
         text: `UPDATE posts
-                SET title = $2, content = $3, visibility = $4, date_updated = NOW()
+                SET title = $2, content = $3, content_tokens = TO_TSVECTOR($3), visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
