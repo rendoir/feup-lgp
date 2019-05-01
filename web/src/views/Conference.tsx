@@ -1,8 +1,11 @@
 import axios from "axios";
 import * as React from "react";
+
+import Chat from "../components/Chat/Chat";
 import Post from "../components/Post/Post";
-import "../styles/Conference.css";
 import Livestream from "../components/Livestream/Livestream";
+
+import "../styles/Conference.css";
 
 interface Props {
   match: {
@@ -31,10 +34,10 @@ class Conference extends React.Component<Props, State> {
   }
 
   public componentDidMount() {
-    //this.apiGetFeed();
+    //this.apiGetConference();
   }
 
-  public apiGetFeed() {
+  public apiGetConference() {
     let conferenceURL = `${location.protocol}//${location.hostname}`;
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
       conferenceURL += `:${process.env.REACT_APP_API_PORT}/conference/`;
@@ -53,8 +56,13 @@ class Conference extends React.Component<Props, State> {
     return (
       <div id="Conference" className="container my-5">
         <div>Hello Conference {this.id}</div>
-        <div className="live">
-          <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+        <div className="conf_head">
+          <div className="live_container">
+            <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+          </div>
+          <div className="chat_container">
+            <Chat />
+          </div>
         </div>
       </div>
     );
