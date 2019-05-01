@@ -168,7 +168,8 @@ export async function getProfilePosts(req, res) {
 							OR (p.visibility= 'private' AND p.author = $2)
 							OR (p.visibility = 'followers'
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
-								OR $1=$2))
+                                OR $1=$2))
+                    ORDER BY p.date_created DESC
                     LIMIT 10
                     OFFSET $3`,
             values: [userId, userloggedId, offset],
@@ -191,7 +192,7 @@ export async function getProfilePosts(req, res) {
                         ON c.author = a.id
                         WHERE
                             p.id = $1
-                        ORDER BY c.date_updated ASC;`,
+                        ORDER BY c.date_updated ASC`,
                 values: [post.id],
             });
             const likersPost = await query({
