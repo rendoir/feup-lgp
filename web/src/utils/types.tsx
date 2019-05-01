@@ -2,7 +2,7 @@ export type AvatarSIze = "small" | "large" | "full";
 
 export type AvatarPlaceholder =
   | "empty"
-  | "blue"
+  | "lblue"
   | "blue"
   | "purple"
   | "red"
@@ -58,8 +58,8 @@ export type PeerInfo = {
   peer: Peer;
   type: PeerInfoType;
   title: string;
-  userName?: string | null;
-  avatar?: string | null;
-  bigAvatar?: string | null;
+  userName?: string;
+  avatar?: string;
+  bigAvatar?: string;
   placeholder: AvatarPlaceholder;
 };
