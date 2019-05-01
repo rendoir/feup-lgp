@@ -154,3 +154,93 @@ export function rate(req, res) {
         res.status(400).send({ message: 'An error ocurred while rating an user' });
     });
 }
+
+export async function getProfilePosts(req, res) {
+    const userId = req.params.id; const userloggedId = 1; // logged in user
+    try {
+        const result = await query({
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated,
+                          a.bio, a.home_town, a.university, a.work, a.work_field
+                    FROM posts p
+                    INNER JOIN users a
+                    ON p.author = a.id
+					WHERE p.author = $1 AND
+							(p.visibility = 'public'
+							OR (p.visibility= 'private' AND p.author = $2)
+							OR (p.visibility = 'followers'
+								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
+								OR $1=$2))
+                           `,
+            values: [userId, userloggedId],
+        });
+        if (result == null) {
+            res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
+            return;
+        }
+        const commentsToSend = [];
+        const likersToSend = [];
+        const tagsToSend = [];
+        const filesToSend = [];
+        for (const post of result.rows) {
+            const comment = await query({
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                        FROM posts p
+                        LEFT JOIN comments c
+                        ON p.id = c.post
+                        INNER JOIN users a
+                        ON c.author = a.id
+                        WHERE
+                            p.id = $1
+                        ORDER BY c.date_updated ASC;`,
+                values: [post.id],
+            });
+            const likersPost = await query({
+                text: `SELECT a.id, a.first_name, a.last_name
+                        FROM likes_a_post l
+                        INNER JOIN users a
+                        ON l.author = a.id
+                        WHERE l.post = $1`,
+                values: [post.id],
+            });
+            const tagsPost = await query({
+                text: `SELECT t.name
+                        FROM tags t
+                        INNER JOIN posts_tags pt
+                        ON pt.tag = t.id
+                        WHERE pt.post = $1`,
+                values: [post.id],
+            });
+            const files = await query({
+                text: `SELECT f.name, f.mimetype, f.size
+                        FROM posts p
+                        INNER JOIN files f
+                        ON p.id = f.post
+                        WHERE
+                            p.id = $1`,
+                values: [post.id],
+            });
+            commentsToSend.push(comment.rows);
+            likersToSend.push(likersPost.rows);
+            tagsToSend.push(tagsPost.rows);
+            filesToSend.push(files.rows);
+        }
+        const profileInfo = await query({
+            text: `SELECT *
+                FROM users
+                WHERE id = $1
+             `,
+            values: [userId],
+        });
+        res.send({
+            posts: result.rows,
+            comments: commentsToSend,
+            likers: likersToSend,
+            tags: tagsToSend,
+            files: filesToSend,
+            info: profileInfo.rows[0],
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post'));
+    }
+}

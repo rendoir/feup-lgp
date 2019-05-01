@@ -329,7 +329,7 @@ export function saveFiles(req, res, id) {
             const filetype = file.mimetype;
             const filesize = file.size;
             // Move file to uploads
-            file.mv('uploads/' + id + '/' + filename, (err) => {
+            file.mv('./uploads/' + id + '/' + filename, (err) => {
                 if (err) {
                     res.status(400).send({ message: 'An error ocurred while creating/editing post: Moving file.' });
                 } else {

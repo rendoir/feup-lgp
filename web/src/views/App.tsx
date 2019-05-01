@@ -23,7 +23,7 @@ class App extends React.Component {
             <Header />
             <Switch>
               <Route exact={true} path="/" component={Feed} />
-              <Route path="/user/:username" component={Profile} />
+              <Route path="/user/:id" component={Profile} />
               <Route path="/post/:id" component={PostView} />
               <Route path="/admin" component={Backoffice} />
               <Route path="/shop" component={Shop} />
