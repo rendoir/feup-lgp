@@ -11,6 +11,7 @@ import PostView from "./PostView";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import Shop from "./Shop";
+import Conference from "./Conference";
 
 class App extends React.Component {
   public render() {
@@ -25,6 +26,7 @@ class App extends React.Component {
           <Route exact={true} path="/shop" component={Shop} />
           <Route exact={true} path="/login" component={Login} />
           <Route exact={true} path="/register" component={RegisterLanding} />
+          <Route exact={true} path="/conference/:id" component={Conference} />
         </Router>
       </div>
     );
