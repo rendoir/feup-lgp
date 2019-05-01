@@ -52,6 +52,7 @@ module.exports = {
         "src/components/Input/*.tsx",
         "src/components/InputNext/*.tsx",
         "src/components/Radio/Radio.tsx",
+        "src/components/Range/Range.tsx",
         "src/components/Select/*.tsx",
         "src/components/Switcher/*.tsx"
       ]
