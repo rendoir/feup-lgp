@@ -1,0 +1,115 @@
+@import '../../styles/variables';
+
+$radio-font-family: $default-font-family;
+$radio-size: 22px;
+$radio-inactive-color: #c0c0c0;
+$radio-disabled-color: $radio-inactive-color;
+$radio-active-color: $color-primary;
+$radio-label-font-size: 15px;
+$radio-label-padding: 24px;
+$radio-disabled-label-color: #cbcbcb;
+
+.container {
+  all: initial;
+  display: inline-flex;
+  flex-direction: row;
+  padding: 6px 0;
+  cursor: pointer;
+  font-family: $radio-font-family;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  overflow: hidden;
+
+  &:hover {
+    & .radio {
+      box-shadow: 0 0 0 2px $radio-active-color inset;
+    }
+  }
+
+  &:active {
+    & .input:checked + .radio {
+      &:before {
+        transform: scale(0.9);
+      }
+    }
+  }
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  top: -9999px;
+  left: -9999px;
+
+  & + .radio {
+    &:before {
+      transform: scale(0);
+    }
+  }
+
+  &:checked + .radio {
+    box-shadow: 0 0 0 2px $radio-active-color inset;
+
+    &:before {
+      transform: scale(1);
+    }
+  }
+}
+
+.radio {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  width: $radio-size;
+  height: $radio-size;
+  cursor: pointer;
+  user-select: none;
+  transition: box-shadow $default-transition-duration ease-in-out;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px $radio-inactive-color inset;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  &:before {
+    display: block;
+    width: 10px;
+    height: 10px;
+    content: '';
+    transition: tranform $default-transition-duration ease-in-out;
+    border-radius: 50%;
+    background-color: $color-primary;
+    flex: 0 0 auto;
+  }
+}
+
+.label {
+  padding-left: $radio-label-padding;
+  cursor: inherit;
+  user-select: none;
+  font-size: $radio-label-font-size;
+
+  & b,
+  & strong {
+    font-weight: 500;
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+
+  &.labeled {
+    color: $radio-disabled-label-color;
+  }
+
+  & .radio {
+    cursor: not-allowed;
+    box-shadow: 0 0 0 2px $radio-disabled-color inset !important;
+
+    &:before {
+      background-color: $radio-disabled-color !important;
+    }
+  }
+}

@@ -51,7 +51,9 @@ module.exports = {
       components: [
         "src/components/Input/*.tsx",
         "src/components/InputNext/*.tsx",
-        "src/components/Select/*.tsx"
+        "src/components/Radio/Radio.tsx",
+        "src/components/Select/*.tsx",
+        "src/components/Switcher/*.tsx"
       ]
     },
     {
@@ -73,7 +75,6 @@ module.exports = {
         "src/components/Icon/*.tsx",
         "src/components/Modal/Modal.tsx",
         "src/components/Scroller/*.tsx",
-        "src/components/Switcher/*.tsx",
         "src/components/Tabs/Tabs.tsx"
       ]
     },
