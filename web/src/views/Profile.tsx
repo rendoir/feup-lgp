@@ -316,7 +316,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   public getProfilePosts() {
-    const postsDiv = [];
+    const postsDiv: any[] = [];
 
     for (const post of this.state.posts) {
       console.log("TAgs: ", post.tags);
@@ -330,7 +330,7 @@ class Profile extends React.Component<IProps, State> {
           likes={post.likes}
           likers={post.likers}
           comments={post.comments || []}
-          tagsPost={post.tags}
+          tags={post.tags}
           title={post.title}
           date={post.date_created.replace(/T.*/gi, "")}
           visibility={post.visibility}
