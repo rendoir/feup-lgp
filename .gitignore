@@ -1,0 +1,6 @@
+.idea/
+.vscode
+.DS_Store
+secrets
+reverse_proxy/*.crt
+reverse_proxy/*.key

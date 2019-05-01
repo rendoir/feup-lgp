@@ -1,0 +1,54 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "gnet server",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "nodemon",
+    "build": "tsc",
+    "lint": "tslint -p . -c tslint.json",
+    "report": "nyc report",
+    "test": "npm run build && nyc --reporter=html mocha --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/alexandreaam/lgp-3a"
+  },
+  "keywords": [
+    "gnet",
+    "medical",
+    "social-network",
+    "glintt",
+    "medicine"
+  ],
+  "author": "lgp-3a",
+  "license": "MIT",
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/express-fileupload": "^0.4.0",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^11.13.4",
+    "body-parser": "^1.18.3",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "express-fileupload": "^1.1.4",
+    "express-jwt": "^5.3.1",
+    "express-session": "^1.16.1",
+    "fs": "0.0.1-security",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "pg": "^7.9.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.4.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.18.11",
+    "nyc": "^13.1.0",
+    "supertest": "^4.0.2",
+    "tslint": "^5.15.0"
+  }
+}

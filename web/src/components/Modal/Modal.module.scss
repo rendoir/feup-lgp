@@ -1,0 +1,194 @@
+@import '../../styles/variables';
+
+$modal-font-family: $default-font-family;
+$modal-font-size: $default-font-size;
+$modal-font-color: $default-font-color;
+$modal-font-color-light: $default-font-color-light;
+$modal-border-radius: $default-border-radius;
+$modal-border-color: rgba($black, 0.075);
+$modal-min-width: 500px;
+$modal-overlay-color: rgba($black, 0.45);
+$modal-close-size: 28px;
+$modal-close-size-large: 32px;
+$modal-close-color: rgba($black, 0.4);
+$modal-close-color-hover: rgba($black, 0.6);
+$modal-close-transition-duration: $default-transition-duration;
+$modal-background-color: $white;
+$modal-fullscreen-background-color: $white;
+$modal-fullscreen-padding-top: 80px;
+$modal-fullscreen-min-width: 800px;
+$modal-fullscreen-min-height: 600px;
+$modal-header-font-size: $default-font-size-large;
+$modal-header-color: $default-font-color;
+
+.container {
+  all: initial;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: ($default-padding-large * 3) 0 0;
+  border-radius: $modal-border-radius;
+  outline: none;
+  background-color: $modal-background-color;
+  box-shadow: 0 2px 3px 0 rgba($black, 0.15);
+  font-family: $modal-font-family;
+  flex: 0 0 auto;
+  min-width: $modal-min-width;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-direction: column;
+  padding: $default-padding * 2;
+  background-color: $modal-overlay-color;
+  align-items: center;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.close {
+  display: block;
+  width: $modal-close-size;
+  height: $modal-close-size;
+  cursor: pointer;
+  user-select: none;
+  transition: color $modal-close-transition-duration linear;
+  line-height: inherit;
+  color: $modal-close-color;
+
+  &:hover {
+    color: $modal-close-color-hover;
+  }
+}
+
+.closeSpinner {
+  vertical-align: inherit;
+}
+
+.header {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  width: 100%;
+  height: 60px;
+  padding: $default-padding ($default-padding * 2);
+  cursor: default;
+  user-select: none;
+  font-size: $modal-header-font-size;
+  font-weight: 500;
+  line-height: $modal-close-size;
+  flex: 0 0 auto;
+  color: $modal-header-color;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+
+  & .closeContainer {
+    position: absolute;
+    top: $default-padding;
+    right: $default-padding * 2;
+  }
+
+  & .close {
+    line-height: $modal-close-size;
+  }
+
+  &.border {
+    box-shadow: inset 0 -1px 0 0 $modal-border-color;
+  }
+}
+
+.body {
+  position: relative;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: $default-padding ($default-padding * 2);
+  font-size: $modal-font-size;
+  flex: 1 1 auto;
+}
+
+.footer {
+  padding: $default-padding ($default-padding * 2);
+  flex: 0 1 auto;
+
+  &.border {
+    box-shadow: inset 0 1px 0 0 $modal-border-color;
+  }
+}
+
+.fullscreen {
+  background-color: $modal-fullscreen-background-color;
+  padding: 0;
+
+  & .closeContainer {
+    position: absolute;
+    top: $default-padding * 2;
+    right: $default-padding * 2;
+  }
+
+  & .close {
+    font-size: $modal-close-size-large;
+    line-height: 1;
+  }
+
+  & .header {
+    margin-top: $modal-fullscreen-padding-top;
+    padding: $default-padding 0;
+    box-shadow: none;
+    font-size: $modal-header-font-size * 2;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  & .body {
+    padding: 0;
+  }
+
+  & .container {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    box-shadow: none;
+
+    & .wrapper {
+      overflow: auto;
+      width: auto;
+      min-width: $modal-fullscreen-min-width;
+      height: 100%;
+      max-height: $modal-fullscreen-min-height;
+      margin: 0 auto;
+      flex: 0 1 auto;
+    }
+  }
+}
+
+.spinner {
+  vertical-align: inherit;
+}
+
+.bodyWrapper {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+}
+
+.tabs {
+  flex: 0 0 auto !important;
+  padding: $default-padding-small !important;
+  padding-right: 0 !important;
+}

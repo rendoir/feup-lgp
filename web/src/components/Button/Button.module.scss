@@ -1,0 +1,513 @@
+@import '../../styles/variables';
+
+$button-min-width: 90px;
+
+$button-border-radius: $default-border-radius;
+$button-border-radius-small: $default-border-radius-small;
+
+$button-padding-top: $default-padding-small;
+$button-padding-right: $default-padding-large * 1.5;
+$button-padding-bottom: $default-padding-small;
+$button-padding-left: $default-padding-large * 1.5;
+
+$button-font-size: $default-font-size-large;
+$button-font-weight: 400;
+$button-line-height: 26px;
+$button-font-family: $default-font-family;
+$button-size-modifier: 0.25;
+
+$button-default-background-color: #757575;
+$button-default-text-shadow: 0 1px 1px rgba($black, 0.2);
+$button-default-box-shadow: 0 2px 4px rgba($black, 0.25);
+$button-default-box-shadow-active: 0 1px 1px rgba($black, 0.25);
+$button-default-hover-background-color: tint(
+  $button-default-background-color,
+  10%
+);
+$button-default-active-background-color: shade(
+  $button-default-background-color,
+  5%
+);
+$button-default-disabled-background-color: rgba(
+  darken($button-default-background-color, 0.5),
+  0.7
+);
+$button-default-color: $white;
+
+$button-primary-background-color: $color-primary;
+$button-primary-hover-background-color: tint(
+  $button-primary-background-color,
+  10%
+);
+$button-primary-active-background-color: shade(
+  $button-primary-background-color,
+  5%
+);
+$button-primary-disabled-background-color: rgba(
+  darken($button-primary-background-color, 0.5),
+  0.7
+);
+$button-primary-color: $button-default-color;
+
+$button-success-background-color: $color-success;
+$button-success-hover-background-color: tint(
+  $button-success-background-color,
+  10%
+);
+$button-success-active-background-color: shade(
+  $button-success-background-color,
+  5%
+);
+$button-success-disabled-background-color: rgba(
+  darken($button-success-background-color, 0.5),
+  0.7
+);
+$button-success-color: $button-default-color;
+
+$button-danger-background-color: $color-danger;
+$button-danger-hover-background-color: tint(
+  $button-danger-background-color,
+  10%
+);
+$button-danger-active-background-color: shade(
+  $button-danger-background-color,
+  5%
+);
+$button-danger-disabled-background-color: rgba(
+  darken($button-danger-background-color, 0.5),
+  0.7
+);
+$button-danger-color: $button-default-color;
+
+$button-info-background-color: $color-info;
+$button-info-hover-background-color: tint($button-info-background-color, 10%);
+$button-info-active-background-color: shade($button-info-background-color, 5%);
+$button-info-disabled-background-color: rgba(
+  darken($button-info-background-color, 0.5),
+  0.7
+);
+$button-info-color: $button-default-color;
+
+$button-warning-background-color: $color-warning;
+$button-warning-hover-background-color: tint(
+  $button-warning-background-color,
+  10%
+);
+$button-warning-active-background-color: shade(
+  $button-warning-background-color,
+  5%
+);
+$button-warning-disabled-background-color: rgba(
+  darken($button-warning-background-color, 0.5),
+  0.7
+);
+$button-warning-color: $button-default-color;
+
+$button-transition-duration: $default-transition-duration;
+
+.container {
+  all: initial;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: $button-min-width;
+  cursor: pointer;
+  user-select: none;
+  transition-timing-function: ease;
+  transition-duration: $button-transition-duration;
+  transition-property: color, background, box-shadow, text-shadow;
+  text-align: center;
+  border: 0;
+  outline: none;
+  background-color: transparent;
+  font-family: $button-font-family;
+  font-weight: $button-font-weight;
+  color: #000;
+
+  &[disabled] {
+    cursor: default;
+  }
+}
+
+.wide {
+  width: 100%;
+}
+
+.rounded {
+  border-radius: $button-border-radius;
+
+  &.small {
+    border-radius: $button-border-radius-small;
+  }
+}
+
+.default {
+  background-color: $button-default-background-color;
+  color: $button-default-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-default-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-default-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-default-disabled-background-color;
+  }
+}
+
+.primary {
+  background-color: $button-primary-background-color;
+  color: $button-primary-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-primary-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-primary-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-primary-disabled-background-color;
+  }
+}
+
+.success {
+  background-color: $button-success-background-color;
+  color: $button-success-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-success-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-success-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-success-disabled-background-color;
+  }
+}
+
+.danger {
+  background-color: $button-danger-background-color;
+  color: $button-danger-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-danger-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-danger-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-danger-disabled-background-color;
+  }
+}
+
+.info {
+  background-color: $button-info-background-color;
+  color: $button-info-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-info-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-info-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-info-disabled-background-color;
+  }
+}
+
+.warning {
+  background-color: $button-warning-background-color;
+  color: $button-warning-color;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    background-color: $button-warning-hover-background-color;
+  }
+
+  &:active:enabled {
+    background-color: $button-warning-active-background-color;
+  }
+
+  &[disabled] {
+    background-color: $button-warning-disabled-background-color;
+  }
+}
+
+.button {
+  text-shadow: $button-default-text-shadow;
+
+  &:hover:enabled,
+  &:focus:enabled {
+    box-shadow: $button-default-box-shadow;
+  }
+
+  &:active:enabled {
+    box-shadow: $button-default-box-shadow-active;
+  }
+}
+
+.link {
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+  &.default {
+    color: $button-default-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-default-hover-background-color;
+    }
+
+    &:active {
+      color: $button-default-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-default-disabled-background-color;
+    }
+  }
+
+  &.primary {
+    color: $button-primary-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-primary-hover-background-color;
+    }
+
+    &:active {
+      color: $button-primary-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-primary-disabled-background-color;
+    }
+  }
+
+  &.success {
+    color: $button-success-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-success-hover-background-color;
+    }
+
+    &:active {
+      color: $button-success-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-success-disabled-background-color;
+    }
+  }
+
+  &.danger {
+    color: $button-danger-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-danger-hover-background-color;
+    }
+
+    &:active {
+      color: $button-danger-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-danger-disabled-background-color;
+    }
+  }
+
+  &.info {
+    color: $button-info-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-info-hover-background-color;
+    }
+
+    &:active {
+      color: $button-info-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-info-disabled-background-color;
+    }
+  }
+
+  &.warning {
+    color: $button-warning-background-color;
+
+    &:hover,
+    &:focus {
+      color: $button-warning-hover-background-color;
+    }
+
+    &:active {
+      color: $button-warning-active-background-color;
+    }
+
+    &[disabled] {
+      color: $button-warning-disabled-background-color;
+    }
+  }
+}
+
+.outline {
+  background-color: transparent;
+  text-shadow: 0 0 0 transparent;
+
+  &:hover,
+  &:focus,
+  &:active {
+    text-shadow: $button-default-text-shadow;
+  }
+
+  &.default {
+    box-shadow: inset 0 0 0 1px $button-default-background-color;
+    color: $button-default-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-default-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-default-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-default-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-default-active-background-color;
+      color: $white;
+    }
+  }
+
+  &.primary {
+    box-shadow: inset 0 0 0 1px $button-primary-background-color;
+    color: $button-primary-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-primary-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-primary-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-primary-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-primary-active-background-color;
+      color: $white;
+    }
+  }
+
+  &.success {
+    box-shadow: inset 0 0 0 1px $button-success-background-color;
+    color: $button-success-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-success-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-success-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-success-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-success-active-background-color;
+      color: $white;
+    }
+  }
+
+  &.danger {
+    box-shadow: inset 0 0 0 1px $button-danger-background-color;
+    color: $button-danger-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-danger-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-danger-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-danger-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-danger-active-background-color;
+      color: $white;
+    }
+  }
+
+  &.info {
+    box-shadow: inset 0 0 0 1px $button-info-background-color;
+    color: $button-info-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-info-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-info-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-info-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-info-active-background-color;
+      color: $white;
+    }
+  }
+
+  &.warning {
+    box-shadow: inset 0 0 0 1px $button-warning-background-color;
+    color: $button-warning-background-color;
+
+    &:hover,
+    &:focus {
+      background-color: $button-warning-hover-background-color;
+      box-shadow: inset 0 0 0 1px $button-warning-hover-background-color;
+      color: $white;
+    }
+
+    &:active {
+      background-color: $button-warning-active-background-color;
+      box-shadow: inset 0 0 0 1px $button-warning-active-background-color;
+      color: $white;
+    }
+  }
+}
+
+.small {
+  padding: ($button-padding-top * (1 - $button-size-modifier))
+    ($button-padding-right * (1 - $button-size-modifier))
+    ($button-padding-bottom * (1 - $button-size-modifier))
+    ($button-padding-left * (1 - $button-size-modifier));
+  font-size: $button-font-size * (1 - $button-size-modifier);
+  line-height: $button-line-height * (1 - $button-size-modifier);
+}
+
+.normal {
+  padding: $button-padding-top $button-padding-right $button-padding-bottom
+    $button-padding-left;
+  font-size: $button-font-size;
+  line-height: $button-line-height;
+}
+
+.large {
+  padding: ($button-padding-top * (1 + $button-size-modifier))
+    ($button-padding-right * (1 + $button-size-modifier))
+    ($button-padding-bottom * (1 + $button-size-modifier))
+    ($button-padding-left * (1 + $button-size-modifier));
+  font-size: $button-font-size * (1 + $button-size-modifier);
+  line-height: $button-line-height * (1 + $button-size-modifier);
+}

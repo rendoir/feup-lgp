@@ -1,0 +1,15 @@
+@import '../../styles/common';
+
+#user-card-comp {
+    a {
+        text-decoration: none;
+    }
+
+    .username {
+        color: $glintt;
+    }
+
+    .username:hover {
+        color: $dark-accent-color;
+    }
+}

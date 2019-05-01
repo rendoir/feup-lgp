@@ -1,0 +1,58 @@
+@import '../../styles/variables';
+
+$avatar-text-color: $white;
+$avatar-text-font-size: 32px;
+$avatar-unset-color: $color-success;
+$avatar-away-color: $color-warning;
+$avatar-dnd-color: $color-danger;
+$avatar-hovered-opacity: 0.9;
+$avatar-active-opacity: 0.85;
+
+.container {
+  all: initial;
+  display: inline-block;
+  border-radius: 100%;
+  line-height: 0;
+  transform: translateZ(1px);
+  transition: opacity $default-transition-duration ease-in-out;
+  opacity: 1;
+  user-select: none;
+}
+
+.svg {
+  z-index: 3000 !important;
+}
+
+.text {
+  font-family: $default-font-family;
+  font-size: $avatar-text-font-size;
+  color: $avatar-text-color;
+  letter-spacing: 1px;
+  fill: currentColor;
+  text-transform: uppercase;
+  user-select: none;
+  cursor: inherit;
+  vertical-align: middle;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.hovered {
+  opacity: $avatar-hovered-opacity;
+
+  &:active {
+    opacity: $avatar-active-opacity;
+  }
+}
+
+.unset {
+  fill: $avatar-unset-color;
+}
+
+.away {
+  fill: $avatar-away-color;
+}
+
+.do_not_disturb {
+  fill: $avatar-dnd-color;
+}

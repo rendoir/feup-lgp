@@ -1,0 +1,104 @@
+@import 'variables';
+
+body {
+  font-family: $default-font-family !important;
+
+  p {
+    margin: 0;
+  }
+
+  .footer {
+    a {
+      color: $glintt !important;
+    }
+
+    a:hover {
+      color: $dark-accent-color !important;
+    }
+  }
+
+  textarea {
+    overflow: hidden !important;
+    resize: none !important;
+    height: calc(1.5em + 0.75rem + 2px) !important;
+  }
+
+  input:focus,
+  textarea:focus {
+    box-shadow: 0 0 0 0.2rem $light-accent-color !important;
+    border-color: $light-accent-color !important;
+    outline: none !important;
+  }
+
+  input[type='text']::placeholder,
+  textarea::placeholder {
+    color: #6f8183;
+  }
+
+  input[type='text']:focus::placeholder,
+  textarea:focus::placeholder {
+    color: darkgrey;
+  }
+
+  .pointer {
+    cursor: pointer;
+  }
+
+  .star-ratings-css {
+    unicode-bidi: bidi-override;
+    color: #c5c5c5;
+    font-size: 25px;
+    height: 25px;
+    width: 100px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0;
+    text-shadow: 0 1px 0 #a2a2a2;
+
+    button{
+      font-size: 100%;
+      font-family: inherit;
+      border: 0;
+      border-color: #ffffff;
+      padding: 0;
+      overflow: visible;
+      text-transform: none;
+      -webkit-appearance: button;
+    }
+
+    &-top {
+      color: #e7711b;
+      padding: 0;
+      position: absolute;
+      z-index: 0;
+      display: block;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+    }
+    &-bottom {
+      padding: 0;
+      display: block;
+      z-index: -1;
+    }
+
+
+    #rate{
+      color: #8f8f8f;
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+
+    #rate span:hover:before,
+    #rate span:hover ~ span:before {
+      color: #e7711b;
+      content: "\2605";
+      position: absolute;
+    }
+
+    #rate p{
+      color: #000000;
+      font-size: small;
+    }
+  }
+}
