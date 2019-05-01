@@ -22,6 +22,7 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
+                ORDER BY date_created DESC
                 LIMIT 10
                 OFFSET $2`,
         values: [loggedInUser, offset, queryKeywords, initialDate, finalDate, tags],
@@ -45,6 +46,7 @@ function authorQuery(keywords: string[], tags: string[], offset: number, initial
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
+                ORDER BY date_created DESC
                 LIMIT 10
                 OFFSET $2`,
         values: [loggedInUser, offset, queryKeywords, initialDate, finalDate, tags],
