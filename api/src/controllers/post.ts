@@ -11,8 +11,8 @@ export async function createPost(req, res) {
 
     try {
         const post = (await query({
-            text: `INSERT INTO posts (author, title, content, content_tokens, visibility)
-            VALUES ($1, $2, $3, TO_TSVECTOR($3), $4) RETURNING id`,
+            text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
+            VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
             values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
         })).rows[0];
         saveFiles(req, res, post.id);
@@ -33,7 +33,7 @@ export function editPost(req, res) {
 
     query({
         text: `UPDATE posts
-                SET title = $2, content = $3, content_tokens = TO_TSVECTOR($3), visibility = $4, date_updated = NOW()
+                SET title = $2, content = $3, search_tokens = TO_TSVECTOR($2 || ' ' || $3), visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
         values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {

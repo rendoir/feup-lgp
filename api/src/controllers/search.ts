@@ -14,7 +14,7 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
-                    (p.content_tokens @@ TO_TSQUERY($3) OR $3 LIKE '')
+                    (p.search_tokens @@ TO_TSQUERY($3) OR $3 LIKE '')
                     AND $6::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
