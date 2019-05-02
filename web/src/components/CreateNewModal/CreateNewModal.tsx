@@ -122,6 +122,35 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     }
   };
 
+  private handleFileChange = (files: FileList | null) => {
+    if (!files) {
+      return;
+    }
+
+    const images: File[] = [];
+    const videos: File[] = [];
+    const docs: File[] = [];
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith("image")) {
+        images.push(file);
+      } else if (file.type.startsWith("video")) {
+        videos.push(file);
+      } else {
+        docs.push(file);
+      }
+    });
+
+    this.props.onRequestChange({
+      ...this.props.request,
+      files: {
+        docs,
+        images,
+        videos
+      }
+    });
+  };
+
   private renderError() {
     const { error } = this.props;
 
@@ -216,6 +245,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
+            onFileChange={this.handleFileChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>

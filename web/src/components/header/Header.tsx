@@ -155,13 +155,28 @@ export default class Header extends React.Component<{}, State> {
         : "/api";
 
     if (request.type === "post") {
+      const formData = new FormData();
+      request.files.images.forEach((file, idx) =>
+        formData.append("images[" + idx + "]", file)
+      );
+      request.files.videos.forEach((file, idx) =>
+        formData.append("videos[" + idx + "]", file)
+      );
+      request.files.docs.forEach((file, idx) =>
+        formData.append("docs[" + idx + "]", file)
+      );
+
+      formData.append("author", "1");
+      formData.append("text", request.about);
+      formData.append("title", request.title);
+      formData.append("visibility", request.privacy);
+
       url += "/post/create";
       axios
-        .post(url, {
-          author: 1, // This is the logged in user
-          text: request.about,
-          title: request.title,
-          visibility: request.privacy
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         })
         .then(res => {
           console.log("Post created - reloading page...");

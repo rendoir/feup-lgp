@@ -30,7 +30,7 @@ export type Props = {
     | "url"
     | "textarea";
   /** input value attribute */
-  value: string | number;
+  value?: string | number;
   /** input name attribute */
   name?: string;
   /** input label attribute */

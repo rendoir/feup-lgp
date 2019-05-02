@@ -22,6 +22,7 @@ export type Props = {
   onChange: (value: string, event: ChangeEvent) => void;
   onAvatarRemove: () => void;
   onAvatarChange: (avatar: File) => void;
+  onFileChange: (files: FileList | null) => void;
 };
 
 export type State = {
@@ -255,13 +256,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     return (
       <div>
         <InputNext
-          label={"Files"}
+          onChange={(_, e) =>
+            this.props.onFileChange((e.target as HTMLInputElement).files)
+          }
+          id={`${id}_post_files`}
           type={"file"}
+          label={"Files"}
           multiple={true}
-          onChange={this.handleChange}
-          id={`${id}_post_video`}
-          name={"video"}
-          value={""}
+          name={"files"}
         />
       </div>
     );
