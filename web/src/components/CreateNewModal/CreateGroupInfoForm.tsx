@@ -26,13 +26,13 @@ export type Props = {
 
 export type State = {
   avatar?: string;
-  file: string;
   isPublic: boolean;
   privacy: string;
-  video: string;
+  files: File[];
   local: string;
   dateStart: string;
   dateEnd: string;
+  tags: string[];
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
@@ -50,11 +50,11 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       avatar: undefined,
       dateEnd: "",
       dateStart: "",
-      file: "",
+      files: [],
       isPublic: Boolean(props.shortname),
       local: "",
       privacy: "public",
-      video: ""
+      tags: []
     };
   }
 
@@ -154,6 +154,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     this.props.onChange(value, event);
   };
 
+  private handleTagsChange = (tags: string[], newtags: string[]) => {
+    this.setState({ tags: newtags });
+  };
+
   private renderAvatar() {
     const { title } = this.props;
     const { avatar } = this.state;
@@ -251,23 +255,13 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     return (
       <div>
         <InputNext
-          label={"Video"}
-          type={"url"}
-          placeholder={"Insert video URL (Optional)"}
+          label={"Files"}
+          type={"file"}
+          multiple={true}
           onChange={this.handleChange}
           id={`${id}_post_video`}
           name={"video"}
-          value={this.state.video}
-        />
-        <InputNext
-          label={"File"}
-          placeholder={"Upload file (Optional)"}
-          type={"file"}
-          onChange={this.handleChange}
-          id={`${id}_post_file`}
-          name={"file"}
-          value={this.state.file}
-          multiple={true}
+          value={""}
         />
       </div>
     );

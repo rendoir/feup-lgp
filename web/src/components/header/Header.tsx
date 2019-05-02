@@ -20,8 +20,11 @@ type State = {
     about: string;
     avatar?: File;
     privacy: string;
-    video: string;
-    image: string;
+    files: {
+      docs: File[];
+      videos: File[];
+      images: File[];
+    };
     dateStart: string;
     dateEnd: string;
     local: string;
@@ -39,13 +42,16 @@ export default class Header extends React.Component<{}, State> {
         avatar: undefined,
         dateEnd: "",
         dateStart: "",
-        image: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
         local: "",
         privacy: "public",
         shortname: "",
         title: "",
-        type: "post",
-        video: ""
+        type: "post"
       },
       step: "type"
     };
@@ -191,13 +197,16 @@ export default class Header extends React.Component<{}, State> {
         avatar: undefined,
         dateEnd: "",
         dateStart: "",
-        image: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
         local: "",
         privacy: "public",
         shortname: "",
         title: "",
-        type: "post",
-        video: ""
+        type: "post"
       },
       step: "type"
     });

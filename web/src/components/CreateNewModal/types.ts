@@ -33,8 +33,11 @@ export type Request = {
   about: string;
   avatar?: File;
   privacy: string;
-  video: string;
-  image: string;
+  files: {
+    videos: File[];
+    images: File[];
+    docs: File[];
+  };
   dateStart: string;
   dateEnd: string;
   local: string;
