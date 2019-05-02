@@ -21,12 +21,13 @@ class Chat extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.user = "Myself";
+    this.user = "Myself"; //TODO
 
     this.state = {
       messageList: []
     };
 
+    //TODO DELETE THIS
     setInterval(() => {
       this._onNewMessage({
         user: Math.random() < 0.5 ? "Myself" : "User",
@@ -38,7 +39,7 @@ class Chat extends React.Component<Props, State> {
   }
 
   _onNewMessage(message: Message) {
-    console.log(message);
+    //console.log(message);
     this.setState({
       messageList: [...this.state.messageList, message]
     });

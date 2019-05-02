@@ -319,8 +319,6 @@ class Profile extends React.Component<IProps, State> {
     const postsDiv = [];
 
     for (const post of this.state.posts) {
-      console.log("TAgs: ", post.tags);
-      console.log("Files: ", post.files);
       postsDiv.push(
         <Post
           key={post.id}
