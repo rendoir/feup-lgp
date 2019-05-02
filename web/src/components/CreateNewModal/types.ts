@@ -35,6 +35,9 @@ export type Request = {
   privacy: string;
   video: string;
   image: string;
+  dateStart: string;
+  dateEnd: string;
+  local: string;
 };
 
 export type Step = "type" | "info" | "avatar";

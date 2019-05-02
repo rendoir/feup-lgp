@@ -45,14 +45,14 @@ export function createConference(req, res) {
   }
 
   query({
-    text: 'INSERT INTO conference (title, about, local, dateStart, dateEnd, avatar, privacy) ' +
+    text: 'INSERT INTO conference (title, about, local, datestart, dateend, avatar, privacy) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: [
       req.body.title,
       req.body.about,
       req.body.local,
-      Date.parse(req.body.detaStart),
-      Date.parse(req.body.dateEnd),
+      req.body.dateStart,
+      req.body.dateEnd,
       req.body.avatar,
       req.body.privacy,
     ],

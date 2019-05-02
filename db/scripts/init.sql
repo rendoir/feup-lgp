@@ -90,11 +90,10 @@ CREATE TABLE conference (
     title TEXT NOT NULL,
     about TEXT NOT NULL,
     local TEXT NOT NULL,
-    dateStart DATE NOT NULL ,
-    dateEnd DATE,
+    dateStart TEXT NOT NULL ,
+    dateEnd TEXT,
     avatar TEXT ARRAY,
-    privacy visibility_enum NOT NULL DEFAULT 'public',
-    CHECK(dateEnd >= dateStart)
+    privacy visibility_enum NOT NULL DEFAULT 'public'
 );
 
 ALTER TABLE IF EXISTS ONLY likes_a_comment

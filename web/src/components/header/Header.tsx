@@ -1,9 +1,55 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { MouseEvent } from "react";
 import * as React from "react";
+import CreateNewModal from "../CreateNewModal/CreateNewModal";
+import { Request, Step } from "../CreateNewModal/types";
+import Icon from "../Icon/Icon";
 import "./Header.css";
 
 import PostModal from "../PostModal/PostModal";
 
-export default class Header extends React.Component {
+type State = {
+  isOpen: boolean;
+  step: Step;
+  request: {
+    type: "post" | "conference";
+    title: string;
+    shortname: string;
+    about: string;
+    avatar?: File;
+    privacy: string;
+    video: string;
+    image: string;
+    dateStart: string;
+    dateEnd: string;
+    local: string;
+  };
+};
+
+export default class Header extends React.Component<{}, State> {
+  constructor() {
+    super({});
+
+    this.state = {
+      isOpen: false,
+      request: {
+        about: "",
+        avatar: undefined,
+        dateEnd: "",
+        dateStart: "",
+        image: "",
+        local: "",
+        privacy: "public",
+        shortname: "",
+        title: "",
+        type: "post",
+        video: ""
+      },
+      step: "type"
+    };
+  }
+
   public render() {
     return (
       <header>
@@ -87,13 +133,36 @@ export default class Header extends React.Component {
                 <i className="fas fa-plus-square" />
               </span>
             </a>
-            <PostModal
-              id={0}
-              title=""
-              text=""
-              images={undefined}
-              videos={undefined}
-            />
+            <div>
+              <a href={"#"} onClick={this.handleClick}>
+                <Icon
+                  icon={faPlus}
+                  size={"2x"}
+                  inverse={true}
+                  theme={"primary"}
+                />
+              </a>
+              {this.state.isOpen ? (
+                <CreateNewModal
+                  pending={false}
+                  onSubmit={this.handleSubmit}
+                  onStepChange={step => this.setState({ step })}
+                  maxGroupSize={5}
+                  request={this.state.request}
+                  onRequestChange={request => this.setState({ request })}
+                  onClose={this.resetState}
+                  autoFocus={false}
+                  step={this.state.step}
+                />
+              ) : null}
+            </div>
+            {/*<PostModal*/}
+            {/*  id={0}*/}
+            {/*  title=""*/}
+            {/*  text=""*/}
+            {/*  images={undefined}*/}
+            {/*  videos={undefined}*/}
+            {/*/>*/}
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-user-md" />
@@ -104,4 +173,53 @@ export default class Header extends React.Component {
       </header>
     );
   }
+
+  private handleClick = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private handleSubmit = (request: Request) => {
+    let conferenceUrl = `${location.protocol}//${location.hostname}`;
+    conferenceUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    conferenceUrl += "/conference/create";
+    axios
+      .post(conferenceUrl, {
+        about: request.about,
+        avatar: request.avatar,
+        dateEnd: request.dateEnd,
+        dateStart: request.dateStart,
+        local: request.local,
+        privacy: request.privacy,
+        title: request.title
+      })
+      .then(res => {
+        console.log(`Conference with id = ${res.data.id} created`);
+        this.resetState();
+      })
+      .catch(error => console.log("Failed to create conference. " + error));
+  };
+
+  private resetState = () => {
+    this.setState({
+      isOpen: false,
+      request: {
+        about: "",
+        avatar: undefined,
+        dateEnd: "",
+        dateStart: "",
+        image: "",
+        local: "",
+        privacy: "public",
+        shortname: "",
+        title: "",
+        type: "post",
+        video: ""
+      },
+      step: "type"
+    });
+  };
 }
