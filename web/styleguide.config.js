@@ -51,7 +51,10 @@ module.exports = {
       components: [
         "src/components/Input/*.tsx",
         "src/components/InputNext/*.tsx",
-        "src/components/Select/*.tsx"
+        "src/components/Radio/Radio.tsx",
+        "src/components/Range/Range.tsx",
+        "src/components/Select/*.tsx",
+        "src/components/Switcher/*.tsx"
       ]
     },
     {
@@ -69,12 +72,17 @@ module.exports = {
       components: [
         "src/components/Avatar/*.tsx",
         "src/components/AvatarSelector/*.tsx",
+        "src/components/ImageEdit/ImageEdit.tsx",
         "src/components/ImagePreloader/*.tsx",
         "src/components/Icon/*.tsx",
-        "src/components/Tabs/Tabs.tsx",
-        "src/components/Scroller/Scroller.tsx",
-        "src/components/Modal/Modal.tsx"
+        "src/components/Modal/Modal.tsx",
+        "src/components/Scroller/*.tsx",
+        "src/components/Tabs/Tabs.tsx"
       ]
+    },
+    {
+      name: "Plug & Play Modals",
+      components: ["src/components/CreateNewModal/CreateNewModal.tsx"]
     },
     {
       name: "Post",

@@ -20,7 +20,7 @@ function ModalClose(props: Props) {
 
   return (
     <div id={props.id} className={className} onClick={props.onClick}>
-      <Icon icon={faTimes} className={styles.close} size={"lg"} />
+      <Icon icon={faTimes} className={styles.close} size={"2x"} />
     </div>
   );
 }
