@@ -55,39 +55,63 @@ class Conference extends React.Component<Props, State> {
       .catch(() => console.log("Failed to get conference"));
   }
 
+  public handleHideConference() {
+    if (this.state.isHidden) {
+      this.setState({
+        isHidden: false
+      });
+    } else {
+      this.setState({
+        isHidden: true
+      });
+    }
+  }
+
   public render() {
-    return (
-      <div id="Conference" className="my-5">
-        <a>Hello Conference {this.id}</a>
-        <div className={`${styles.post_options} btn-group`}>
-          <button
-            className="w-100 h-100 ml-2"
-            role="button"
-            data-toggle="dropdown"
-          >
-            <i className="fas fa-ellipsis-v" />
-          </button>
-          <div className="dropdown-menu dropdown-menu-right">
-            {this.getDropdownButtons()}
-          </div>
+    if (this.state.isHidden) {
+      return (
+        <div id="hiddenConference" className="my-5">
+          <a>The owner has closed this conference.</a>
         </div>
-        <div className="conf_head w-100">
-          <div className="live_wrap">
-            <div className="live_container">
-              <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+      );
+    } else {
+      return (
+        <div id="Conference">
+          <a>Hello Conference {this.id}</a>
+          <div className={`${styles.post_options} btn-group`}>
+            <button
+              className="w-100 h-100 ml-2"
+              role="button"
+              data-toggle="dropdown"
+            >
+              <i className="fas fa-ellipsis-v" />
+            </button>
+            <div className="dropdown-menu dropdown-menu-right">
+              {this.getDropdownButtons()}
             </div>
           </div>
-          <div className="chat_wrap">
-            <div className="chat_container">
-              <Chat />
+          <div className="conf_head w-100">
+            <div className="live_wrap">
+              <div className="live_container">
+                <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+              </div>
+            </div>
+            <div className="chat_wrap">
+              <div className="chat_container">
+                <Chat />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   private getDropdownButtons() {
+    const hideBtnText = this.state.isHidden
+      ? "Reopen Conference"
+      : "Hide Conference";
+
     const reportButton = (
       <button
         key={0}
@@ -107,9 +131,10 @@ class Conference extends React.Component<Props, State> {
         className="dropdown-item"
         type="button"
         data-toggle="modal"
+        onClick={this.handleHideConference}
         //data-target={`#delete_conference_modal${this.props.id}`}
       >
-        Delete Conference
+        {hideBtnText}
       </button>
     );
     const archiveButton = (
