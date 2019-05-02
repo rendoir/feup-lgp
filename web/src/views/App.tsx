@@ -13,6 +13,7 @@ import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import SearchResults from "./SearchResults";
 import Shop from "./Shop";
+import Conference from "./Conference";
 
 class App extends React.Component {
   public render() {
@@ -30,6 +31,7 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
+              <Route path="/conference/:id" component={Conference} />
             </Switch>
           </ErrorBoundary>
         </Router>
