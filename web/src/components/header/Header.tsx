@@ -156,13 +156,13 @@ export default class Header extends React.Component<{}, State> {
                 />
               ) : null}
             </div>
-            {/*<PostModal*/}
-            {/*  id={0}*/}
-            {/*  title=""*/}
-            {/*  text=""*/}
-            {/*  images={undefined}*/}
-            {/*  videos={undefined}*/}
-            {/*/>*/}
+            <PostModal
+              id={0}
+              title=""
+              text=""
+              images={undefined}
+              videos={undefined}
+            />
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-user-md" />
@@ -180,27 +180,45 @@ export default class Header extends React.Component<{}, State> {
   };
 
   private handleSubmit = (request: Request) => {
-    let conferenceUrl = `${location.protocol}//${location.hostname}`;
-    conferenceUrl +=
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    conferenceUrl += "/conference/create";
-    axios
-      .post(conferenceUrl, {
-        about: request.about,
-        avatar: request.avatar,
-        dateEnd: request.dateEnd,
-        dateStart: request.dateStart,
-        local: request.local,
-        privacy: request.privacy,
-        title: request.title
-      })
-      .then(res => {
-        console.log(`Conference with id = ${res.data.id} created`);
-        this.resetState();
-      })
-      .catch(error => console.log("Failed to create conference. " + error));
+
+    if (request.type === "post") {
+      url += "/post/create";
+      axios
+        .post(url, {
+          author: 1, // This is the logged in user
+          text: request.about,
+          title: request.title,
+          visibility: request.privacy
+        })
+        .then(res => {
+          console.log("Post created - reloading page...");
+          window.location.href = "/post/" + res.data.id;
+          this.resetState();
+        })
+        .catch(() => console.log("Failed to create post"));
+    } else {
+      url += "/conference/create";
+      axios
+        .post(url, {
+          about: request.about,
+          avatar: request.avatar,
+          dateEnd: request.dateEnd,
+          dateStart: request.dateStart,
+          local: request.local,
+          privacy: request.privacy,
+          title: request.title
+        })
+        .then(res => {
+          console.log(`Conference with id = ${res.data.id} created`);
+          this.resetState();
+        })
+        .catch(error => console.log("Failed to create conference. " + error));
+    }
   };
 
   private resetState = () => {

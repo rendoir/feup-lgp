@@ -8,7 +8,7 @@ import React, { Component } from "react";
 
 // - Import style
 import "@fortawesome/fontawesome-free/css/all.css";
-import "bootstrap/dist/css/bootstrap.css";
+// import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 
 import styles from "./../Post/Post.module.scss";

@@ -190,6 +190,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <IconButton
             glyph={faArrowLeft}
             size={"small"}
+            iconSize={"lg"}
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
