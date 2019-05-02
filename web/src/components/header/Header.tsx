@@ -8,6 +8,7 @@ import Icon from "../Icon/Icon";
 import "./Header.css";
 
 import PostModal from "../PostModal/PostModal";
+import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
 
 type State = {
   isOpen: boolean;
@@ -79,50 +80,17 @@ export default class Header extends React.Component<{}, State> {
                 </a>
               </li>
               <li className="nav-item active">
-                <a className="nav-link" href="#">
+                <a className="nav-link" href="/user/1">
                   Profile <span className="sr-only">(current)</span>
                 </a>
               </li>
               <li className="nav-item active">
-                <a className="nav-link" href="shop">
+                <a className="nav-link" href="/shop">
                   Shop <span className="sr-only">(current)</span>
                 </a>
               </li>
             </ul>
-            <div className="dropdown mx-2">
-              <button
-                id="dropdownCategories-btn"
-                className="btn btn-primary dropdown-toggle"
-                type="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Search type
-              </button>
-              <div className="dropdown-menu">
-                <a className="dropdown-item" href="#">
-                  <i className="fas fa-book-medical " /> Documents
-                </a>
-                <a className="dropdown-item" href="#">
-                  <i className="fas fa-user " /> Users
-                </a>
-                <a className="dropdown-item" href="#">
-                  <i className=" fas fa-align-justify " /> Posts
-                </a>
-              </div>
-            </div>
-            <form className="form-inline my-2 my-lg-0">
-              <input
-                id="search-input"
-                className="form-control mr-sm-2"
-                type="text"
-                placeholder="Search"
-              />
-              <button className="btn btn-secondary my-2 my-sm-0" type="submit">
-                <i className="fas fa-search" />
-              </button>
-            </form>
+            <SearchSimpleForm />
             <a
               className="nav-link"
               data-toggle="modal"
@@ -156,13 +124,7 @@ export default class Header extends React.Component<{}, State> {
                 />
               ) : null}
             </div>
-            <PostModal
-              id={0}
-              title=""
-              text=""
-              images={undefined}
-              videos={undefined}
-            />
+            <PostModal id={0} title="" text="" tags={[]} />
             <a className="nav-link" href="#">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-user-md" />

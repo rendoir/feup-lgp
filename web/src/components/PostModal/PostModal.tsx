@@ -7,35 +7,50 @@ import Avatar from "../Avatar/Avatar";
 import Button from "../Button/Button";
 
 import { checkPropTypes } from "prop-types";
+import AddTags from "../AddTags/AddTags";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
+import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
 
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
+
 interface IProps {
   /* The following attributes are only required for post edition */
-  id?: number;
+  id: number;
   title?: string;
   text?: string;
   visibility?: string;
 
-  images?: string[];
-  videos?: string[];
+  files?: MyFile[];
+  tags: any[];
 }
 
 interface IState {
   title: string;
   text: string;
+
+  images: File[];
+  videos: File[];
+  docs: File[];
+
+  tags: any[];
   visibility: string;
+
+  removedFiles?: MyFile[];
 }
 
 class PostModal extends Component<IProps, IState> {
   public mode: string;
-
-  public image: any = React.createRef();
-  public video: any = React.createRef();
+  public addTags: any;
 
   private visibilityOptions = [
     { value: "public", title: "Public" },
@@ -50,10 +65,17 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      docs: [],
+      images: [],
+      removedFiles: [],
+      tags: [],
       text: props.text || "",
       title: props.title || "",
+      videos: [],
       visibility: props.visibility || "private"
     };
+
+    this.addTags = React.createRef();
 
     // Post manipulation handlers
     this.handlePostCreation = this.handlePostCreation.bind(this);
@@ -61,6 +83,8 @@ class PostModal extends Component<IProps, IState> {
     this.handlePostCancel = this.handlePostCancel.bind(this);
     // Field change handlers
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleFileUpload = this.handleFileUpload.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
 
   public handlePostCancel() {
@@ -73,6 +97,26 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiCreatePost() {
+    const formData = new FormData();
+    this.state.images.forEach((file, i) =>
+      formData.append("images[" + i + "]", file)
+    );
+    this.state.videos.forEach((file, i) =>
+      formData.append("videos[" + i + "]", file)
+    );
+    this.state.docs.forEach((file, i) =>
+      formData.append("docs[" + i + "]", file)
+    );
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
+    formData.append("author", "1");
+    formData.append("text", this.state.text);
+    formData.append("title", this.state.title);
+    formData.append("visibility", this.state.visibility);
+
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -80,15 +124,10 @@ class PostModal extends Component<IProps, IState> {
         : "/api";
     postUrl += "/post/create";
     axios
-      .post(postUrl, {
+      .post(postUrl, formData, {
         headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
-        // tslint:disable-next-line:object-literal-sort-keys
-        author: 1, // This is the logged in user
-        text: this.state.text,
-        title: this.state.title,
-        visibility: this.state.visibility
+          "Content-Type": "multipart/form-data"
+        }
       })
       .then(res => {
         console.log("Post created - reloading page...");
@@ -98,6 +137,30 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public apiEditPost() {
+    const formData = new FormData();
+
+    this.state.tags.forEach((tag, i) =>
+      formData.append("tags[" + i + "]", tag)
+    );
+
+    this.state.images.forEach((file, i) =>
+      formData.append("images[" + i + "]", file)
+    );
+    this.state.videos.forEach((file, i) =>
+      formData.append("videos[" + i + "]", file)
+    );
+    this.state.docs.forEach((file, i) =>
+      formData.append("docs[" + i + "]", file)
+    );
+    if (this.state.removedFiles) {
+      formData.append("removed", JSON.stringify(this.state.removedFiles));
+    }
+    formData.append("id", String(this.props.id));
+    formData.append("author", "1");
+    formData.append("text", this.state.text);
+    formData.append("title", this.state.title);
+    formData.append("visibility", this.state.visibility);
+
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -105,14 +168,11 @@ class PostModal extends Component<IProps, IState> {
         : "/api";
     postUrl += "/post/edit";
     axios
-      .post(postUrl, {
+      .post(postUrl, formData, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
-        },
-        id: this.props.id,
-        text: this.state.text,
-        title: this.state.title,
-        visibility: this.state.visibility
+          "Content-Type": "multipart/form-data"
+        }
       })
       .then(res => {
         console.log("Post edited - reloading page...");
@@ -146,6 +206,32 @@ class PostModal extends Component<IProps, IState> {
     this.setState(partialState);
   }
 
+  public handleFileUpload(files: FileList | null) {
+    if (!files) {
+      return;
+    }
+
+    const images: File[] = [];
+    const videos: File[] = [];
+    const docs: File[] = [];
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith("image")) {
+        images.push(file);
+      } else if (file.type.startsWith("video")) {
+        videos.push(file);
+      } else {
+        docs.push(file);
+      }
+    });
+
+    this.setState({
+      docs,
+      images,
+      videos
+    });
+  }
+
   public getInputRequiredClass(content: string) {
     return content === "" ? "empty_required_field" : "post_field";
   }
@@ -162,6 +248,7 @@ class PostModal extends Component<IProps, IState> {
           <input
             name="title"
             type="text"
+            autoComplete="off"
             className={this.getInputRequiredClass(this.state.title)}
             onChange={this.handleInputChange}
             placeholder="Insert title"
@@ -207,30 +294,68 @@ class PostModal extends Component<IProps, IState> {
         </div>
 
         <div className="mb-3">
-          <h5>Video</h5>
-          <input
-            type="text"
-            className="post_field"
-            placeholder="Insert video URL (Optional)"
-            ref={this.video}
-            defaultValue={""}
-          />
+          <h5>Tags</h5>
+          <AddTags onChange={this.handleTagsChange} tags={this.props.tags} />
         </div>
 
         <div>
-          <h5>Image</h5>
+          <h5>Files</h5>
         </div>
+        {this.getRemovedFiles()}
         <div className="custom-file">
-          <label className="custom-file-label">Insert image (Optional)</label>
+          <label className="custom-file-label">{this.getFileLabel()}</label>
           <input
             type="file"
+            accept="*"
             className="custom-file-input"
-            ref={this.image}
+            onChange={e => this.handleFileUpload(e.target.files)}
             defaultValue={""}
+            multiple={true}
           />
         </div>
       </form>
     );
+  }
+
+  public getRemovedFiles() {
+    if (this.mode === EDIT_MODE && this.props.files) {
+      const toRemove = this.props.files.map(file =>
+        this.state.removedFiles && !this.state.removedFiles.includes(file) ? (
+          <PostFile
+            key={file.name}
+            id={this.props.id ? this.props.id : 0}
+            file={file}
+            editMode={this.mode === EDIT_MODE}
+            handleRemove={this.handleRemove}
+          />
+        ) : null
+      );
+      return toRemove;
+    }
+  }
+
+  public handleRemove(fileToRemove: MyFile) {
+    if (this.state.removedFiles) {
+      const removed = this.state.removedFiles;
+      removed.push(fileToRemove);
+      this.setState({
+        removedFiles: removed
+      });
+    }
+  }
+
+  public getFileLabel() {
+    let label = "";
+
+    this.state.images.forEach(file => (label += file.name + " "));
+    this.state.videos.forEach(file => (label += file.name + " "));
+    this.state.docs.forEach(file => (label += file.name + " "));
+
+    if (label === "") {
+      label = "Insert images, videos and documents";
+    }
+
+    return label;
   }
 
   public getActionButton() {
@@ -250,6 +375,10 @@ class PostModal extends Component<IProps, IState> {
       </button>
     );
   }
+
+  public handleTagsChange = (tags: any, newtags: any) => {
+    this.setState({ tags: newtags });
+  };
 
   public render() {
     const htmlId =

@@ -29,6 +29,30 @@ import * as controller from '../controllers/users';
 usersRouter.post('/', controller.registerUser);
 
 /**
+ * @api {post} /api/users/{id} Get user posts
+ * @apiName Profile Posts
+ * @apiGroup Users
+ *
+ * @apiParam {id} id ID of the user.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while getting profile posts'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'The given email does not have permission to register, please contact the administration'
+ *     }
+ */
+usersRouter.get('/:id', controller.getProfilePosts);
+
+/**
  * @api {post} /api/users/:id/user_interactions Get user-user one-click interactions such as rate or subscription
  * @apiName Get-User-User-Interactions
  * @apiGroup Users
@@ -75,3 +99,20 @@ usersRouter.post('/:id/subscribe', controller.subscribeUser);
  *     }
  */
 usersRouter.post('/:id/unsubscribe', controller.unsubscribeUser);
+
+/**
+ * @api {post} /api/users/rate Rate a user
+ * @apiName Rate-User
+ * @apiGroup Users
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   target_user      Id of the user being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.post('/:id/rate', controller.rate);

@@ -5,6 +5,10 @@ import axios from "axios";
 import Avatar from "../Avatar/Avatar";
 
 import React, { Component } from "react";
+import Cookies from "universal-cookie";
+
+// - Import app components
+import ReportModal from "../PostModal/ReportModal";
 
 // - Import style
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -12,6 +16,9 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap/dist/js/bootstrap.js";
 
 import styles from "./../Post/Post.module.scss";
+
+// - Import utils
+import { apiCheckCommentUserReport } from "../../utils/apiReport";
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
@@ -34,16 +41,22 @@ export type State = {
   likers: any[];
   likes: number;
   redirect: boolean;
+  userReport: boolean; // Tells if the logged user has reported this post
 };
+
+const cookies = new Cookies();
 
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
   public id: string;
+  public loggedUserId: number;
 
   constructor(props: Props) {
     super(props);
 
     this.id = "comment_" + this.props.title;
+    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+
     this.state = {
       commentID: 0,
       commentText: this.props.text,
@@ -53,12 +66,14 @@ class Comment extends Component<Props, State> {
       isHovered: false,
       likers: [],
       likes: 0,
-      redirect: false
+      redirect: false,
+      userReport: false
     };
 
     this.handleCommentDeletion = this.handleCommentDeletion.bind(this);
     this.apiEditComment = this.apiEditComment.bind(this);
-
+    this.handleCommentReport = this.handleCommentReport.bind(this);
+    this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
 
@@ -105,25 +120,7 @@ class Comment extends Component<Props, State> {
                   <i className="fas fa-ellipsis-v" />
                 </button>
                 <div className="dropdown-menu dropdown-menu-right">
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#edit_comment_modal_${this.props.title}`}
-                    onClick={() =>
-                      this.setState({ commentText: this.props.text })
-                    }
-                  >
-                    Edit Comment
-                  </button>
-                  <button
-                    className="dropdown-item"
-                    type="button"
-                    data-toggle="modal"
-                    data-target={`#delete_comment_modal_${this.props.title}`}
-                  >
-                    Delete Comment
-                  </button>
+                  {this.getDropdownButtons()}
                 </div>
               </div>
               <div className={`${styles.post_comment_section} w-100`}>
@@ -275,6 +272,11 @@ class Comment extends Component<Props, State> {
             </div>
           </div>
         </div>
+
+        <ReportModal
+          commentId={Number(this.props.title)}
+          reportCancelHandler={this.handleReportCancel}
+        />
       </div>
     );
   }
@@ -286,11 +288,20 @@ class Comment extends Component<Props, State> {
     });
     this.apiGetCommentsOfComment(Number(this.props.title));
     this.apiGetWhoLikedComment(Number(this.props.title));
+    this.apiGetCommentUserReport(Number(this.props.title));
   }
 
   public handleAddComment(event: any) {
     event.preventDefault();
     this.apiComments();
+  }
+
+  public handleCommentReport() {
+    this.setState({ userReport: true });
+  }
+
+  public handleReportCancel() {
+    this.setState({ userReport: false });
   }
 
   public onEnterPress = (e: any) => {
@@ -385,6 +396,14 @@ class Comment extends Component<Props, State> {
     }
 
     return <i className="fas fa-thumbs-up" style={divStyle} />;
+  }
+
+  public async apiGetCommentUserReport(commentId: number) {
+    const userReport: boolean = await apiCheckCommentUserReport(
+      commentId,
+      this.loggedUserId
+    );
+    this.setState({ userReport });
   }
 
   public apiGetCommentsOfComment(id: number) {
@@ -545,6 +564,47 @@ class Comment extends Component<Props, State> {
     }
   }
 
+  public getDropdownButtons() {
+    const reportButton = (
+      <button
+        key={0}
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        data-toggle="modal"
+        data-target={`#report_comment_modal_${this.props.title}`}
+        onClick={this.handleCommentReport}
+        disabled={this.state.userReport}
+      >
+        {this.state.userReport ? "Report already issued" : "Report comment"}
+      </button>
+    );
+    const editButton = (
+      <button
+        key={1}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#edit_comment_modal_${this.props.title}`}
+        onClick={() => this.setState({ commentText: this.props.text })}
+      >
+        Edit Comment
+      </button>
+    );
+    const deleteButton = (
+      <button
+        key={2}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#delete_comment_modal_${this.props.title}`}
+      >
+        Delete Comment
+      </button>
+    );
+    const dropdownButtons = [reportButton, editButton, deleteButton];
+    return dropdownButtons;
+  }
+
   public getActionButton() {
     return (
       <div>
@@ -580,7 +640,7 @@ class Comment extends Component<Props, State> {
     );
   }
   public getLikes() {
-    const likesDiv = [];
+    const likesDiv: any[] = [];
 
     if (this.state.likes > 0) {
       likesDiv.push(
@@ -627,7 +687,7 @@ class Comment extends Component<Props, State> {
   }
 
   public actionRenderLevelComments() {
-    const actionSeeRepliesDiv = [];
+    const actionSeeRepliesDiv: any[] = [];
 
     if (this.state.comments.length > 0) {
       actionSeeRepliesDiv.push(

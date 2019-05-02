@@ -1,15 +1,16 @@
 'use strict';
 
 import { json, urlencoded } from 'body-parser';
-// import * as cookie_parser from 'cookie-parser';
 import { config } from 'dotenv';
 import * as express from 'express';
+import * as fileUpload from 'express-fileupload';
+// import * as cookie_parser from 'cookie-parser';
 import * as express_session from 'express-session';
 import * as fs from 'fs';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
-import { jwtMiddleware } from './_helpers/jwt';
+// import { jwtMiddleware } from './_helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -35,6 +36,8 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    searchRouter,
+    tagsRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
@@ -46,6 +49,7 @@ app.use(morgan('combined'));
 // app.use(cookie_parser());
 app.use(urlencoded({extended: true}));
 app.use(json());
+app.use(fileUpload({createParentPath: true}));
 app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
 app.use(express.static('uploads'));
 
@@ -66,8 +70,10 @@ app.use('/login', loginRouter);
 app.use('/feed', feedRouter);
 app.use('/post', postRouter);
 app.use('/admin', adminRouter);
+app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.use('/conference', conferenceRouter);
+app.use('/search', searchRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });
