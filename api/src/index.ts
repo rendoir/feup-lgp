@@ -31,6 +31,7 @@ if (process.env.PRODUCTION === 'true') {
 import {
     adminRouter,
     commentRouter,
+    conferenceRouter,
     feedRouter,
     loginRouter,
     postRouter,
@@ -66,6 +67,7 @@ app.use('/feed', feedRouter);
 app.use('/post', postRouter);
 app.use('/admin', adminRouter);
 app.use('/post/:post_id/comment', commentRouter);
+app.use('/conference', conferenceRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });
