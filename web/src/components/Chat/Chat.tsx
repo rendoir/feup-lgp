@@ -38,7 +38,6 @@ class Chat extends React.Component<Props, State> {
   }
 
   _onNewMessage(message: Message) {
-    console.log(message);
     this.setState({
       messageList: [...this.state.messageList, message]
     });
