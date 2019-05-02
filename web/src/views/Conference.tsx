@@ -19,6 +19,7 @@ interface Props {
 type State = {
   hasChat: boolean;
   hasLiveStream: boolean;
+  isHidden: boolean;
 };
 
 class Conference extends React.Component<Props, State> {
@@ -30,7 +31,8 @@ class Conference extends React.Component<Props, State> {
 
     this.state = {
       hasChat: true,
-      hasLiveStream: true
+      hasLiveStream: true,
+      isHidden: false
     };
   }
 

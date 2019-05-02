@@ -198,6 +198,7 @@ export default class Header extends React.Component<{}, State> {
         })
         .then(res => {
           console.log(`Conference with id = ${res.data.id} created`);
+          window.location.href = "/conference/" + res.data.id;
           this.resetState();
         })
         .catch(error => console.log("Failed to create conference. " + error));
