@@ -1,3 +1,5 @@
+@import "./colors";
+
 #Conference {
     $min_screen_width_chat: 1200px;
 
@@ -48,5 +50,39 @@
         }
 
         display: block;
+    }
+
+    .conf_posts {
+        width: 60%;
+        margin-left: auto;
+        float: right;
+    }
+
+    .conf_details {
+        width: 35%;
+        border: $light-border;
+        float: left;
+        margin-right: 5%;
+
+        ul li {
+            list-style-type: none;
+            padding: 0.25rem 0.5rem;
+      
+            i {
+              list-style-type: none;
+              padding-right: 0.5rem;
+            }
+        }
+    }
+
+    @media (max-width: $min_screen_width_chat) {
+        .conf_posts,
+        .conf_details {
+          display: block;
+          float: none;
+          width: 100%;
+          margin-left: 0;
+          margin-bottom: 5%;
+        }
     }
 }
