@@ -1,7 +1,6 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
 import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
-import { PeerInfo } from "../../utils/types";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import IconButton from "../IconButton/IconButton";
@@ -19,7 +18,6 @@ import CreateGroupInfoForm from "./CreateGroupInfoForm";
 import CreateGroupTypeForm from "./CreateGroupTypeForm";
 import styles from "./CreateNewModal.module.css";
 import { Props } from "./types";
-import { ISelectorState } from "./types";
 
 type CreateNewModalState = {
   isPublic: boolean;
@@ -56,10 +54,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     if (step === "info") {
       this.props.onStepChange("type");
     }
-
-    if (step === "members") {
-      this.props.onStepChange("info");
-    }
   };
 
   private handleNextStepClick = (): void => {
@@ -68,26 +62,13 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     if (step === "type") {
       this.props.onStepChange("info");
     }
-
-    if (step === "info") {
-      this.props.onStepChange("members");
-    }
   };
 
-  private handleChange = (
-    value: string,
-    { target }: ChangeEvent<HTMLAbstractInputElement>
-  ) => {
+  private handleChange = (value: string, { target }: ChangeEvent) => {
+    console.log((target as HTMLAbstractInputElement).name);
     this.props.onRequestChange({
       ...this.props.request,
-      [target.name]: value
-    });
-  };
-
-  private handleMembersChange = (members: ISelectorState<PeerInfo>): void => {
-    this.props.onRequestChange({
-      ...this.props.request,
-      members
+      [(target as HTMLAbstractInputElement).name]: value
     });
   };
 
@@ -122,10 +103,9 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     if (event) {
       event.preventDefault();
     }
-    const shortname = this.state.isPublic ? this.props.request.shortname : "";
+
     this.props.onSubmit({
-      ...this.props.request,
-      shortname
+      ...this.props.request
     });
   };
 
@@ -138,34 +118,12 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       event.preventDefault();
       event.stopPropagation();
 
-      switch (this.props.step) {
-        case "avatar":
-          break;
-        case "members":
-          this.handleSubmit();
-          break;
-        default:
-          this.handleNextStepClick();
-      }
+      this.handleNextStepClick();
     }
   };
 
-  // private isMaxGroupSizeExceeded(): boolean {
-  //   const {
-  //     maxGroupSize,
-  //     request: { type, members }
-  //   } = this.props;
-  //   const membersCount = members.getSelected().size;
-  //
-  //   return type === 'group' && membersCount > maxGroupSize;
-  // }
-
   private renderError() {
     const { error } = this.props;
-
-    // if (this.isMaxGroupSizeExceeded()) {
-    //   return <div className={styles.error}>Max group size exceeded</div>;
-    // }
 
     if (!error) {
       return null;
@@ -208,7 +166,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             id={`${id}_step_${step}_submit_button`}
             type={"submit"}
             theme={"success"}
-            rounded={true}
+            rounded={false}
             onClick={this.handleNextStepClick}
           >
             Next

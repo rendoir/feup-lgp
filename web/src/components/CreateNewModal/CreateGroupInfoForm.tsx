@@ -3,7 +3,7 @@ import React, { ChangeEvent, PureComponent } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
-import Switcher from "../Switcher/Switcher";
+import Select from "../Select/Select";
 import styles from "./CreateNewModal.module.css";
 
 export type Props = {
@@ -19,17 +19,20 @@ export type Props = {
   isPublicGroupEnabled: boolean;
   aboutMaxLength?: number;
   onSubmit: (event: Event) => void;
-  onChange: (
-    value: string,
-    event: ChangeEvent<HTMLAbstractInputElement>
-  ) => void;
+  onChange: (value: string, event: ChangeEvent) => void;
   onAvatarRemove: () => void;
   onAvatarChange: (avatar: File) => void;
 };
 
 export type State = {
   avatar?: string;
+  file: string;
   isPublic: boolean;
+  privacy: string;
+  video: string;
+  local: string;
+  dateStart: string;
+  dateEnd: string;
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
@@ -45,7 +48,13 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     this.state = {
       avatar: undefined,
-      isPublic: Boolean(props.shortname)
+      dateEnd: "",
+      dateStart: "",
+      file: "",
+      isPublic: Boolean(props.shortname),
+      local: "",
+      privacy: "public",
+      video: ""
     };
   }
 
@@ -72,6 +81,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             label={`Title`}
             value={title}
             htmlAutoFocus={true}
+            required={true}
           />
           <InputNext
             className={styles.input}
@@ -83,8 +93,11 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             type={"textarea"}
             value={about || ""}
             maxLength={aboutMaxLength}
+            required={true}
           />
-          {this.renderShortname()}
+          {this.renderPrivacy()}
+          {type === "post" ? this.renderFiles() : null}
+          {type === "conference" ? this.renderLocalAndDate() : null}
         </form>
       </div>
     );
@@ -133,6 +146,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     this.setState({ isPublic });
   };
 
+  private handleChange = (value: string, event: ChangeEvent) => {
+    // @ts-ignore
+    this.setState({
+      [(event.target as HTMLAbstractInputElement).name]: value
+    });
+    this.props.onChange(value, event);
+  };
+
   private renderAvatar() {
     const { title } = this.props;
     const { avatar } = this.state;
@@ -151,8 +172,22 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     );
   }
 
-  private renderShortname() {
-    const { type, shortname, id, isPublicGroupEnabled } = this.props;
+  private renderPrivacy() {
+    const { id, isPublicGroupEnabled } = this.props;
+    const options = [
+      {
+        title: "Public",
+        value: "public"
+      },
+      {
+        title: "Followers",
+        value: "followers"
+      },
+      {
+        title: "Private",
+        value: "private"
+      }
+    ];
 
     if (!isPublicGroupEnabled) {
       return null;
@@ -160,25 +195,79 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={styles.shortnameWrapper}>
-        <div className={styles.switcher}>
-          <Switcher
-            id={`${id}_public_switcher`}
-            name={`${id}_public_switcher`}
-            value={this.state.isPublic}
-            onChange={this.handlePublicToggle}
-            label={`Make this ${type} public`}
-            description={"Privacy settings"}
+        <Select
+          id={`${id}_privacy`}
+          name={"privacy"}
+          value={this.state.privacy}
+          label={"Privacy"}
+          options={options}
+          onChange={this.handleChange}
+        />
+      </div>
+    );
+  }
+
+  private renderLocalAndDate() {
+    const { id } = this.props;
+
+    return (
+      <div className={styles.shortnameWrapper}>
+        <InputNext
+          onChange={this.handleChange}
+          id={`${id}_conference_local`}
+          value={this.state.local}
+          name={"local"}
+          placeholder={"Conference local"}
+          label={"Local"}
+        />
+        <div id={`${id}_conference_dates`}>
+          <label htmlFor={`${id}_conference_dates`} className={styles.dates}>
+            Dates
+          </label>
+          <InputNext
+            onChange={this.handleChange}
+            id={`${id}_conference_date_start`}
+            value={this.state.dateStart}
+            name={"dateStart"}
+            label={"Start"}
+            type={"datetime-local"}
+          />
+          <InputNext
+            onChange={this.handleChange}
+            id={`${id}_conference_date_end`}
+            value={this.state.dateEnd}
+            name={"dateEnd"}
+            label={"End"}
+            type={"datetime-local"}
           />
         </div>
+      </div>
+    );
+  }
+
+  private renderFiles() {
+    const { id } = this.props;
+
+    return (
+      <div>
         <InputNext
-          id={`${id}_shortname`}
-          name={"shortname"}
-          value={shortname || ""}
-          prefix={this.props.shortnamePrefix}
-          disabled={!this.state.isPublic}
-          label={`Public URL`}
-          ref={this.setShortnameInput}
-          onChange={this.props.onChange}
+          label={"Video"}
+          type={"url"}
+          placeholder={"Insert video URL (Optional)"}
+          onChange={this.handleChange}
+          id={`${id}_post_video`}
+          name={"video"}
+          value={this.state.video}
+        />
+        <InputNext
+          label={"File"}
+          placeholder={"Upload file (Optional)"}
+          type={"file"}
+          onChange={this.handleChange}
+          id={`${id}_post_file`}
+          name={"file"}
+          value={this.state.file}
+          multiple={true}
         />
       </div>
     );

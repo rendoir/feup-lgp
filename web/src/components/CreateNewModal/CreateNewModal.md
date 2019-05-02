@@ -1,6 +1,5 @@
 ```jsx harmony
 import Button from '../Button/Button';
-const { PeerInfoSelectorState } = require('./index');
 const initial = {
   isOpen: false,
   step: 'type',
@@ -10,6 +9,9 @@ const initial = {
     shortname: '',
     about: '',
     avatar: undefined,
+    privacy: 'public',
+    video: '',
+    file: '',
   },
 };
 initialState = initial;

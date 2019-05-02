@@ -25,6 +25,9 @@ export type Props = {
     | "tel"
     | "url"
     | "password"
+    | "file"
+    | "datetime-local"
+    | "url"
     | "textarea";
   /** input value attribute */
   value: string | number;
@@ -60,6 +63,8 @@ export type Props = {
   readOnly?: boolean;
   /** Input required attribute */
   required?: boolean;
+  /** Input multiple attribute */
+  multiple?: boolean;
   /** Textarea rows attribute */
   rows?: number;
   /** Textarea cols attribute */
@@ -271,7 +276,9 @@ class InputNext extends Component<Props, State> {
         maxLength,
         spellcheck,
         rows,
-        cols
+        cols,
+        required,
+        multiple
       }
     } = this;
 
@@ -279,12 +286,14 @@ class InputNext extends Component<Props, State> {
       className: classNames(styles.input, this.props.inputClassName),
       disabled,
       id,
+      multiple,
       name,
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onFocus: this.handleFocus,
       placeholder: placeholder ? placeholder : "",
       ref: this.setInput,
+      required,
       tabIndex,
       type,
       value

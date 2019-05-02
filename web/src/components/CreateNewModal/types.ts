@@ -32,10 +32,12 @@ export type Request = {
   shortname: string;
   about: string;
   avatar?: File;
-  members: ISelectorState<PeerInfo>;
+  privacy: string;
+  video: string;
+  image: string;
 };
 
-export type Step = "type" | "info" | "avatar" | "members";
+export type Step = "type" | "info" | "avatar";
 
 export type Props = {
   id: string;
