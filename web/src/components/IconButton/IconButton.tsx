@@ -12,6 +12,7 @@ export type Props = {
   style?: object;
   glyph: IconDefinition;
   size: "small" | "normal" | "large";
+  iconSize?: IconSize;
   theme: ColorTheme;
   flat: boolean;
   disabled: boolean;
@@ -38,6 +39,8 @@ class IconButton extends Component<Props> {
       style,
       active,
       onClick,
+      glyph,
+      iconSize,
       ...otherProps
     } = this.props;
 
@@ -81,19 +84,18 @@ class IconButton extends Component<Props> {
         return "lg";
 
       default:
-        return "sm";
+        return "lg";
     }
   }
 
   private renderIcon() {
-    const { glyph } = this.props;
-    const { size } = this.props;
+    const { glyph, size, iconSize } = this.props;
 
     return (
       <Icon
         icon={glyph}
         className={styles.icon}
-        size={this.getIconSize(size)}
+        size={iconSize || this.getIconSize(size)}
       />
     );
   }

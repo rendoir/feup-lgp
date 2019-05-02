@@ -2,7 +2,7 @@ export type AvatarSIze = "small" | "large" | "full";
 
 export type AvatarPlaceholder =
   | "empty"
-  | "blue"
+  | "lblue"
   | "blue"
   | "purple"
   | "red"
@@ -42,4 +42,24 @@ export type ClientRect = {
   bottom: number;
   width: number;
   height: number;
+};
+
+export type PeerType = "user" | "group" | "sip";
+
+export type Peer = {
+  id: number;
+  type: PeerType;
+  key?: string;
+};
+
+export type PeerInfoType = "user" | "group" | "channel" | "sip";
+
+export type PeerInfo = {
+  peer: Peer;
+  type: PeerInfoType;
+  title: string;
+  userName?: string;
+  avatar?: string;
+  bigAvatar?: string;
+  placeholder: AvatarPlaceholder;
 };

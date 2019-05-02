@@ -1,5 +1,5 @@
-import AvatarColors from "./Color";
-import { AvatarPlaceholder } from "./types";
+import { AvatarPlaceholder } from "../../../utils/types";
+import AvatarColors from "./AvatarColors";
 
 export type Color = {
   type: "color";
