@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as request from 'request-promise';
 import { query } from '../db/db';
 
 export function createConference(req, res) {
@@ -45,7 +43,7 @@ export function createConference(req, res) {
   }
 
   query({
-    text: 'INSERT INTO conference (title, about, local, datestart, dateend, avatar, privacy) ' +
+    text: 'INSERT INTO conferences (title, about, local, datestart, dateend, avatar, privacy) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: [
       req.body.title,
