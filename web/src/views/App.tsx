@@ -5,13 +5,13 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
+import Conference from "./Conference";
 import Feed from "./Feed";
 import Login from "./Login";
 import PostView from "./PostView";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import Shop from "./Shop";
-import Conference from "./Conference";
 
 class App extends React.Component {
   public render() {

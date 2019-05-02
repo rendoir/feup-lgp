@@ -1,7 +1,7 @@
 import * as React from "react";
 import Avatar from "../Avatar/Avatar";
-import styles from "./Chat.module.css";
 import stylesComments from "./../Post/Post.module.scss";
+import styles from "./Chat.module.css";
 
 type Message = {
   user: string;
@@ -21,43 +21,43 @@ class Chat extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.user = "Myself"; //TODO
+    this.user = "Myself"; // TODO
 
     this.state = {
       messageList: []
     };
 
-    //TODO DELETE THIS
+    // TODO DELETE THIS
     setInterval(() => {
       this._onNewMessage({
-        user: Math.random() < 0.5 ? "Myself" : "User",
         date: "12:05 05/03/2019",
         text:
-          "This is an actual super hyper mega big message just to test if the css looks good when a message is this big."
+          "This is an actual super hyper mega big message just to test if the css looks good when a message is this big.",
+        user: Math.random() < 0.5 ? "Myself" : "User"
       });
     }, 1000);
   }
 
-  _onNewMessage(message: Message) {
-    //console.log(message);
+  public _onNewMessage(message: Message) {
+    // console.log(message);
     this.setState({
       messageList: [...this.state.messageList, message]
     });
   }
 
-  scrollToBottom = () => {
+  public scrollToBottom = () => {
     this.messagesEnd.parentNode.scroll({
-      top: this.messagesEnd.offsetTop,
+      behavior: "smooth",
       left: 0,
-      behavior: "smooth"
+      top: this.messagesEnd.offsetTop
     });
   };
 
-  componentDidMount() {
+  public componentDidMount() {
     this.scrollToBottom();
   }
 
-  componentDidUpdate() {
+  public componentDidUpdate() {
     this.scrollToBottom();
   }
 
@@ -88,7 +88,7 @@ class Chat extends React.Component<Props, State> {
     );
   }
 
-  getMessages() {
+  public getMessages() {
     return this.state.messageList.map(msg => (
       <div
         key={msg.date + msg.user}
