@@ -4,7 +4,6 @@ import styles from "./Chat.module.css";
 import stylesComments from "./../Post/Post.module.scss";
 
 type Message = {
-  img: string;
   user: string;
   text: string;
   date: string;
@@ -17,11 +16,12 @@ type State = {
 };
 
 class Chat extends React.Component<Props, State> {
-  public user: number;
+  public user: string;
+  public messagesEnd: any;
 
   constructor(props: Props) {
     super(props);
-    this.user = 1;
+    this.user = "Myself";
 
     this.state = {
       messageList: []
@@ -29,20 +29,36 @@ class Chat extends React.Component<Props, State> {
 
     setInterval(() => {
       this._onNewMessage({
-        img: "",
-        user: "User",
-        date: "",
+        user: Math.random() < 0.5 ? "Myself" : "User",
+        date: "12:05 05/03/2019",
         text:
           "DSADHSADJKHSADKAHSDJK SAHKDJSAHFJDHKFAJGSDHFGDSKFJGS ADHFGDSHFGSDHKFGDS HFGDSAKHFGSAHKJFGS DHJFGKHDSGFHS AGDFHJASGDFHGSAD FHJSADGFHSJ"
       });
-    }, 250);
+    }, 1000);
   }
 
-  _onNewMessage(message: any) {
+  _onNewMessage(message: Message) {
     console.log(message);
     this.setState({
       messageList: [...this.state.messageList, message]
     });
+  }
+
+  scrollToBottom = () => {
+    /*this.messagesEnd.scrollIntoView({
+        block: "nearest", 
+        inline: "start",
+        behavior: "smooth" 
+      });*/
+    this.messagesEnd.parentNode.scrollTop = this.messagesEnd.offsetTop;
+  };
+
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
   }
 
   public render() {
@@ -54,6 +70,12 @@ class Chat extends React.Component<Props, State> {
           <div className={stylesComments.post_comment + " w-100"}>
             {this.getMessages()}
           </div>
+          <div
+            style={{ float: "left", clear: "both" }}
+            ref={el => {
+              this.messagesEnd = el;
+            }}
+          />
         </div>
 
         <div className={styles.chat_footer}>
@@ -68,20 +90,46 @@ class Chat extends React.Component<Props, State> {
 
   getMessages() {
     return this.state.messageList.map(msg => (
-      <div className={stylesComments.post_comment + " my-3"}>
+      <div
+        className={
+          stylesComments.post_comment +
+          " w-75 mx-3 my-3 " +
+          (this.user === msg.user ? styles.right : "")
+        }
+      >
         <div className={stylesComments.comment_header}>
-          <Avatar
-            title={msg.user}
-            placeholder="empty"
-            size={30}
-            image="https://picsum.photos/200/200?image=52"
-          />
+          {this.user !== msg.user ? (
+            <Avatar
+              title={msg.user}
+              placeholder="empty"
+              size={30}
+              image="https://picsum.photos/200/200?image=52"
+            />
+          ) : null}
+
           <div>
-            <div className={stylesComments.comment_text}>
+            <div
+              className={
+                stylesComments.comment_text +
+                " " +
+                (this.user === msg.user ? styles.glintt_bg : "")
+              }
+            >
               <p>
-                <span className={stylesComments.post_author}>{msg.user}</span>
+                {this.user !== msg.user ? (
+                  <span className={stylesComments.post_author}>{msg.user}</span>
+                ) : null}
                 {msg.text}
               </p>
+            </div>
+            <div
+              className={
+                styles.date +
+                " my-1 " +
+                (this.user === msg.user ? "ml-auto float-right mr-2" : "ml-3")
+              }
+            >
+              {msg.date}
             </div>
           </div>
         </div>
