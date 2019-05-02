@@ -91,6 +91,7 @@ class Chat extends React.Component<Props, State> {
   getMessages() {
     return this.state.messageList.map(msg => (
       <div
+        key={msg.date + msg.user}
         className={
           stylesComments.post_comment +
           " w-75 mx-3 my-3 " +

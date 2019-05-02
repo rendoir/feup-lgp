@@ -118,7 +118,11 @@ class Conference extends React.Component<Props, State> {
         </div>
 
         <div className="container my-5">
-          <div className="conf_details p-3">{this.getDetails()}</div>
+          <div className="conf_side">
+            <button className="join">Join conference</button>
+            <div className="p-3">{this.getDetails()}</div>
+            <div className="p-3">{this.getAdminButtons()}</div>
+          </div>
           <div className="conf_posts">{this.getPosts()}</div>
         </div>
       </div>
@@ -157,6 +161,29 @@ class Conference extends React.Component<Props, State> {
           <i className="fas fa-hourglass-end" /> {this.state.date_end}
         </li>
       </ul>
+    );
+  }
+
+  private getAdminButtons() {
+    return (
+      <div className="p-0 m-0">
+        <h6>Administrator</h6>
+        <button>
+          <i className="fas fa-envelope" />Invite user
+        </button>
+        <button>
+          <i className="fas fa-video" />Start livestream
+        </button>
+        <button>
+          <i className="fas fa-puzzle-piece" />Create challenge
+        </button>
+        <button>
+          <i className="fas fa-archive" />Archive conference
+        </button>
+        <button>
+          <i className="fas fa-trash" />Delete conference
+        </button>
+      </div>
     );
   }
 }
