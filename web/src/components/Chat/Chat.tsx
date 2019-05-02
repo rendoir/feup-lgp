@@ -45,12 +45,11 @@ class Chat extends React.Component<Props, State> {
   }
 
   scrollToBottom = () => {
-    /*this.messagesEnd.scrollIntoView({
-        block: "nearest", 
-        inline: "start",
-        behavior: "smooth" 
-      });*/
-    this.messagesEnd.parentNode.scrollTop = this.messagesEnd.offsetTop;
+    this.messagesEnd.parentNode.scroll({
+      top: this.messagesEnd.offsetTop,
+      left: 0,
+      behavior: "smooth"
+    });
   };
 
   componentDidMount() {
