@@ -32,7 +32,7 @@ class Chat extends React.Component<Props, State> {
         user: Math.random() < 0.5 ? "Myself" : "User",
         date: "12:05 05/03/2019",
         text:
-          "DSADHSADJKHSADKAHSDJK SAHKDJSAHFJDHKFAJGSDHFGDSKFJGS ADHFGDSHFGSDHKFGDS HFGDSAKHFGSAHKJFGS DHJFGKHDSGFHS AGDFHJASGDFHGSAD FHJSADGFHSJ"
+          "This is an actual super hyper mega big message just to test if the css looks good when a message is this big."
       });
     }, 1000);
   }

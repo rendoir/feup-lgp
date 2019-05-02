@@ -1,11 +1,52 @@
 #Conference {
+    $min_screen_width_chat: 1200px;
+
+    width: 75%;
+    margin-left:auto;
+    margin-right:auto;
+
+    @media (min-width: $min_screen_width_chat) { 
+        width: 85%;
+    }
+
+    .live_wrap {
+        @media (min-width: $min_screen_width_chat) { 
+            display: inline-block;
+            width: 70%;
+        }
+        display: block;
+        width: 100%;
+    }
+
     .live_container {
         width: 100%;
         position: relative;
         padding-top: 56.25%;
     }
+
+    .chat_wrap {
+        @media (min-width: $min_screen_width_chat) { 
+            display: inline-block;
+            width: 30%;
+        }
+        display: block;
+        width: 100%;
+    }
+
     .chat_container{
-        width: 50%;
-        height: 40em;
+        position: relative;
+        width: 100%;
+        height: 50vh;
+        @media (min-width: $min_screen_width_chat) { 
+            height: 100%;
+        }
+    }
+
+    .conf_head {
+        @media (min-width: $min_screen_width_chat) { 
+            display: flex;
+        }
+
+        display: block;
     }
 }

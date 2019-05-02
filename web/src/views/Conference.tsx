@@ -54,14 +54,17 @@ class Conference extends React.Component<Props, State> {
 
   public render() {
     return (
-      <div id="Conference" className="container my-5">
-        <div>Hello Conference {this.id}</div>
-        <div className="conf_head">
-          <div className="live_container">
-            <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+      <div id="Conference" className="my-5">
+        <div className="conf_head w-100">
+          <div className="live_wrap">
+            <div className="live_container">
+              <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+            </div>
           </div>
-          <div className="chat_container">
-            <Chat />
+          <div className="chat_wrap">
+            <div className="chat_container">
+              <Chat />
+            </div>
           </div>
         </div>
       </div>
