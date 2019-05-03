@@ -153,22 +153,7 @@ class Conference extends React.Component<IProps, IState> {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
-            <h4>
-              {this.state.title}
-              <div className={`${styles.post_options} btn-group`}>
-                <button
-                  className="w-100 h-100 ml-2"
-                  role="button"
-                  data-toggle="dropdown"
-                >
-                  <i className="fas fa-ellipsis-v" />
-                </button>
-                <div className="dropdown-menu dropdown-menu-right">
-                  {this.getDropdownButtons()}
-                </div>
-                {this.getHiddenInfo()}
-              </div>
-            </h4>
+            <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
 
@@ -292,6 +277,10 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getAdminButtons() {
+    const hideBtnText = this.state.isHidden
+      ? "Reopen Conference"
+      : "Hide Conference";
+
     return (
       <div className="p-0 m-0">
         <h6>Administrator</h6>
@@ -311,10 +300,11 @@ class Conference extends React.Component<IProps, IState> {
           <i className="fas fa-archive" />
           Archive conference
         </button>
-        <button>
+        <button onClick={this.handleHideConference}>
           <i className="fas fa-trash" />
-          Delete conference
+          {hideBtnText}
         </button>
+        {this.getHiddenInfo()}
       </div>
     );
   }
