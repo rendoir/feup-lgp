@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "../components/header/Header";
 import "../styles/App.css";
 
+import ConferenceEdit from "../components/ConferenceEdit/ConferenceEdit";
+import ConferenceStream from "../components/ConferenceStream/ConferenceStream";
 import Backoffice from "./Backoffice";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
@@ -30,6 +32,9 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
+
+              <Route path="/conf/:id" component={ConferenceStream} />
+              <Route path="/conf/:id/edit" component={ConferenceEdit} />
             </Switch>
           </ErrorBoundary>
         </Router>
