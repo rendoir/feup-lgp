@@ -7,6 +7,14 @@
     margin-left:auto;
     margin-right:auto;
 
+    #hidden_info{
+        color: red;
+        font-size: 10px;
+        min-width: 200px;
+        flex-grow: 1;
+        margin-top: 10px;
+    }
+
     @media (min-width: $min_screen_width_chat) { 
         width: 85%;
     }

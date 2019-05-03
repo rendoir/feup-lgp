@@ -8,15 +8,16 @@ import Livestream from "../components/Livestream/Livestream";
 import "../styles/Conference.css";
 import styles from "../components/Post/Post.module.css";
 
-interface Props {
+interface IProps {
   match: {
     params: {
       id: number;
+      user_id: 1;
     };
   };
 }
 
-type State = {
+interface IState {
   hasChat: boolean;
   hasLiveStream: boolean;
   posts: any[];
@@ -26,14 +27,16 @@ type State = {
   date_start: string;
   date_end: string;
   isHidden: boolean;
-};
+}
 
-class Conference extends React.Component<Props, State> {
+class Conference extends React.Component<IProps, IState> {
   public id: number;
+  public userId: number;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
+    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       hasChat: true,
@@ -79,6 +82,7 @@ class Conference extends React.Component<Props, State> {
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
+    this.getHiddenInfo = this.getHiddenInfo.bind(this);
   }
 
   public componentDidMount() {
@@ -114,7 +118,9 @@ class Conference extends React.Component<Props, State> {
   }
 
   public render() {
-    if (this.state.isHidden) {
+    console.log("logged: ", this.userId);
+    console.log("owner: ", this.props.match.params.user_id);
+    if (this.state.isHidden && !(this.userId == 1)) {
       // && not owner
       return (
         <div id="hiddenConference" className="my-5">
@@ -138,6 +144,7 @@ class Conference extends React.Component<Props, State> {
                 <div className="dropdown-menu dropdown-menu-right">
                   {this.getDropdownButtons()}
                 </div>
+                {this.getHiddenInfo()}
               </div>
             </h4>
             <p>{this.state.description}</p>
@@ -199,6 +206,16 @@ class Conference extends React.Component<Props, State> {
         </li>
       </ul>
     );
+  }
+
+  public getHiddenInfo() {
+    if (this.state.isHidden) {
+      return (
+        <div id="hidden_info">
+          <b>The conference was closed to all users!</b>
+        </div>
+      );
+    }
   }
 
   public getDropdownButtons() {
