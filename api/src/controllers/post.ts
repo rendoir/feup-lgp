@@ -499,4 +499,18 @@ export function inviteSubscribers(req, res) {
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
     });
 }
-// TODO: ADICIONAR ENDPOINT PARA QUANDO O UTILIZADR É NOTIFICADO
+
+export function inviteNotified(req, res) {
+    query({
+        text: `UPDATE invites SET user_notified = TRUE
+                WHERE invited_user = $1
+                    AND invite_subject_id = $2
+                    AND invite_type = 'post'`,
+        values: [req.params.id, req.body.invited_user],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}

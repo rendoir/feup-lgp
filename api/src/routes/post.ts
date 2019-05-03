@@ -278,3 +278,19 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *     }
  */
 postRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);
+
+/**
+ * @api {post} /api/post/:id/invite_notified Mark a post invite notification as seen by the invited user
+ * @apiName Set-Post-Invitation-As-Seen
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id    Id of the conference referred on the invite
+ * @apiParam {number}   invited_user    Id of the user who has been already notified about the invitation
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/invite_notified', controller.inviteNotified);

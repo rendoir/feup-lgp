@@ -92,3 +92,19 @@ conferenceRouter.get('/:id/attendance_intent', controller.addUserAttendanceInten
  *     }
  */
 conferenceRouter.get('/:id/remove_attendance_intent', controller.removeUserAttendanceIntent);
+
+/**
+ * @api {post} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
+ * @apiName Set-Conference-Invitation-As-Seen
+ * @apiGroup Conference
+ *
+ * @apiParam {number}   id    Id of the conference referred on the invite
+ * @apiParam {number}   invited_user    Id of the user who has been already notified about the invitation
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.post('/:id/invite_notified', controller.inviteNotified);
