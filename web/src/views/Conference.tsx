@@ -77,6 +77,8 @@ class Conference extends React.Component<Props, State> {
       date_start: "14:30 20/03/2019",
       date_end: "16:30 20/03/2019"
     };
+
+    this.handleHideConference = this.handleHideConference.bind(this);
   }
 
   public componentDidMount() {
@@ -113,6 +115,7 @@ class Conference extends React.Component<Props, State> {
 
   public render() {
     if (this.state.isHidden) {
+      // && not owner
       return (
         <div id="hiddenConference" className="my-5">
           <a>The owner has closed this conference.</a>
@@ -122,7 +125,21 @@ class Conference extends React.Component<Props, State> {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
-            <h4>{this.state.title}</h4>
+            <h4>
+              {this.state.title}
+              <div className={`${styles.post_options} btn-group`}>
+                <button
+                  className="w-100 h-100 ml-2"
+                  role="button"
+                  data-toggle="dropdown"
+                >
+                  <i className="fas fa-ellipsis-v" />
+                </button>
+                <div className="dropdown-menu dropdown-menu-right">
+                  {this.getDropdownButtons()}
+                </div>
+              </div>
+            </h4>
             <p>{this.state.description}</p>
           </div>
 
