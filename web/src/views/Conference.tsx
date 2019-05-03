@@ -107,6 +107,24 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public handleHideConference() {
+    /*let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+        !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+            ? `:${process.env.REACT_APP_API_PORT}`
+            : "/api";
+    postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
+    
+    axios
+      .post(postUrl, {
+        id: this.props.match.params.id, // When loggin, this is the user logged in
+        visibility: 'closed'
+      })
+      .then(res => {
+        console.log("Conference hidden...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
+    */
     if (this.state.isHidden) {
       this.setState({
         isHidden: false

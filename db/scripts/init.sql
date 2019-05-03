@@ -6,7 +6,8 @@ CREATE TYPE permission_level_enum AS ENUM (
 CREATE TYPE visibility_enum AS ENUM (
     'public',
     'followers',
-    'private'
+    'private',
+    'closed'
 );
 
 CREATE TYPE content_type_enum AS ENUM (
