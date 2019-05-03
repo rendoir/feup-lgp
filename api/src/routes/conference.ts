@@ -24,3 +24,18 @@ export const conferenceRouter = Router();
  *     }
  */
 conferenceRouter.post('/create', controller.createConference);
+
+/**
+ * @api {get} /api/conference/:id Get a conference
+ * @apiName Get-A-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id       id of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id', controller.getConference);
