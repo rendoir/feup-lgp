@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as request from 'request-promise';
+import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export function createConference(req, res) {
@@ -67,3 +68,64 @@ export function createConference(req, res) {
     });
   });
 }
+
+export function inviteUser(req, res) {
+  query({
+      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
+      values: [req.body.invited_user, req.params.id],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export function inviteSubscribers(req, res) {
+  const cookies = new Cookies(req.headers.cookie);
+  query({
+      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+              SELECT follower, $1, 'conference' FROM follows WHERE followed = $2
+              ON CONFLICT ON CONSTRAINT unique_invite
+              DO NOTHING`,
+      values: [req.params.id, cookies.get('user_id')],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export function addUserAttendanceIntent(req, res) {
+  console.log('ADD ATTENDANCE INTENT');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
+  query({
+      text: `INSERT INTO conference_attendance_intents (attending_user, conference) VALUES ($1, $2)`,
+      values: [cookies.get('user_id'), req.params.id],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export function removeUserAttendanceIntent(req, res) {
+  console.log('REMOVE ATTENDANCE INTENT');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
+  query({
+      text: `DELETE FROM conference_attendance_intents WHERE attending_user = $1 AND conference = $2`,
+      values: [cookies.get('user_id'), req.params.id],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+// TODO: ADICIONAR ENDPOINT PARA QUANDO O UTILIZADR É NOTIFICADO

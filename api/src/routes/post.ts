@@ -244,3 +244,37 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
  *     }
  */
 postRouter.post('/:id/rate', controller.rate);
+
+/**
+ * @api {post} /api/post/:id/invite Invite user to engage in post discussion
+ * @apiName Invite-To-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id    Id of the post the user will be invited to
+ * @apiParam {number}   invited_user    Id of the user being invited
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/invite', controller.inviteUser);
+
+/**
+ * @api {get} /api/post/:id/invite_subscribers Invite subscribers of the inviter user to engage in post discussion
+ * @apiName Invite-Subscribers-To-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id    Id of the post the subscribers will be invited to
+ *
+ * The user whose subscribers will be invited to the post is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-
+import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
@@ -471,3 +471,32 @@ export function deleteFolderRecursive(path) {
       fs.rmdirSync(path);
     }
 }
+
+export function inviteUser(req, res) {
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
+        values: [req.body.invited_user, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function inviteSubscribers(req, res) {
+    const cookies = new Cookies(req.headers.cookie);
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                ON CONFLICT ON CONSTRAINT unique_invite
+                DO NOTHING`,
+        values: [req.params.id, cookies.get('user_id')],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+// TODO: ADICIONAR ENDPOINT PARA QUANDO O UTILIZADR É NOTIFICADO

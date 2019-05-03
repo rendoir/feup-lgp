@@ -147,7 +147,7 @@ CREATE TABLE invites (
     invite_type invite_type_enum NOT NULL,
     user_notified BOOLEAN DEFAULT FALSE, -- set to true when the invited user sees the invite notification
     date_invited TIMESTAMP DEFAULT NOW(),
-    UNIQUE (invited_user, invite_subject_id, invite_type)
+    CONSTRAINT unique_invite UNIQUE (invited_user, invite_subject_id, invite_type)
 );
 
 ALTER TABLE IF EXISTS ONLY likes_a_comment
@@ -187,6 +187,24 @@ CREATE TRIGGER delete_likes_of_a_post
     AFTER DELETE ON likes_a_post
     FOR EACH ROW
 EXECUTE PROCEDURE delete_likes_post();
+
+/* If user expresses his intention to attend a conference, we can consider him as notified */
+CREATE FUNCTION notified_on_attendance_intent() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$BEGIN
+    UPDATE invites 
+        SET user_notified = TRUE 
+        WHERE invited_user = NEW.attending_user 
+            AND invite_subject_id = NEW.conference 
+            AND invite_type = 'conference';
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER notified_on_intent
+    AFTER INSERT ON conference_attendance_intents
+    FOR EACH ROW
+EXECUTE PROCEDURE notified_on_attendance_intent();
+
 
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('adminooooo@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe','ICBAS', 'user');
