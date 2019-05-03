@@ -4,6 +4,7 @@ import stylesComments from "./../Post/Post.module.scss";
 import styles from "./Chat.module.css";
 
 type Message = {
+  id: number;
   user: string;
   text: string;
   date: string;
@@ -17,11 +18,13 @@ type State = {
 
 class Chat extends React.Component<Props, State> {
   public user: string;
+  public i: number; // TODO DELETE
   public messagesEnd: any;
 
   constructor(props: Props) {
     super(props);
     this.user = "Myself"; // TODO
+    this.i = 0; // TODO DELETE
 
     this.state = {
       messageList: []
@@ -31,6 +34,7 @@ class Chat extends React.Component<Props, State> {
     setInterval(() => {
       this._onNewMessage({
         date: "12:05 05/03/2019",
+        id: this.i++,
         text:
           "This is an actual super hyper mega big message just to test if the css looks good when a message is this big.",
         user: Math.random() < 0.5 ? "Myself" : "User"
@@ -91,7 +95,7 @@ class Chat extends React.Component<Props, State> {
   public getMessages() {
     return this.state.messageList.map(msg => (
       <div
-        key={msg.date + msg.user}
+        key={msg.id}
         className={
           stylesComments.post_comment +
           " w-75 mx-3 my-3 " +

@@ -119,11 +119,13 @@ class Conference extends React.Component<IProps, State> {
 
         <div className="container my-5">
           <div className="conf_side">
-            <button className="join">Join conference</button>
             <div className="p-3">{this.getDetails()}</div>
             <div className="p-3">{this.getAdminButtons()}</div>
           </div>
-          <div className="conf_posts">{this.getPosts()}</div>
+          <div className="conf_posts">
+            <button className="join">Join conference</button>
+            {this.getPosts()}
+          </div>
         </div>
       </div>
     );
