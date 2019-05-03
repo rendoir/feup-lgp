@@ -83,6 +83,9 @@ export function inviteUser(req, res) {
 
 export function inviteSubscribers(req, res) {
   const cookies = new Cookies(req.headers.cookie);
+  console.log('INVITE SUBSCRIBERS');
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
               SELECT follower, $1, 'conference' FROM follows WHERE followed = $2
@@ -97,13 +100,13 @@ export function inviteSubscribers(req, res) {
   });
 }
 
-export function addUserAttendanceIntent(req, res) {
-  console.log('ADD ATTENDANCE INTENT');
+export function addParticipantUser(req, res) {
+  console.log('ADD PARTICIPANT');
   const cookies = new Cookies(req.headers.cookie);
   console.log('USER: ', cookies.get('user_id'));
   console.log('CONFERENCE: ', req.params.id);
   query({
-      text: `INSERT INTO conference_attendance_intents (attending_user, conference) VALUES ($1, $2)`,
+      text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
       values: [cookies.get('user_id'), req.params.id],
   }).then((result) => {
       res.status(200).send();
@@ -113,13 +116,13 @@ export function addUserAttendanceIntent(req, res) {
   });
 }
 
-export function removeUserAttendanceIntent(req, res) {
-  console.log('REMOVE ATTENDANCE INTENT');
+export function removeParticipantUser(req, res) {
+  console.log('REMOVE PARTICIPANT');
   const cookies = new Cookies(req.headers.cookie);
   console.log('USER: ', cookies.get('user_id'));
   console.log('CONFERENCE: ', req.params.id);
   query({
-      text: `DELETE FROM conference_attendance_intents WHERE attending_user = $1 AND conference = $2`,
+      text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
       values: [cookies.get('user_id'), req.params.id],
   }).then((result) => {
       res.status(200).send();
@@ -130,12 +133,16 @@ export function removeUserAttendanceIntent(req, res) {
 }
 
 export function inviteNotified(req, res) {
+  console.log('INVITE NOTIFIED');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
   query({
       text: `UPDATE invites SET user_notified = TRUE
               WHERE invited_user = $1
                   AND invite_subject_id = $2
                   AND invite_type = 'conference'`,
-      values: [req.params.id, req.body.invited_user],
+      values: [req.params.id, cookies.get('user_id')],
   }).then((result) => {
       res.status(200).send();
   }).catch((error) => {

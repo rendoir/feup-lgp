@@ -42,7 +42,7 @@ conferenceRouter.post('/create', controller.createConference);
 conferenceRouter.post('/:id/invite', controller.inviteUser);
 
 /**
- * @api {get} /api/conference/:id/invite_subscribers Invite subscribers of the inviter user to conference
+ * @api {post} /api/conference/:id/invite_subscribers Invite subscribers of the inviter user to conference
  * @apiName Invite-Subscribers-To-Conference
  * @apiGroup Conference
  *
@@ -57,15 +57,15 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);
+conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
- * @api {get} /api/conference/:id/attendance_intent Set a user intention to attend a conference
- * @apiName Set-Conference-Attendance-Intention
+ * @api {post} /api/conference/:id/add_participant Add user to conference participants
+ * @apiName Add-Conference-Participant
  * @apiGroup Conference
  *
- * @apiParam {number}   id    Id of the conference the user intends to attend
- * The user who intends to attend the conference is the logged in user, which means we can access his id through cookies.
+ * @apiParam {number}   id    Id of the conference the user wants to participate in
+ * The user who intends to participate in the conference is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
  *
  * @apiErrorExample Error-Response:
@@ -74,10 +74,10 @@ conferenceRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/attendance_intent', controller.addUserAttendanceIntent);
+conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
 
 /**
- * @api {get} /api/conference/:id/remove_attendance_intent Remove a user intention to attend a conference
+ * @api {delete} /api/conference/:id/remove_attendance_intent Remove a user intention to attend a conference
  * @apiName Remove-Conference-Attendance-Intention
  * @apiGroup Conference
  *
@@ -91,20 +91,21 @@ conferenceRouter.get('/:id/attendance_intent', controller.addUserAttendanceInten
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/remove_attendance_intent', controller.removeUserAttendanceIntent);
+conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
 
 /**
- * @api {post} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
+ * @api {put} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
  * @apiName Set-Conference-Invitation-As-Seen
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference referred on the invite
- * @apiParam {number}   invited_user    Id of the user who has been already notified about the invitation
- *
+ * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
+ * 
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/:id/invite_notified', controller.inviteNotified);
+conferenceRouter.put('/:id/invite_notified', controller.inviteNotified);

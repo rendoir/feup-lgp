@@ -501,12 +501,16 @@ export function inviteSubscribers(req, res) {
 }
 
 export function inviteNotified(req, res) {
+    console.log('INVITE NOTIFIED');
+    const cookies = new Cookies(req.headers.cookie);
+    console.log('USER: ', cookies.get('user_id'));
+    console.log('CONFERENCE: ', req.params.id);
     query({
         text: `UPDATE invites SET user_notified = TRUE
                 WHERE invited_user = $1
                     AND invite_subject_id = $2
-                    AND invite_type = 'post'`,
-        values: [req.params.id, req.body.invited_user],
+                    AND invite_type = 'conference'`,
+        values: [req.params.id, cookies.get('user_id')],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

@@ -262,7 +262,7 @@ postRouter.post('/:id/rate', controller.rate);
 postRouter.post('/:id/invite', controller.inviteUser);
 
 /**
- * @api {get} /api/post/:id/invite_subscribers Invite subscribers of the inviter user to engage in post discussion
+ * @api {post} /api/post/:id/invite_subscribers Invite subscribers of the inviter user to engage in post discussion
  * @apiName Invite-Subscribers-To-Post
  * @apiGroup Post
  *
@@ -277,15 +277,16 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *      message: 'An error message here'
  *     }
  */
-postRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);
+postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
- * @api {post} /api/post/:id/invite_notified Mark a post invite notification as seen by the invited user
+ * @api {put} /api/post/:id/invite_notified Mark a post invite notification as seen by the invited user
  * @apiName Set-Post-Invitation-As-Seen
  * @apiGroup Post
  *
- * @apiParam {number}   id    Id of the conference referred on the invite
- * @apiParam {number}   invited_user    Id of the user who has been already notified about the invitation
+ * @apiParam {number}   id    Id of the post referred on the invite
+ * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -293,4 +294,4 @@ postRouter.get('/:id/invite_subscribers', controller.inviteSubscribers);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/invite_notified', controller.inviteNotified);
+postRouter.put('/:id/invite_notified', controller.inviteNotified);
