@@ -7,13 +7,20 @@ import Post from "../components/Post/Post";
 
 import "../styles/Conference.css";
 import styles from "../components/Post/Post.module.css";
+import Avatar from "../components/Avatar/Avatar";
+import Icon from "../components/Icon/Icon";
+import {
+  faGlobeAfrica,
+  faLock,
+  faQuestion,
+  faUserFriends,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 
 interface IProps {
   match: {
     params: {
       id: number;
-      user_id: 1;
-      visibility: string;
     };
   };
 }
@@ -28,6 +35,9 @@ interface IState {
   date_start: string;
   date_end: string;
   isHidden: boolean;
+  owner_id: number;
+  owner_name: string;
+  privacy: string;
 }
 
 class Conference extends React.Component<IProps, IState> {
@@ -40,14 +50,15 @@ class Conference extends React.Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
-      date_end: "16:30 20/03/2019",
-      date_start: "14:30 20/03/2019",
-      description:
-        "Nam ut metus sed purus aliquet porttitor sit amet nec metus. Fusce porta neque pellentesque mollis porttitor. Mauris eget leo metus. Etiam venenatis condimentum efficitur. Etiam libero lorem, ornare ac leo nec, accumsan eleifend arcu. Donec at lectus quam. Vivamus ornare ipsum ut dolor faucibus sollicitudin faucibus sit amet orci. In sit amet venenatis eros. Integer vestibulum rhoncus vehicula. Ut venenatis dignissim tellus vel facilisis.",
+      date_end: "",
+      date_start: "",
+      description: "",
       hasChat: true,
       hasLiveStream: true,
       isHidden: false,
-      place: "Porto",
+      owner_id: 1,
+      owner_name: "",
+      place: "",
       // posts: []
       posts: [
         {
@@ -81,7 +92,8 @@ class Conference extends React.Component<IProps, IState> {
           visibility: "public"
         }
       ],
-      title: "Conference title"
+      privacy: "",
+      title: ""
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
@@ -93,7 +105,6 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiGetConference() {
-    console.log(this.id);
     let conferenceURL = `${location.protocol}//${location.hostname}`;
     conferenceURL +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -114,7 +125,10 @@ class Conference extends React.Component<IProps, IState> {
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
+          owner_id: conference.user_id,
+          owner_name: conference.first_name + conference.last_name,
           place: conference.local,
+          privacy: conference.local,
           title: conference.title
         });
       })
@@ -122,24 +136,24 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public handleHideConference() {
-    /*let postUrl = `${location.protocol}//${location.hostname}`;
+    let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
-        !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-            ? `:${process.env.REACT_APP_API_PORT}`
-            : "/api";
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
     postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
 
     axios
       .post(postUrl, {
-        id: this.props.match.params.id, // When loggin, this is the user logged in
-        visibility: 'closed'
+        id: this.props.match.params.id,
+        privacy: "closed"
       })
       .then(res => {
         console.log("Conference hidden...");
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
-    */
+      .catch(() => console.log("Failed to update privacy"));
+
     if (this.state.isHidden) {
       this.setState({
         isHidden: false
@@ -152,14 +166,24 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (
-      this.state.isHidden &&
-      !(this.userId == this.props.match.params.user_id)
-    ) {
-      // && not owner
+    if (this.state.isHidden && this.userId == this.state.owner_id) {
       return (
         <div id="hiddenConference" className="my-5">
           <a>The owner has closed this conference.</a>
+          <p>Conference by: </p>
+          <Avatar
+            title={this.state.owner_name}
+            placeholder="empty"
+            size={30}
+            image="https://picsum.photos/200/200?image=52"
+          />
+          <a
+            className={styles.post_author}
+            href={"/user/" + this.state.owner_id}
+          >
+            {" "}
+            {this.state.owner_name}
+          </a>
         </div>
       );
     } else {
@@ -221,6 +245,17 @@ class Conference extends React.Component<IProps, IState> {
   private getDetails() {
     return (
       <ul className="p-0 m-0">
+        <Avatar
+          title={this.state.owner_name}
+          placeholder="empty"
+          size={30}
+          image="https://picsum.photos/200/200?image=52"
+        />
+        <a className={styles.post_author} href={"/user/" + this.state.owner_id}>
+          {" "}
+          {this.state.owner_name}
+        </a>
+        <Icon icon={this.getVisibilityIcon(this.state.privacy)} size="lg" />
         <li>
           <i className="fas fa-map-marker-alt" /> {this.state.place}
         </li>
@@ -320,6 +355,19 @@ class Conference extends React.Component<IProps, IState> {
         {this.getHiddenInfo()}
       </div>
     );
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case "public":
+        return faGlobeAfrica;
+      case "followers":
+        return faUserFriends;
+      case "private":
+        return faLock;
+      default:
+        return faQuestion;
+    }
   }
 }
 
