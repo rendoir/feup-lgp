@@ -1,4 +1,5 @@
-@import "./colors";
+@import "./variables";
+@import "./functions";
 
 #Conference {
     $min_screen_width_chat: 1200px;
@@ -57,11 +58,21 @@
         margin-left: auto;
         float: right;
 
-        .join {
+        .join_button {
+            color: #FFFFFF;
             margin-bottom: 1.5em;
             width: 100%;
             padding: 1em 0;
             font-size: 1.5em;
+            border-radius: 40px;
+        }
+        
+        .join {
+            background-color: $color-primary;
+        }
+
+        .joined {
+            background-color: tint(#FF0000, 21);
         }
 
         button {

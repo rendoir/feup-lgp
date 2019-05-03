@@ -60,6 +60,23 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
 conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
+ * @api {put} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
+ * @apiName Set-Conference-Invitation-As-Seen
+ * @apiGroup Conference
+ *
+ * @apiParam {number}   id    Id of the conference referred on the invite
+ * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
+ * 
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.put('/:id/invite_notified', controller.inviteNotified);
+
+/**
  * @api {post} /api/conference/:id/add_participant Add user to conference participants
  * @apiName Add-Conference-Participant
  * @apiGroup Conference
@@ -94,18 +111,18 @@ conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
 conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
 
 /**
- * @api {put} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
- * @apiName Set-Conference-Invitation-As-Seen
+ * @api {get} /api/conference/:id/check_participant Check if a user is participating in a conference
+ * @apiName Check-Conference-Participation
  * @apiGroup Conference
  *
- * @apiParam {number}   id    Id of the conference referred on the invite
- * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
+ * @apiParam {number}   id    Id of the conference in which we are verifying the user participation
+ * The user whose participationto attend the conference is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
- * 
+ *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.put('/:id/invite_notified', controller.inviteNotified);
+conferenceRouter.get('/:id/check_participation', controller.checkUserParticipation);

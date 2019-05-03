@@ -7,6 +7,9 @@ import Post from "../components/Post/Post";
 
 import "../styles/Conference.css";
 
+// - Import utils
+import { apiCheckUserConferenceParticipation } from "../utils/apiInvite";
+
 interface IProps {
   match: {
     params: {
@@ -15,7 +18,7 @@ interface IProps {
   };
 }
 
-type State = {
+interface IState {
   hasChat: boolean;
   hasLiveStream: boolean;
   posts: any[];
@@ -24,9 +27,10 @@ type State = {
   place: string;
   date_start: string;
   date_end: string;
-};
+  userParticipation: boolean;
+}
 
-class Conference extends React.Component<IProps, State> {
+class Conference extends React.Component<IProps, IState> {
   public id: number;
 
   constructor(props: IProps) {
@@ -74,13 +78,15 @@ class Conference extends React.Component<IProps, State> {
           visibility: "public"
         }
       ],
-      title: "Conference title"
+      title: "Conference title",
+      userParticipation: true
     };
   }
 
   public componentDidMount() {
     // TODO
     // this.apiGetConference();
+    // this.apiGetUserParticipation();
   }
 
   public apiGetConference() {
@@ -96,6 +102,13 @@ class Conference extends React.Component<IProps, State> {
       .get(conferenceURL, {})
       .then(res => console.log(res))
       .catch(() => console.log("Failed to get conference"));
+  }
+
+  public async apiGetUserParticipation() {
+    const participant: boolean = await apiCheckUserConferenceParticipation(
+      this.id
+    );
+    this.setState({ userParticipation: participant });
   }
 
   public render() {
@@ -125,7 +138,7 @@ class Conference extends React.Component<IProps, State> {
             <div className="p-3">{this.getAdminButtons()}</div>
           </div>
           <div className="conf_posts">
-            <button className="join">Join conference</button>
+            {this.getJoinButton()}
             {this.getPosts()}
           </div>
         </div>
@@ -194,6 +207,17 @@ class Conference extends React.Component<IProps, State> {
           Delete conference
         </button>
       </div>
+    );
+  }
+
+  private getJoinButton() {
+    const buttonClass = this.state.userParticipation ? "joined" : "join";
+    const buttonText = this.state.userParticipation
+      ? "Leave conference"
+      : "Join conference";
+    // TODO: METER EFEITOS AO CARREGAR
+    return (
+      <button className={`join_button ${buttonClass}`}>{buttonText}</button>
     );
   }
 }

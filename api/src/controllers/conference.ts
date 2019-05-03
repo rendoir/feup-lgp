@@ -77,7 +77,7 @@ export function inviteUser(req, res) {
       res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+      res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
   });
 }
 
@@ -96,39 +96,7 @@ export function inviteSubscribers(req, res) {
       res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while subscribing post' });
-  });
-}
-
-export function addParticipantUser(req, res) {
-  console.log('ADD PARTICIPANT');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
-  console.log('CONFERENCE: ', req.params.id);
-  query({
-      text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
-      values: [cookies.get('user_id'), req.params.id],
-  }).then((result) => {
-      res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while subscribing post' });
-  });
-}
-
-export function removeParticipantUser(req, res) {
-  console.log('REMOVE PARTICIPANT');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
-  console.log('CONFERENCE: ', req.params.id);
-  query({
-      text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
-      values: [cookies.get('user_id'), req.params.id],
-  }).then((result) => {
-      res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+      res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
   });
 }
 
@@ -147,6 +115,59 @@ export function inviteNotified(req, res) {
       res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while subscribing post' });
+      res.status(400).send({ message: 'An error ocurred while notifying conference invite' });
   });
+}
+
+export function addParticipantUser(req, res) {
+  console.log('ADD PARTICIPANT');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
+  query({
+      text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
+      values: [cookies.get('user_id'), req.params.id],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while adding participant to conference' });
+  });
+}
+
+export function removeParticipantUser(req, res) {
+  console.log('REMOVE PARTICIPANT');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
+  query({
+      text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
+      values: [cookies.get('user_id'), req.params.id],
+  }).then((result) => {
+      res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while removing participant from conference' });
+  });
+}
+
+export async function checkUserParticipation(req, res) {
+  console.log('CHECK PARTICIPATION');
+  const cookies = new Cookies(req.headers.cookie);
+  console.log('USER: ', cookies.get('user_id'));
+  console.log('CONFERENCE: ', req.params.id);
+
+  try {
+      const userParticipantQuery = await query({
+          text: `SELECT *
+                  FROM conference_participants
+                  WHERE participant_user = $1 AND conference = $2`,
+          values: [cookies.get('user_id'), req.params.id],
+      });
+      console.log("É PARTICIPANTE ? ", Boolean(userParticipantQuery.rows[0]));
+      res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user participation in conference'));
+  }
 }

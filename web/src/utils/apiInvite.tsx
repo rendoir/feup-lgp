@@ -45,7 +45,22 @@ export async function apiInviteNotified(
     await axios.put(apiURL, {});
     return true;
   } catch (error) {
-    console.log("Failed to invite notified");
+    console.log("Failed to set invite as notified");
+    return false;
+  }
+}
+
+export async function apiCheckUserConferenceParticipation(
+  conferenceId: number
+): Promise<boolean> {
+  const apiURL = getApiURL(`/conference/${conferenceId}/invite_notified`);
+
+  try {
+    const res = await axios.put(apiURL, {});
+    console.log("é participante ? ", res.data.participant);
+    return res.data.participant;
+  } catch (error) {
+    console.log("Failed to check participation");
     return false;
   }
 }
