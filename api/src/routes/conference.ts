@@ -24,3 +24,19 @@ export const conferenceRouter = Router();
  *     }
  */
 conferenceRouter.post('/create', controller.createConference);
+
+/**
+ * @api {post} /api/conference/:id/change_privacy Change the privacy of a conference
+ * @apiName Change-Privacy-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   privacy     Visibility of the post: public/followers/private
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);

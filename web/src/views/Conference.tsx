@@ -13,6 +13,7 @@ interface IProps {
     params: {
       id: number;
       user_id: 1;
+      visibility: string;
     };
   };
 }
