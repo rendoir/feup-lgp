@@ -5,10 +5,11 @@ import Chat from "../components/Chat/Chat";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 
-import "../styles/Conference.css";
-import styles from "../components/Post/Post.module.css";
 import Avatar from "../components/Avatar/Avatar";
 import Icon from "../components/Icon/Icon";
+import styles from "../components/Post/Post.module.css";
+import "../styles/Conference.css";
+
 import {
   faGlobeAfrica,
   faLock,
@@ -121,6 +122,11 @@ class Conference extends React.Component<IProps, IState> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
+        if (conference.privacy === "closed") {
+          this.setState({
+            isHidden: true
+          });
+        }
         this.setState({
           date_end: dateend,
           date_start: datestart,
@@ -136,6 +142,20 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public handleHideConference() {
+    let privacyState = "closed";
+
+    if (this.state.isHidden) {
+      privacyState = "public";
+      this.setState({
+        isHidden: false
+      });
+    } else {
+      privacyState = "closed";
+      this.setState({
+        isHidden: true
+      });
+    }
+
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -146,44 +166,28 @@ class Conference extends React.Component<IProps, IState> {
     axios
       .post(postUrl, {
         id: this.props.match.params.id,
-        privacy: "closed"
+        privacy: privacyState
       })
       .then(res => {
         console.log("Conference hidden...");
-        window.location.reload();
       })
       .catch(() => console.log("Failed to update privacy"));
-
-    if (this.state.isHidden) {
-      this.setState({
-        isHidden: false
-      });
-    } else {
-      this.setState({
-        isHidden: true
-      });
-    }
   }
 
   public render() {
-    if (this.state.isHidden && this.userId == this.state.owner_id) {
+    if (this.state.isHidden && !(this.userId === this.state.owner_id)) {
       return (
-        <div id="hiddenConference" className="my-5">
-          <a>The owner has closed this conference.</a>
-          <p>Conference by: </p>
-          <Avatar
-            title={this.state.owner_name}
-            placeholder="empty"
-            size={30}
-            image="https://picsum.photos/200/200?image=52"
-          />
-          <a
-            className={styles.post_author}
-            href={"/user/" + this.state.owner_id}
-          >
-            {" "}
-            {this.state.owner_name}
-          </a>
+        <div id="Conference" className="my-5">
+          <div className="container my-5">
+            <h4>Title: {this.state.title}</h4>
+            <h5>This conference has been closed!</h5>
+          </div>
+
+          <div className="container my-5">
+            <div className="conf_side">
+              <div className="p-3">{this.getDetails()}</div>
+            </div>
+          </div>
         </div>
       );
     } else {
@@ -220,6 +224,61 @@ class Conference extends React.Component<IProps, IState> {
         </div>
       );
     }
+  }
+
+  public getHiddenInfo() {
+    if (this.state.isHidden) {
+      return (
+        <div id="hidden_info">
+          <b>The conference was closed to all users!</b>
+        </div>
+      );
+    }
+  }
+
+  public getDropdownButtons() {
+    const hideBtnText = this.state.isHidden
+      ? "Reopen Conference"
+      : "Hide Conference";
+
+    const reportButton = (
+      <button
+        key={0}
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        data-toggle="modal"
+        // data-target={`#report_post_modal_${this.props.id}`}
+        // onClick={this.handleConferenceReport}
+        // disabled={this.state.userReport}
+      >
+        Report conference
+      </button>
+    );
+    const deleteButton = (
+      <button
+        key={1}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        onClick={this.handleHideConference}
+        // data-target={`#delete_conference_modal${this.props.id}`}
+      >
+        {hideBtnText}
+      </button>
+    );
+    const archiveButton = (
+      <button
+        key={2}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        // data-target={`#archive_conference_modal${this.props.id}`}
+      >
+        Delete Conference
+      </button>
+    );
+    const dropdownButtons = [reportButton, deleteButton, archiveButton];
+    return dropdownButtons;
   }
 
   private getPosts() {
@@ -267,61 +326,6 @@ class Conference extends React.Component<IProps, IState> {
         </li>
       </ul>
     );
-  }
-
-  public getHiddenInfo() {
-    if (this.state.isHidden) {
-      return (
-        <div id="hidden_info">
-          <b>The conference was closed to all users!</b>
-        </div>
-      );
-    }
-  }
-
-  public getDropdownButtons() {
-    const hideBtnText = this.state.isHidden
-      ? "Reopen Conference"
-      : "Hide Conference";
-
-    const reportButton = (
-      <button
-        key={0}
-        className={`dropdown-item ${styles.report_content}`}
-        type="button"
-        data-toggle="modal"
-        //data-target={`#report_post_modal_${this.props.id}`}
-        //onClick={this.handleConferenceReport}
-        //disabled={this.state.userReport}
-      >
-        Report conference
-      </button>
-    );
-    const deleteButton = (
-      <button
-        key={1}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        onClick={this.handleHideConference}
-        //data-target={`#delete_conference_modal${this.props.id}`}
-      >
-        {hideBtnText}
-      </button>
-    );
-    const archiveButton = (
-      <button
-        key={2}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        //data-target={`#archive_conference_modal${this.props.id}`}
-      >
-        Delete Conference
-      </button>
-    );
-    const dropdownButtons = [reportButton, deleteButton, archiveButton];
-    return dropdownButtons;
   }
 
   private getAdminButtons() {

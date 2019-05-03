@@ -1,5 +1,5 @@
 import { query } from '../db/db';
-import {editFiles, saveTags} from "./post";
+import {editFiles, saveTags} from './post';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
@@ -110,7 +110,7 @@ export async function getConference(req, res) {
   }
 }
 
-export function changePrivacy(req, res){
+export function changePrivacy(req, res) {
   query({
     text: `UPDATE conferences
                 SET privacy = $2
