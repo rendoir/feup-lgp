@@ -55,6 +55,7 @@ class Conference extends React.Component<IProps, State> {
           likes: 0,
           tags: [],
           title: "My title",
+          user_id: 1,
           visibility: "public"
         },
         {
@@ -69,6 +70,7 @@ class Conference extends React.Component<IProps, State> {
           likes: 0,
           tags: [],
           title: "My title",
+          user_id: 2,
           visibility: "public"
         }
       ],
@@ -136,6 +138,7 @@ class Conference extends React.Component<IProps, State> {
       <Post
         key={post.id}
         id={post.id}
+        user_id={post.user_id}
         author={post.first_name + " " + post.last_name}
         text={post.content}
         likes={post.likes}
@@ -144,7 +147,7 @@ class Conference extends React.Component<IProps, State> {
         visibility={post.visibility}
         comments={post.comments}
         likers={post.likers}
-        tagsPost={post.tags}
+        tags={post.tags}
         files={post.files}
       />
     ));

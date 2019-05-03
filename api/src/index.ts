@@ -10,7 +10,7 @@ import * as fs from 'fs';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
-import { jwtMiddleware } from './_helpers/jwt';
+// import { jwtMiddleware } from './_helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -35,6 +35,7 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    searchRouter,
     tagsRouter,
     usersRouter,
 } from './routes/routes';
@@ -70,6 +71,7 @@ app.use('/post', postRouter);
 app.use('/admin', adminRouter);
 app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
+app.use('/search', searchRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });

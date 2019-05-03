@@ -90,12 +90,13 @@ export async function getUserUserInteractions(req, res) {
             values: [observerUser, targetUser],
         });
 
-        const rateVal = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
+        // tslint:disable-next-line: no-shadowed-variable
+        const rate = rateQuery.rows[0] ? rateQuery.rows[0].rate : null;
         const totalRatingsNumber = totalRatingsQuery.rows[0].count;
         const totalRatingAmount = totalRatingAmountQuery.rows[0].total * 20;
 
         const result = {
-            rate: rateVal,
+            rate,
             totalRatingsNumber,
             totalRatingAmount,
             subscription: Boolean(subscriptionQuery.rows[0]),
@@ -156,21 +157,23 @@ export function rate(req, res) {
 
 export async function getProfilePosts(req, res) {
     const userId = req.params.id; const userloggedId = 1; // logged in user
+    const offset = req.query.offset;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated,
-                          a.bio, a.home_town, a.university, a.work, a.work_field
+            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content, p.likes,
+                p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
-                    INNER JOIN users a
-                    ON p.author = a.id
+                        INNER JOIN users a ON (p.author = a.id)
 					WHERE p.author = $1 AND
 							(p.visibility = 'public'
 							OR (p.visibility= 'private' AND p.author = $2)
 							OR (p.visibility = 'followers'
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
-								OR $1=$2))
-                           `,
-            values: [userId, userloggedId],
+                                OR $1=$2))
+                    ORDER BY p.date_created DESC
+                    LIMIT 10
+                    OFFSET $3`,
+            values: [userId, userloggedId, offset],
         });
         if (result == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
@@ -190,7 +193,7 @@ export async function getProfilePosts(req, res) {
                         ON c.author = a.id
                         WHERE
                             p.id = $1
-                        ORDER BY c.date_updated ASC;`,
+                        ORDER BY c.date_updated ASC`,
                 values: [post.id],
             });
             const likersPost = await query({
@@ -224,7 +227,7 @@ export async function getProfilePosts(req, res) {
             filesToSend.push(files.rows);
         }
         const profileInfo = await query({
-            text: `SELECT *
+            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
                 FROM users
                 WHERE id = $1
              `,
@@ -236,7 +239,7 @@ export async function getProfilePosts(req, res) {
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
-            info: profileInfo.rows[0],
+            user: profileInfo.rows[0],
         });
     } catch (error) {
         console.error(error);

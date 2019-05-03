@@ -2,6 +2,7 @@ import * as React from "react";
 import "./Header.css";
 
 import PostModal from "../PostModal/PostModal";
+import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
 
 export default class Header extends React.Component {
   public render() {
@@ -43,40 +44,7 @@ export default class Header extends React.Component {
                 </a>
               </li>
             </ul>
-            <div className="dropdown mx-2">
-              <button
-                id="dropdownCategories-btn"
-                className="btn btn-primary dropdown-toggle"
-                type="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Search type
-              </button>
-              <div className="dropdown-menu">
-                <a className="dropdown-item" href="#">
-                  <i className="fas fa-book-medical " /> Documents
-                </a>
-                <a className="dropdown-item" href="#">
-                  <i className="fas fa-user " /> Users
-                </a>
-                <a className="dropdown-item" href="#">
-                  <i className=" fas fa-align-justify " /> Posts
-                </a>
-              </div>
-            </div>
-            <form className="form-inline my-2 my-lg-0">
-              <input
-                id="search-input"
-                className="form-control mr-sm-2"
-                type="text"
-                placeholder="Search"
-              />
-              <button className="btn btn-secondary my-2 my-sm-0" type="submit">
-                <i className="fas fa-search" />
-              </button>
-            </form>
+            <SearchSimpleForm />
             <a
               className="nav-link"
               data-toggle="modal"

@@ -50,10 +50,10 @@ interface IProps {
   likes: number;
   visibility: string;
   comments: any[];
-
   files?: MyFile[];
   likers: any[];
-  tagsPost: any[];
+  tags: any[];
+  user_id: number;
 }
 
 interface IState {
@@ -93,7 +93,7 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-
+    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -148,7 +148,7 @@ class Post extends Component<IProps, IState> {
             />
             <a
               className={styles.post_author}
-              href={"/user/" + this.props.author}
+              href={"/user/" + this.props.user_id}
             >
               {" "}
               {this.props.author}
@@ -269,7 +269,7 @@ class Post extends Component<IProps, IState> {
 
     const tagsFilter: any[] = [];
 
-    this.props.tagsPost.map(tag => {
+    this.props.tags.map(tag => {
       tagsFilter.push(tag.name);
     });
 
@@ -578,7 +578,7 @@ class Post extends Component<IProps, IState> {
       return <div className={`${styles.post_comment} w-100`} />;
     }
 
-    let currentComments = [];
+    let currentComments: any[] = [];
     if (this.props.comments.length < 6) {
       currentComments = this.props.comments;
     } else {
@@ -619,7 +619,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public getLikes() {
-    const likesDiv = [];
+    const likesDiv: any[] = [];
     if (this.props.likes > 0) {
       likesDiv.push(this.getLikers());
     }
@@ -670,7 +670,7 @@ class Post extends Component<IProps, IState> {
       return;
     }
 
-    const pageNumbersInd = [];
+    const pageNumbersInd: number[] = [];
     for (let i = 1; i <= Math.ceil(this.props.comments.length / 5); i++) {
       pageNumbersInd.push(i);
     }
@@ -825,7 +825,7 @@ class Post extends Component<IProps, IState> {
   }
 
   private getFiles() {
-    const filesDiv = [];
+    const filesDiv: any[] = [];
 
     if (this.state.docs.length) {
       for (const file of this.state.docs) {
@@ -861,15 +861,15 @@ class Post extends Component<IProps, IState> {
   }
 
   private getTags() {
-    const tagsDiv = [];
+    const tagsDiv: any[] = [];
 
     // sorting tags alphabetically
-    this.props.tagsPost.sort((a, b) =>
+    this.props.tags.sort((a, b) =>
       (a.name || "").toString().localeCompare((b.name || "").toString())
     );
 
-    if (this.props.tagsPost.length > 0) {
-      for (const tag of this.props.tagsPost) {
+    if (this.props.tags.length > 0) {
+      for (const tag of this.props.tags) {
         tagsDiv.push(
           <span
             key={"tags_" + tag.name + "post_" + this.props.id}

@@ -1,0 +1,13 @@
+#search-comp {
+  @media (min-width: 768px) {
+    input {
+      width: 200px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    input {
+      width: 400px;
+    }
+  }
+}
