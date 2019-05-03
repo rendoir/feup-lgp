@@ -77,7 +77,8 @@ module.exports = {
         "src/components/Icon/*.tsx",
         "src/components/Modal/Modal.tsx",
         "src/components/Scroller/*.tsx",
-        "src/components/Tabs/Tabs.tsx"
+        "src/components/Tabs/Tabs.tsx",
+        "src/components/Tags/Tag.tsx"
       ]
     },
     {
