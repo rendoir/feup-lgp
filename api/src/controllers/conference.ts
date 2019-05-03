@@ -44,9 +44,10 @@ export function createConference(req, res) {
   }
 
   query({
-    text: 'INSERT INTO conferences (title, about, local, datestart, dateend, avatar, privacy) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
     values: [
+      req.body.author,
       req.body.title,
       req.body.about,
       req.body.local,
@@ -65,6 +66,48 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. Error: ' + error.toString(),
     });
   });
+}
+
+export async function getConference(req, res) {
+  const id = req.params.id;
+  const user = 1; // logged in user
+  try {
+    /**
+     * conference must be owned by user
+     * OR conference is public
+     * OR conference is private to followers and user is a follower of the author
+     */
+    const conference = await query({
+      text: `
+              SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
+              c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+              FROM conferences c
+              INNER JOIN users a ON c.author = a.id
+              WHERE c.id = $1
+                AND (c.author = $2
+                    OR c.privacy = 'public'
+                    OR (c.privacy = 'followers'
+                        AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
+                    )
+                )
+            `,
+      values: [id, user],
+    });
+    if (conference === null) {
+      res.status(400).send(
+        new Error('Conference either does not exists or you do not have the required permissions'),
+      );
+      return;
+    }
+    const result = {
+      conference: conference.rows[0],
+    };
+    console.log(result);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error retrieving conference'));
+  }
 }
 
 export function changePrivacy(req, res){

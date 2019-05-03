@@ -189,6 +189,7 @@ export default class Header extends React.Component<{}, State> {
       axios
         .post(url, {
           about: request.about,
+          author: 1,
           avatar: request.avatar,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,

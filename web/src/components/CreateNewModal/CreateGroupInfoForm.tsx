@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React, { ChangeEvent, PureComponent } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import AddTags from "../AddTags/AddTags";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import Select from "../Select/Select";
@@ -92,13 +93,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             placeholder={`Write a short description of this ${type}`}
             label={`Description`}
             type={"textarea"}
+            rows={5}
             value={about || ""}
             maxLength={aboutMaxLength}
             required={true}
           />
           {this.renderPrivacy()}
-          {type === "post" ? this.renderFiles() : null}
-          {type === "conference" ? this.renderLocalAndDate() : null}
+          {type === "post" ? this.renderPostFields() : null}
+          {type === "conference" ? this.renderConferenceFields() : null}
         </form>
       </div>
     );
@@ -131,20 +133,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     }
   }
 
-  private setShortnameInput = (shortnameInput?: InputNext | null): void => {
-    if (shortnameInput) {
-      this.shortnameInput = shortnameInput;
-    }
-  };
-
   private handleSubmit = (event: Event) => {
     event.preventDefault();
 
     this.props.onSubmit(event);
-  };
-
-  private handlePublicToggle = (isPublic: boolean): void => {
-    this.setState({ isPublic });
   };
 
   private handleChange = (value: string, event: ChangeEvent) => {
@@ -153,10 +145,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       [(event.target as HTMLAbstractInputElement).name]: value
     });
     this.props.onChange(value, event);
-  };
-
-  private handleTagsChange = (tags: string[], newtags: string[]) => {
-    this.setState({ tags: newtags });
   };
 
   private renderAvatar() {
@@ -212,7 +200,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     );
   }
 
-  private renderLocalAndDate() {
+  private renderConferenceFields() {
     const { id } = this.props;
 
     return (
@@ -250,7 +238,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     );
   }
 
-  private renderFiles() {
+  private renderPostFields() {
     const { id } = this.props;
 
     return (
