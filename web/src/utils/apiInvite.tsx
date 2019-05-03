@@ -34,3 +34,18 @@ export async function apiInviteSubscribers(
     return false;
   }
 }
+
+export async function apiInviteNotified(
+  inviteSubjectId: number,
+  inviteType: string // 'post' or 'conference'
+): Promise<boolean> {
+  const apiURL = getApiURL(`/conference/${inviteSubjectId}/invite_notified`);
+
+  try {
+    await axios.put(apiURL, {});
+    return true;
+  } catch (error) {
+    console.log("Failed to invite notified");
+    return false;
+  }
+}
