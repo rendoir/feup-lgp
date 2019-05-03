@@ -2,8 +2,8 @@ import axios from "axios";
 import * as React from "react";
 
 import Chat from "../components/Chat/Chat";
-import Post from "../components/Post/Post";
 import Livestream from "../components/Livestream/Livestream";
+import Post from "../components/Post/Post";
 
 import "../styles/Conference.css";
 import styles from "../components/Post/Post.module.css";
@@ -40,46 +40,48 @@ class Conference extends React.Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
+      date_end: "16:30 20/03/2019",
+      date_start: "14:30 20/03/2019",
+      description:
+        "Nam ut metus sed purus aliquet porttitor sit amet nec metus. Fusce porta neque pellentesque mollis porttitor. Mauris eget leo metus. Etiam venenatis condimentum efficitur. Etiam libero lorem, ornare ac leo nec, accumsan eleifend arcu. Donec at lectus quam. Vivamus ornare ipsum ut dolor faucibus sollicitudin faucibus sit amet orci. In sit amet venenatis eros. Integer vestibulum rhoncus vehicula. Ut venenatis dignissim tellus vel facilisis.",
       hasChat: true,
       hasLiveStream: true,
       isHidden: false,
-      title: "Conference title",
-      description:
-        "Nam ut metus sed purus aliquet porttitor sit amet nec metus. Fusce porta neque pellentesque mollis porttitor. Mauris eget leo metus. Etiam venenatis condimentum efficitur. Etiam libero lorem, ornare ac leo nec, accumsan eleifend arcu. Donec at lectus quam. Vivamus ornare ipsum ut dolor faucibus sollicitudin faucibus sit amet orci. In sit amet venenatis eros. Integer vestibulum rhoncus vehicula. Ut venenatis dignissim tellus vel facilisis.",
-      //posts: []
+      place: "Porto",
+      // posts: []
       posts: [
         {
-          id: 1,
-          first_name: "John",
-          last_name: "Doe",
-          content: "This is the post content",
-          likes: 0,
-          title: "My title",
-          date_created: "2019-12-03",
-          visibility: "public",
           comments: [],
+          content: "This is the post content",
+          date_created: "2019-12-03",
+          files: [],
+          first_name: "John",
+          id: 1,
+          last_name: "Doe",
           likers: [],
+          likes: 0,
           tags: [],
-          files: []
+          title: "My title",
+          user_id: 1,
+          visibility: "public"
         },
         {
-          id: 2,
-          first_name: "John",
-          last_name: "Doe",
-          content: "This is the post content",
-          likes: 0,
-          title: "My title",
-          date_created: "2019-12-03",
-          visibility: "public",
           comments: [],
+          content: "This is the post content",
+          date_created: "2019-12-03",
+          files: [],
+          first_name: "John",
+          id: 2,
+          last_name: "Doe",
           likers: [],
+          likes: 0,
           tags: [],
-          files: []
+          title: "My title",
+          user_id: 2,
+          visibility: "public"
         }
       ],
-      place: "Porto",
-      date_start: "14:30 20/03/2019",
-      date_end: "16:30 20/03/2019"
+      title: "Conference title"
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
@@ -87,8 +89,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    //TODO
-    //this.apiGetConference();
+    // TODO
+    // this.apiGetConference();
   }
 
   public apiGetConference() {
@@ -102,7 +104,7 @@ class Conference extends React.Component<IProps, IState> {
 
     axios
       .get(conferenceURL, {})
-      .then(res => {})
+      .then(res => console.log(res))
       .catch(() => console.log("Failed to get conference"));
   }
 
@@ -113,7 +115,7 @@ class Conference extends React.Component<IProps, IState> {
             ? `:${process.env.REACT_APP_API_PORT}`
             : "/api";
     postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
-    
+
     axios
       .post(postUrl, {
         id: this.props.match.params.id, // When loggin, this is the user logged in
@@ -184,8 +186,14 @@ class Conference extends React.Component<IProps, IState> {
           </div>
 
           <div className="container my-5">
-            <div className="conf_details p-3">{this.getDetails()}</div>
-            <div className="conf_posts">{this.getPosts()}</div>
+            <div className="conf_side">
+              <div className="p-3">{this.getDetails()}</div>
+              <div className="p-3">{this.getAdminButtons()}</div>
+            </div>
+            <div className="conf_posts">
+              <button className="join">Join conference</button>
+              {this.getPosts()}
+            </div>
           </div>
         </div>
       );
@@ -197,6 +205,7 @@ class Conference extends React.Component<IProps, IState> {
       <Post
         key={post.id}
         id={post.id}
+        user_id={post.user_id}
         author={post.first_name + " " + post.last_name}
         text={post.content}
         likes={post.likes}
@@ -207,7 +216,6 @@ class Conference extends React.Component<IProps, IState> {
         likers={post.likers}
         tags={post.tags}
         files={post.files}
-        user_id={1}
       />
     ));
   }
@@ -281,6 +289,34 @@ class Conference extends React.Component<IProps, IState> {
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
     return dropdownButtons;
+  }
+
+  private getAdminButtons() {
+    return (
+      <div className="p-0 m-0">
+        <h6>Administrator</h6>
+        <button>
+          <i className="fas fa-envelope" />
+          Invite user
+        </button>
+        <button>
+          <i className="fas fa-video" />
+          Start livestream
+        </button>
+        <button>
+          <i className="fas fa-puzzle-piece" />
+          Create challenge
+        </button>
+        <button>
+          <i className="fas fa-archive" />
+          Archive conference
+        </button>
+        <button>
+          <i className="fas fa-trash" />
+          Delete conference
+        </button>
+      </div>
+    );
   }
 }
 

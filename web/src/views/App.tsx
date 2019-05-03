@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
+import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
@@ -13,7 +14,6 @@ import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import SearchResults from "./SearchResults";
 import Shop from "./Shop";
-import Conference from "./Conference";
 
 class App extends React.Component {
   public render() {

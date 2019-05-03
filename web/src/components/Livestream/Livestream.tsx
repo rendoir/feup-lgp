@@ -19,7 +19,7 @@ class Livestream extends Component<Props, State> {
         src={this.props.src}
         frameBorder="0"
         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
+        allowFullScreen={true}
       />
     );
   }

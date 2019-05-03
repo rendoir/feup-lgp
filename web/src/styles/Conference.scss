@@ -64,15 +64,15 @@
         width: 60%;
         margin-left: auto;
         float: right;
-    }
 
-    .conf_details {
-        width: 35%;
-        border: $light-border;
-        float: left;
-        margin-right: 5%;
+        .join {
+            margin-bottom: 1.5em;
+            width: 100%;
+            padding: 1em 0;
+            font-size: 1.5em;
+        }
 
-        ul li {
+        button {
             list-style-type: none;
             padding: 0.25rem 0.5rem;
       
@@ -83,14 +83,54 @@
         }
     }
 
+    .conf_side {
+        width: 35%;
+        float: left;
+        margin-right: 5%;
+
+        button {
+            font-size: 1.1em;
+        }
+
+        ul li, button {
+            list-style-type: none;
+            padding: 0.25rem 0.5rem;
+      
+            i {
+              list-style-type: none;
+              padding-right: 0.5rem;
+            }
+        }
+
+        > div {
+            border: $light-border;
+            margin-bottom: 2em;
+        }
+    }
+
     @media (max-width: $min_screen_width_chat) {
         .conf_posts,
-        .conf_details {
+        .conf_side {
           display: block;
           float: none;
           width: 100%;
           margin-left: 0;
           margin-bottom: 5%;
         }
+    }
+
+    button {
+        display: block;
+        background: none;
+        border: none;
+        padding: 0.3em 0.5em;
+    }
+
+    button:hover {
+        background: rgb(245, 245, 245);
+    }
+
+    button:focus {
+        outline: none;
     }
 }
