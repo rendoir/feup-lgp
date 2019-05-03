@@ -5,6 +5,7 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
+import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
@@ -30,6 +31,7 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
+              <Route path="/conference/:id" component={Conference} />
             </Switch>
           </ErrorBoundary>
         </Router>
