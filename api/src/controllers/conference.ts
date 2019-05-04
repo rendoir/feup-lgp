@@ -1,4 +1,5 @@
 import { query } from '../db/db';
+import {editFiles, saveTags} from './post';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
@@ -107,4 +108,18 @@ export async function getConference(req, res) {
     console.log(error);
     res.status(500).send(new Error('Error retrieving conference'));
   }
+}
+
+export function changePrivacy(req, res) {
+  query({
+    text: `UPDATE conferences
+                SET privacy = $2
+                WHERE id = $1`,
+    values: [req.body.id, req.body.privacy],
+  }).then((result) => {
+    res.status(200).send();
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while changing the privacy of a conference' });
+  });
 }

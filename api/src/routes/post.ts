@@ -51,8 +51,6 @@ postRouter.post('/edit', controller.editPost);
  * @apiGroup Post
  *
  * @apiParam {String}   id Id of the post.
- * @apiParam {String}   title Title of the post.
- * @apiParam {String}   text Body of the post.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
