@@ -79,22 +79,35 @@ class Conference extends React.Component<IProps, State> {
   }
 
   public componentDidMount() {
-    // TODO
-    // this.apiGetConference();
+    this.apiGetConference();
   }
 
   public apiGetConference() {
+    console.log(this.id);
     let conferenceURL = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      conferenceURL += `:${process.env.REACT_APP_API_PORT}/conference/`;
-    } else {
-      conferenceURL += "/api/conference/";
-    }
-    conferenceURL += this.id;
-
+    conferenceURL +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    conferenceURL += `/conference/${this.id}`;
     axios
       .get(conferenceURL, {})
-      .then(res => console.log(res))
+      .then(res => {
+        console.log(res);
+        const conference = res.data.conference;
+        let datestart = conference.datestart.split("T");
+        datestart = datestart[0] + " " + datestart[1];
+        let dateend = conference.dateend.split("T");
+        dateend = dateend[0] + " " + dateend[1];
+
+        this.setState({
+          date_end: dateend,
+          date_start: datestart,
+          description: conference.about,
+          place: conference.local,
+          title: conference.title
+        });
+      })
       .catch(() => console.log("Failed to get conference"));
   }
 

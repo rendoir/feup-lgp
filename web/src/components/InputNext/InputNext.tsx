@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import classNames from "classnames";
 import styles from "./InputNext.module.css";
 
-type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
+export type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
 export type Props = {
   /** Input class attribute */
@@ -25,9 +25,12 @@ export type Props = {
     | "tel"
     | "url"
     | "password"
+    | "file"
+    | "datetime-local"
+    | "url"
     | "textarea";
   /** input value attribute */
-  value: string | number;
+  value?: string | number;
   /** input name attribute */
   name?: string;
   /** input label attribute */
@@ -60,6 +63,8 @@ export type Props = {
   readOnly?: boolean;
   /** Input required attribute */
   required?: boolean;
+  /** Input multiple attribute */
+  multiple?: boolean;
   /** Textarea rows attribute */
   rows?: number;
   /** Textarea cols attribute */
@@ -142,6 +147,18 @@ class InputNext extends Component<Props, State> {
     this.autoFocus();
   }
 
+  public focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  public blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
   private handleChange = (
     event: React.ChangeEvent<HTMLAbstractInputElement>
   ): void => {
@@ -187,18 +204,6 @@ class InputNext extends Component<Props, State> {
       if (document.activeElement !== this.input) {
         this.input.focus();
       }
-    }
-  }
-
-  private focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  private blur(): void {
-    if (this.input) {
-      this.input.blur();
     }
   }
 
@@ -271,7 +276,9 @@ class InputNext extends Component<Props, State> {
         maxLength,
         spellcheck,
         rows,
-        cols
+        cols,
+        required,
+        multiple
       }
     } = this;
 
@@ -279,12 +286,14 @@ class InputNext extends Component<Props, State> {
       className: classNames(styles.input, this.props.inputClassName),
       disabled,
       id,
+      multiple,
       name,
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onFocus: this.handleFocus,
       placeholder: placeholder ? placeholder : "",
       ref: this.setInput,
+      required,
       tabIndex,
       type,
       value

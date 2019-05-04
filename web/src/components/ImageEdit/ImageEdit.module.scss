@@ -1,0 +1,76 @@
+@import "../../styles/variables";
+
+$modal-avatar-edit-font-family: $default-font-family;
+$modal-avatar-edit-copper-z-index: 100;
+$modal-avatar-edit-control-z-index: $modal-avatar-edit-copper-z-index + 1;
+$modal-avatar-edit-cropper-overlay-color: rgba(#333, 0.7);
+$modal-avatar-edit-cropper-overlay-border-color: $white;
+
+.container {
+  all: initial;
+  width: 100%;
+  font-family: $modal-avatar-edit-font-family;
+}
+
+.body {
+  position: relative;
+  z-index: $modal-avatar-edit-copper-z-index;
+  width: 100%;
+  padding: 0;
+}
+
+.controls {
+  //position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: $modal-avatar-edit-copper-z-index + 1;
+}
+
+.footer {
+  padding: 0;
+}
+
+.icon {
+  color: $black;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.rotateLeft {
+  composes: icon;
+  position: absolute;
+  z-index: $modal-avatar-edit-control-z-index;
+  top: 10px;
+  right: 40px;
+}
+
+.rotateRight {
+  composes: icon;
+  position: absolute;
+  z-index: $modal-avatar-edit-control-z-index;
+  top: 10px;
+  right: 10px;
+}
+
+.zoom {
+  position: absolute;
+  z-index: $modal-avatar-edit-control-z-index;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 28px 60px;
+}
+
+.cropper {
+  &:global(.croppie-container) {
+    & :global(.cr-viewport) {
+      border: 2px solid $modal-avatar-edit-cropper-overlay-border-color;
+      box-shadow: 0 0 2000px 2000px $modal-avatar-edit-cropper-overlay-color;
+    }
+  }
+}
