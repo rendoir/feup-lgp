@@ -5,7 +5,6 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import ConferenceEdit from "../components/ConferenceEdit/ConferenceEdit";
-import ConferenceStream from "../components/ConferenceStream/ConferenceStream";
 import Backoffice from "./Backoffice";
 import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
@@ -34,10 +33,6 @@ class App extends React.Component {
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
               <Route path="/conference/:id/edit" component={ConferenceEdit} />
-              <Route
-                path="/conference/:id/stream"
-                component={ConferenceStream}
-              />
               <Route path="/conference/:id" component={Conference} />
             </Switch>
           </ErrorBoundary>
