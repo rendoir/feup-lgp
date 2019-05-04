@@ -274,7 +274,7 @@ class Conference extends React.Component<IProps, IState> {
         data-toggle="modal"
         // data-target={`#archive_conference_modal${this.props.id}`}
       >
-        Delete Conference
+        Archive Conference
       </button>
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
