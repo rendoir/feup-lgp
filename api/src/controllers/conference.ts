@@ -43,12 +43,13 @@ export function createConference(req, res) {
   }
 
   query({
-    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    text: 'INSERT INTO conferences (author, title, about, livestreamURL, local, datestart, dateend, avatar, privacy) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
     values: [
       req.body.author,
       req.body.title,
       req.body.about,
+      req.body.livestream,
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
@@ -79,7 +80,7 @@ export async function getConference(req, res) {
     const conference = await query({
       text: `
               SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+              c.about, c.livestreamURL, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
               FROM conferences c
               INNER JOIN users a ON c.author = a.id
               WHERE c.id = $1
