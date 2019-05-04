@@ -48,17 +48,6 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
       });
     }, 1500);
 
-    // TODO DELETE THIS
-    // setInterval(() => {
-    //   this._onNewMessage({
-    //     date: "12:05 05/03/2019",
-    //     id: this.i++,
-    //     text:
-    //       "This is an actual super hyper mega big message just to test if the css looks good when a message is this big.",
-    //     user: Math.random() < 0.5 ? "Myself" : "User"
-    //   });
-    // }, 1000);
-
     this.onLiveChatSubmit = this.onLiveChatSubmit.bind(this);
     this.onChangeLiveChatMessage = this.onChangeLiveChatMessage.bind(this);
   }
