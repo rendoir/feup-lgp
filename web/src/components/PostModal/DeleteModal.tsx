@@ -1,8 +1,5 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-
-import createSequence from "../../utils/createSequence";
 
 import "./PostModal.css";
 
@@ -12,6 +9,8 @@ import Button from "../Button/Button";
 import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
+
+import { getApiURL } from "../../utils/apiURL";
 
 const CREATE_MODE = "Create";
 const DELETE_MODE = "Delete";
@@ -31,8 +30,6 @@ interface IState {
   text: string;
   redirect: boolean;
 }
-
-const seq = createSequence();
 
 class DeleteModal extends Component<IProps, IState> {
   public mode: string;
@@ -59,17 +56,9 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public apiDeletePost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/delete";
+    const postUrl = getApiURL(`/post/${this.props.id}`);
     axios
       .delete(postUrl, {
-        data: {
-          id: this.props.id
-        },
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }

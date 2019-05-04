@@ -2,10 +2,11 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import openSocket from "socket.io-client";
 
-import { getApiUrl } from "../../services/requests";
 import Avatar from "../Avatar/Avatar";
 import stylesComments from "./../Post/Post.module.scss";
 import styles from "./Chat.module.css";
+
+import { getApiURL } from "../../utils/apiURL";
 
 type Message = {
   id: number;
@@ -38,11 +39,11 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
       messageList: []
     };
 
-    this.socketIo = openSocket(getApiUrl());
+    this.socketIo = openSocket(getApiURL(""));
     this.socketIo.emit("groupConnect", this.ioNamespace); // guarantee namespace exists in backend
     setTimeout(() => {
       // leave enough time for backend to have created namespace
-      const localSocketIo = openSocket(getApiUrl() + "/" + this.ioNamespace);
+      const localSocketIo = openSocket(getApiURL(`/${this.ioNamespace}`));
       localSocketIo.on("message", (msg: Message) => {
         this._onNewMessage(msg);
       });

@@ -120,7 +120,7 @@ describe('Root GET', () => {
     });
 });
 
-describe('Create post', () => {
+describe('Post', () => {
     let postId = -1;
 
     it('Should submit a new public post', (done) => {
@@ -134,7 +134,7 @@ describe('Create post', () => {
                 postId = res.body.id;
                 done();
             })
-    });
+    })
 
     it('Should retrieve the submitted post', (done) => {
         request(app)
@@ -148,5 +148,25 @@ describe('Create post', () => {
                 expect(res.body.comments).to.be.empty;
                 done();
             });
-    });
+    })
+
+    it('Should delete the submitted post', (done) => {
+        request(app)
+            .delete(`/post/${postId}`)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
+    })
+
+    it('Should not find deleted post', (done) => {
+        request(app)
+            .get(`/post/${postId}`)
+            .expect(400)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
+    })
 });

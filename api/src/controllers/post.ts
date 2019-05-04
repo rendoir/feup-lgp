@@ -48,9 +48,9 @@ export function editPost(req, res) {
 
 export function deletePost(req, res) {
     query({
-        text: 'DELETE FROM posts WHERE id = $1', values: [req.body.id],
+        text: 'DELETE FROM posts WHERE id = $1', values: [req.params.id],
     }).then((result) => {
-        deleteFolderRecursive('uploads/' + req.body.id);
+        deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -67,12 +67,11 @@ export async function getPost(req, res) {
          * OR post is public
          * OR post is private to followers and user is a follower of the author
          */
-        const post = await query({
+        const post = (await query({
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
-                    INNER JOIN users a
-                    ON p.author = a.id
+                        INNER JOIN users a ON p.author = a.id
                     WHERE
                         p.id = $1
                         AND (p.author = $2
@@ -82,7 +81,7 @@ export async function getPost(req, res) {
                                 )
                             )`,
             values: [postId, userId],
-        });
+        })).rows[0];
         if (post == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
@@ -94,10 +93,8 @@ export async function getPost(req, res) {
         const comments = await query({
             text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                     FROM posts p
-                    LEFT JOIN comments c
-                    ON p.id = c.post
-                    INNER JOIN users a
-                    ON c.author = a.id
+                        LEFT JOIN comments c ON p.id = c.post
+                        INNER JOIN users a ON c.author = a.id
                     WHERE
                         p.id = $1
                         AND (p.author = $2
@@ -106,7 +103,7 @@ export async function getPost(req, res) {
                                 AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
                                 )
                             )
-                    ORDER BY c.date_updated ASC;`,
+                    ORDER BY c.date_updated ASC`,
             values: [postId, userId],
         });
 
@@ -138,13 +135,12 @@ export async function getPost(req, res) {
             values: [postId],
         });
         const result = {
-            post: post.rows[0],
+            post,
             comments: comments.rows,
             files: files.rows,
             likers: likers.rows,
             tags: tags.rows,
         };
-        console.log(result);
         res.send(result);
     } catch (error) {
         console.error(error);

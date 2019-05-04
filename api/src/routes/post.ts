@@ -46,13 +46,11 @@ postRouter.post('/create', controller.createPost);
 postRouter.post('/edit', controller.editPost);
 
 /**
- * @api {delete} /api/post/delete Delete a post
+ * @api {delete} /api/post/:id Delete a post
  * @apiName Delete-A-Post
  * @apiGroup Post
  *
  * @apiParam {String}   id Id of the post.
- * @apiParam {String}   title Title of the post.
- * @apiParam {String}   text Body of the post.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -64,7 +62,7 @@ postRouter.post('/edit', controller.editPost);
  *      message: 'An error ocurred while deleting post'
  *     }
  */
-postRouter.delete('/delete', controller.deletePost);
+postRouter.delete('/:id', controller.deletePost);
 
 /**
  * @api {get} /api/post/:id Get a post
