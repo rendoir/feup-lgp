@@ -42,13 +42,7 @@ class Chat extends React.Component<Props, State> {
     };
 
     this.socketIo = openSocket(getApiUrl());
-    this.socketIo.on("message", message => {
-      const msg: Message = {
-        date: "12:05 05/03/2019",
-        id: this.i++,
-        text: message,
-        user: this.user
-      };
+    this.socketIo.on("message", (msg: Message) => {
       this._onNewMessage(msg);
     });
 
@@ -69,6 +63,7 @@ class Chat extends React.Component<Props, State> {
 
   public _onNewMessage(message: Message) {
     console.log(message);
+    message.id = this.i++;
     this.setState({
       messageList: [...this.state.messageList, message]
     });
@@ -112,6 +107,7 @@ class Chat extends React.Component<Props, State> {
             type="text"
             placeholder="Insert your message here..."
             onChange={this.onChangeLiveChatMessage}
+            value={this.state.chatMessage}
           />
           <button type="submit">
             <i className="fas fa-paper-plane" />
@@ -123,7 +119,14 @@ class Chat extends React.Component<Props, State> {
 
   private async onLiveChatSubmit(event: any) {
     event.preventDefault();
-    this.socketIo.emit("message", this.state.chatMessage);
+    this.socketIo.emit("message", {
+      date: "12:05 05/03/2019",
+      text: this.state.chatMessage,
+      user: this.user
+    });
+    this.setState({
+      chatMessage: ""
+    });
   }
 
   private onChangeLiveChatMessage(event: any) {

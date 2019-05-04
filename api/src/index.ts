@@ -102,8 +102,8 @@ const server = http.createServer(app).listen(process.env.API_PORT);
 const io = socketIo(server);
 
 io.on('connection', (client) => {
-    client.on('message', (text) => {
-        console.log('Received message %s from %s', text, client.id);
-        io.emit('message', text);
+    client.on('message', (msg) => {
+        // console.log('Received message %s from %s', msg.text, client.id);
+        io.emit('message', msg);
     });
 });
