@@ -10,7 +10,7 @@ export type Props = {
   className?: string;
   clickable: boolean;
   onClick?: (event: MouseEvent) => void;
-  onRemove: (event: MouseEvent) => void;
+  onRemove: (tag: string, event: MouseEvent) => void;
 };
 
 class Tag extends PureComponent<Props> {
@@ -31,7 +31,7 @@ class Tag extends PureComponent<Props> {
         <p className={styles.tag}>
           #{value}
           <a href={"#"} onClick={this.handleRemove}>
-            <Icon icon={faTimes} size={"sm"} className={styles.remove} />
+            <Icon icon={faTimes} size={"sm"} className={styles.icon} />
           </a>
         </p>
       </div>
@@ -49,7 +49,7 @@ class Tag extends PureComponent<Props> {
   private handleRemove = (event: MouseEvent): void => {
     event.preventDefault();
 
-    this.props.onRemove(event);
+    this.props.onRemove(this.props.value, event);
   };
 }
 

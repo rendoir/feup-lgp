@@ -11,13 +11,21 @@ initialState = {
 const handleSubmit = () => {
   if (state.value.length > 0) {
       const tags = state.tags;
-      tags.push(state.value);
+      tags.length < 5 ? tags.push(state.value) : null;
       setState({ tags });
   }
 };
 
-const handleRemove = (event) => {
-  console.log(event.target);
+const handleRemove = (tag, event) => {
+  const tags = state.tags;
+  
+  for(let j = 0; j < tags.length; j++) {
+    if (tags[j] === tag) {
+      tags.splice(j, 1);
+      break;
+    }
+  }
+  setState({ tags });
 };
 
 <div>
@@ -31,13 +39,15 @@ const handleRemove = (event) => {
     >
       Add Tag
     </Button>
+    <div style={{ marginTop: '20px' }}>
     {
       state.tags.map((tag, idx) => (
-            <div key={idx}>
+            <div key={idx} style={{ padding: '3px 0' }}>
               <Tag id={idx} value={tag} onRemove={handleRemove} />
             </div>
         )
       )
     }
+    </div>
 </div>
 ```
