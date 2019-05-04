@@ -6,7 +6,6 @@ import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 
 import "../styles/Conference.css";
-import { string } from "prop-types";
 import { getApiURL } from "../utils/apiURL";
 
 interface IProps {
