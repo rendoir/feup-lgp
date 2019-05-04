@@ -27,8 +27,8 @@ $tags-width: 100px;
   text-transform: capitalize;
 }
 
-.remove {
-  padding-left: $tags-padding;
+.icon {
+  margin-left: $tags-padding;
   color: $tags-remove-color;
 
   &:hover {

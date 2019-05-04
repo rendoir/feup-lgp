@@ -122,6 +122,10 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     }
   };
 
+  private handleTagsInput = (event: ChangeEvent<HTMLInputElement>): void => {};
+
+  private handleTags = (tags: string[]) => {};
+
   private handleFileChange = (files: FileList | null) => {
     if (!files) {
       return;
@@ -238,6 +242,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             type={type}
             about={about}
             title={title}
+            tags={this.props.tags}
             avatar={avatar}
             shortname={shortname}
             shortnamePrefix={shortnamePrefix}

@@ -1,0 +1,62 @@
+@import "../../styles/variables";
+
+$header-color: $black;
+$header-background-color: $color-primary;
+$header-height: 50px;
+$header-font-family: $default-font-family;
+$header-font-size: $default-font-size-large;
+
+.container {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  height: $header-height;
+  color: $header-color;
+  background-color: $header-background-color;
+  opacity: 1;
+  font-family: $header-font-family;
+  font-size: $header-font-size;
+  font-weight: 500;
+  padding: $default-padding-small;
+}
+
+.wrapper {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.logo {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  color: $white;
+  text-decoration: none;
+  padding: 0 10px;
+}
+
+.link {
+  text-decoration: none;
+  color: $white;
+  padding: $default-padding-small / 2;
+}
+
+.buttons {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0 10px;
+}
+
+.icon {
+  color: $white;
+}
