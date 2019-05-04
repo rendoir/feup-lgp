@@ -91,7 +91,6 @@ class Conference extends React.Component<IProps, IState> {
         dateend = dateend[0] + " " + dateend[1];
 
         const postsComing = res.data;
-        console.log(postsComing);
 
         postsComing.posts.map(
           (post: any, idx: any) => (
