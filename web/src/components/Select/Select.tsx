@@ -37,7 +37,7 @@ export type Props = {
   /** Select placeholder attribute */
   placeholder?: string;
   /** Select onChange event handler attribute */
-  onChange: (value: string) => unknown;
+  onChange: (value: string, event: ChangeEvent) => any;
 };
 
 class Select extends Component<Props> {
@@ -87,7 +87,7 @@ class Select extends Component<Props> {
   }
 
   private handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
-    this.props.onChange(event.target.value);
+    this.props.onChange(event.target.value, event);
   };
 
   private handleLabelMouseDown = (

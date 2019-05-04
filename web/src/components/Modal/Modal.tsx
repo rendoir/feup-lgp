@@ -13,7 +13,7 @@ export type Props = {
 };
 
 class Modal extends PureComponent<Props> {
-  private static defaultProps = {
+  public static defaultProps = {
     shouldCloseOnOverlayClick: true
   };
 
