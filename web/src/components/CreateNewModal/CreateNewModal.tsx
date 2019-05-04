@@ -210,12 +210,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   }
 
   private renderInfoStep() {
-    const {
-      id,
-      step,
-      request: { type, about, title, shortname, avatar },
-      shortnamePrefix
-    } = this.props;
+    const { id, step, request } = this.props;
 
     return (
       <div className={styles.wrapper}>
@@ -227,7 +222,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          New {type}
+          New {request.type}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -239,13 +234,17 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <CreateGroupInfoForm
             vertical={true}
             id={id}
-            type={type}
-            about={about}
-            title={title}
+            type={request.type}
+            about={request.about}
+            title={request.title}
+            local={request.local}
+            dateStart={request.dateStart}
+            dateEnd={request.dateEnd}
+            livestream={request.livestream}
+            switcher={request.switcher}
+            privacy={request.privacy}
             tags={this.props.tags}
-            avatar={avatar}
-            shortname={shortname}
-            shortnamePrefix={shortnamePrefix}
+            avatar={request.avatar}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}

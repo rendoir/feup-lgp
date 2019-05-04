@@ -17,10 +17,14 @@ export type Props = {
   id: string;
   type: "post" | "conference";
   title: string;
-  shortname?: string;
-  shortnamePrefix?: string;
-  about?: string;
+  about: string;
   avatar?: File;
+  local: string;
+  dateStart: string;
+  dateEnd: string;
+  switcher: string;
+  livestream: string;
+  privacy: string;
   tags?: string[];
   className?: string;
   vertical: boolean;
@@ -35,25 +39,25 @@ export type Props = {
 
 export type State = {
   avatar?: string;
-  isPublic: boolean;
-  privacy: string;
   files: File[];
-  local: string;
-  dateStart: string;
-  dateEnd: string;
   tags: string[];
   tagsInput: string;
-  switcher: boolean;
-  livestream: string;
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
   public static defaultProps = {
+    about: "",
     aboutMaxLength: 3000,
+    dateEnd: "",
+    dateStart: "",
+    livestream: "",
+    local: "",
+    privacy: "public",
+    switcher: "false",
+    title: "",
     vertical: false
   };
 
-  private shortnameInput?: InputNext;
   private tags: string[];
 
   constructor(props: Props) {
@@ -62,14 +66,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     this.state = {
       avatar: undefined,
-      dateEnd: "",
-      dateStart: "",
       files: [],
-      isPublic: Boolean(props.shortname),
-      livestream: "",
-      local: "",
-      privacy: "public",
-      switcher: false,
       tags: [],
       tagsInput: ""
     };
@@ -137,17 +134,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     }
   }
 
-  public componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>
-  ): void {
-    if (this.shortnameInput) {
-      if (prevState.isPublic !== this.state.isPublic && this.state.isPublic) {
-        this.shortnameInput.focus();
-      }
-    }
-  }
-
   private handleSubmit = (event: Event) => {
     event.preventDefault();
 
@@ -163,7 +149,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   };
 
   private handleLivestreamToggle = (value: boolean, event: ChangeEvent) => {
-    this.setState({ switcher: value });
     this.props.onChange(String(value), event);
   };
 
@@ -229,28 +214,28 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     }
 
     return (
-      <div className={styles.shortnameWrapper}>
+      <div className={styles.Wrapper}>
         <Select
           id={`${id}_privacy`}
           name={"privacy"}
-          value={this.state.privacy}
+          value={this.props.privacy}
           label={"Privacy"}
           options={options}
-          onChange={this.handleChange}
+          onChange={this.props.onChange}
         />
       </div>
     );
   }
 
   private renderConferenceFields() {
-    const { id } = this.props;
+    const { id, local } = this.props;
 
     return (
       <div className={styles.shortnameWrapper}>
         <InputNext
-          onChange={this.handleChange}
+          onChange={this.props.onChange}
           id={`${id}_conference_local`}
-          value={this.state.local}
+          value={local}
           name={"local"}
           placeholder={"Conference local"}
           label={"Local"}
@@ -260,17 +245,17 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             Dates
           </label>
           <InputNext
-            onChange={this.handleChange}
+            onChange={this.props.onChange}
             id={`${id}_conference_date_start`}
-            value={this.state.dateStart}
+            value={this.props.dateStart}
             name={"dateStart"}
             label={"Start"}
             type={"datetime-local"}
           />
           <InputNext
-            onChange={this.handleChange}
+            onChange={this.props.onChange}
             id={`${id}_conference_date_end`}
-            value={this.state.dateEnd}
+            value={this.props.dateEnd}
             name={"dateEnd"}
             label={"End"}
             type={"datetime-local"}
@@ -288,18 +273,18 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             name={"switcher"}
             label={"LIVESTREAM"}
             onChange={this.handleLivestreamToggle}
-            value={this.state.switcher}
+            value={this.props.switcher === "true"}
             className={styles.switcher}
           />
           <InputNext
             onChange={this.handleChange}
             id={`${id}_liveStream`}
-            value={this.state.livestream}
+            value={this.props.livestream}
             name={"livestream"}
             label={"Livestream URL"}
             type={"url"}
             placeholder={"https://www.example.com"}
-            disabled={!this.state.switcher}
+            disabled={!Boolean(this.props.switcher)}
           />
         </div>
       </div>
