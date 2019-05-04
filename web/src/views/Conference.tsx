@@ -61,38 +61,7 @@ class Conference extends React.Component<IProps, IState> {
       owner_name: "",
       place: "",
       // posts: []
-      posts: [
-        {
-          comments: [],
-          content: "This is the post content",
-          date_created: "2019-12-03",
-          files: [],
-          first_name: "John",
-          id: 1,
-          last_name: "Doe",
-          likers: [],
-          likes: 0,
-          tags: [],
-          title: "My title",
-          user_id: 1,
-          visibility: "public"
-        },
-        {
-          comments: [],
-          content: "This is the post content",
-          date_created: "2019-12-03",
-          files: [],
-          first_name: "John",
-          id: 2,
-          last_name: "Doe",
-          likers: [],
-          likes: 0,
-          tags: [],
-          title: "My title",
-          user_id: 2,
-          visibility: "public"
-        }
-      ],
+      posts: [],
       privacy: "",
       title: ""
     };
@@ -122,11 +91,24 @@ class Conference extends React.Component<IProps, IState> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
+        const postsComing = res.data;
+        console.log(postsComing);
+
+        postsComing.posts.map(
+          (post: any, idx: any) => (
+            (post.comments = postsComing.comments[idx]),
+            (post.likers = postsComing.likers[idx]),
+            (post.tags = postsComing.tags[idx]),
+            (post.files = postsComing.files[idx])
+          )
+        );
+
         if (conference.privacy === "closed") {
           this.setState({
             isHidden: true
           });
         }
+
         this.setState({
           date_end: dateend,
           date_start: datestart,
@@ -134,11 +116,12 @@ class Conference extends React.Component<IProps, IState> {
           owner_id: conference.user_id,
           owner_name: conference.first_name + conference.last_name,
           place: conference.local,
+          posts: postsComing.posts,
           privacy: conference.local,
           title: conference.title
         });
       })
-      .catch(() => console.log("Failed to get conference"));
+      .catch(() => console.log("Failed to get conference info"));
   }
 
   public handleHideConference() {

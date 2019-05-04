@@ -238,12 +238,12 @@ INSERT INTO posts (author, title, content) VALUES (2, 'User post', 'This is a po
 INSERT INTO posts (author, title, content) VALUES (3, 'User post', 'This is a post done by a mere user');
 
 /* POSTS IN CONFERENCE */
-INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 1, 'private', '2019-12-03');
-INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 1, 'public', '2019-12-03');
-INSERT INTO posts (author, title, content, conference, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', 1, '2019-12-02');
-INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 2, 'followers', '2019-12-01');
-INSERT INTO posts (author, title, content, conference) VALUES (1, 'Admin post', 'This is a post done by the admin', 2);
-INSERT INTO posts (author, title, content, conference) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 1);
+INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (2, 'User post', 'This post was created by an user and appears in a conference', 1, 'private', '2019-12-03');
+INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (3, 'User post', 'This post was created by an user and appears in a conference', 1, 'public', '2019-12-03');
+INSERT INTO posts (author, title, content, conference, date_created) VALUES (1, 'Admin post', 'This post was created by an admin and appears in a conference', 1, '2019-12-02');
+INSERT INTO posts (author, title, content, conference, visibility, date_created) VALUES (2, 'User post', 'This post was created by an user and appears in a conference', 2, 'followers', '2019-12-01');
+INSERT INTO posts (author, title, content, conference) VALUES (1, 'Admin post', 'This is a post done by the admin and appears in a conference', 2);
+INSERT INTO posts (author, title, content, conference) VALUES (2, 'User post', 'This is a post done by a mere user following the admin and appears in a conference', 1);
 
 
 -- Initialize full-text search for posts

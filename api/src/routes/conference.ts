@@ -41,6 +41,21 @@ conferenceRouter.post('/create', controller.createConference);
 conferenceRouter.get('/:id', controller.getConference);
 
 /**
+ * @api {get} /api/conference/:id/get_posts Get the posts of a conference
+ * @apiName Get-Conference-Posts
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id       id of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.post('/:id/get_posts', controller.getConferencePosts);
+
+/**
  * @api {post} /api/conference/:id/change_privacy Change the privacy of a conference
  * @apiName Change-Privacy-Conference
  * @apiGroup Post
