@@ -1,4 +1,5 @@
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import openSocket from "socket.io-client";
 
 import { getApiUrl } from "../../services/requests";
@@ -13,28 +14,24 @@ type Message = {
   date: string;
 };
 
-type Props = {};
-
 type State = {
   chatMessage: string;
   messageList: Message[];
 };
 
-class Chat extends React.Component<Props, State> {
-  public user: string;
-  public i: number; // TODO DELETE
-  public messagesEnd: any;
-
-  private readonly userId = 1;
-  // Following JWT is specific for user_id: 1
-  private readonly userJwt = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnTmV0IiwiaWF0IjoxNTU2OTIxNTg5LCJleHAiOjE1ODg0NTc2MDMsImF1ZCI6ImdOZXQiLCJzdWIiOiIxIiwiR2l2ZW5OYW1lIjoiSm9obm55IiwiU3VybmFtZSI6IlJvY2tldCIsIkVtYWlsIjoianJvY2tldEBleGFtcGxlLmNvbSIsInVzZXJfaWQiOiIxIn0.fxc35BDUIpap2TJn0DYDQCUxiH12P0-jxYh2TxdbgXk`;
+class Chat extends React.Component<RouteComponentProps<any>, State> {
+  private user: string;
+  private i: number; // TODO DELETE
+  private messagesEnd: any;
 
   private socketIo: SocketIOClient.Socket;
+  private ioNamespace: number;
 
-  constructor(props: Props) {
+  constructor(props: RouteComponentProps<any>) {
     super(props);
-    this.user = "Myself"; // TODO
+    this.user = "Myself"; // TODO: Should be login name
     this.i = 0; // TODO DELETE
+    this.ioNamespace = this.props.match.params.id;
 
     this.state = {
       chatMessage: "",
@@ -42,9 +39,14 @@ class Chat extends React.Component<Props, State> {
     };
 
     this.socketIo = openSocket(getApiUrl());
-    this.socketIo.on("message", (msg: Message) => {
-      this._onNewMessage(msg);
-    });
+    this.socketIo.emit("groupConnect", this.ioNamespace); // guarantee namespace exists in backend
+    setTimeout(() => {
+      // leave enough time for backend to have created namespace
+      const localSocketIo = openSocket(getApiUrl() + "/" + this.ioNamespace);
+      localSocketIo.on("message", (msg: Message) => {
+        this._onNewMessage(msg);
+      });
+    }, 1500);
 
     // TODO DELETE THIS
     // setInterval(() => {
@@ -119,10 +121,15 @@ class Chat extends React.Component<Props, State> {
 
   private async onLiveChatSubmit(event: any) {
     event.preventDefault();
-    this.socketIo.emit("message", {
+    const msg = {
       date: "12:05 05/03/2019",
       text: this.state.chatMessage,
       user: this.user
+    };
+    console.log(this.socketIo);
+    this.socketIo.emit("message", {
+      msg,
+      namespace: this.ioNamespace
     });
     this.setState({
       chatMessage: ""
@@ -186,4 +193,4 @@ class Chat extends React.Component<Props, State> {
   }
 }
 
-export default Chat;
+export default withRouter(Chat);

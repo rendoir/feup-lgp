@@ -101,9 +101,14 @@ console.log('PORT: ' + process.env.API_PORT);
 const server = http.createServer(app).listen(process.env.API_PORT);
 const io = socketIo(server);
 
-io.on('connection', (client) => {
-    client.on('message', (msg) => {
-        // console.log('Received message %s from %s', msg.text, client.id);
-        io.emit('message', msg);
+io.on('connection', (socket) => {
+    socket.on('groupConnect', (group: number) => {
+        const namespace = io.of('/' + group);
+        console.log('Created namespace: ' + group);
+    });
+    socket.on('message', (data) => {
+        console.log('Received message %s from %s', data.msg.text, socket.id);
+        const namespace = data.namespace;
+        io.of(namespace).emit('message', data.msg);
     });
 });
