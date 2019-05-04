@@ -35,10 +35,10 @@ export function editPost(req, res) {
         text: `UPDATE posts
                 SET title = $2, content = $3, search_tokens = TO_TSVECTOR($2 || ' ' || $3), visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
-        values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
+        values: [req.params.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         editFiles(req, res);
-        saveTags(req, res, req.body.id);
+        saveTags(req, res, req.params.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
