@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "../components/header/Header";
 import "../styles/App.css";
 
-import ConferenceEdit from "../components/ConferenceEdit/ConferenceEdit";
 import Backoffice from "./Backoffice";
 import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
@@ -32,7 +31,6 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
-              <Route path="/conference/:id/edit" component={ConferenceEdit} />
               <Route path="/conference/:id" component={Conference} />
             </Switch>
           </ErrorBoundary>
