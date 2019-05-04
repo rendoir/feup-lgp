@@ -70,16 +70,24 @@
             width: 100%;
             padding: 1em 0;
             font-size: 1.5em;
-        }
-
-        button {
             list-style-type: none;
             padding: 0.25rem 0.5rem;
-      
+
             i {
-              list-style-type: none;
-              padding-right: 0.5rem;
+                list-style-type: none;
+                padding-right: 0.5rem;
             }
+            display: block;
+            background: none;
+            border: none;
+        }
+
+        .join:hover {
+            background: rgb(245, 245, 245);
+        }
+
+        .join:focus {
+            outline: none;
         }
     }
 
@@ -119,18 +127,20 @@
         }
     }
 
-    button {
-        display: block;
-        background: none;
-        border: none;
-        padding: 0.3em 0.5em;
-    }
+    #conf-admin-buttons{
+        button {
+            display: block;
+            background: none;
+            border: none;
+            padding: 0.3em 0.5em;
+        }
 
-    button:hover {
-        background: rgb(245, 245, 245);
-    }
+        button:hover {
+            background: rgb(245, 245, 245);
+        }
 
-    button:focus {
-        outline: none;
+        button:focus {
+            outline: none;
+        }
     }
 }

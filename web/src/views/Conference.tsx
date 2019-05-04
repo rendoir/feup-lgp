@@ -84,7 +84,6 @@ class Conference extends React.Component<IProps, IState> {
     axios
       .get(conferenceURL, {})
       .then(res => {
-        console.log(res);
         const conference = res.data.conference;
         let datestart = conference.datestart.split("T");
         datestart = datestart[0] + " " + datestart[1];
@@ -265,23 +264,29 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getPosts() {
-    return this.state.posts.map(post => (
-      <Post
-        key={post.id}
-        id={post.id}
-        user_id={post.user_id}
-        author={post.first_name + " " + post.last_name}
-        text={post.content}
-        likes={post.likes}
-        title={post.title}
-        date={post.date_created.replace(/T.*/gi, "")}
-        visibility={post.visibility}
-        comments={post.comments}
-        likers={post.likers}
-        tags={post.tags}
-        files={post.files}
-      />
-    ));
+    const postsDiv: any[] = [];
+
+    for (const post of this.state.posts) {
+      postsDiv.push(
+        <Post
+          key={post.id}
+          id={post.id}
+          author={post.first_name + " " + post.last_name}
+          text={post.content}
+          user_id={post.user_id}
+          likes={post.likes}
+          likers={post.likers}
+          comments={post.comments || []}
+          tags={post.tags}
+          title={post.title}
+          date={post.date_created.replace(/T.*/gi, "")}
+          visibility={post.visibility}
+          files={post.files}
+        />
+      );
+    }
+
+    return postsDiv;
   }
 
   private getDetails() {
@@ -317,7 +322,7 @@ class Conference extends React.Component<IProps, IState> {
       : "Hide Conference";
 
     return (
-      <div className="p-0 m-0">
+      <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>Administrator</h6>
         <button>
           <i className="fas fa-envelope" />
