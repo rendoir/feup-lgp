@@ -21,7 +21,7 @@ class App extends React.Component {
       <div className="App">
         <Router>
           <ErrorBoundary>
-            <Header />
+            <Header title={"gNet"} />
             <Switch>
               <Route exact={true} path="/" component={Feed} />
               <Route path="/user/:id" component={Profile} />
