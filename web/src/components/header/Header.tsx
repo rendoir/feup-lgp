@@ -131,7 +131,7 @@ export default class Header extends React.Component<{}, State> {
               ) : null}
             </div>
             <PostModal id={0} title="" text="" tags={[]} />
-            <a className="nav-link" href="#">
+            <a className="nav-link" href="notifications">
               <span className="text-white h3 pl-3">
                 <i className="fas fa-bell" />
               </span>
