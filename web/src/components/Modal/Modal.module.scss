@@ -49,6 +49,7 @@ $modal-header-color: $default-font-color;
   padding: $default-padding * 2;
   background-color: $modal-overlay-color;
   align-items: center;
+  z-index: 9999 !important;
 }
 
 .wrapper {
