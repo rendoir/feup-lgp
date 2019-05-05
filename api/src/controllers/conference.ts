@@ -70,7 +70,7 @@ export function createConference(req, res) {
 
 export async function getConference(req, res) {
   const id = req.params.id;
-  const user = 1; // logged in user
+  const user = 2;
   try {
     /**
      * conference must be owned by user

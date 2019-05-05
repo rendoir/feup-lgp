@@ -175,7 +175,11 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.state.isHidden && !(this.userId === this.state.owner_id)) {
+    console.log("logged: ", this.userId);
+    console.log("owner: ", this.state.owner_id);
+    console.log(!(this.userId == this.state.owner_id));
+    console.log(this.state.isHidden && !(this.userId === this.state.owner_id));
+    if (this.state.isHidden && !(this.userId == this.state.owner_id)) {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
