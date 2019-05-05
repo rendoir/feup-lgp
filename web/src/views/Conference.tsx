@@ -4,6 +4,7 @@ import * as React from "react";
 import Chat from "../components/Chat/Chat";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
+import InviteModal from "../components/PostModal/InviteModal";
 
 import "../styles/Conference.css";
 
@@ -246,10 +247,16 @@ class Conference extends React.Component<IProps, IState> {
     return (
       <div className="p-0 m-0">
         <h6>Administrator</h6>
-        <button>
+        <button
+          data-toggle="modal"
+          data-target={`#invite_conference_modal_${this.id}`}
+        >
           <i className="fas fa-envelope" />
-          Invite user
+          Invite users
         </button>
+        {/* Invite Users */}
+        <InviteModal conferenceId={this.id} />
+
         <button>
           <i className="fas fa-video" />
           Start livestream

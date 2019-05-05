@@ -125,8 +125,8 @@ export async function amountSubscribersUninvited(req, res) {
       text: `SELECT COUNT(*) FROM retrieve_conference_uninvited_subscribers($1)`,
       values: [req.params.id],
     });
-    console.log("AMOUNT UNINVITED SUBSCRIBERS ", amountUninvitedSubscribersQuery.rows[0]);
-    res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0] });
+    console.log("AMOUNT UNINVITED SUBSCRIBERS ", amountUninvitedSubscribersQuery.rows[0].count);
+    res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
   } catch (error) {
     console.error(error);
     res.status(500).send(new Error('Error retrieving user participation in conference'));
@@ -135,7 +135,7 @@ export async function amountSubscribersUninvited(req, res) {
 
 export async function getUninvitedUsersInfo(req, res) {
   if (!await loggedUserOwnsConference(req.params.id)) {
-    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your conference');
+    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to a conference that is not yours');
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
   }
@@ -144,9 +144,9 @@ export async function getUninvitedUsersInfo(req, res) {
 
   try {
     const uninvitedUsersQuery = await query({
-      text: `SELECT id, first_name, last_name, uiversity, work, work_field
+      text: `SELECT id, first_name, last_name, university, work, work_field
               FROM users
-              WHERE id NOT IN retrieve_conference_invited_or_joined_users($1)`,
+              WHERE id NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users($1))`,
       values: [req.params.id],
     });
     console.log("UNINVITED USERS ", uninvitedUsersQuery.rows);

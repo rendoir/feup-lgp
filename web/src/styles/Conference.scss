@@ -102,6 +102,16 @@
             font-size: 1.1em;
         }
 
+        #invite_modal_done {
+            background-color: #428bca;
+        }
+
+        .invite_subscribers {
+            background-color: $color-primary;
+            color: white;
+            border-radius: 15px;
+        }
+
         ul li, button {
             list-style-type: none;
             padding: 0.25rem 0.5rem;

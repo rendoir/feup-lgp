@@ -58,18 +58,18 @@ export async function apiGetUninvitedSubscribersAmount(
 export async function apiGetUninvitedUsersInfo(
   inviteSubjectId: number,
   inviteType: string // 'post' or 'conference'
-): Promise<number> {
+) {
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/uninvited_users_info`
   );
 
   try {
     const res = await axios.get(apiURL);
-    console.log("uninvited: ", res.data);
+    console.log("uninvited users: ", res.data);
     return res.data;
   } catch (error) {
     console.log("Failed to invite subscribers");
-    return -1;
+    return null;
   }
 }
 

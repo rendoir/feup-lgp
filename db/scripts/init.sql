@@ -262,7 +262,7 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         FROM follows, conferences
         WHERE followed = author AND 
         conferences.id = _conference_id AND
-        follower NOT IN retrieve_conference_invited_or_joined_users(_conference_id);
+        follower NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users(_conference_id));
 $$ LANGUAGE SQL;
 -- POSTS
 CREATE OR REPLACE FUNCTION retrieve_post_invited_users(_post_id BIGINT)
@@ -278,7 +278,7 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         FROM follows, posts
         WHERE followed = author AND 
         posts.id = _post_id AND
-        follower NOT IN retrieve_post_invited_users(_post_id);
+        follower NOT IN (SELECT * FROM retrieve_post_invited_users(_post_id));
 $$ LANGUAGE SQL;
 
 
@@ -291,6 +291,8 @@ INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES 
 
 INSERT INTO follows (follower, followed) VALUES (1, 2);
 INSERT INTO follows (follower, followed) VALUES (1, 3);
+INSERT INTO follows (follower, followed) VALUES (2, 3);
+INSERT INTO follows (follower, followed) VALUES (3, 4);
 
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 2);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 4, 3);
