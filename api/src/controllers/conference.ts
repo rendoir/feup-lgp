@@ -69,7 +69,13 @@ export function createConference(req, res) {
   });
 }
 
-export function inviteUser(req, res) {
+export async function inviteUser(req, res) {
+  if (!await loggedUserOwnsConference(req.params.id)) {
+    console.log('\n\nERROR: You cannot invite users to a conference if you are not the owner');
+    res.status(400).send({ message: 'An error ocurred while inviting user: You are not the conference owner.' });
+    return;
+  }
+
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
       values: [req.body.invited_user, req.params.id],
@@ -81,18 +87,23 @@ export function inviteUser(req, res) {
   });
 }
 
-export function inviteSubscribers(req, res) {
-  const cookies = new Cookies(req.headers.cookie);
+export async function inviteSubscribers(req, res) {
+  if (!await loggedUserOwnsConference(req.params.id)) {
+    console.log('\n\nERROR: You cannot invite users to a conference if you are not the owner');
+    res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the conference owner.' });
+    return;
+  }
   console.log('INVITE SUBSCRIBERS');
-  console.log('USER: ', cookies.get('user_id'));
   console.log('CONFERENCE: ', req.params.id);
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
-              SELECT follower, $1, 'conference' FROM follows WHERE followed = $2
+                SELECT uninvited_subscriber, $1, 'conference'
+                FROM retrieve_conference_uninvited_subscribers($1)
               ON CONFLICT ON CONSTRAINT unique_invite
               DO NOTHING`,
-      values: [req.params.id, cookies.get('user_id')],
+      values: [req.params.id],
   }).then((result) => {
+      console.log("SUBSCRIBERS INVITED SUCCESSFULLY"); 
       res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -100,17 +111,63 @@ export function inviteSubscribers(req, res) {
   });
 }
 
+export async function amountSubscribersUninvited(req, res) {
+  if (!await loggedUserOwnsConference(req.params.id)) {
+    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your conference');
+    res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
+    return;
+  }
+  console.log('UNINVITED AMOUNT SUBSCRIBERS');
+  console.log('CONFERENCE: ', req.params.id);
+
+  try {
+    const amountUninvitedSubscribersQuery = await query({
+      text: `SELECT COUNT(*) FROM retrieve_conference_uninvited_subscribers($1)`,
+      values: [req.params.id],
+    });
+    console.log("AMOUNT UNINVITED SUBSCRIBERS ", amountUninvitedSubscribersQuery.rows[0]);
+    res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in conference'));
+  }
+}
+
+export async function getUninvitedUsersInfo(req, res) {
+  if (!await loggedUserOwnsConference(req.params.id)) {
+    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your conference');
+    res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
+    return;
+  }
+  console.log('INVITE SUBSCRIBERS');
+  console.log('CONFERENCE: ', req.params.id);
+
+  try {
+    const uninvitedUsersQuery = await query({
+      text: `SELECT id, first_name, last_name, uiversity, work, work_field
+              FROM users
+              WHERE id NOT IN retrieve_conference_invited_or_joined_users($1)`,
+      values: [req.params.id],
+    });
+    console.log("UNINVITED USERS ", uninvitedUsersQuery.rows);
+    res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in conference'));
+  }
+}
+
 export function inviteNotified(req, res) {
   console.log('INVITE NOTIFIED');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
+  const userId = 3; // logged user
+  console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
       text: `UPDATE invites SET user_notified = TRUE
               WHERE invited_user = $1
                   AND invite_subject_id = $2
                   AND invite_type = 'conference'`,
-      values: [req.params.id, cookies.get('user_id')],
+      values: [req.params.id, userId],
   }).then((result) => {
       res.status(200).send();
   }).catch((error) => {
@@ -121,7 +178,7 @@ export function inviteNotified(req, res) {
 
 export function addParticipantUser(req, res) {
   console.log('ADD PARTICIPANT');
-  const userId = 3;
+  const userId = 3; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
@@ -137,7 +194,7 @@ export function addParticipantUser(req, res) {
 
 export function removeParticipantUser(req, res) {
   console.log("REMOVER PARTICIPANTE")
-  const userId = 3;
+  const userId = 3; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
@@ -153,7 +210,7 @@ export function removeParticipantUser(req, res) {
 
 export async function checkUserParticipation(req, res) {
   console.log('CHECK PARTICIPATION');
-  const userId = 3;
+  const userId = 3; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   try {
@@ -173,7 +230,7 @@ export async function checkUserParticipation(req, res) {
 
 export async function checkUserCanJoin(req, res) {
   console.log('CHECK USER CAN JOIN');
-  const userId = 3;
+  const userId = 3; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   try {
@@ -181,7 +238,6 @@ export async function checkUserCanJoin(req, res) {
           text: `SELECT * FROM user_can_join_conference($1, $2)`,
           values: [req.params.id, userId],
       });
-      // TODO: criar trigger para cancelar entrada se nao tiver acesso a conferencia
       const canJoin = userCanJoinQuery.rows[0].user_can_join_conference;
       console.log("PODE ENTRAR ? ", userCanJoinQuery.rows[0]);
       res.status(200).send({ canJoin });
@@ -191,12 +247,27 @@ export async function checkUserCanJoin(req, res) {
   }
 }
 
+async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
+  const loggedUser = 3;
+  try {
+    const userOwnsConferenceQuery = await query({
+        text: `SELECT * FROM conferences WHERE id = $1 AND author = $2`,
+        values: [conferenceId, loggedUser],
+    });
+    console.log("LOGGED USEr OWNS CONFERENCE ? ", Boolean(userOwnsConferenceQuery.rows[0]));
+    return Boolean(userOwnsConferenceQuery.rows[0]);
+} catch (error) {
+    console.error(error);
+    return false;
+}
+}
+
 export function setSecureCookiesExample(req, res) {
   console.log("SETTING COOKIES...");
   try {
       // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
       // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
-      // withCredentials tem de estar a true, a nao ser que se coloque o endereço de onde o cliente esta a fazer os requests
+      // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
       // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
 
       // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}

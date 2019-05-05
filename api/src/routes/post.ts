@@ -267,7 +267,6 @@ postRouter.post('/:id/invite', controller.inviteUser);
  * @apiGroup Post
  *
  * @apiParam {number}   id    Id of the post the subscribers will be invited to
- *
  * The user whose subscribers will be invited to the post is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
  *

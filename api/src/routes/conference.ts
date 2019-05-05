@@ -47,7 +47,6 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference the subscribers will be invited to
- *
  * The user whose subscribers will be invited to the conference is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
  *
@@ -60,6 +59,38 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
 conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
+ * @api {get} /api/conference/:id/amount_uninvited_subscribers
+ * Retrieve the amount of subscribers of the conference's author, which are not invited to the conference
+ * If a subscriber as already joined the conference, he will be accounted as invited
+ * @apiName Get-Amount-Uninvited-Subscribers
+ * @apiGroup Conference
+ *
+ * @apiParam {number}   id    Id of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
+
+/**
+ * @api {get} /api/conference/:id/uninvited_users_info Retrieve the users that haven't been invited and haven't joined a given conference
+ * @apiName Get-Uninvited-Users-Info
+ * @apiGroup Conference
+ *
+ * @apiParam {number}   id    Id of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
+
+/**
  * @api {put} /api/conference/:id/invite_notified Mark a conference invite notification as seen by the invited user
  * @apiName Set-Conference-Invitation-As-Seen
  * @apiGroup Conference
@@ -67,7 +98,7 @@ conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
  * @apiParam {number}   id    Id of the conference referred on the invite
  * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
- * 
+ *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

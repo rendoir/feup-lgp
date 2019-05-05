@@ -14,7 +14,6 @@ import {
   apiUserJoinConference,
   apiUserLeaveConference
 } from "../utils/apiConference";
-import { apiInviteSubscribers, apiInviteUser } from "../utils/apiInvite";
 
 interface IProps {
   match: {

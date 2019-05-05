@@ -243,6 +243,44 @@ CREATE TRIGGER join_conference_on_permission
     FOR EACH ROW
 EXECUTE PROCEDURE join_conference_if_permitted();
 
+/* Utils functions fetching users according to their participance in conference/post */
+-- CONFERENCES
+CREATE OR REPLACE FUNCTION retrieve_conference_invited_or_joined_users(_conference_id BIGINT)
+RETURNS TABLE(notified_user BIGINT) AS $$
+	SELECT invited_user
+        FROM invites
+        WHERE invite_subject_id = _conference_id AND invite_type = 'conference'
+    UNION
+    SELECT participant_user
+        FROM conference_participants
+        WHERE conference = _conference_id;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION retrieve_conference_uninvited_subscribers(_conference_id BIGINT)
+RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
+	SELECT follower
+        FROM follows, conferences
+        WHERE followed = author AND 
+        conferences.id = _conference_id AND
+        follower NOT IN retrieve_conference_invited_or_joined_users(_conference_id);
+$$ LANGUAGE SQL;
+-- POSTS
+CREATE OR REPLACE FUNCTION retrieve_post_invited_users(_post_id BIGINT)
+RETURNS TABLE(invited_user BIGINT) AS $$
+	SELECT invited_user
+        FROM invites
+        WHERE invite_subject_id = _post_id AND invite_type = 'post';
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION retrieve_post_uninvited_subscribers(_post_id BIGINT)
+RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
+	SELECT follower
+        FROM follows, posts
+        WHERE followed = author AND 
+        posts.id = _post_id AND
+        follower NOT IN retrieve_post_invited_users(_post_id);
+$$ LANGUAGE SQL;
+
 
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('adminooooo@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe','ICBAS', 'user');
@@ -529,5 +567,5 @@ INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 1);
 * CONFERENCES
 */
 INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is a public conference, any person can join', 'local', 'data inicio', 'public');
-INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is a followers or invite only conference (visibility: followers)', 'local', 'data inicio', 'followers');
+INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (3, 'titulo', 'this is a followers or invite only conference (visibility: followers)', 'local', 'data inicio', 'followers');
 INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is an invite only conference (visibility: private)', 'local', 'data inicio', 'private');
