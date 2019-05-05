@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 
 // - Import styles
-import styles from "../Post/Post.module.css";
+import styles from "./ChallengeCarousel.module.css";
 
 // - Import app components
 import Conference from "../../views/Conference";
@@ -12,7 +12,7 @@ export type Props = {
   id: number;
   challenges: Challenge[];
   parent: Conference;
-  handleImageClick: (image: string | undefined) => any;
+  // handleChallengeClick: (image: string | undefined) => any;
 };
 
 export type State = {};
@@ -38,27 +38,27 @@ class ChallengeCarousel extends Component<Props, State> {
       items.push(
         <li
           key={"li_" + this.props.id + "_" + i}
-          data-target={"#imgCarousel" + this.props.id}
+          data-target={"#challengeCarousel" + this.props.id}
           data-slide-to={i}
           className={i ? "" : "active"}
         />
       );
-      /*challenges.push(
+      challenges.push(
         <div
           key={"div_" + this.props.id + "_" + i}
           className={"carousel-item " + (i ? "" : "active")}
         >
           <div
             className={styles.post_content_media}
-            onClick={this.props.handleImageClick.bind(
+            /*onClick={this.props.handleImageClick.bind(
               this.props.parent,
-              this.props.challenges[i].src
-            )}
+              this.props.challenges[i]
+            )}*/
           >
-            <img src={this.props.challenges[i].src} />
+            <Challenge />
           </div>
         </div>
-      );*/
+      );
     }
 
     return (
@@ -68,11 +68,11 @@ class ChallengeCarousel extends Component<Props, State> {
         data-ride="carousel"
         data-interval="false"
       >
-        {/*<ol className="carousel-indicators">{items}</ol>
+        <ol className="carousel-indicators">{items}</ol>
         <div className="carousel-inner">{challenges}</div>
         <a
           className="carousel-control-prev"
-          href={"#imgCarousel" + this.props.id}
+          href={"#challengeCarousel" + this.props.id}
           role="button"
           data-slide="prev"
         >
@@ -81,13 +81,13 @@ class ChallengeCarousel extends Component<Props, State> {
         </a>
         <a
           className="carousel-control-next"
-          href={"#imgCarousel" + this.props.id}
+          href={"#challengeCarousel" + this.props.id}
           role="button"
           data-slide="next"
         >
           <span className="carousel-control-next-icon" aria-hidden="true" />
           <span className="sr-only">Next</span>
-    </a>*/}
+        </a>
       </div>
     );
   }

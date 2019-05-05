@@ -1,6 +1,8 @@
 import axios from "axios";
 import * as React from "react";
 
+import ChallengeCarousel from "../components/ChallengeCarousel/ChallengeCarousel";
+import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import Chat from "../components/Chat/Chat";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
@@ -136,6 +138,7 @@ class Conference extends React.Component<IProps, State> {
           <div className="conf_side">
             <div className="p-3">{this.getDetails()}</div>
             <div className="p-3">{this.getAdminButtons()}</div>
+            <div className="p-3">{this.getChallenges()}</div>
           </div>
           <div className="conf_posts">
             <button className="join">Join conference</button>
@@ -166,6 +169,23 @@ class Conference extends React.Component<IProps, State> {
     ));
   }
 
+  private getChallenges() {
+    return (
+      <div className="p-0 m-0">
+        <h6>
+          Challenges <i className="fas fa-puzzle-piece" />
+        </h6>
+        <ChallengeCarousel
+          key={"challenges_" + this.id}
+          id={this.id}
+          challenges={[]}
+          parent={this}
+          // handleChallengeClick={this.handleChallengeClick}
+        />
+      </div>
+    );
+  }
+
   private getDetails() {
     return (
       <ul className="p-0 m-0">
@@ -194,10 +214,16 @@ class Conference extends React.Component<IProps, State> {
           <i className="fas fa-video" />
           Start livestream
         </button>
-        <button>
+        <button
+          key={0}
+          type="button"
+          data-toggle="modal"
+          data-target={`#challenge_modal_Create`}
+        >
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
+        <ChallengeModal id={0} conference_id={this.id} text={""} title={""} />
         <button>
           <i className="fas fa-archive" />
           Archive conference
