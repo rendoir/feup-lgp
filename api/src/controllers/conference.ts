@@ -121,12 +121,12 @@ export function inviteNotified(req, res) {
 
 export function addParticipantUser(req, res) {
   console.log('ADD PARTICIPANT');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
+  const userId = 3;
+  console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
       text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
-      values: [cookies.get('user_id'), req.params.id],
+      values: [userId, req.params.id],
   }).then((result) => {
       res.status(200).send();
   }).catch((error) => {
@@ -136,13 +136,13 @@ export function addParticipantUser(req, res) {
 }
 
 export function removeParticipantUser(req, res) {
-  console.log('REMOVE PARTICIPANT');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
+  console.log("REMOVER PARTICIPANTE")
+  const userId = 3;
+  console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
       text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
-      values: [cookies.get('user_id'), req.params.id],
+      values: [userId, req.params.id],
   }).then((result) => {
       res.status(200).send();
   }).catch((error) => {
@@ -153,19 +153,72 @@ export function removeParticipantUser(req, res) {
 
 export async function checkUserParticipation(req, res) {
   console.log('CHECK PARTICIPATION');
-  const cookies = new Cookies(req.headers.cookie);
-  console.log('USER: ', cookies.get('user_id'));
+  const userId = 3;
+  console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
-
   try {
       const userParticipantQuery = await query({
           text: `SELECT *
                   FROM conference_participants
                   WHERE participant_user = $1 AND conference = $2`,
-          values: [cookies.get('user_id'), req.params.id],
+          values: [userId, req.params.id],
       });
       console.log("É PARTICIPANTE ? ", Boolean(userParticipantQuery.rows[0]));
       res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user participation in conference'));
+  }
+}
+
+export async function checkUserCanJoin(req, res) {
+  console.log('CHECK USER CAN JOIN');
+  const userId = 3;
+  console.log('USER: ', userId);
+  console.log('CONFERENCE: ', req.params.id);
+  try {
+      const userCanJoinQuery = await query({
+          text: `SELECT * FROM user_can_join_conference($1, $2)`,
+          values: [req.params.id, userId],
+      });
+      // TODO: criar trigger para cancelar entrada se nao tiver acesso a conferencia
+      const canJoin = userCanJoinQuery.rows[0].user_can_join_conference;
+      console.log("PODE ENTRAR ? ", userCanJoinQuery.rows[0]);
+      res.status(200).send({ canJoin });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user participation in conference'));
+  }
+}
+
+export function setSecureCookiesExample(req, res) {
+  console.log("SETTING COOKIES...");
+  try {
+      // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
+      // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
+      // withCredentials tem de estar a true, a nao ser que se coloque o endereço de onde o cliente esta a fazer os requests
+      // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
+
+      // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
+      // "req.cookies" para aceder a cookies mais tarde noutros requests.
+      // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
+      /*for (var key in req.cookies) {
+        res.clearCookie(key, { path: '/' });
+      }
+      for (var key in req.signedCookies) {
+        res.clearCookie(key, { path: '/' });
+      }*/
+
+      //res.cookie('user_id', 3); // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
+      //res.cookie('user_id', 1, {signed: true, httpOnly: true}); // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
+      //the one the server will access cannot be forged by hackers using XSS
+      /*res.cookie('openExample', 'openExampleValue');
+      res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
+      res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
+      res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
+      req.session.firstName = 'bomdia';
+      console.log(req.session.id);
+      res.status(200).send('Cookies set');
   } catch (error) {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user participation in conference'));

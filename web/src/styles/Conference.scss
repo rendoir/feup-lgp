@@ -70,10 +70,17 @@
         .join {
             background-color: $color-primary;
         }
-
-        .joined {
-            background-color: tint(#FF0000, 21);
+        .join:hover {
+            background-color: shade($color-primary, 15);
         }
+
+        .leave, .cannot_join {
+            background-color: $color-danger;
+        }
+        .leave:hover {
+            background-color: shade($color-danger, 28);
+        }
+
 
         button {
             list-style-type: none;

@@ -116,7 +116,7 @@ conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantU
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference in which we are verifying the user participation
- * The user whose participationto attend the conference is the logged in user, which means we can access his id through cookies.
+ * The user whose participation we in conference is being verified is the logged in user, which means we can access his id through cookies.
  * This way, we don't need to pass it as a request parameter.
  *
  * @apiErrorExample Error-Response:
@@ -126,3 +126,25 @@ conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantU
  *     }
  */
 conferenceRouter.get('/:id/check_participation', controller.checkUserParticipation);
+
+/**
+ * @api {get} /api/conference/:id/check_user_access Check if a user is allowed to join a conference
+ * @apiName Check-User-Access
+ * @apiGroup Conference
+ *
+ * @apiParam {number}   id    Id of the conference in which we are verifying if the user can join
+ * The user whose access to the conference we want to verify is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
+
+/**
+ * This is just an example on how to set cookies in a secure way, so that they dont get forged or accessed by XSS
+ */
+conferenceRouter.post('/set_cookies', controller.setSecureCookiesExample);

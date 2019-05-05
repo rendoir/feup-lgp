@@ -8,7 +8,13 @@ import Post from "../components/Post/Post";
 import "../styles/Conference.css";
 
 // - Import utils
-import { apiCheckUserConferenceParticipation } from "../utils/apiInvite";
+import {
+  apiCheckUserCanJoinConference,
+  apiCheckUserConferenceParticipation,
+  apiUserJoinConference,
+  apiUserLeaveConference
+} from "../utils/apiConference";
+import { apiInviteSubscribers, apiInviteUser } from "../utils/apiInvite";
 
 interface IProps {
   match: {
@@ -27,7 +33,9 @@ interface IState {
   place: string;
   date_start: string;
   date_end: string;
+  userCanJoin: boolean;
   userParticipation: boolean;
+  waitingUserJoinLeave: boolean;
 }
 
 class Conference extends React.Component<IProps, IState> {
@@ -79,14 +87,56 @@ class Conference extends React.Component<IProps, IState> {
         }
       ],
       title: "Conference title",
-      userParticipation: true
+      userCanJoin: false,
+      userParticipation: false,
+      waitingUserJoinLeave: false
     };
+
+    this.handleJoinConference = this.handleJoinConference.bind(this);
+    this.handleLeaveConference = this.handleLeaveConference.bind(this);
+  }
+
+  public async handleJoinConference() {
+    if (this.state.waitingUserJoinLeave) {
+      console.log("ESPERAAA");
+      return;
+    }
+    console.log("ENTRAR");
+    this.setState({
+      userParticipation: true,
+      waitingUserJoinLeave: true
+    });
+
+    const joinSuccess = await apiUserJoinConference(this.id);
+    this.setState({
+      userParticipation: joinSuccess,
+      waitingUserJoinLeave: false
+    });
+  }
+
+  public async handleLeaveConference() {
+    if (this.state.waitingUserJoinLeave) {
+      console.log("ESPERAAA");
+      return;
+    }
+    console.log("SAIR");
+    this.setState({
+      userParticipation: false,
+      waitingUserJoinLeave: true
+    });
+
+    const leaveSuccess = await apiUserLeaveConference(this.id);
+    this.setState({
+      userParticipation: !leaveSuccess,
+      waitingUserJoinLeave: false
+    });
   }
 
   public componentDidMount() {
     // TODO
     // this.apiGetConference();
-    // this.apiGetUserParticipation();
+    this.apiGetUserCanJoin();
+    this.apiGetUserParticipation();
   }
 
   public apiGetConference() {
@@ -104,6 +154,11 @@ class Conference extends React.Component<IProps, IState> {
       .catch(() => console.log("Failed to get conference"));
   }
 
+  public async apiGetUserCanJoin() {
+    const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
+    this.setState({ userCanJoin: canJoin });
+  }
+
   public async apiGetUserParticipation() {
     const participant: boolean = await apiCheckUserConferenceParticipation(
       this.id
@@ -119,18 +174,20 @@ class Conference extends React.Component<IProps, IState> {
           <p>{this.state.description}</p>
         </div>
 
-        <div className="conf_head w-100">
-          <div className="live_wrap">
-            <div className="live_container">
-              <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+        {this.state.userParticipation && this.state.userCanJoin && (
+          <div className="conf_head w-100">
+            <div className="live_wrap">
+              <div className="live_container">
+                <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
+              </div>
+            </div>
+            <div className="chat_wrap">
+              <div className="chat_container">
+                <Chat />
+              </div>
             </div>
           </div>
-          <div className="chat_wrap">
-            <div className="chat_container">
-              <Chat />
-            </div>
-          </div>
-        </div>
+        )}
 
         <div className="container my-5">
           <div className="conf_side">
@@ -147,6 +204,10 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getPosts() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
     return this.state.posts.map(post => (
       <Post
         key={post.id}
@@ -211,13 +272,29 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getJoinButton() {
-    const buttonClass = this.state.userParticipation ? "joined" : "join";
-    const buttonText = this.state.userParticipation
+    console.log(this.state);
+    let buttonClass = this.state.userParticipation ? "leave" : "join";
+    let buttonText = this.state.userParticipation
       ? "Leave conference"
       : "Join conference";
+
+    if (!this.state.userCanJoin) {
+      buttonClass = "cannot_join";
+      buttonText = "You don't have permission to access this conference";
+    }
     // TODO: METER EFEITOS AO CARREGAR
     return (
-      <button className={`join_button ${buttonClass}`}>{buttonText}</button>
+      <button
+        className={`join_button ${buttonClass}`}
+        onClick={
+          this.state.userParticipation
+            ? this.handleLeaveConference
+            : this.handleJoinConference
+        }
+        disabled={!this.state.userCanJoin}
+      >
+        {buttonText}
+      </button>
     );
   }
 }
