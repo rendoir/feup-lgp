@@ -8,13 +8,15 @@ export async function getFeed(req, res) {
     try {
         const result = await query({
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
-                        p.visibility, p.date_created, p.date_updated, users.id AS user_id
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
                     WHERE
-                        author = $1
+                        (author = $1
                         OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                            AND p.visibility IN ('public', 'followers'))
+                            AND p.visibility IN ('public', 'followers')))
+                        AND 
+                        p.conference IS null   
                     ORDER BY date_created DESC
                     LIMIT 10
                     OFFSET $2`,
