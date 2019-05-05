@@ -66,11 +66,11 @@ async function setCookies(): Promise<void> {
       }
     );
     console.log("acabou de por cookies");
-    //console.log("cookies set msg: ", res.data);
+    // console.log("cookies set msg: ", res.data);
   } catch (error) {
     console.log("Failed to set cookies");
   }
-  //const cookies = new Cookies();
+  // const cookies = new Cookies();
 
   /*console.log("openExample", cookies.get("openExample"));
     cookies.set("openExample", 'openExampleChangedByXSS', { path: "/" });
