@@ -184,6 +184,16 @@ class Post extends Component<IProps, IState> {
           {this.getFiles()}
           {this.getTags()}
           <div className={styles.post_stats}>
+            <span
+              key={this.id + "_span_like_button"}
+              role="button"
+              data-toggle="dropdown"
+              data-target={"#post_" + this.props.id + " show_likes"}
+            >
+              {this.props.likes} likes
+              {this.getLikes()}
+            </span>
+            <span> {this.props.comments.length} comments</span>
             <fieldset className="rate">
               <div className="star-ratings-css">
                 {this.handleStars()}
@@ -196,16 +206,6 @@ class Post extends Component<IProps, IState> {
                 </div>
               </div>
             </fieldset>
-            <span
-              key={this.id + "_span_like_button"}
-              role="button"
-              data-toggle="dropdown"
-              data-target={"#post_" + this.props.id + " show_likes"}
-            >
-              {this.props.likes} likes
-              {this.getLikes()}
-            </span>
-            <span> {this.props.comments.length} comments</span>
           </div>
           {this.getUserInteractionButtons()}
           {/* Post edition modal */}
