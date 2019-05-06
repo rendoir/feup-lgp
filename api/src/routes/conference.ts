@@ -59,9 +59,7 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
 conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
- * @api {get} /api/conference/:id/amount_uninvited_subscribers
- * Retrieve the amount of subscribers of the conference's author, which are not invited to the conference
- * If a subscriber as already joined the conference, he will be accounted as invited
+ * @api {get} /api/conference/:id/amount_uninvited_subscribers Retrieve conference author's amount of uninvited subscribers
  * @apiName Get-Amount-Uninvited-Subscribers
  * @apiGroup Conference
  *
