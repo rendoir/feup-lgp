@@ -171,6 +171,15 @@
   .post_actions button span {
     display: none;
   }
+
+  .post_stats {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #rate {
+    margin-bottom: 10px;
+  }
 }
 
 .post_actions button:hover,
