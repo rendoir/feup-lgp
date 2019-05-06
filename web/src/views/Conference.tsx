@@ -401,7 +401,6 @@ class Conference extends React.Component<IProps, IState> {
     });
   };
   private renderStream() {
-    console.log(this.state.livestreamUrl);
     return (
       <div className="conf_head w-100">
         <div className="live_wrap">
