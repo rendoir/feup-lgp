@@ -48,7 +48,6 @@ interface IState {
   request: {
     type: "post" | "conference";
     title: string;
-    shortname: string;
     about: string;
     avatar?: File;
     privacy: string;
@@ -104,7 +103,6 @@ class Conference extends React.Component<IProps, IState> {
         livestream: "",
         local: "",
         privacy: "public",
-        shortname: "",
         switcher: "false",
         tags: [],
         title: "",
@@ -120,6 +118,7 @@ class Conference extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetConference();
+    this.getPossibleTags();
   }
 
   public apiGetConference() {

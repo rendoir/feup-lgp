@@ -338,12 +338,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   }
 
   private renderConfPostStep() {
-    const {
-      id,
-      step,
-      request: { type, about, title, shortname, avatar },
-      shortnamePrefix
-    } = this.props;
+    const { id, step, request } = this.props;
 
     return (
       <div className={styles.wrapper}>
@@ -360,18 +355,17 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <CreateGroupInfoForm
             vertical={true}
             id={id}
-            type={type}
-            about={about}
-            title={title}
+            type={request.type}
+            about={request.about}
+            title={request.title}
+            privacy={request.privacy}
             tags={this.props.tags}
-            avatar={avatar}
-            shortname={shortname}
-            shortnamePrefix={shortnamePrefix}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
             onFileChange={this.handleFileChange}
+            onTagChange={this.handleTagChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>
