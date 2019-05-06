@@ -15,8 +15,8 @@ export async function getFeed(req, res) {
                         (author = $1
                         OR (author IN (SELECT followed FROM follows WHERE follower = $1)
                             AND p.visibility IN ('public', 'followers')))
-                        AND 
-                        p.conference IS null   
+                        AND
+                        p.conference IS null
                     ORDER BY date_created DESC
                     LIMIT 10
                     OFFSET $2`,

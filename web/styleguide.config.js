@@ -88,10 +88,6 @@ module.exports = {
     {
       name: "Post",
       components: ["src/components/Comment2/*.tsx"]
-    },
-    {
-      name: "Header",
-      components: ["src/components/header/Header2.tsx"]
     }
   ]
 };
