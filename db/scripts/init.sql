@@ -489,3 +489,7 @@ INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 3, 2);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 4, 3);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 1);
+
+/**
+* Challenges - Challenges
+*/

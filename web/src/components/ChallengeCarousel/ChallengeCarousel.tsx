@@ -12,7 +12,7 @@ export type Props = {
   id: number;
   challenges: Challenge[];
   parent: Conference;
-  // handleChallengeClick: (image: string | undefined) => any;
+  handleChallengeClick: (challenge: Challenge | undefined) => any;
 };
 
 export type State = {};
@@ -50,10 +50,10 @@ class ChallengeCarousel extends Component<Props, State> {
         >
           <div
             className={styles.post_content_media}
-            /*onClick={this.props.handleImageClick.bind(
+            onClick={this.props.handleChallengeClick.bind(
               this.props.parent,
               this.props.challenges[i]
-            )}*/
+            )}
           >
             <Challenge />
           </div>

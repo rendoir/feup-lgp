@@ -145,6 +145,7 @@ class Conference extends React.Component<IProps, State> {
             {this.getPosts()}
           </div>
         </div>
+        <ChallengeModal id={0} conference_id={this.id} text={""} title={""} />
       </div>
     );
   }
@@ -223,7 +224,6 @@ class Conference extends React.Component<IProps, State> {
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
-        <ChallengeModal id={0} conference_id={this.id} text={""} title={""} />
         <button>
           <i className="fas fa-archive" />
           Archive conference

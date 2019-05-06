@@ -6,6 +6,7 @@ import React, { Component } from "react";
 import "./ChallengeModal.module.css";
 
 // - Import app components
+import { checkPropTypes } from "prop-types";
 import Button from "../Button/Button";
 import Select from "../Select/Select";
 
