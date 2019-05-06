@@ -17,6 +17,7 @@ interface IProps {
 }
 
 type State = {
+  archived: boolean;
   hasChat: boolean;
   hasLiveStream: boolean;
   livestreamUrl: string;
@@ -36,6 +37,7 @@ class Conference extends React.Component<IProps, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
+      archived: false,
       date_end: "16:30 20/03/2019",
       date_start: "14:30 20/03/2019",
       description:
@@ -110,6 +112,14 @@ class Conference extends React.Component<IProps, State> {
           title: conference.title
         });
       })
+      .catch(() => console.log("Failed to get conference"));
+  }
+
+  public apiSetArchived() {
+    const conferenceURL = getApiURL(`/conference/${this.id}`);
+    axios
+      .post(conferenceURL, {})
+      .then()
       .catch(() => console.log("Failed to get conference"));
   }
 
@@ -206,7 +216,12 @@ class Conference extends React.Component<IProps, State> {
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
-        <button>
+        <button
+          type="button"
+          onClick={() => {
+            console.log("Archive it");
+          }}
+        >
           <i className="fas fa-archive" />
           Archive conference
         </button>

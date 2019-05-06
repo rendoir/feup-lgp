@@ -109,3 +109,36 @@ export async function getConference(req, res) {
     res.status(500).send(new Error('Error retrieving conference'));
   }
 }
+
+export async function archieveConference(req, res) {
+  const id = req.params.id;
+  const user = 1; // logged in user
+  try {
+    const archiveConference = await query({
+      text: `
+      INSERT INTO archived_conferences (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy)
+      SELECT c.author, c.title, c.about, c.livestream_url, c.local, c.datestart, c.dateend, c.avatar, c.privacy)
+      FROM conferences c
+      WHERE c.id=$1
+			  `,
+      values: [id, user],
+    });
+    const deleteConference = await query({
+      text: `
+      DELETE FROM conferences c
+      WHERE c.id=$1;
+			  `,
+      values: [id, user],
+    });
+    if (archiveConference === null || deleteConference === null) {
+      res.status(400).send(
+        new Error('Error in the archieve process of conference'),
+      );
+      return;
+    }
+    res.send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error archieve conference'));
+  }
+}

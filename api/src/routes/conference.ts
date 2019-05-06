@@ -39,3 +39,5 @@ conferenceRouter.post('/create', controller.createConference);
  *     }
  */
 conferenceRouter.get('/:id', controller.getConference);
+
+conferenceRouter.get('/:id/archive', controller.archieveConference);
