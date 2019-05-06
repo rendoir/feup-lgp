@@ -38,7 +38,7 @@ class Profile extends React.Component<IProps, State> {
   constructor(props: any) {
     super(props);
     this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
-    this.observerId = 3; // cookies.get("user_id"); - change when login fetches user id properly
+    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       fetchingInfo: true,

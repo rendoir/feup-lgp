@@ -126,9 +126,9 @@
         }
 
         .invite_subscribers {
-            background-color: $color-primary;
-            color: white;
-            border-radius: 15px;
+            background-color: $color-primary !important;
+            color: white !important;
+            border-radius: 15px !important;
         }
 
         ul li, button {
