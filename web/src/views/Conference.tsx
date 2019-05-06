@@ -1,12 +1,12 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { MouseEvent } from "react";
 import * as React from "react";
-
+import Avatar from "../components/Avatar/Avatar";
 import Chat from "../components/Chat/Chat";
+import Icon from "../components/Icon/Icon";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
-
-import Avatar from "../components/Avatar/Avatar";
-import Icon from "../components/Icon/Icon";
 import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
 
@@ -17,6 +17,8 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
+import { Request, Step } from "../components/CreateNewModal/types";
 
 interface IProps {
   match: {
@@ -28,6 +30,7 @@ interface IProps {
 
 interface IState {
   hasChat: boolean;
+  step: Step;
   hasLiveStream: boolean;
   posts: any[];
   title: string;
@@ -39,17 +42,38 @@ interface IState {
   owner_id: number;
   owner_name: string;
   privacy: string;
+  postModalOpen: boolean;
+  request: {
+    type: "post" | "conference";
+    title: string;
+    shortname: string;
+    about: string;
+    avatar?: File;
+    privacy: string;
+    files: {
+      docs: File[];
+      videos: File[];
+      images: File[];
+    };
+    tags: string[];
+    dateStart: string;
+    dateEnd: string;
+    local: string;
+    livestream: string;
+    switcher: string;
+  };
 }
 
 class Conference extends React.Component<IProps, IState> {
   public id: number;
   public userId: number;
+  public tags: string[];
 
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-
+    this.tags = [];
     this.state = {
       date_end: "",
       date_start: "",
@@ -60,10 +84,31 @@ class Conference extends React.Component<IProps, IState> {
       owner_id: 1,
       owner_name: "",
       place: "",
+      postModalOpen: false,
       // posts: []
       posts: [],
       privacy: "",
-      title: ""
+      title: "",
+      request: {
+        about: "",
+        avatar: undefined,
+        dateEnd: "",
+        dateStart: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: "",
+        local: "",
+        privacy: "public",
+        shortname: "",
+        switcher: "false",
+        tags: [],
+        title: "",
+        type: "post"
+      },
+      step: "type"
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
@@ -199,6 +244,23 @@ class Conference extends React.Component<IProps, IState> {
             </div>
             <div className="conf_posts">
               <button className="join">Join conference</button>
+              <button className="create" onClick={this.createConfPost}>
+                Create Post
+              </button>
+              {this.state.postModalOpen ? (
+                <CreateNewModal
+                  pending={false}
+                  onSubmit={this.handleSubmit}
+                  onStepChange={step => this.setState({ step })}
+                  maxGroupSize={5}
+                  request={this.state.request}
+                  onRequestChange={request => this.setState({ request })}
+                  onClose={this.resetState}
+                  autoFocus={false}
+                  step={"postConf"}
+                  tags={this.tags}
+                />
+              ) : null}
               {this.getPosts()}
             </div>
           </div>
@@ -206,6 +268,97 @@ class Conference extends React.Component<IProps, IState> {
       );
     }
   }
+
+  private createConfPost = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ postModalOpen: true });
+  };
+
+  private handleSubmit = (request: Request) => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+
+    if (request.type === "post") {
+      const formData = new FormData();
+      request.files.images.forEach((file, idx) =>
+        formData.append("images[" + idx + "]", file)
+      );
+      request.files.videos.forEach((file, idx) =>
+        formData.append("videos[" + idx + "]", file)
+      );
+      request.files.docs.forEach((file, idx) =>
+        formData.append("docs[" + idx + "]", file)
+      );
+      request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
+
+      formData.append("author", "1");
+      formData.append("text", request.about);
+      formData.append("title", request.title);
+      formData.append("visibility", request.privacy);
+      formData.append("conference", this.id + "");
+
+      url += "/post/create";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(res => {
+          console.log("Post created - reloading page...");
+          window.location.reload();
+          this.resetState();
+        })
+        .catch(() => console.log("Failed to create post"));
+    }
+  };
+
+  private getPossibleTags = (): void => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    url += `/tags`;
+
+    axios
+      .get(url)
+      .then(res => {
+        res.data.forEach(tag => {
+          this.tags.push(tag.name);
+        });
+      })
+      .catch(() => console.log("Failed to get tags"));
+  };
+
+  private resetState = () => {
+    this.setState({
+      postModalOpen: false,
+      request: {
+        about: "",
+        avatar: undefined,
+        dateEnd: "",
+        dateStart: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: "",
+        local: "",
+        privacy: "public",
+        shortname: "",
+        switcher: "false",
+        tags: [],
+        title: "",
+        type: "post"
+      },
+      step: "type"
+    });
+  };
 
   public getHiddenInfo() {
     if (this.state.isHidden) {

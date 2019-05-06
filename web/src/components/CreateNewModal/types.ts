@@ -46,7 +46,7 @@ export type Request = {
   livestream: string;
 };
 
-export type Step = "type" | "info" | "avatar";
+export type Step = "type" | "info" | "avatar" | "postConf";
 
 export type Props = {
   id: string;

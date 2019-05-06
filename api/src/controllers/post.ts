@@ -10,14 +10,25 @@ export async function createPost(req, res) {
     }
 
     try {
-        const post = (await query({
-            text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
-            VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
-            values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
-        })).rows[0];
-        saveFiles(req, res, post.id);
-        saveTags(req, res, post.id);
-        res.send({ id: post.id });
+        if ( req.body.conference > 0) {
+            const post = (await query({
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
+                VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
+                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+            })).rows[0];
+            saveFiles(req, res, post.id);
+            saveTags(req, res, post.id);
+            res.send({ id: post.id });
+        } else {
+            const post = (await query({
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
+                VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
+                values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
+            })).rows[0];
+            saveFiles(req, res, post.id);
+            saveTags(req, res, post.id);
+            res.send({ id: post.id });
+        }
     } catch (error) {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating a post' });
