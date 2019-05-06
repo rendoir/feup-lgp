@@ -6,6 +6,7 @@ import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 
 import "../styles/Conference.css";
+import { getApiURL } from "../utils/apiURL";
 
 interface IProps {
   match: {
@@ -18,6 +19,7 @@ interface IProps {
 type State = {
   hasChat: boolean;
   hasLiveStream: boolean;
+  livestreamUrl: string;
   posts: any[];
   title: string;
   description: string;
@@ -39,7 +41,8 @@ class Conference extends React.Component<IProps, State> {
       description:
         "Nam ut metus sed purus aliquet porttitor sit amet nec metus. Fusce porta neque pellentesque mollis porttitor. Mauris eget leo metus. Etiam venenatis condimentum efficitur. Etiam libero lorem, ornare ac leo nec, accumsan eleifend arcu. Donec at lectus quam. Vivamus ornare ipsum ut dolor faucibus sollicitudin faucibus sit amet orci. In sit amet venenatis eros. Integer vestibulum rhoncus vehicula. Ut venenatis dignissim tellus vel facilisis.",
       hasChat: true,
-      hasLiveStream: true,
+      hasLiveStream: false,
+      livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
       place: "Porto",
       // posts: []
       posts: [
@@ -83,13 +86,7 @@ class Conference extends React.Component<IProps, State> {
   }
 
   public apiGetConference() {
-    console.log(this.id);
-    let conferenceURL = `${location.protocol}//${location.hostname}`;
-    conferenceURL +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    conferenceURL += `/conference/${this.id}`;
+    const conferenceURL = getApiURL(`/conference/${this.id}`);
     axios
       .get(conferenceURL, {})
       .then(res => {
@@ -100,10 +97,15 @@ class Conference extends React.Component<IProps, State> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
+        if (conference.livestream_url) {
+          this.setState({ hasLiveStream: true });
+        }
+
         this.setState({
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
+          livestreamUrl: conference.livestream_url,
           place: conference.local,
           title: conference.title
         });
@@ -119,18 +121,7 @@ class Conference extends React.Component<IProps, State> {
           <p>{this.state.description}</p>
         </div>
 
-        <div className="conf_head w-100">
-          <div className="live_wrap">
-            <div className="live_container">
-              <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
-            </div>
-          </div>
-          <div className="chat_wrap">
-            <div className="chat_container">
-              <Chat />
-            </div>
-          </div>
-        </div>
+        {this.state.hasLiveStream && this.renderStream()}
 
         <div className="container my-5">
           <div className="conf_side">
@@ -140,6 +131,23 @@ class Conference extends React.Component<IProps, State> {
           <div className="conf_posts">
             <button className="join">Join conference</button>
             {this.getPosts()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  private renderStream() {
+    return (
+      <div className="conf_head w-100">
+        <div className="live_wrap">
+          <div className="live_container">
+            <Livestream src={this.state.livestreamUrl} />
+          </div>
+        </div>
+        <div className="chat_wrap">
+          <div className="chat_container">
+            <Chat />
           </div>
         </div>
       </div>

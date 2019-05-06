@@ -13,6 +13,8 @@ import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
+import { getApiURL } from "../../utils/apiURL";
+
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
 
@@ -155,20 +157,14 @@ class PostModal extends Component<IProps, IState> {
     if (this.state.removedFiles) {
       formData.append("removed", JSON.stringify(this.state.removedFiles));
     }
-    formData.append("id", String(this.props.id));
     formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/edit";
+    const editUrl = getApiURL(`/post/${this.props.id}`);
     axios
-      .post(postUrl, formData, {
+      .put(editUrl, formData, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
           "Content-Type": "multipart/form-data"

@@ -121,7 +121,7 @@ CREATE TABLE conferences (
     author BIGINT REFERENCES users ON DELETE CASCADE,
     title TEXT NOT NULL,
     about TEXT NOT NULL,
-    livestreamURL TEXT,
+    livestream_url TEXT,
     local TEXT NOT NULL,
     dateStart TEXT NOT NULL ,
     dateEnd TEXT,

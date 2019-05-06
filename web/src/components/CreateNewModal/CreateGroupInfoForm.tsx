@@ -279,7 +279,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             name={"livestream"}
             label={"Livestream URL"}
             type={"url"}
-            placeholder={"https://www.example.com"}
+            placeholder={"https://www.youtube.com/embed/<id>"}
             disabled={!Boolean(this.props.switcher)}
           />
         </div>
