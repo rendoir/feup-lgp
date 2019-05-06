@@ -75,7 +75,7 @@ export async function inviteUser(req, res) {
     res.status(400).send({ message: 'An error ocurred while inviting user: You are not the conference owner.' });
     return;
   }
-
+  console.log("INVITE USER: ", req.body.invited_user);
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
       values: [req.body.invited_user, req.params.id],
@@ -139,15 +139,15 @@ export async function getUninvitedUsersInfo(req, res) {
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
   }
-  console.log('INVITE SUBSCRIBERS');
+  console.log('GET UNINVITED USERS');
   console.log('CONFERENCE: ', req.params.id);
-
+  const userId = 3;
   try {
     const uninvitedUsersQuery = await query({
-      text: `SELECT id, first_name, last_name, university, work, work_field
+      text: `SELECT id, first_name, last_name, home_town, university, work, work_field
               FROM users
-              WHERE id NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users($1))`,
-      values: [req.params.id],
+              WHERE id NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users($1)) AND id <> $2`,
+      values: [req.params.id, userId],
     });
     console.log("UNINVITED USERS ", uninvitedUsersQuery.rows);
     res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });

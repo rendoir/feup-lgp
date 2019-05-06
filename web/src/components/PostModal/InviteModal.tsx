@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Dropdown } from "semantic-ui-react";
 
 import "./PostModal.css";
 
@@ -19,6 +18,10 @@ interface IProps {
 }
 
 interface IState {
+  afterInviteMessage: string;
+  fetchingUninvitedSubs: boolean;
+  fetchingUninvitedUsers: boolean;
+  inviteUserInput: string;
   uninvitedSubscribersAmount: number;
   uninvitedUsers: any[];
   waitingSubscribersInvitation: boolean;
@@ -37,23 +40,29 @@ class InviteModal extends Component<IProps, IState> {
     this.htmlId = `invite_${this.subjectType}_modal_${this.subjectId}`;
 
     this.state = {
+      afterInviteMessage: "",
+      fetchingUninvitedSubs: true,
+      fetchingUninvitedUsers: true,
+      inviteUserInput: "",
       uninvitedSubscribersAmount: 0,
       uninvitedUsers: [
         {
           first_name: "Rodrigo",
+          home_town: "Gaia",
           id: 1,
           last_name: "Pinto",
-          university: "FEUP",
+          university: "",
           work: "surgeon",
-          work_field: "cardiology"
+          work_field: "Cardiology"
         },
         {
-          first_name: "John",
-          id: 2,
-          last_name: "Price",
-          university: "Arkansas UNI",
-          work: "surgeon",
-          work_field: "cardiology"
+          first_name: "Joao",
+          home_town: "Porto",
+          id: 1,
+          last_name: "Carlos",
+          university: "FEUP",
+          work: "",
+          work_field: ""
         }
       ],
       waitingSubscribersInvitation: false,
@@ -62,6 +71,9 @@ class InviteModal extends Component<IProps, IState> {
 
     this.handleInviteSubscribers = this.handleInviteSubscribers.bind(this);
     this.handleInviteUser = this.handleInviteUser.bind(this);
+    this.handlerInviteUserInputChange = this.handlerInviteUserInputChange.bind(
+      this
+    );
   }
 
   public componentDidMount() {
@@ -74,15 +86,39 @@ class InviteModal extends Component<IProps, IState> {
       this.subjectId,
       this.subjectType
     );
-    this.setState({ uninvitedSubscribersAmount });
+    this.setState({
+      fetchingUninvitedSubs: false,
+      uninvitedSubscribersAmount
+    });
   }
 
   public async apiGetUninvitedUsers() {
+    this.setState({ fetchingUninvitedUsers: true });
+
     const uninvitedUsers = await apiGetUninvitedUsersInfo(
       this.subjectId,
       this.subjectType
     );
-    this.setState({ uninvitedUsers });
+    console.log("UNINVITED USERS: ", uninvitedUsers);
+    if (!uninvitedUsers || uninvitedUsers.length === 0) {
+      this.setState({
+        fetchingUninvitedUsers: false,
+        uninvitedUsers: []
+      });
+      return;
+    }
+
+    this.setState({
+      fetchingUninvitedUsers: false,
+      uninvitedUsers
+    });
+  }
+
+  public handlerInviteUserInputChange(e) {
+    console.log("invite input: ", e.target.value);
+    const noExtraWhiteSpace = e.target.value.replace(/\s+/g, " ");
+    console.log("input after removing extra ws: ", noExtraWhiteSpace);
+    this.setState({ inviteUserInput: noExtraWhiteSpace });
   }
 
   public async handleInviteSubscribers() {
@@ -95,9 +131,12 @@ class InviteModal extends Component<IProps, IState> {
       this.subjectType
     );
 
+    this.apiGetUninvitedUsers(); // Fetch uninvited users again, since subscribers may have been invited
+
     const uninvitedSubscribersLeft = inviteSuccess
       ? 0
       : this.state.uninvitedSubscribersAmount;
+
     this.setState({
       uninvitedSubscribersAmount: uninvitedSubscribersLeft,
       waitingSubscribersInvitation: false
@@ -106,70 +145,90 @@ class InviteModal extends Component<IProps, IState> {
 
   public async handleInviteUser() {
     console.log("INVITE USER");
-  }
+    const names = this.state.inviteUserInput.trim().split(" ");
+    const firstName = names[0];
+    const lastName = names[1];
+    console.log(names[0], names[1]);
+    let userFound = false;
 
-  public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
-  }
+    this.state.uninvitedUsers.forEach(async user => {
+      if (user.first_name !== firstName || user.last_name !== lastName) {
+        return;
+      }
 
-  public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
-  }
+      userFound = true;
 
-  /*public getReportForm() {
-    return (
-      <form className="was-validated">
-        <div className="mb-3">
-          <h5>Report reason</h5>
-          <textarea
-            name="text"
-            className={this.getInputRequiredClass(this.state.reportReason)}
-            onChange={this.handleInputChange}
-            placeholder="Insert report reason"
-            value={this.state.reportReason}
-            required={true}
-          />
-          <div
-            className="field_required_warning"
-            style={this.getInputRequiredStyle(this.state.reportReason)}
-          >
-            Reason must be provided
-          </div>
-        </div>
-      </form>
-    );
-  }*/
+      const inviteSuccess = await apiInviteUser(
+        this.subjectId,
+        user.id,
+        "conference"
+      );
+
+      let afterInviteMessage = "User " + firstName + " " + lastName;
+      if (inviteSuccess) {
+        afterInviteMessage += " was successfully invited";
+      } else {
+        afterInviteMessage += " couldn't be invited. An error occurred.";
+      }
+
+      console.log("invite message: ", afterInviteMessage);
+      this.setState({ afterInviteMessage });
+
+      // Since we invited a new user, refetch the ones who are not invited yet
+      this.apiGetUninvitedUsers();
+      this.apiGetUninvitedSubsAmount();
+    });
+
+    if (!userFound) {
+      this.setState({
+        afterInviteMessage:
+          "No uninvited user called " +
+          firstName +
+          " " +
+          lastName +
+          " was found"
+      });
+    }
+  }
 
   public getInviteUserForm() {
-    let invSubscribersText =
-      this.state.uninvitedSubscribersAmount > 0
-        ? "Invite all subscribers"
-        : "All subscribers have been invited";
-    let invSubscribersDisclosure = "";
-    if (this.state.waitingSubscribersInvitation) {
-      invSubscribersText = "Inviting subscribers...";
-    } else if (this.state.uninvitedSubscribersAmount > 0) {
-      invSubscribersDisclosure =
-        "(" + this.state.uninvitedSubscribersAmount + " without invitation)";
-    } else if (this.state.uninvitedSubscribersAmount < 0) {
-      invSubscribersText =
-        "Error fetching uninvited subscribers. Try again later.";
+    if (this.state.fetchingUninvitedUsers) {
+      return <div>Fetching uninvited users...</div>;
+    } else if (this.state.uninvitedUsers.length === 0) {
+      return <div>There are no uninvited users left</div>;
     }
 
-    const invSubscribersButton = (
+    const searchUserInput = (
+      <input
+        key={0}
+        id="invite_user_input"
+        className="mr-sm-2"
+        type="search"
+        placeholder="Insert user's first and last name"
+        aria-label="Search"
+        value={this.state.inviteUserInput}
+        onChange={this.handlerInviteUserInputChange}
+      />
+    );
+    const searchButton = (
       <button
+        key={1}
+        className="my-2 my-sm-0"
         type="button"
-        onClick={this.handleInviteSubscribers}
-        disabled={this.state.uninvitedSubscribersAmount <= 0}
+        onClick={this.handleInviteUser}
       >
-        {`${invSubscribersText} ${invSubscribersDisclosure}`}
+        Invite
       </button>
     );
 
-    return <div>{invSubscribersButton}</div>;
+    return [searchUserInput, searchButton];
   }
 
   public getInviteSubscribersButton() {
+    if (this.state.fetchingUninvitedSubs) {
+      return <div>Fetching uninvited subscribers..</div>;
+    }
+
     let invSubscribersText =
       this.state.uninvitedSubscribersAmount > 0
         ? "Invite all subscribers"
@@ -196,14 +255,14 @@ class InviteModal extends Component<IProps, IState> {
       </button>
     );
 
-    return <div>{invSubscribersButton}</div>;
+    return invSubscribersButton;
   }
 
   public render() {
     return (
       <div
         id={this.htmlId}
-        className={`modal fade report_modal`}
+        className={`modal fade invite_modal`}
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
@@ -228,8 +287,17 @@ class InviteModal extends Component<IProps, IState> {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div className="modal-body d-flex justify-content-center">
-              {this.getInviteSubscribersButton()}
+            <div className="modal-body">
+              <div className="row d-flex justify-content-center">
+                {this.getInviteSubscribersButton()}
+              </div>
+              <div className="row d-flex justify-content-center mt-5">
+                {this.getInviteUserForm()}
+              </div>
+              <div className="row d-flex justify-content-center">
+                {this.state.afterInviteMessage !== "" &&
+                  this.state.afterInviteMessage}
+              </div>
             </div>
             <div className="modal-footer">
               <button
