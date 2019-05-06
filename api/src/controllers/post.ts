@@ -499,22 +499,3 @@ export function inviteSubscribers(req, res) {
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
     });
 }
-
-export function inviteNotified(req, res) {
-    console.log('INVITE NOTIFIED');
-    const cookies = new Cookies(req.headers.cookie);
-    console.log('USER: ', cookies.get('user_id'));
-    console.log('CONFERENCE: ', req.params.id);
-    query({
-        text: `UPDATE invites SET user_notified = TRUE
-                WHERE invited_user = $1
-                    AND invite_subject_id = $2
-                    AND invite_type = 'conference'`,
-        values: [req.params.id, cookies.get('user_id')],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while subscribing post' });
-    });
-}

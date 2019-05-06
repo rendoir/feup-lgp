@@ -73,18 +73,29 @@ export async function apiGetUninvitedUsersInfo(
   }
 }
 
-export async function apiInviteNotified(
-  inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
-): Promise<boolean> {
-  const apiURL = getApiURL(`/conference/${inviteSubjectId}/invite_notified`);
+export async function apiInviteNotified(inviteId: number): Promise<boolean> {
+  const apiURL = getApiURL(`/users/1/invite_notified`);
 
   try {
-    await axios.put(apiURL, {});
+    await axios.put(apiURL, { inviteId });
     return true;
   } catch (error) {
     console.log("Failed to set invite as notified");
     return false;
+  }
+}
+
+export async function apiGetNotifications() {
+  const apiURL = getApiURL(`/users/1/notifications`);
+
+  try {
+    console.log("VAI FETCHAR NOTIFS");
+    const res = await axios.get(apiURL);
+    console.log("notifications", res.data);
+    return res.data.notifications;
+  } catch (error) {
+    console.log("Failed to get notifications");
+    return null;
   }
 }
 

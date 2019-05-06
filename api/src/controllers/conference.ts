@@ -157,28 +157,9 @@ export async function getUninvitedUsersInfo(req, res) {
   }
 }
 
-export function inviteNotified(req, res) {
-  console.log('INVITE NOTIFIED');
-  const userId = 3; // logged user
-  console.log('USER: ', userId);
-  console.log('CONFERENCE: ', req.params.id);
-  query({
-      text: `UPDATE invites SET user_notified = TRUE
-              WHERE invited_user = $1
-                  AND invite_subject_id = $2
-                  AND invite_type = 'conference'`,
-      values: [req.params.id, userId],
-  }).then((result) => {
-      res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while notifying conference invite' });
-  });
-}
-
 export function addParticipantUser(req, res) {
   console.log('ADD PARTICIPANT');
-  const userId = 3; // logged user
+  const userId = 1; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
@@ -194,7 +175,7 @@ export function addParticipantUser(req, res) {
 
 export function removeParticipantUser(req, res) {
   console.log("REMOVER PARTICIPANTE")
-  const userId = 3; // logged user
+  const userId = 1; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   query({
@@ -210,7 +191,7 @@ export function removeParticipantUser(req, res) {
 
 export async function checkUserParticipation(req, res) {
   console.log('CHECK PARTICIPATION');
-  const userId = 3; // logged user
+  const userId = 1; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   try {
@@ -230,7 +211,7 @@ export async function checkUserParticipation(req, res) {
 
 export async function checkUserCanJoin(req, res) {
   console.log('CHECK USER CAN JOIN');
-  const userId = 3; // logged user
+  const userId = 1; // logged user
   console.log('USER: ', userId);
   console.log('CONFERENCE: ', req.params.id);
   try {
@@ -256,10 +237,10 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
     });
     console.log("LOGGED USEr OWNS CONFERENCE ? ", Boolean(userOwnsConferenceQuery.rows[0]));
     return Boolean(userOwnsConferenceQuery.rows[0]);
-} catch (error) {
-    console.error(error);
-    return false;
-}
+  } catch (error) {
+      console.error(error);
+      return false;
+  }
 }
 
 export function setSecureCookiesExample(req, res) {

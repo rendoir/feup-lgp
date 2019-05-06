@@ -570,3 +570,9 @@ INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 1);
 INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is a public conference, any person can join', 'local', 'data inicio', 'public');
 INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (3, 'titulo', 'this is a followers or invite only conference (visibility: followers)', 'local', 'data inicio', 'followers');
 INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is an invite only conference (visibility: private)', 'local', 'data inicio', 'private');
+
+
+/**
+* INVITES
+*/
+INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6, 'post');

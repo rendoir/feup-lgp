@@ -116,3 +116,39 @@ usersRouter.post('/:id/unsubscribe', controller.unsubscribeUser);
  *     }
  */
 usersRouter.post('/:id/rate', controller.rate);
+
+/**
+ * @api {get} /api/users/:id/notifications Fetch logged user's received invites, which he hasn't seen yet
+ * @apiName Get-User-Notifications
+ * @apiGroup Users
+ *
+ * @apiParam {number}   id  This id can be set to any value, since it will not be used. It's in the URL due to route problems.
+ *
+ * The logged user id is required, but we can access it through cookies. Therefore, no parameter is required.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.get('/:id/notifications', controller.getNotifications);
+
+/**
+ * @api {put} /api/users/:id/invite_notified Mark an invite notification as seen by the invited user
+ * @apiName Set-Invitation-As-Seen
+ * @apiGroup Users
+ *
+ * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL due to route problems.
+ * @apiParam {number}   inviteId    Id of the invite being set as seen by the user
+ *
+ * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
+ * This way, we don't need to pass it as a request parameter.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.put('/:id/invite_notified', controller.inviteNotified);

@@ -246,3 +246,50 @@ export async function getProfilePosts(req, res) {
         res.status(500).send(new Error('Error retrieving post'));
     }
 }
+
+export async function getNotifications(req, res) {
+    console.log('GET NOTIFICATIONS');
+    const userId = 1;
+    console.log('USER: ', userId);
+
+    try {
+      const unseenInvitesQuery = await query({
+        text: `SELECT DISTINCT invites.id, invite_subject_id,
+                (CASE WHEN invite_type = 'conference' THEN conferences.title ELSE posts.title END) as title, invite_type, date_invited
+                FROM invites, conferences, posts
+                WHERE (
+                        (invite_type = 'conference' AND conferences.id = invite_subject_id) OR
+                        (invite_type = 'post' AND posts.id = invite_subject_id)
+                    ) AND
+                    invited_user = $1 AND
+                    invites.user_notified = FALSE
+                ORDER BY date_invited DESC`,
+        values: [userId],
+      });
+
+      console.log("NOTIFICATIONS FETCHED");
+
+      res.status(200).send({ notifications: unseenInvitesQuery.rows });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user notifications'));
+    }
+}
+
+export function inviteNotified(req, res) {
+    console.log('INVITE NOTIFIED');
+    const userId = 1;
+    console.log('USER: ', userId);
+    console.log('INVITE: ', req.body.inviteId);
+    query({
+        text: `UPDATE invites SET user_notified = TRUE
+                WHERE id = $1 AND
+                invited_user = $2`,
+        values: [req.body.inviteId, userId],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while setting invite as notified' });
+    });
+}

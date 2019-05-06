@@ -277,20 +277,3 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *     }
  */
 postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
-
-/**
- * @api {put} /api/post/:id/invite_notified Mark a post invite notification as seen by the invited user
- * @apiName Set-Post-Invitation-As-Seen
- * @apiGroup Post
- *
- * @apiParam {number}   id    Id of the post referred on the invite
- * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.put('/:id/invite_notified', controller.inviteNotified);
