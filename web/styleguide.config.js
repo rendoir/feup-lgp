@@ -77,7 +77,8 @@ module.exports = {
         "src/components/Icon/*.tsx",
         "src/components/Modal/Modal.tsx",
         "src/components/Scroller/*.tsx",
-        "src/components/Tabs/Tabs.tsx"
+        "src/components/Tabs/Tabs.tsx",
+        "src/components/Tags/Tag.tsx"
       ]
     },
     {
@@ -87,6 +88,10 @@ module.exports = {
     {
       name: "Post",
       components: ["src/components/Comment2/*.tsx"]
+    },
+    {
+      name: "Header",
+      components: ["src/components/header/Header2.tsx"]
     }
   ]
 };

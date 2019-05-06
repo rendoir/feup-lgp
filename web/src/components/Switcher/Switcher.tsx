@@ -94,6 +94,7 @@ class Switcher extends PureComponent<Props> {
         <div className={className}>
           <input
             className={styles.input}
+            name={name}
             id={id}
             value={value ? "true" : "false"}
             checked={value}

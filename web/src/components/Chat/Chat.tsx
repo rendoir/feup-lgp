@@ -1,7 +1,12 @@
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import openSocket from "socket.io-client";
+
 import Avatar from "../Avatar/Avatar";
 import stylesComments from "./../Post/Post.module.scss";
 import styles from "./Chat.module.css";
+
+import { getApiURL } from "../../utils/apiURL";
 
 type Message = {
   id: number;
@@ -10,40 +15,47 @@ type Message = {
   date: string;
 };
 
-type Props = {};
-
 type State = {
+  chatMessage: string;
   messageList: Message[];
 };
 
-class Chat extends React.Component<Props, State> {
-  public user: string;
-  public i: number; // TODO DELETE
-  public messagesEnd: any;
+class Chat extends React.Component<RouteComponentProps<any>, State> {
+  private user: string;
+  private i: number; // TODO DELETE
+  private messagesEnd: any;
 
-  constructor(props: Props) {
+  private socketIo: SocketIOClient.Socket;
+  private ioNamespace: number;
+
+  constructor(props: RouteComponentProps<any>) {
     super(props);
-    this.user = "Myself"; // TODO
+    this.user = "Myself"; // TODO: Should be login name
     this.i = 0; // TODO DELETE
+    this.ioNamespace = this.props.match.params.id;
 
     this.state = {
+      chatMessage: "",
       messageList: []
     };
 
-    // TODO DELETE THIS
-    setInterval(() => {
-      this._onNewMessage({
-        date: "12:05 05/03/2019",
-        id: this.i++,
-        text:
-          "This is an actual super hyper mega big message just to test if the css looks good when a message is this big.",
-        user: Math.random() < 0.5 ? "Myself" : "User"
+    this.socketIo = openSocket(getApiURL(""));
+    this.socketIo.emit("groupConnect", this.ioNamespace); // guarantee namespace exists in backend
+    setTimeout(() => {
+      // leave enough time for backend to have created namespace
+      const localSocketIo = openSocket(getApiURL(`/${this.ioNamespace}`));
+      localSocketIo.on("message", (msg: Message) => {
+        this._onNewMessage(msg);
       });
-    }, 1000);
+    }, 1500);
+
+    this.onLiveChatSubmit = this.onLiveChatSubmit.bind(this);
+    this.onChangeLiveChatMessage = this.onChangeLiveChatMessage.bind(this);
   }
 
   public _onNewMessage(message: Message) {
-    // console.log(message);
+    console.log(message);
+    message.id = this.i++;
     this.setState({
       messageList: [...this.state.messageList, message]
     });
@@ -82,17 +94,45 @@ class Chat extends React.Component<Props, State> {
           />
         </div>
 
-        <div className={styles.chat_footer}>
-          <input type="text" placeholder="Insert your message here..." />
-          <button>
+        <form className={styles.chat_footer} onSubmit={this.onLiveChatSubmit}>
+          <input
+            type="text"
+            placeholder="Insert your message here..."
+            onChange={this.onChangeLiveChatMessage}
+            value={this.state.chatMessage}
+          />
+          <button type="submit">
             <i className="fas fa-paper-plane" />
           </button>
-        </div>
+        </form>
       </div>
     );
   }
 
-  public getMessages() {
+  private async onLiveChatSubmit(event: any) {
+    event.preventDefault();
+    const msg = {
+      date: "12:05 05/03/2019",
+      text: this.state.chatMessage,
+      user: this.user
+    };
+    console.log(this.socketIo);
+    this.socketIo.emit("message", {
+      msg,
+      namespace: this.ioNamespace
+    });
+    this.setState({
+      chatMessage: ""
+    });
+  }
+
+  private onChangeLiveChatMessage(event: any) {
+    this.setState({
+      chatMessage: event.target.value
+    });
+  }
+
+  private getMessages() {
     return this.state.messageList.map(msg => (
       <div
         key={msg.id}
@@ -143,4 +183,4 @@ class Chat extends React.Component<Props, State> {
   }
 }
 
-export default Chat;
+export default withRouter(Chat);

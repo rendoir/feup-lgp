@@ -41,9 +41,12 @@ export type Request = {
   dateStart: string;
   dateEnd: string;
   local: string;
+  tags: string[];
+  switcher: string;
+  livestream: string;
 };
 
-export type Step = "type" | "info" | "avatar";
+export type Step = "type" | "info" | "avatar" | "postConf";
 
 export type Props = {
   id: string;
@@ -51,6 +54,7 @@ export type Props = {
   step: Step;
   error?: string | null;
   pending: boolean;
+  tags?: string[];
   request: Request;
   shortnamePrefix?: string;
   autoFocus: boolean;

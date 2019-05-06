@@ -1,9 +1,16 @@
 import classNames from "classnames";
-import React, { ChangeEvent, PureComponent } from "react";
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+  PureComponent
+} from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import Select from "../Select/Select";
+import Switcher from "../Switcher/Switcher";
+import Tag from "../Tags/Tag";
 import styles from "./CreateNewModal.module.css";
 
 export type Props = {
@@ -14,6 +21,7 @@ export type Props = {
   shortnamePrefix?: string;
   about?: string;
   avatar?: File;
+  tags?: string[];
   className?: string;
   vertical: boolean;
   isPublicGroupEnabled: boolean;
@@ -22,6 +30,7 @@ export type Props = {
   onChange: (value: string, event: ChangeEvent) => void;
   onAvatarRemove: () => void;
   onAvatarChange: (avatar: File) => void;
+  onFileChange: (files: FileList | null) => void;
 };
 
 export type State = {
@@ -33,6 +42,9 @@ export type State = {
   dateStart: string;
   dateEnd: string;
   tags: string[];
+  tagsInput: string;
+  switcher: boolean;
+  livestream: string;
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
@@ -42,9 +54,11 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   };
 
   private shortnameInput?: InputNext;
+  private tags: string[];
 
   constructor(props: Props) {
     super(props);
+    this.tags = [];
 
     this.state = {
       avatar: undefined,
@@ -52,9 +66,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       dateStart: "",
       files: [],
       isPublic: Boolean(props.shortname),
+      livestream: "",
       local: "",
       privacy: "public",
-      tags: []
+      switcher: false,
+      tags: [],
+      tagsInput: ""
     };
   }
 
@@ -91,13 +108,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             placeholder={`Write a short description of this ${type}`}
             label={`Description`}
             type={"textarea"}
+            rows={5}
             value={about || ""}
             maxLength={aboutMaxLength}
             required={true}
           />
           {this.renderPrivacy()}
-          {type === "post" ? this.renderFiles() : null}
-          {type === "conference" ? this.renderLocalAndDate() : null}
+          {type === "post" ? this.renderPostFields() : null}
+          {type === "conference" ? this.renderConferenceFields() : null}
         </form>
       </div>
     );
@@ -130,20 +148,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     }
   }
 
-  private setShortnameInput = (shortnameInput?: InputNext | null): void => {
-    if (shortnameInput) {
-      this.shortnameInput = shortnameInput;
-    }
-  };
-
   private handleSubmit = (event: Event) => {
     event.preventDefault();
 
     this.props.onSubmit(event);
-  };
-
-  private handlePublicToggle = (isPublic: boolean): void => {
-    this.setState({ isPublic });
   };
 
   private handleChange = (value: string, event: ChangeEvent) => {
@@ -154,8 +162,31 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     this.props.onChange(value, event);
   };
 
-  private handleTagsChange = (tags: string[], newtags: string[]) => {
-    this.setState({ tags: newtags });
+  private handleLivestreamToggle = (value: boolean, event: ChangeEvent) => {
+    this.setState({ switcher: value });
+    this.props.onChange(String(value), event);
+  };
+
+  private handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      const tags = this.state.tags;
+      if (!tags.includes(this.state.tagsInput)) {
+        tags.push(this.state.tagsInput);
+      }
+      this.setState({ tags, tagsInput: "" });
+    }
+  };
+
+  private handleRemove = (tag: string): void => {
+    const tags = this.state.tags;
+
+    for (let i = 0; i < tags.length; i++) {
+      if (tags[i] === tag) {
+        tags.splice(i, 1);
+        this.setState({ tags });
+        break;
+      }
+    }
   };
 
   private renderAvatar() {
@@ -211,7 +242,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     );
   }
 
-  private renderLocalAndDate() {
+  private renderConferenceFields() {
     const { id } = this.props;
 
     return (
@@ -245,23 +276,79 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             type={"datetime-local"}
           />
         </div>
+        <div id={`${id}_conference_livestream`}>
+          <label
+            htmlFor={`${id}_conference_livestream`}
+            className={styles.dates}
+          >
+            Livestream
+          </label>
+          <Switcher
+            id={`${id}_switcher`}
+            name={"switcher"}
+            label={"LIVESTREAM"}
+            onChange={this.handleLivestreamToggle}
+            value={this.state.switcher}
+            className={styles.switcher}
+          />
+          <InputNext
+            onChange={this.handleChange}
+            id={`${id}_liveStream`}
+            value={this.state.livestream}
+            name={"livestream"}
+            label={"Livestream URL"}
+            type={"url"}
+            placeholder={"https://www.youtube.com/embed/<id>"}
+            disabled={!this.state.switcher}
+          />
+        </div>
       </div>
     );
   }
 
-  private renderFiles() {
+  private renderPostFields() {
     const { id } = this.props;
 
     return (
       <div>
         <InputNext
-          label={"Files"}
-          type={"file"}
-          multiple={true}
           onChange={this.handleChange}
-          id={`${id}_post_video`}
-          name={"video"}
-          value={""}
+          id={`${id}_post_tags`}
+          type={"text"}
+          value={this.state.tagsInput}
+          label={"Tags"}
+          name={"tagsInput"}
+          list={"possible_tags"}
+          onKeyUp={this.handleKeyUp}
+        />
+        <datalist id={"possible_tags"}>
+          {this.props.tags
+            ? this.props.tags.map((tag, key) => (
+                <option key={"tag_" + key} value={tag} />
+              ))
+            : null}
+        </datalist>
+        <div>
+          {this.state.tags.map((tag, idx) => {
+            return (
+              <Tag
+                onRemove={this.handleRemove}
+                key={idx}
+                value={tag}
+                id={String(idx)}
+              />
+            );
+          })}
+        </div>
+        <InputNext
+          onChange={(_, e) =>
+            this.props.onFileChange((e.target as HTMLInputElement).files)
+          }
+          id={`${id}_post_files`}
+          type={"file"}
+          label={"Files"}
+          multiple={true}
+          name={"files"}
         />
       </div>
     );

@@ -20,7 +20,7 @@ body {
   textarea {
     overflow: hidden !important;
     resize: none !important;
-    height: calc(1.5em + 0.75rem + 2px) !important;
+    //height: calc(1.5em + 0.75rem + 2px) !important;
   }
 
   input:focus,
@@ -100,5 +100,12 @@ body {
       color: #000000;
       font-size: small;
     }
+  }
+
+  #hiddenConference a{
+    padding-left: 20px;
+    position: center;
+    color: #e7711b;
+
   }
 }

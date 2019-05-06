@@ -30,7 +30,7 @@ export type Props = {
     | "url"
     | "textarea";
   /** input value attribute */
-  value: string | number;
+  value?: string | number;
   /** input name attribute */
   name?: string;
   /** input label attribute */
@@ -65,6 +65,8 @@ export type Props = {
   required?: boolean;
   /** Input multiple attribute */
   multiple?: boolean;
+  /** Input list attribute */
+  list?: string;
   /** Textarea rows attribute */
   rows?: number;
   /** Textarea cols attribute */
@@ -80,6 +82,8 @@ export type Props = {
   onFocus?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
   /** input onBlur event attribute */
   onBlur?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
+  /** Input onKeyDown event attribute */
+  onKeyUp?: (event: React.KeyboardEvent) => any;
 };
 
 export type State = {
@@ -191,6 +195,14 @@ class InputNext extends Component<Props, State> {
     }
   };
 
+  private handleKeyUp = (event: React.KeyboardEvent): void => {
+    const { onKeyUp } = this.props;
+
+    if (onKeyUp) {
+      onKeyUp(event);
+    }
+  };
+
   private isAutoFocus(): boolean {
     return Boolean(this.props.autoFocus) && !this.props.disabled;
   }
@@ -278,7 +290,8 @@ class InputNext extends Component<Props, State> {
         rows,
         cols,
         required,
-        multiple
+        multiple,
+        list
       }
     } = this;
 
@@ -286,11 +299,13 @@ class InputNext extends Component<Props, State> {
       className: classNames(styles.input, this.props.inputClassName),
       disabled,
       id,
+      list,
       multiple,
       name,
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onFocus: this.handleFocus,
+      onKeyUp: this.handleKeyUp,
       placeholder: placeholder ? placeholder : "",
       ref: this.setInput,
       required,

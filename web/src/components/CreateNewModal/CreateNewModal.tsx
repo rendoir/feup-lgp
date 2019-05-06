@@ -122,6 +122,39 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     }
   };
 
+  private handleTagsInput = (event: ChangeEvent<HTMLInputElement>): void => {};
+
+  private handleTags = (tags: string[]) => {};
+
+  private handleFileChange = (files: FileList | null) => {
+    if (!files) {
+      return;
+    }
+
+    const images: File[] = [];
+    const videos: File[] = [];
+    const docs: File[] = [];
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith("image")) {
+        images.push(file);
+      } else if (file.type.startsWith("video")) {
+        videos.push(file);
+      } else {
+        docs.push(file);
+      }
+    });
+
+    this.props.onRequestChange({
+      ...this.props.request,
+      files: {
+        docs,
+        images,
+        videos
+      }
+    });
+  };
+
   private renderError() {
     const { error } = this.props;
 
@@ -209,6 +242,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             type={type}
             about={about}
             title={title}
+            tags={this.props.tags}
             avatar={avatar}
             shortname={shortname}
             shortnamePrefix={shortnamePrefix}
@@ -216,6 +250,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
+            onFileChange={this.handleFileChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>
@@ -284,9 +319,65 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
         return this.renderInfoStep();
       case "avatar":
         return this.renderAvatarStep();
+      case "postConf":
+        return this.renderConfPostStep();
       default:
         return null;
     }
+  }
+
+  private renderConfPostStep() {
+    const {
+      id,
+      step,
+      request: { type, about, title, shortname, avatar },
+      shortnamePrefix
+    } = this.props;
+
+    return (
+      <div className={styles.wrapper}>
+        <ModalHeader className={styles.header} withBorder={true}>
+          New Conference Post
+          <ModalClose
+            pending={this.props.pending}
+            onClick={this.props.onClose}
+            id={`${this.props.id}_close_button`}
+          />
+        </ModalHeader>
+        {this.renderError()}
+        <ModalBody className={styles.body}>
+          <CreateGroupInfoForm
+            vertical={true}
+            id={id}
+            type={type}
+            about={about}
+            title={title}
+            tags={this.props.tags}
+            avatar={avatar}
+            shortname={shortname}
+            shortnamePrefix={shortnamePrefix}
+            onChange={this.handleChange}
+            onSubmit={this.handleNextStepClick}
+            onAvatarRemove={this.handleAvatarRemove}
+            onAvatarChange={this.handleAvatarEdit}
+            onFileChange={this.handleFileChange}
+            isPublicGroupEnabled={this.props.isPublicGroupEnabled}
+          />
+        </ModalBody>
+        <ModalFooter className={styles.footer}>
+          <Button
+            wide={true}
+            id={`${id}_step_${step}_submit_button`}
+            type={"submit"}
+            theme={"success"}
+            rounded={false}
+            onClick={this.handleSubmit}
+          >
+            Finish
+          </Button>
+        </ModalFooter>
+      </div>
+    );
   }
 }
 

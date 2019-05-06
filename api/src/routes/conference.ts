@@ -108,7 +108,7 @@ conferenceRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersIn
 conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
 
 /**
- * @api {delete} /api/conference/:id/remove_attendance_intent Remove a user intention to attend a conference
+ * @api {delete} /api/conference/:id/remove_participant Remove a user participation in a conference
  * @apiName Remove-Conference-Attendance-Intention
  * @apiGroup Conference
  *
@@ -162,3 +162,34 @@ conferenceRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
  * This is just an example on how to set cookies in a secure way, so that they dont get forged or accessed by XSS
  */
 conferenceRouter.post('/set_cookies', controller.setSecureCookiesExample);
+
+/**
+ * @api {get} /api/conference/:id Get a conference
+ * @apiName Get-A-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id       id of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id', controller.getConference);
+
+/**
+ * @api {post} /api/conference/:id/change_privacy Change the privacy of a conference
+ * @apiName Change-Privacy-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   privacy     Visibility of the post: public/followers/private
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
