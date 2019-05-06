@@ -9,6 +9,7 @@ import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
+import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -32,6 +33,7 @@ interface IState {
   hasChat: boolean;
   step: Step;
   hasLiveStream: boolean;
+  livestreamUrl: string;
   posts: any[];
   title: string;
   description: string;
@@ -81,6 +83,7 @@ class Conference extends React.Component<IProps, IState> {
       hasChat: true,
       hasLiveStream: true,
       isHidden: false,
+      livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
       owner_id: 1,
       owner_name: "",
       place: "",
@@ -120,12 +123,7 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiGetConference() {
-    let conferenceURL = `${location.protocol}//${location.hostname}`;
-    conferenceURL +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    conferenceURL += `/conference/${this.id}`;
+    const conferenceURL = getApiURL(`/conference/${this.id}`);
     axios
       .get(conferenceURL, {})
       .then(res => {
@@ -156,6 +154,7 @@ class Conference extends React.Component<IProps, IState> {
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
+          livestreamUrl: conference.livestream_url,
           owner_id: conference.user_id,
           owner_name: conference.first_name + conference.last_name,
           place: conference.local,
@@ -223,20 +222,7 @@ class Conference extends React.Component<IProps, IState> {
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
-
-          <div className="conf_head w-100">
-            <div className="live_wrap">
-              <div className="live_container">
-                <Livestream src="https://www.youtube.com/embed/DPfHHls50-w" />
-              </div>
-            </div>
-            <div className="chat_wrap">
-              <div className="chat_container">
-                <Chat />
-              </div>
-            </div>
-          </div>
-
+          {this.state.hasLiveStream && this.renderStream()}
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
@@ -414,6 +400,23 @@ class Conference extends React.Component<IProps, IState> {
       step: "type"
     });
   };
+  private renderStream() {
+    console.log(this.state.livestreamUrl);
+    return (
+      <div className="conf_head w-100">
+        <div className="live_wrap">
+          <div className="live_container">
+            <Livestream src={this.state.livestreamUrl} />
+          </div>
+        </div>
+        <div className="chat_wrap">
+          <div className="chat_container">
+            <Chat />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   private getPosts() {
     const postsDiv: any[] = [];

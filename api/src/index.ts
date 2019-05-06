@@ -6,11 +6,12 @@ import * as express from 'express';
 import * as fileUpload from 'express-fileupload';
 // import * as cookie_parser from 'cookie-parser';
 import * as express_session from 'express-session';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
 // import { jwtMiddleware } from './_helpers/jwt';
+import * as socketIo from 'socket.io';
 
 // let privateKey; let certificate;
 
@@ -99,4 +100,16 @@ app.use((err, req, res, next) => {
 
 console.log('PORT: ' + process.env.API_PORT);
 // https.createServer(credentials, app).listen(process.env.API_PORT);
-http.createServer(app).listen(process.env.API_PORT);
+const server = http.createServer(app).listen(process.env.API_PORT);
+
+const io = socketIo(server);
+io.on('connection', (socket) => {
+    socket.on('groupConnect', (group: number) => {
+        const namespace = io.of('/' + group);
+        console.log('Created namespace: ' + group);
+    });
+    socket.on('message', (data) => {
+        const namespace = data.namespace;
+        io.of(namespace).emit('message', data.msg);
+    });
+});

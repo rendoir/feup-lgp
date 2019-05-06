@@ -43,10 +43,10 @@ postRouter.post('/create', controller.createPost);
  *      message: 'An error ocurred while editing post'
  *     }
  */
-postRouter.post('/edit', controller.editPost);
+postRouter.put('/:id', controller.editPost);
 
 /**
- * @api {delete} /api/post/delete Delete a post
+ * @api {delete} /api/post/:id Delete a post
  * @apiName Delete-A-Post
  * @apiGroup Post
  *
@@ -62,7 +62,7 @@ postRouter.post('/edit', controller.editPost);
  *      message: 'An error ocurred while deleting post'
  *     }
  */
-postRouter.delete('/delete', controller.deletePost);
+postRouter.delete('/:id', controller.deletePost);
 
 /**
  * @api {get} /api/post/:id Get a post
