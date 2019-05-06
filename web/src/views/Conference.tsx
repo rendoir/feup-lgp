@@ -5,11 +5,11 @@ import * as React from "react";
 
 import Avatar from "../components/Avatar/Avatar";
 import ChallengeCarousel from "../components/ChallengeCarousel/ChallengeCarousel";
-import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
+
 import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
@@ -23,6 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
+import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 
 interface IProps {
   match: {
@@ -119,6 +120,7 @@ class Conference extends React.Component<IProps, IState> {
 
     this.handleHideConference = this.handleHideConference.bind(this);
     this.getHiddenInfo = this.getHiddenInfo.bind(this);
+    this.handleChallengeClick = this.handleChallengeClick.bind(this);
   }
 
   public componentDidMount() {
@@ -230,13 +232,8 @@ class Conference extends React.Component<IProps, IState> {
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
               <div className="p-3">{this.getAdminButtons()}</div>
+              <div className="p-3">{this.getChallenges()}</div>
             </div>
-            <ChallengeModal
-              id={0}
-              conference_id={this.id}
-              text={""}
-              title={""}
-            />
             <div className="conf_posts">
               <button className="join">Join conference</button>
               <button className="create" onClick={this.createConfPost}>
@@ -452,23 +449,6 @@ class Conference extends React.Component<IProps, IState> {
     return postsDiv;
   }
 
-  private getChallenges() {
-    return (
-      <div className="p-0 m-0">
-        <h6>
-          Challenges <i className="fas fa-puzzle-piece" />
-        </h6>
-        <ChallengeCarousel
-          key={"challenges_" + this.id}
-          id={this.id}
-          challenges={[]}
-          parent={this}
-          // handleChallengeClick={this.handleChallengeClick}
-        />
-      </div>
-    );
-  }
-
   private getDetails() {
     return (
       <ul className="p-0 m-0">
@@ -513,14 +493,14 @@ class Conference extends React.Component<IProps, IState> {
           Start livestream
         </button>
         <button
-          key={0}
           type="button"
           data-toggle="modal"
-          data-target={`#challenge_modal_Create`}
+          data-target="#challenge_modal_Create"
         >
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
+        <ChallengeModal id={0} conference_id={this.id} />
         <button>
           <i className="fas fa-archive" />
           Archive conference
@@ -545,6 +525,27 @@ class Conference extends React.Component<IProps, IState> {
       default:
         return faQuestion;
     }
+  }
+
+  private handleChallengeClick() {
+    return null;
+  }
+
+  private getChallenges() {
+    return (
+      <div className="p-0 m-0">
+        <h6>
+          Challenges <i className="fas fa-puzzle-piece" />
+        </h6>
+        <ChallengeCarousel
+          key={"challenges_" + this.id}
+          id={this.id}
+          challenges={[]}
+          parent={this}
+          handleChallengeClick={this.handleChallengeClick}
+        />
+      </div>
+    );
   }
 }
 
