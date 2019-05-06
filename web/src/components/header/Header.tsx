@@ -1,21 +1,32 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClinicMedical,
+  faPlus,
+  faUserMd
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, PureComponent } from "react";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
 import { Request, Step } from "../CreateNewModal/types";
 import Icon from "../Icon/Icon";
-import "./Header.css";
-
-import PostModal from "../PostModal/PostModal";
 import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
+import styles from "./Header.module.css";
+
+type Props = {
+  title: string;
+  searchBar: boolean;
+  onSearchClick?: (text: string, event: MouseEvent) => any;
+  onProfileClick?: (event: MouseEvent) => any;
+};
 
 type State = {
+  search: string;
   isOpen: boolean;
   step: Step;
   request: {
     type: "post" | "conference";
     title: string;
-    shortname: string;
     about: string;
     avatar?: File;
     privacy: string;
@@ -33,10 +44,16 @@ type State = {
   };
 };
 
-export default class Header extends React.Component<{}, State> {
-  public tags: string[];
-  constructor() {
-    super({});
+class Header extends PureComponent<Props, State> {
+  public static defaultProps = {
+    logoRedirectToHome: false,
+    searchBar: false
+  };
+
+  private tags: string[];
+
+  constructor(props: Props) {
+    super(props);
 
     this.state = {
       isOpen: false,
@@ -53,12 +70,12 @@ export default class Header extends React.Component<{}, State> {
         livestream: "",
         local: "",
         privacy: "public",
-        shortname: "",
         switcher: "false",
         tags: [],
         title: "",
         type: "post"
       },
+      search: "",
       step: "type"
     };
 
@@ -71,96 +88,84 @@ export default class Header extends React.Component<{}, State> {
 
   public render() {
     return (
-      <header>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <a className="navbar-brand" href="/">
-            {" "}
-            <i className="fas fa-clinic-medical fa-lg" />{" "}
-            <span className="notranslate">gNet</span>
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarColor01"
-            aria-controls="navbarColor01"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-
-          <div className="collapse navbar-collapse" id="navbarColor01">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Home <span className="sr-only">(current)</span>
-                </a>
-              </li>
-              <li className="nav-item active">
-                <a className="nav-link" href="/user/1">
-                  Profile <span className="sr-only">(current)</span>
-                </a>
-              </li>
-              <li className="nav-item active">
-                <a className="nav-link" href="/shop">
-                  Shop <span className="sr-only">(current)</span>
-                </a>
-              </li>
-            </ul>
-            <SearchSimpleForm />
-            <a
-              className="nav-link"
-              data-toggle="modal"
-              role="button"
-              data-target="#post_modal_Create"
-            >
-              <span className="text-white h3 pl-3">
-                <i className="fas fa-plus-square" />
-              </span>
-            </a>
-            <div>
-              <a href={"#"} onClick={this.handleClick}>
-                <Icon
-                  icon={faPlus}
-                  size={"2x"}
-                  inverse={true}
-                  theme={"primary"}
-                />
-              </a>
-              {this.state.isOpen ? (
-                <CreateNewModal
-                  pending={false}
-                  onSubmit={this.handleSubmit}
-                  onStepChange={step => this.setState({ step })}
-                  maxGroupSize={5}
-                  request={this.state.request}
-                  onRequestChange={request => this.setState({ request })}
-                  onClose={this.resetState}
-                  autoFocus={false}
-                  step={this.state.step}
-                  tags={this.tags}
-                />
-              ) : null}
-            </div>
-            <PostModal id={0} title="" text="" tags={[]} />
-            <a className="nav-link" href="/notifications">
-              <span className="text-white h3 pl-3">
-                <i className="fas fa-bell" />
-              </span>
-            </a>
-            <a className="nav-link" href="#">
-              <span className="text-white h3 pl-3">
-                <i className="fas fa-user-md" />
-              </span>
-            </a>
-          </div>
-        </nav>
-      </header>
+      <Navbar
+        collapseOnSelect={true}
+        className={styles.container}
+        expand={"lg"}
+        variant={"dark"}
+        sticky={"top"}
+      >
+        {this.renderBrand()}
+        <Navbar.Toggle aria-controls={"navbar-nav"} />
+        <Navbar.Collapse id={"navbar-nav"}>
+          {this.renderLinks()}
+          <SearchSimpleForm />
+          {this.renderButtons()}
+        </Navbar.Collapse>
+      </Navbar>
     );
   }
 
-  private handleClick = (event: MouseEvent) => {
+  private renderBrand() {
+    const { title } = this.props;
+
+    return (
+      <Navbar.Brand href={"/"} className={styles.logo}>
+        <Icon icon={faClinicMedical} size={"lg"} className={styles.icon} />
+        {title}
+      </Navbar.Brand>
+    );
+  }
+
+  private renderLinks() {
+    return (
+      <Nav className={"mr-auto"}>
+        <Nav.Link href={"/"} className={styles.link}>
+          Home
+        </Nav.Link>
+        <Nav.Link href={"/shop"} className={styles.link}>
+          Shop
+        </Nav.Link>
+      </Nav>
+    );
+  }
+
+  private renderButtons() {
+    return (
+      <Nav>
+        <Nav.Link href={"#"} onClick={this.handleClick} className={styles.link}>
+          <Icon
+            icon={faPlus}
+            size={"lg"}
+            inverse={true}
+            theme={"primary"}
+            className={"mr-1"}
+          />
+          New
+        </Nav.Link>
+        <Nav.Link href={"/user/1"} className={styles.link}>
+          <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
+          Profile
+        </Nav.Link>
+        {this.state.isOpen ? (
+          <CreateNewModal
+            pending={false}
+            onSubmit={this.handleSubmit}
+            maxGroupSize={5}
+            request={this.state.request}
+            onStepChange={step => this.setState({ step })}
+            onClose={this.resetState}
+            onRequestChange={request => this.setState({ request })}
+            autoFocus={false}
+            step={this.state.step}
+            tags={this.tags}
+          />
+        ) : null}
+      </Nav>
+    );
+  }
+
+  private handleClick = (event: MouseEvent): void => {
     event.preventDefault();
     this.setState({ isOpen: true });
   };
@@ -260,13 +265,15 @@ export default class Header extends React.Component<{}, State> {
         livestream: "",
         local: "",
         privacy: "public",
-        shortname: "",
         switcher: "false",
         tags: [],
         title: "",
         type: "post"
       },
+      search: "",
       step: "type"
     });
   };
 }
+
+export default Header;

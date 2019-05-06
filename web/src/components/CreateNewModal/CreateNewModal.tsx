@@ -95,10 +95,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     this.props.onStepChange("avatar");
   };
 
-  private handlePublicToggle = (isPublic: boolean): void => {
-    this.setState({ isPublic });
-  };
-
   private handleSubmit = (event?: MouseEvent): void => {
     if (event) {
       event.preventDefault();
@@ -121,10 +117,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       this.handleNextStepClick();
     }
   };
-
-  private handleTagsInput = (event: ChangeEvent<HTMLInputElement>): void => {};
-
-  private handleTags = (tags: string[]) => {};
 
   private handleFileChange = (files: FileList | null) => {
     if (!files) {
@@ -152,6 +144,25 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
         images,
         videos
       }
+    });
+  };
+
+  private handleTagChange = (tag: string) => {
+    const tags = this.props.request.tags;
+
+    if (tags.includes(tag)) {
+      for (let i = 0; i < tags.length; i++) {
+        if (tags[i] === tag) {
+          tags.splice(i, 1);
+          break;
+        }
+      }
+    } else {
+      tags.push(tag);
+    }
+    this.props.onRequestChange({
+      ...this.props.request,
+      tags
     });
   };
 
@@ -210,12 +221,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   }
 
   private renderInfoStep() {
-    const {
-      id,
-      step,
-      request: { type, about, title, shortname, avatar },
-      shortnamePrefix
-    } = this.props;
+    const { id, step, request } = this.props;
 
     return (
       <div className={styles.wrapper}>
@@ -227,7 +233,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          New {type}
+          New {request.type}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -239,18 +245,23 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <CreateGroupInfoForm
             vertical={true}
             id={id}
-            type={type}
-            about={about}
-            title={title}
+            type={request.type}
+            about={request.about}
+            title={request.title}
+            local={request.local}
+            dateStart={request.dateStart}
+            dateEnd={request.dateEnd}
+            livestream={request.livestream}
+            switcher={request.switcher}
+            privacy={request.privacy}
             tags={this.props.tags}
-            avatar={avatar}
-            shortname={shortname}
-            shortnamePrefix={shortnamePrefix}
+            avatar={request.avatar}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
             onFileChange={this.handleFileChange}
+            onTagChange={this.handleTagChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>
@@ -327,12 +338,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   }
 
   private renderConfPostStep() {
-    const {
-      id,
-      step,
-      request: { type, about, title, shortname, avatar },
-      shortnamePrefix
-    } = this.props;
+    const { id, step, request } = this.props;
 
     return (
       <div className={styles.wrapper}>
@@ -349,18 +355,17 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <CreateGroupInfoForm
             vertical={true}
             id={id}
-            type={type}
-            about={about}
-            title={title}
+            type={request.type}
+            about={request.about}
+            title={request.title}
+            privacy={request.privacy}
             tags={this.props.tags}
-            avatar={avatar}
-            shortname={shortname}
-            shortnamePrefix={shortnamePrefix}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
             onFileChange={this.handleFileChange}
+            onTagChange={this.handleTagChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>
