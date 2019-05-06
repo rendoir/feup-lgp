@@ -28,23 +28,19 @@ class Challenge extends Component<Props, State> {
 
   public render() {
     const challenge = this.getChallenge();
-
-    return <div>{this.getChallenge()}</div>;
+    return <div className="container d-block w-75">{challenge}</div>;
   }
 
   public getChallenge() {
-    let challenge;
     switch (this.props.challengeType) {
       case "question_options":
-        challenge = <QuestionOptions {...this.props} />;
+        return <QuestionOptions {...this.props} />;
       case "livestream_view":
       case "comment_post":
       case "create_post":
       default:
-        challenge = <TextChallenge {...this.props} />;
+        return <TextChallenge {...this.props} />;
     }
-
-    return challenge;
   }
 }
 

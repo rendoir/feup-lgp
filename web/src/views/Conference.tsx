@@ -192,7 +192,6 @@ class Conference extends React.Component<IProps, IState> {
         dateend = dateend[0] + " " + dateend[1];
 
         const challengesConf = res.data.challenges;
-        console.log(challengesConf);
 
         const postsComing = res.data;
 
@@ -639,9 +638,7 @@ class Conference extends React.Component<IProps, IState> {
     }
   }
 
-  private handleChallengeClick() {
-    return null;
-  }
+  private handleChallengeClick() {}
 
   private getChallenges() {
     return (

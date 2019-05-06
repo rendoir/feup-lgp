@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { Component } from "react";
 
 // - Import styles
-import "./ChallengeModal.module.css";
+import "../PostModal/PostModal.css";
 
 // - Import app components
 import { checkPropTypes } from "prop-types";
@@ -65,7 +65,7 @@ class ChallengeModal extends Component<IProps, IState> {
     return Boolean(this.state.title && this.state.text);
   }
 
-  public getActionButton() {
+  public getActionButtons() {
     return (
       <button
         type="button"
@@ -190,7 +190,7 @@ class ChallengeModal extends Component<IProps, IState> {
               >
                 Cancel
               </button>
-              {this.getActionButton()}
+              {this.getActionButtons()}
             </div>
           </div>
         </div>

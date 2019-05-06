@@ -48,7 +48,7 @@ class ChallengeCarousel extends Component<Props, State> {
           className={"carousel-item " + (i ? "" : "active")}
         >
           <div
-            className={styles.post_content_media}
+            className="post_content_media"
             onClick={this.props.handleChallengeClick.bind(
               this.props.parent,
               this.props.challenges[i]
@@ -77,9 +77,9 @@ class ChallengeCarousel extends Component<Props, State> {
         data-interval="false"
       >
         <ol className="carousel-indicators">{items}</ol>
-        <div className="carousel-inner">{challenges}</div>
+        <div className="carousel-inner challenge">{challenges}</div>
         <a
-          className="carousel-control-prev"
+          className={`carousel-control-prev ${styles.carousel_control_prev}`}
           href={"#challengeCarousel" + this.props.id}
           role="button"
           data-slide="prev"
@@ -88,7 +88,7 @@ class ChallengeCarousel extends Component<Props, State> {
           <span className="sr-only">Previous</span>
         </a>
         <a
-          className="carousel-control-next"
+          className={`carousel-control-next ${styles.carousel_control_next}`}
           href={"#challengeCarousel" + this.props.id}
           role="button"
           data-slide="next"
