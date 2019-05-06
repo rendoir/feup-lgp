@@ -95,10 +95,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     this.props.onStepChange("avatar");
   };
 
-  private handlePublicToggle = (isPublic: boolean): void => {
-    this.setState({ isPublic });
-  };
-
   private handleSubmit = (event?: MouseEvent): void => {
     if (event) {
       event.preventDefault();
@@ -121,10 +117,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       this.handleNextStepClick();
     }
   };
-
-  private handleTagsInput = (event: ChangeEvent<HTMLInputElement>): void => {};
-
-  private handleTags = (tags: string[]) => {};
 
   private handleFileChange = (files: FileList | null) => {
     if (!files) {
@@ -152,6 +144,25 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
         images,
         videos
       }
+    });
+  };
+
+  private handleTagChange = (tag: string) => {
+    const tags = this.props.request.tags;
+
+    if (tags.includes(tag)) {
+      for (let i = 0; i < tags.length; i++) {
+        if (tags[i] === tag) {
+          tags.splice(i, 1);
+          break;
+        }
+      }
+    } else {
+      tags.push(tag);
+    }
+    this.props.onRequestChange({
+      ...this.props.request,
+      tags
     });
   };
 
@@ -250,6 +261,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             onAvatarRemove={this.handleAvatarRemove}
             onAvatarChange={this.handleAvatarEdit}
             onFileChange={this.handleFileChange}
+            onTagChange={this.handleTagChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>

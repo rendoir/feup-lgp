@@ -35,6 +35,7 @@ export type Props = {
   onAvatarRemove: () => void;
   onAvatarChange: (avatar: File) => void;
   onFileChange: (files: FileList | null) => void;
+  onTagChange: (tag: string) => any;
 };
 
 export type State = {
@@ -58,11 +59,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     vertical: false
   };
 
-  private tags: string[];
-
   constructor(props: Props) {
     super(props);
-    this.tags = [];
 
     this.state = {
       avatar: undefined,
@@ -159,19 +157,17 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         tags.push(this.state.tagsInput);
       }
       this.setState({ tags, tagsInput: "" });
+      this.props.onTagChange(this.state.tagsInput);
     }
   };
 
-  private handleRemove = (tag: string): void => {
-    const tags = this.state.tags;
+  private handleTagRemove = (tag: string) => {
+    let tags = this.state.tags;
 
-    for (let i = 0; i < tags.length; i++) {
-      if (tags[i] === tag) {
-        tags.splice(i, 1);
-        this.setState({ tags });
-        break;
-      }
-    }
+    tags = tags.filter(x => x !== tag);
+
+    this.setState({ tags });
+    this.props.onTagChange(tag);
   };
 
   private renderAvatar() {
@@ -313,18 +309,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               ))
             : null}
         </datalist>
-        <div>
-          {this.state.tags.map((tag, idx) => {
-            return (
-              <Tag
-                onRemove={this.handleRemove}
-                key={idx}
-                value={tag}
-                id={String(idx)}
-              />
-            );
-          })}
-        </div>
+        {this.state.tags.map((tag, idx) => (
+          <Tag
+            onRemove={this.handleTagRemove}
+            key={idx}
+            value={tag}
+            id={String(idx)}
+          />
+        ))}
         <InputNext
           onChange={(_, e) =>
             this.props.onFileChange((e.target as HTMLInputElement).files)

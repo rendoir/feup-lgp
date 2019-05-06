@@ -47,6 +47,8 @@ class Header extends PureComponent<Props, State> {
     searchBar: false
   };
 
+  private tags: string[];
+
   constructor(props: Props) {
     super(props);
 
@@ -73,6 +75,12 @@ class Header extends PureComponent<Props, State> {
       search: "",
       step: "type"
     };
+
+    this.tags = [];
+  }
+
+  public componentDidMount(): void {
+    this.getPossibleTags();
   }
 
   public render() {
@@ -147,6 +155,7 @@ class Header extends PureComponent<Props, State> {
             onRequestChange={request => this.setState({ request })}
             autoFocus={false}
             step={this.state.step}
+            tags={this.tags}
           />
         ) : null}
       </Nav>
@@ -217,6 +226,24 @@ class Header extends PureComponent<Props, State> {
         })
         .catch(error => console.log("Failed to create conference. " + error));
     }
+  };
+
+  private getPossibleTags = (): void => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    url += `/tags`;
+
+    axios
+      .get(url)
+      .then(res => {
+        res.data.forEach(tag => {
+          this.tags.push(tag.name);
+        });
+      })
+      .catch(() => console.log("Failed to get tags"));
   };
 
   private resetState = () => {
