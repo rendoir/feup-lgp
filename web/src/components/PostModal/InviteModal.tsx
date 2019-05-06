@@ -98,7 +98,7 @@ class InviteModal extends Component<IProps, IState> {
       this.subjectId,
       this.subjectType
     );
-    console.log("UNINVITED USERS: ", uninvitedUsers);
+
     if (!uninvitedUsers || uninvitedUsers.length === 0) {
       this.setState({
         fetchingUninvitedUsers: false,
@@ -114,9 +114,7 @@ class InviteModal extends Component<IProps, IState> {
   }
 
   public handlerInviteUserInputChange(e) {
-    console.log("invite input: ", e.target.value);
     const noExtraWhiteSpace = e.target.value.replace(/\s+/g, " ");
-    console.log("input after removing extra ws: ", noExtraWhiteSpace);
     this.setState({ inviteUserInput: noExtraWhiteSpace });
   }
 
@@ -124,7 +122,7 @@ class InviteModal extends Component<IProps, IState> {
     this.setState({
       waitingSubscribersInvitation: true
     });
-    console.log("INVITE SUBSCRIBERS");
+
     const inviteSuccess = await apiInviteSubscribers(
       this.subjectId,
       this.subjectType
@@ -143,11 +141,10 @@ class InviteModal extends Component<IProps, IState> {
   }
 
   public async handleInviteUser() {
-    console.log("INVITE USER");
     const names = this.state.inviteUserInput.trim().split(" ");
     const firstName = names[0];
     const lastName = names[1];
-    console.log(names[0], names[1]);
+
     let userFound = false;
 
     this.state.uninvitedUsers.forEach(async user => {
@@ -170,7 +167,6 @@ class InviteModal extends Component<IProps, IState> {
         afterInviteMessage += " couldn't be invited. An error occurred.";
       }
 
-      console.log("invite message: ", afterInviteMessage);
       this.setState({ afterInviteMessage });
 
       // Since we invited a new user, refetch the ones who are not invited yet

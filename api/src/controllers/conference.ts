@@ -75,7 +75,7 @@ export async function inviteUser(req, res) {
     res.status(400).send({ message: 'An error ocurred while inviting user: You are not the conference owner.' });
     return;
   }
-  console.log("INVITE USER: ", req.body.invited_user);
+
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
       values: [req.body.invited_user, req.params.id],
@@ -93,8 +93,7 @@ export async function inviteSubscribers(req, res) {
     res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the conference owner.' });
     return;
   }
-  console.log('INVITE SUBSCRIBERS');
-  console.log('CONFERENCE: ', req.params.id);
+
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
                 SELECT uninvited_subscriber, $1, 'conference'
@@ -103,7 +102,6 @@ export async function inviteSubscribers(req, res) {
               DO NOTHING`,
       values: [req.params.id],
   }).then((result) => {
-      console.log("SUBSCRIBERS INVITED SUCCESSFULLY"); 
       res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -117,15 +115,12 @@ export async function amountSubscribersUninvited(req, res) {
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
   }
-  console.log('UNINVITED AMOUNT SUBSCRIBERS');
-  console.log('CONFERENCE: ', req.params.id);
 
   try {
     const amountUninvitedSubscribersQuery = await query({
       text: `SELECT COUNT(*) FROM retrieve_conference_uninvited_subscribers($1)`,
       values: [req.params.id],
     });
-    console.log("AMOUNT UNINVITED SUBSCRIBERS ", amountUninvitedSubscribersQuery.rows[0].count);
     res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
   } catch (error) {
     console.error(error);
@@ -139,8 +134,7 @@ export async function getUninvitedUsersInfo(req, res) {
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
   }
-  console.log('GET UNINVITED USERS');
-  console.log('CONFERENCE: ', req.params.id);
+
   const userId = 3;
   try {
     const uninvitedUsersQuery = await query({
@@ -149,7 +143,6 @@ export async function getUninvitedUsersInfo(req, res) {
               WHERE id NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users($1)) AND id <> $2`,
       values: [req.params.id, userId],
     });
-    console.log("UNINVITED USERS ", uninvitedUsersQuery.rows);
     res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
   } catch (error) {
     console.error(error);
@@ -158,10 +151,7 @@ export async function getUninvitedUsersInfo(req, res) {
 }
 
 export function addParticipantUser(req, res) {
-  console.log('ADD PARTICIPANT');
   const userId = 1; // logged user
-  console.log('USER: ', userId);
-  console.log('CONFERENCE: ', req.params.id);
   query({
       text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
       values: [userId, req.params.id],
@@ -174,10 +164,7 @@ export function addParticipantUser(req, res) {
 }
 
 export function removeParticipantUser(req, res) {
-  console.log("REMOVER PARTICIPANTE")
   const userId = 1; // logged user
-  console.log('USER: ', userId);
-  console.log('CONFERENCE: ', req.params.id);
   query({
       text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
       values: [userId, req.params.id],
@@ -190,10 +177,7 @@ export function removeParticipantUser(req, res) {
 }
 
 export async function checkUserParticipation(req, res) {
-  console.log('CHECK PARTICIPATION');
   const userId = 1; // logged user
-  console.log('USER: ', userId);
-  console.log('CONFERENCE: ', req.params.id);
   try {
       const userParticipantQuery = await query({
           text: `SELECT *
@@ -201,7 +185,6 @@ export async function checkUserParticipation(req, res) {
                   WHERE participant_user = $1 AND conference = $2`,
           values: [userId, req.params.id],
       });
-      console.log("É PARTICIPANTE ? ", Boolean(userParticipantQuery.rows[0]));
       res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
   } catch (error) {
       console.error(error);
@@ -210,17 +193,13 @@ export async function checkUserParticipation(req, res) {
 }
 
 export async function checkUserCanJoin(req, res) {
-  console.log('CHECK USER CAN JOIN');
   const userId = 1; // logged user
-  console.log('USER: ', userId);
-  console.log('CONFERENCE: ', req.params.id);
   try {
       const userCanJoinQuery = await query({
           text: `SELECT * FROM user_can_join_conference($1, $2)`,
           values: [req.params.id, userId],
       });
       const canJoin = userCanJoinQuery.rows[0].user_can_join_conference;
-      console.log("PODE ENTRAR ? ", userCanJoinQuery.rows[0]);
       res.status(200).send({ canJoin });
   } catch (error) {
       console.error(error);
@@ -235,7 +214,6 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
         text: `SELECT * FROM conferences WHERE id = $1 AND author = $2`,
         values: [conferenceId, loggedUser],
     });
-    console.log("LOGGED USEr OWNS CONFERENCE ? ", Boolean(userOwnsConferenceQuery.rows[0]));
     return Boolean(userOwnsConferenceQuery.rows[0]);
   } catch (error) {
       console.error(error);
@@ -244,7 +222,7 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
 }
 
 export function setSecureCookiesExample(req, res) {
-  console.log("SETTING COOKIES...");
+  console.log('SETTING COOKIES...');
   try {
       // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
       // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
@@ -261,9 +239,12 @@ export function setSecureCookiesExample(req, res) {
         res.clearCookie(key, { path: '/' });
       }*/
 
-      //res.cookie('user_id', 3); // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
-      //res.cookie('user_id', 1, {signed: true, httpOnly: true}); // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
-      //the one the server will access cannot be forged by hackers using XSS
+      // res.cookie('user_id', 3);
+      // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
+
+      // res.cookie('user_id', 1, {signed: true, httpOnly: true});
+      // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
+      // the one the server will access cannot be forged by hackers using XSS
       /*res.cookie('openExample', 'openExampleValue');
       res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
       res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});

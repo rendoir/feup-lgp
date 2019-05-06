@@ -98,10 +98,9 @@ class Conference extends React.Component<IProps, IState> {
 
   public async handleJoinConference() {
     if (this.state.waitingUserJoinLeave) {
-      console.log("ESPERAAA");
       return;
     }
-    console.log("ENTRAR");
+
     this.setState({
       userParticipation: true,
       waitingUserJoinLeave: true
@@ -116,10 +115,9 @@ class Conference extends React.Component<IProps, IState> {
 
   public async handleLeaveConference() {
     if (this.state.waitingUserJoinLeave) {
-      console.log("ESPERAAA");
       return;
     }
-    console.log("SAIR");
+
     this.setState({
       userParticipation: false,
       waitingUserJoinLeave: true
@@ -278,7 +276,6 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getJoinButton() {
-    console.log(this.state);
     let buttonClass = this.state.userParticipation ? "leave" : "join";
     let buttonText = this.state.userParticipation
       ? "Leave conference"

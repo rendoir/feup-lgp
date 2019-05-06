@@ -109,8 +109,6 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
-    console.log('follower', req.body.follower);
-    console.log('followed', req.body.followed);
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
         values: [req.body.follower, req.params.id],
@@ -248,10 +246,7 @@ export async function getProfilePosts(req, res) {
 }
 
 export async function getNotifications(req, res) {
-    console.log('GET NOTIFICATIONS');
     const userId = 1;
-    console.log('USER: ', userId);
-
     try {
       const unseenInvitesQuery = await query({
         text: `SELECT DISTINCT invites.id, invite_subject_id,
@@ -267,8 +262,6 @@ export async function getNotifications(req, res) {
         values: [userId],
       });
 
-      console.log("NOTIFICATIONS FETCHED");
-
       res.status(200).send({ notifications: unseenInvitesQuery.rows });
     } catch (error) {
       console.error(error);
@@ -277,10 +270,7 @@ export async function getNotifications(req, res) {
 }
 
 export function inviteNotified(req, res) {
-    console.log('INVITE NOTIFIED');
     const userId = 1;
-    console.log('USER: ', userId);
-    console.log('INVITE: ', req.body.inviteId);
     query({
         text: `UPDATE invites SET user_notified = TRUE
                 WHERE id = $1 AND

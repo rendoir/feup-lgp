@@ -30,8 +30,6 @@ class InviteNotification extends Component<IProps, IState> {
   }
 
   public async handleAcceptInvite() {
-    console.log("ACEITOUUU");
-
     let joinSuccess: boolean = true;
 
     // Joining posts is yet to be implemented
@@ -48,7 +46,6 @@ class InviteNotification extends Component<IProps, IState> {
   }
 
   public handleRejectInvite() {
-    console.log("REJEITOUUU");
     this.apiSeenInvite();
   }
 

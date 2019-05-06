@@ -6,7 +6,6 @@ export async function apiInviteUser(
   invitedUserId: number,
   inviteType: string // 'post' or 'conference'
 ): Promise<boolean> {
-  //TODO: DAR PIN A CONVITES???? (PERGUNTAR AOS RESTANTES)
   const apiURL = getApiURL(`/${inviteType}/${inviteSubjectId}/invite`);
   const body = { invited_user: invitedUserId };
 
@@ -29,7 +28,6 @@ export async function apiInviteSubscribers(
 
   try {
     await axios.post(apiURL, {});
-    console.log("invited subscribers successfuly");
     return true;
   } catch (error) {
     console.log("Failed to invite subscribers");
@@ -47,7 +45,6 @@ export async function apiGetUninvitedSubscribersAmount(
 
   try {
     const res = await axios.get(apiURL);
-    console.log("amount uninvited subscribers: ", res.data);
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
     console.log("Failed to invite subscribers");
@@ -65,7 +62,6 @@ export async function apiGetUninvitedUsersInfo(
 
   try {
     const res = await axios.get(apiURL);
-    console.log("uninvited users: ", res.data.uninvitedUsers);
     return res.data.uninvitedUsers;
   } catch (error) {
     console.log("Failed to invite subscribers");
@@ -89,9 +85,7 @@ export async function apiGetNotifications() {
   const apiURL = getApiURL(`/users/1/notifications`);
 
   try {
-    console.log("VAI FETCHAR NOTIFS");
     const res = await axios.get(apiURL);
-    console.log("notifications", res.data);
     return res.data.notifications;
   } catch (error) {
     console.log("Failed to get notifications");

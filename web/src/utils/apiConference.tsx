@@ -30,11 +30,9 @@ export async function apiUserLeaveConference(
 export async function apiCheckUserConferenceParticipation(
   conferenceId: number
 ): Promise<boolean> {
-  console.log("api verificar participação na conf ", conferenceId);
   const apiURL = getApiURL(`/conference/${conferenceId}/check_participation`);
   try {
     const res = await axios.get(apiURL);
-    console.log("é participante ? ", res.data);
     return res.data.participant;
   } catch (error) {
     console.log("Failed to check participation");
@@ -45,11 +43,9 @@ export async function apiCheckUserConferenceParticipation(
 export async function apiCheckUserCanJoinConference(
   conferenceId: number
 ): Promise<boolean> {
-  console.log("api verificar participação na conf ", conferenceId);
   const apiURL = getApiURL(`/conference/${conferenceId}/check_user_access`);
   try {
     const res = await axios.get(apiURL);
-    console.log("pode entrar ? ", res.data);
     return res.data.canJoin;
   } catch (error) {
     console.log("Failed to check participation");

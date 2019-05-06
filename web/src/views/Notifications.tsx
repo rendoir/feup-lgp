@@ -29,7 +29,7 @@ class Notifications extends Component<{}, IState> {
 
   public async apiGetNotifs() {
     const notifications = await apiGetNotifications();
-    console.log("FETCHED NOTIFICATIONSSS: ", notifications);
+
     this.setState({
       fetchingNotifications: false,
       notifications
