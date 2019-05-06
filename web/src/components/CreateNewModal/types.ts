@@ -29,7 +29,6 @@ export type SelectorStateCreator<T> = {
 export type Request = {
   type: "post" | "conference";
   title: string;
-  shortname: string;
   about: string;
   avatar?: File;
   privacy: string;
@@ -46,7 +45,7 @@ export type Request = {
   livestream: string;
 };
 
-export type Step = "type" | "info" | "avatar";
+export type Step = "type" | "info" | "avatar" | "postConf";
 
 export type Props = {
   id: string;
