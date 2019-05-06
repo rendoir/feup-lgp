@@ -7,6 +7,8 @@ import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
+import InviteModal from "../components/PostModal/InviteModal";
+
 import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
@@ -20,6 +22,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
+
+// - Import utils
+import {
+  apiCheckUserCanJoinConference,
+  apiCheckUserConferenceParticipation,
+  apiUserJoinConference,
+  apiUserLeaveConference
+} from "../utils/apiConference";
 
 interface IProps {
   match: {
@@ -40,6 +50,9 @@ interface IState {
   place: string;
   date_start: string;
   date_end: string;
+  userCanJoin: boolean;
+  userParticipation: boolean;
+  waitingUserJoinLeave: boolean;
   isHidden: boolean;
   owner_id: number;
   owner_name: string;
@@ -109,16 +122,57 @@ class Conference extends React.Component<IProps, IState> {
         type: "post"
       },
       step: "type",
-      title: ""
+      title: "",
+      userCanJoin: false,
+      userParticipation: false,
+      waitingUserJoinLeave: false
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
     this.getHiddenInfo = this.getHiddenInfo.bind(this);
+    this.handleJoinConference = this.handleJoinConference.bind(this);
+    this.handleLeaveConference = this.handleLeaveConference.bind(this);
   }
 
   public componentDidMount() {
     this.apiGetConference();
     this.getPossibleTags();
+    this.apiGetUserCanJoin();
+    this.apiGetUserParticipation();
+  }
+
+  public async handleJoinConference() {
+    if (this.state.waitingUserJoinLeave) {
+      return;
+    }
+
+    this.setState({
+      userParticipation: true,
+      waitingUserJoinLeave: true
+    });
+
+    const joinSuccess = await apiUserJoinConference(this.id);
+    this.setState({
+      userParticipation: joinSuccess,
+      waitingUserJoinLeave: false
+    });
+  }
+
+  public async handleLeaveConference() {
+    if (this.state.waitingUserJoinLeave) {
+      return;
+    }
+
+    this.setState({
+      userParticipation: false,
+      waitingUserJoinLeave: true
+    });
+
+    const leaveSuccess = await apiUserLeaveConference(this.id);
+    this.setState({
+      userParticipation: !leaveSuccess,
+      waitingUserJoinLeave: false
+    });
   }
 
   public apiGetConference() {
@@ -198,6 +252,18 @@ class Conference extends React.Component<IProps, IState> {
       .catch(() => console.log("Failed to update privacy"));
   }
 
+  public async apiGetUserCanJoin() {
+    const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
+    this.setState({ userCanJoin: canJoin });
+  }
+
+  public async apiGetUserParticipation() {
+    const participant: boolean = await apiCheckUserConferenceParticipation(
+      this.id
+    );
+    this.setState({ userParticipation: participant });
+  }
+
   public render() {
     if (this.state.isHidden && this.userId === this.state.owner_id) {
       return (
@@ -221,14 +287,17 @@ class Conference extends React.Component<IProps, IState> {
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
-          {this.state.hasLiveStream && this.renderStream()}
+          {this.state.hasLiveStream &&
+            this.state.userParticipation &&
+            this.state.userCanJoin &&
+            this.renderStream()}
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
               <div className="p-3">{this.getAdminButtons()}</div>
             </div>
             <div className="conf_posts">
-              <button className="join">Join conference</button>
+              {this.getJoinButton()}
               <button className="create" onClick={this.createConfPost}>
                 Create Post
               </button>
@@ -417,6 +486,10 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getPosts() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
     const postsDiv: any[] = [];
 
     for (const post of this.state.posts) {
@@ -477,10 +550,16 @@ class Conference extends React.Component<IProps, IState> {
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>Administrator</h6>
-        <button>
+        <button
+          data-toggle="modal"
+          data-target={`#invite_conference_modal_${this.id}`}
+        >
           <i className="fas fa-envelope" />
-          Invite user
+          Invite users
         </button>
+        {/* Invite Users */}
+        <InviteModal conferenceId={this.id} />
+
         <button>
           <i className="fas fa-video" />
           Start livestream
@@ -499,6 +578,32 @@ class Conference extends React.Component<IProps, IState> {
         </button>
         {this.getHiddenInfo()}
       </div>
+    );
+  }
+
+  private getJoinButton() {
+    let buttonClass = this.state.userParticipation ? "leave" : "join";
+    let buttonText = this.state.userParticipation
+      ? "Leave conference"
+      : "Join conference";
+
+    if (!this.state.userCanJoin) {
+      buttonClass = "cannot_join";
+      buttonText = "You don't have permission to access this conference";
+    }
+    // TODO: METER EFEITOS AO CARREGAR
+    return (
+      <button
+        className={`join_button ${buttonClass}`}
+        onClick={
+          this.state.userParticipation
+            ? this.handleLeaveConference
+            : this.handleJoinConference
+        }
+        disabled={!this.state.userCanJoin}
+      >
+        {buttonText}
+      </button>
     );
   }
 

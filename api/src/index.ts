@@ -1,10 +1,10 @@
 'use strict';
 
 import { json, urlencoded } from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import * as express from 'express';
 import * as fileUpload from 'express-fileupload';
-// import * as cookie_parser from 'cookie-parser';
 import * as express_session from 'express-session';
 // import * as fs from 'fs';
 // import * as https from 'https';
@@ -47,15 +47,18 @@ export const app = express();
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(morgan('combined'));
-// app.use(cookie_parser());
+app.use(cookieParser());
 app.use(urlencoded({extended: true}));
 app.use(json());
 app.use(fileUpload({createParentPath: true}));
-app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
+app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: false,
+cookie: { secure: false}}));
 app.use(express.static('uploads'));
 
 // CORS
 app.use((req, res, next) => {
+    // res.header('Content-Type', 'application/json;charset=UTF-8'); pode ser necessario para cookies
+    // res.header('Access-Control-Allow-Credentials', 'true'); pode ser necessario para cookies
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');

@@ -9,6 +9,7 @@ import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
+import Notifications from "./Notifications";
 import PostView from "./PostView";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
@@ -32,6 +33,7 @@ class App extends React.Component {
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
               <Route path="/conference/:id" component={Conference} />
+              <Route path="/notifications" component={Notifications} />
             </Switch>
           </ErrorBoundary>
         </Router>
