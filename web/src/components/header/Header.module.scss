@@ -2,24 +2,16 @@
 
 $header-color: $black;
 $header-background-color: $color-primary;
-$header-height: 50px;
+$header-height: 75px;
 $header-font-family: $default-font-family;
 $header-font-size: $default-font-size-large;
 
 .container {
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  align-items: center;
-  align-content: center;
-  height: $header-height;
   color: $header-color;
-  background-color: $header-background-color;
-  opacity: 1;
+  background-color: lighten(rgba($header-background-color, 1), 5%);
   font-family: $header-font-family;
   font-size: $header-font-size;
   font-weight: 500;
-  padding: $default-padding-small;
 }
 
 .wrapper {
@@ -36,25 +28,33 @@ $header-font-size: $default-font-size-large;
   justify-content: flex-start;
   align-content: center;
   align-items: center;
-  color: $white;
+  color: $white !important;
   text-decoration: none;
   padding: 0 10px;
+
+  &:hover {
+    text-decoration: none;
+    color: $white;
+  }
 }
 
 .link {
   text-decoration: none;
-  color: $white;
+  color: $white !important;
   padding: $default-padding-small / 2;
+
+  &:hover {
+    text-decoration: none;
+    color: darken($white, 10%);
+  }
 }
 
 .buttons {
   display: flex;
   flex-flow: row;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-content: center;
   align-items: center;
-  margin: 0;
-  padding: 0 10px;
 }
 
 .icon {
