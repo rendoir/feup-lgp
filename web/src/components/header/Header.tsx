@@ -1,5 +1,8 @@
-import { faClinicMedical, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faUserMd } from "@fortawesome/free-solid-svg-icons/faUserMd";
+import {
+  faClinicMedical,
+  faPlus,
+  faUserMd
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
