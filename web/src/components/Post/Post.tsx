@@ -93,7 +93,6 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,

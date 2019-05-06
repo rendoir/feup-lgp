@@ -289,6 +289,13 @@ export async function getConference(req, res) {
       );
       return;
     }
+    const challengesResult = await query ({
+      text: `SELECT id, title, dateStart, dateEnd, prize, points_prize, challengeType, content
+                    FROM challenges
+					          WHERE conference = $1
+                    ORDER BY dateStart DESC`,
+      values: [id],
+    });
     const postsResult = await query({
       text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, users.id AS user_id
@@ -352,6 +359,7 @@ export async function getConference(req, res) {
     }
     const result = {
       conference: conference.rows[0],
+      challenges: challengesResult.rows,
       posts: postsResult.rows,
       comments: commentsToSend,
       likers: likersToSend,

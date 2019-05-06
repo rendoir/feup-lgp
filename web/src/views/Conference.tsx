@@ -48,6 +48,7 @@ interface IState {
   hasLiveStream: boolean;
   livestreamUrl: string;
   posts: any[];
+  challenges: any[];
   title: string;
   description: string;
   place: string;
@@ -92,6 +93,7 @@ class Conference extends React.Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.tags = [];
     this.state = {
+      challenges: [],
       date_end: "",
       date_start: "",
       description: "",
@@ -103,7 +105,6 @@ class Conference extends React.Component<IProps, IState> {
       owner_name: "",
       place: "",
       postModalOpen: false,
-      // posts: []
       posts: [],
       privacy: "",
       request: {
@@ -190,6 +191,9 @@ class Conference extends React.Component<IProps, IState> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
+        const challengesConf = res.data.challenges;
+        console.log(challengesConf);
+
         const postsComing = res.data;
 
         postsComing.posts.map(
@@ -208,6 +212,7 @@ class Conference extends React.Component<IProps, IState> {
         }
 
         this.setState({
+          challenges: challengesConf,
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
@@ -564,7 +569,6 @@ class Conference extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal conferenceId={this.id} />
-
         <button>
           <i className="fas fa-video" />
           Start livestream
@@ -577,7 +581,12 @@ class Conference extends React.Component<IProps, IState> {
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
+        {/* Challenge Create Modal */}
         <ChallengeModal id={0} conference_id={this.id} />
+        <button>
+          <i className="fas fa-pen" />
+          Edit conference
+        </button>
         <button>
           <i className="fas fa-archive" />
           Archive conference
@@ -643,7 +652,7 @@ class Conference extends React.Component<IProps, IState> {
         <ChallengeCarousel
           key={"challenges_" + this.id}
           id={this.id}
-          challenges={[]}
+          challenges={this.state.challenges}
           parent={this}
           handleChallengeClick={this.handleChallengeClick}
         />

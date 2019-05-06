@@ -676,3 +676,4 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 /**
 * CHALLENGES
 */
+INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference) VALUES ('Challenge Options 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'question_options','{"Question: What is the title of this conference","CorrectAnswer: Admin conference 1", "Answer: Admin conference 1","Answer: Admin conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}',1);

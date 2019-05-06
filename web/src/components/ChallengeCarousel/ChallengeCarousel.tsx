@@ -10,7 +10,7 @@ import Challenge from "../Challenge/Challenge";
 
 export type Props = {
   id: number;
-  challenges: Challenge[];
+  challenges: any[];
   parent: Conference;
   handleChallengeClick: (challenge: Challenge | undefined) => any;
 };
@@ -26,7 +26,6 @@ class ChallengeCarousel extends Component<Props, State> {
 
   public render() {
     const carousel = this.getCarousel();
-
     return <div>{carousel}</div>;
   }
 
@@ -55,7 +54,16 @@ class ChallengeCarousel extends Component<Props, State> {
               this.props.challenges[i]
             )}
           >
-            <Challenge />
+            <Challenge
+              id={this.props.challenges[i].id}
+              title={this.props.challenges[i].title}
+              challengeType={this.props.challenges[i].challengetype}
+              datestart={this.props.challenges[i].datestart}
+              dateend={this.props.challenges[i].dateend}
+              prize={this.props.challenges[i].prize}
+              pointsPrize={Number(this.props.challenges[i].points_prize)}
+              content={this.props.challenges[i].content}
+            />
           </div>
         </div>
       );
