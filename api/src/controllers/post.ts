@@ -448,14 +448,14 @@ export async function editFiles(req, res) {
             await query({
                 text: `DELETE FROM files
                        WHERE post = $1 AND name = $2`,
-                values: [req.body.id, file.name],
+                values: [req.params.id, file.name],
             });
             // Delete file from filesystem
-            fs.unlinkSync('uploads/' + req.body.id + '/' + file.name);
+            fs.unlinkSync('uploads/' + req.params.id + '/' + file.name);
         }
     }
     // Add new files
-    saveFiles(req, res, req.body.id);
+    saveFiles(req, res, req.params.id);
 }
 
 export function deleteFolderRecursive(path) {
