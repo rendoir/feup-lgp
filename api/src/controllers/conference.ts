@@ -110,33 +110,40 @@ export async function getConference(req, res) {
   }
 }
 
-export async function archieveConference(req, res) {
+export async function archiveConference(req, res) {
   const id = req.params.id;
-  const user = 1; // logged in user
+  console.log('id asdasd ' + id);
   try {
-    const archiveConference = await query({
+    console.log('id asdasd ' + id);
+    const archivedConference = await query({
       text: `
       INSERT INTO archived_conferences (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy)
-      SELECT c.author, c.title, c.about, c.livestream_url, c.local, c.datestart, c.dateend, c.avatar, c.privacy)
+      SELECT c.author, c.title, c.about, c.livestream_url, c.local, c.datestart, c.dateend, c.avatar, c.privacy
       FROM conferences c
       WHERE c.id=$1
 			  `,
-      values: [id, user],
+      values: [id],
     });
     const deleteConference = await query({
       text: `
       DELETE FROM conferences c
       WHERE c.id=$1;
 			  `,
-      values: [id, user],
+      values: [id],
     });
-    if (archiveConference === null || deleteConference === null) {
+    if (archivedConference === null || deleteConference === null) {
       res.status(400).send(
         new Error('Error in the archieve process of conference'),
       );
       return;
     }
-    res.send();
+    const getC = await query({
+      text: `
+      SELECT *
+      FROM archived_conferences
+			  `,
+    });
+    res.send(getC);
   } catch (error) {
     console.log(error);
     res.status(500).send(new Error('Error archieve conference'));

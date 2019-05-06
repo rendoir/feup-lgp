@@ -5,6 +5,7 @@ import Chat from "../components/Chat/Chat";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 
+import { render } from "react-dom";
 import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
 
@@ -116,11 +117,13 @@ class Conference extends React.Component<IProps, State> {
   }
 
   public apiSetArchived() {
-    const conferenceURL = getApiURL(`/conference/${this.id}`);
+    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
     axios
-      .post(conferenceURL, {})
-      .then()
-      .catch(() => console.log("Failed to get conference"));
+      .get(conferenceURL, {})
+      .then(res => {
+        console.log(res);
+      })
+      .catch(() => console.log("Failed to archive conference"));
   }
 
   public render() {
@@ -162,6 +165,12 @@ class Conference extends React.Component<IProps, State> {
         </div>
       </div>
     );
+  }
+
+  private archiveConf() {
+    this.apiSetArchived();
+    alert("Conferencia Arquivada");
+    return (location.href = "/");
   }
 
   private getPosts() {
@@ -219,7 +228,7 @@ class Conference extends React.Component<IProps, State> {
         <button
           type="button"
           onClick={() => {
-            console.log("Archive it");
+            this.archiveConf();
           }}
         >
           <i className="fas fa-archive" />
