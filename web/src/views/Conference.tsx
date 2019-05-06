@@ -88,7 +88,6 @@ class Conference extends React.Component<IProps, IState> {
       // posts: []
       posts: [],
       privacy: "",
-      title: "",
       request: {
         about: "",
         avatar: undefined,
@@ -108,7 +107,8 @@ class Conference extends React.Component<IProps, IState> {
         title: "",
         type: "post"
       },
-      step: "type"
+      step: "type",
+      title: ""
     };
 
     this.handleHideConference = this.handleHideConference.bind(this);
@@ -269,6 +269,61 @@ class Conference extends React.Component<IProps, IState> {
     }
   }
 
+  public getHiddenInfo() {
+    if (this.state.isHidden) {
+      return (
+        <div id="hidden_info">
+          <b>The conference was closed to all users!</b>
+        </div>
+      );
+    }
+  }
+
+  public getDropdownButtons() {
+    const hideBtnText = this.state.isHidden
+      ? "Reopen Conference"
+      : "Hide Conference";
+
+    const reportButton = (
+      <button
+        key={0}
+        className={`dropdown-item ${styles.report_content}`}
+        type="button"
+        data-toggle="modal"
+        // data-target={`#report_post_modal_${this.props.id}`}
+        // onClick={this.handleConferenceReport}
+        // disabled={this.state.userReport}
+      >
+        Report conference
+      </button>
+    );
+    const deleteButton = (
+      <button
+        key={1}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        onClick={this.handleHideConference}
+        // data-target={`#delete_conference_modal${this.props.id}`}
+      >
+        {hideBtnText}
+      </button>
+    );
+    const archiveButton = (
+      <button
+        key={2}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        // data-target={`#archive_conference_modal${this.props.id}`}
+      >
+        Archive Conference
+      </button>
+    );
+    const dropdownButtons = [reportButton, deleteButton, archiveButton];
+    return dropdownButtons;
+  }
+
   private createConfPost = (event: MouseEvent) => {
     event.preventDefault();
     this.setState({ postModalOpen: true });
@@ -359,61 +414,6 @@ class Conference extends React.Component<IProps, IState> {
       step: "type"
     });
   };
-
-  public getHiddenInfo() {
-    if (this.state.isHidden) {
-      return (
-        <div id="hidden_info">
-          <b>The conference was closed to all users!</b>
-        </div>
-      );
-    }
-  }
-
-  public getDropdownButtons() {
-    const hideBtnText = this.state.isHidden
-      ? "Reopen Conference"
-      : "Hide Conference";
-
-    const reportButton = (
-      <button
-        key={0}
-        className={`dropdown-item ${styles.report_content}`}
-        type="button"
-        data-toggle="modal"
-        // data-target={`#report_post_modal_${this.props.id}`}
-        // onClick={this.handleConferenceReport}
-        // disabled={this.state.userReport}
-      >
-        Report conference
-      </button>
-    );
-    const deleteButton = (
-      <button
-        key={1}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        onClick={this.handleHideConference}
-        // data-target={`#delete_conference_modal${this.props.id}`}
-      >
-        {hideBtnText}
-      </button>
-    );
-    const archiveButton = (
-      <button
-        key={2}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        // data-target={`#archive_conference_modal${this.props.id}`}
-      >
-        Archive Conference
-      </button>
-    );
-    const dropdownButtons = [reportButton, deleteButton, archiveButton];
-    return dropdownButtons;
-  }
 
   private getPosts() {
     const postsDiv: any[] = [];
