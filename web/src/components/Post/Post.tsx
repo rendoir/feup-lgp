@@ -44,7 +44,7 @@ import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 interface IProps {
   id: number;
   title: string;
-  date: string | undefined;
+  date: string;
   author: string;
   text: string | undefined;
   likes: number;
@@ -72,6 +72,7 @@ interface IState {
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
+  relevancy: number;
   tags: any[];
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
@@ -93,7 +94,6 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -107,6 +107,7 @@ class Post extends Component<IProps, IState> {
       numberOfRatings: 1,
       postID: 0,
       postRated: false,
+      relevancy: 0,
       tags: [],
       userRate: 50,
       userRateTotal: 50,
@@ -126,7 +127,6 @@ class Post extends Component<IProps, IState> {
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleAddLike = this.handleAddLike.bind(this);
     this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
@@ -134,6 +134,8 @@ class Post extends Component<IProps, IState> {
     if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
       return <div>Loading...</div>;
     }
+
+    this.calculateRelevancy();
 
     return (
       <div>
@@ -184,15 +186,6 @@ class Post extends Component<IProps, IState> {
           {this.getFiles()}
           {this.getTags()}
           <div className={styles.post_stats}>
-            <span
-              key={this.id + "_span_like_button"}
-              role="button"
-              data-toggle="dropdown"
-              data-target={"#post_" + this.props.id + " show_likes"}
-            >
-              {this.props.likes} likes
-              {this.getLikes()}
-            </span>
             <span> {this.props.comments.length} comments</span>
             <fieldset className="rate">
               <div className="star-ratings-css">
@@ -310,6 +303,46 @@ class Post extends Component<IProps, IState> {
       .catch(() => console.log("Failed to create comment"));
   }
 
+  public calculateRelevancy() {
+    let created = this.props.date;
+    let today = new Date();
+    let year = created.substr(0, 4);
+    let month = created.substr(5, 2);
+    let day = created.substr(8, 2);
+    let createdDate = new Date(Number(year), Number(month), Number(day));
+    const diff = Math.floor(
+      (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+        Date.UTC(
+          createdDate.getFullYear(),
+          createdDate.getMonth(),
+          createdDate.getDate()
+        )) /
+        (1000 * 60 * 60 * 24)
+    );
+    let visibility_point = 0;
+    if (this.props.visibility == "followers") {
+      visibility_point = 100;
+    }
+    let rating = Number(this.state.userRateTotal) / this.state.numberOfRatings;
+    if (Number.isNaN(rating)) {
+      rating = 50;
+    }
+
+    const relevancy = 10 * rating + visibility_point - diff;
+    console.log(
+      "Post ",
+      this.props.id,
+      ": ",
+      Number(this.state.userRateTotal) / this.state.numberOfRatings,
+      "with visibility ",
+      this.props.visibility,
+      " and created ",
+      diff,
+      " days ago. The relevancy is: ",
+      relevancy
+    );
+  }
+
   public handleStars() {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
@@ -342,37 +375,6 @@ class Post extends Component<IProps, IState> {
           <span>★</span>
           <span>★</span>
           <span>★</span>
-        </div>
-      );
-    }
-  }
-
-  public userLiked() {
-    const userLoggedIn = 2;
-    const divStyle = { color: "black" };
-
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      divStyle.color = "blue";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
-        </div>
-      );
-    } else {
-      divStyle.color = "black";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
         </div>
       );
     }
@@ -511,44 +513,6 @@ class Post extends Component<IProps, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
-  public handleAddLike(event: any) {
-    event.preventDefault();
-
-    const userLoggedIn = 2;
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      this.apiDeleteLikeToPost();
-    } else {
-      this.apiAddLikeToPost();
-    }
-  }
-
-  public apiAddLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .post(postUrl, {
-        author: 2,
-        headers: {}
-      })
-      .then(res => {
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to add like to comment"));
-  }
-
   public apiDeleteLikeToPost() {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
@@ -644,7 +608,6 @@ class Post extends Component<IProps, IState> {
 
     return (
       <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
         <button onClick={this.handlePostSubscription}>
           <i className={subscribeIcon} />
           <span>{subscribeBtnText}</span>
