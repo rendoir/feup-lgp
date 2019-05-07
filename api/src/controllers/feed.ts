@@ -17,7 +17,7 @@ export async function getFeed(req, res) {
                             AND p.visibility IN ('public', 'followers')))
                         AND
                         p.conference IS null
-                    ORDER BY date_created DESC
+                    ORDER BY relevancy DESC
                     LIMIT 10
                     OFFSET $2`,
             values: [userId, offset],

@@ -72,7 +72,7 @@ interface IState {
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
-  relevancy: number;
+  relevancy: boolean;
   tags: any[];
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
@@ -107,7 +107,7 @@ class Post extends Component<IProps, IState> {
       numberOfRatings: 1,
       postID: 0,
       postRated: false,
-      relevancy: 0,
+      relevancy: false,
       tags: [],
       userRate: 50,
       userRateTotal: 50,
@@ -304,43 +304,62 @@ class Post extends Component<IProps, IState> {
   }
 
   public calculateRelevancy() {
-    let created = this.props.date;
-    let today = new Date();
-    let year = created.substr(0, 4);
-    let month = created.substr(5, 2);
-    let day = created.substr(8, 2);
-    let createdDate = new Date(Number(year), Number(month), Number(day));
-    const diff = Math.floor(
-      (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
-        Date.UTC(
-          createdDate.getFullYear(),
-          createdDate.getMonth(),
-          createdDate.getDate()
-        )) /
-        (1000 * 60 * 60 * 24)
-    );
-    let visibility_point = 0;
-    if (this.props.visibility == "followers") {
-      visibility_point = 100;
-    }
-    let rating = Number(this.state.userRateTotal) / this.state.numberOfRatings;
-    if (Number.isNaN(rating)) {
-      rating = 50;
-    }
+    if (!this.state.relevancy) {
+      let created = this.props.date;
+      let today = new Date();
+      let year = created.substr(0, 4);
+      let month = created.substr(5, 2);
+      let day = created.substr(8, 2);
+      let createdDate = new Date(Number(year), Number(month), Number(day));
+      const diff = Math.floor(
+        (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+          Date.UTC(
+            createdDate.getFullYear(),
+            createdDate.getMonth(),
+            createdDate.getDate()
+          )) /
+          (1000 * 60 * 60 * 24)
+      );
+      let visibility_point = 0;
+      if (this.props.visibility == "followers") {
+        visibility_point = 300;
+      }
+      let rating =
+        Number(this.state.userRateTotal) / this.state.numberOfRatings;
+      if (Number.isNaN(rating)) {
+        rating = 50;
+      }
 
-    const relevancy = 10 * rating + visibility_point - diff;
-    console.log(
-      "Post ",
-      this.props.id,
-      ": ",
-      Number(this.state.userRateTotal) / this.state.numberOfRatings,
-      "with visibility ",
-      this.props.visibility,
-      " and created ",
-      diff,
-      " days ago. The relevancy is: ",
-      relevancy
-    );
+      const relevancy = Math.round(5 * rating + visibility_point - 2 * diff);
+
+      console.log(
+        "Post ",
+        this.props.id,
+        ": ",
+        Number(this.state.userRateTotal) / this.state.numberOfRatings,
+        "with visibility ",
+        this.props.visibility,
+        " and created ",
+        diff,
+        " days ago. The relevancy is: ",
+        relevancy
+      );
+
+      const apiUrl = getApiURL(`/post/${this.props.id}/update_relevancy`);
+      let body = {
+        relevancy: relevancy
+      };
+      return axios
+        .post(apiUrl, body)
+        .then(() => {
+          this.setState({
+            relevancy: true
+          });
+        })
+        .catch(() => {
+          console.log("Relevancy system failed");
+        });
+    }
   }
 
   public handleStars() {
@@ -411,8 +430,9 @@ class Post extends Component<IProps, IState> {
         numberOfRatings: incrementRate
       });
       const userRating =
-        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
-        incrementRate;
+        Math.round(
+          Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20
+        ) / incrementRate;
       let body = {};
       body = {
         evaluator: this.userId,

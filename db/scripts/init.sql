@@ -85,6 +85,7 @@ CREATE TABLE posts (
     content_video TEXT ARRAY,
     content_document TEXT ARRAY,
     rate INTEGER NOT NULL DEFAULT 50 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 100),
+    relevancy INTEGER NOT NULL DEFAULT 500,
     visibility visibility_enum NOT NULL DEFAULT 'public',
     likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),

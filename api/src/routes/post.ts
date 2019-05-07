@@ -275,3 +275,23 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *     }
  */
 postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
+
+/**
+ * @api {post} /api/post/:id/update_relevancy Update relevancy of a post
+ * @apiName Update-Relevancy-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id Id of the post.
+ * @apiParam {String}   relevancy Relevancy of the post.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while updating relevancy of a post'
+ *     }
+ */
+postRouter.post('/:id/update_relevancy', controller.updateRelevancy);

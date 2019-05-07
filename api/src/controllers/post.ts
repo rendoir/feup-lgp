@@ -507,3 +507,18 @@ export function inviteSubscribers(req, res) {
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
     });
 }
+
+export function updateRelevancy(req, res) {
+    console.log("Post ", req.params.id, " with relevancy ", req.body.relevancy);
+    query({
+        text: `UPDATE posts
+                SET relevancy = $2
+                WHERE id = $1`,
+        values: [req.params.id, req.body.relevancy],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while updating relevancy' });
+    });
+}
