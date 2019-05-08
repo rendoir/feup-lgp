@@ -70,7 +70,7 @@ build_api_tests:
     # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
     # - echo "$API_KEY" | tr -d '\r' > docker/api.key
     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-    - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
+    - docker image build -f test.dockerfile --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $API_TEST_IMAGE .
     - docker push $API_TEST_IMAGE
 
 # build_e2e_tests:
