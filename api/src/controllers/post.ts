@@ -526,7 +526,6 @@ export function inviteSubscribers(req, res) {
 }
 
 export function updateRelevancy(req, res) {
-    console.log("Post ", req.params.id, " with relevancy ", req.body.relevancy);
     query({
         text: `UPDATE posts
                 SET relevancy = $2

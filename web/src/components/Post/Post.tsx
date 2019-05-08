@@ -306,12 +306,12 @@ class Post extends Component<IProps, IState> {
 
   public calculateRelevancy() {
     if (!this.state.relevancy) {
-      let created = this.props.date;
-      let today = new Date();
-      let year = created.substr(0, 4);
-      let month = created.substr(5, 2);
-      let day = created.substr(8, 2);
-      let createdDate = new Date(Number(year), Number(month), Number(day));
+      const created = this.props.date;
+      const today = new Date();
+      const year = created.substr(0, 4);
+      const month = created.substr(5, 2);
+      const day = created.substr(8, 2);
+      const createdDate = new Date(Number(year), Number(month), Number(day));
       const diff = Math.floor(
         (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
           Date.UTC(
@@ -321,9 +321,9 @@ class Post extends Component<IProps, IState> {
           )) /
           (1000 * 60 * 60 * 24)
       );
-      let visibility_point = 0;
-      if (this.props.visibility == "followers") {
-        visibility_point = 300;
+      let visibilityPoint = 0;
+      if (this.props.visibility === "followers") {
+        visibilityPoint = 300;
       }
       let rating =
         Number(this.state.userRateTotal) / this.state.numberOfRatings;
@@ -331,7 +331,9 @@ class Post extends Component<IProps, IState> {
         rating = 50;
       }
 
-      const relevancy = Math.round(5 * rating + visibility_point - 2 * diff);
+      const relevancyNumber = Math.round(
+        5 * rating + visibilityPoint - 2 * diff
+      );
 
       console.log(
         "Post number ",
@@ -343,12 +345,12 @@ class Post extends Component<IProps, IState> {
         " and created ",
         diff,
         " days ago. The relevancy is: ",
-        relevancy
+        relevancyNumber
       );
 
       const apiUrl = getApiURL(`/post/${this.props.id}/update_relevancy`);
-      let body = {
-        relevancy: relevancy
+      const body = {
+        relevancy: relevancyNumber
       };
       return axios
         .post(apiUrl, body)
@@ -435,7 +437,7 @@ class Post extends Component<IProps, IState> {
       (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
         incrementRate
     );
-    let body = {
+    const body = {
       evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
@@ -463,14 +465,16 @@ class Post extends Component<IProps, IState> {
     const rateTarget = e.target.id;
 
     let formerRate = this.state.userRate;
-    if (formerRate < 6) formerRate = formerRate * 20;
+    if (formerRate < 6) {
+      formerRate = formerRate * 20;
+    }
     const userRating = Math.round(
       (Number(this.state.userRateTotal) +
         parseInt(rateTarget, 10) * 20 -
         formerRate) /
         Number(this.state.numberOfRatings)
     );
-    let body = {
+    const body = {
       evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
