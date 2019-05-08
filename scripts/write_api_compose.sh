@@ -11,5 +11,5 @@ services:
     depends_on:
       - db
     command:
-      - ['../scripts/wait-for-it.sh', 'db:5432', '--', 'npm', 'test']
+      - ../scripts/wait-for-it.sh db:5432 -- npm test
   " >> docker-compose.yml
