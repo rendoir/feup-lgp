@@ -98,15 +98,15 @@ body {
 
     #update-rate{
       color: #e7711b;
-      unicode-bidi: bidi-override;
-      direction: rtl;
+      /*unicode-bidi: bidi-override;
+      direction: rtl;*/
     }
 
     #update-rate span:hover:before,
     #update-rate span:hover ~ span:before {
       color: blue;
-      content: "\2605";
-      position: absolute;
+      /*content: "\2605";
+      position: absolute;*/
     }
 
   }

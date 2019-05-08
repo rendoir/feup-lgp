@@ -365,7 +365,7 @@ class Post extends Component<IProps, IState> {
 
   public handleStars() {
     const userRate =
-      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
     if (!this.state.postRated) {
       return (
@@ -394,21 +394,11 @@ class Post extends Component<IProps, IState> {
           id="update-rate"
           style={{ width: userRate }}
         >
-          <span id="5" onClick={this.handlePostUpdateRate}>
-            ★
-          </span>
-          <span id="4" onClick={this.handlePostUpdateRate}>
-            ★
-          </span>
-          <span id="3" onClick={this.handlePostUpdateRate}>
-            ★
-          </span>
-          <span id="2" onClick={this.handlePostUpdateRate}>
-            ★
-          </span>
-          <span id="1" onClick={this.handlePostUpdateRate}>
-            ★
-          </span>
+          <span id="1">★</span>
+          <span id="2">★</span>
+          <span id="3">★</span>
+          <span id="4">★</span>
+          <span id="5">★</span>
         </div>
       );
     }
