@@ -4,3 +4,4 @@
 secrets
 reverse_proxy/*.crt
 reverse_proxy/*.key
+yarn.lock
