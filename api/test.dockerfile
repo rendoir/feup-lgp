@@ -8,6 +8,6 @@ RUN apk add --no-cache bash
 USER node
 RUN mkdir -p uploads
 RUN npm install
-CMD ./wait-for-it.sh db:5432 -- npm test
+CMD ./wait-for-postgres.sh db npm test
 # CMD npm test
 # CMD npm test && npm run report
