@@ -7,8 +7,9 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
-                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+            text: `SELECT *
+                    FROM (SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+                        p.visibility, p.date_created, p.date_updated, p.conference, p.relevancy, users.id AS user_id
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
                     WHERE
@@ -17,8 +18,11 @@ export async function getFeed(req, res) {
                             AND p.visibility IN ('public', 'followers')))
                         AND
                         p.conference IS null
-                    ORDER BY relevancy DESC
-                    OFFSET $2`,
+                    ORDER BY date_created DESC
+                    LIMIT 100
+                    OFFSET $2)
+                    AS prelevancy
+                    ORDER BY prelevancy.relevancy DESC`,
             values: [userId, offset],
         });
         const commentsToSend = [];
