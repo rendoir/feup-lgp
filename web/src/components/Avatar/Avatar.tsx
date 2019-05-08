@@ -1,14 +1,14 @@
 import classNames from "classnames";
-import React, { Component } from "react";
+import React, { Component, MouseEvent } from "react";
 import createSequence from "../../utils/createSequence";
-import getAvatarColor from "../../utils/getAvatarColor";
-import getAvatarText from "../../utils/getAvatarText";
 import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
 import ImagePreloader, {
   State as ImagePreloaderState,
   STATE_SUCCESS
 } from "../ImagePreloader/ImagePreloader";
 import styles from "./Avatar.module.css";
+import getAvatarColor from "./utils/getAvatarColor";
+import getAvatarText from "./utils/getAvatarText";
 
 export type Props = {
   title: string | undefined;

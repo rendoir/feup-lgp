@@ -16,10 +16,17 @@ const publicPost = {
     author: -1,
     title: 'Test Title 1',
     text: 'Test Content 1',
-    visibility: 'public'
+    visibility: 'public',
 };
+const editedPublicPost = {
+    author: -1,
+    title: 'Edited Title 1',
+    text: 'Edited Content 1',
+    visibility: 'followers',
+}
 function assignAuthorsToPosts(adminId) {
     publicPost.author = adminId;
+    editedPublicPost.author = adminId;
 }
 
 /**
@@ -120,7 +127,7 @@ describe('Root GET', () => {
     });
 });
 
-describe('Create post', () => {
+describe('Post', () => {
     let postId = -1;
 
     it('Should submit a new public post', (done) => {
@@ -134,7 +141,7 @@ describe('Create post', () => {
                 postId = res.body.id;
                 done();
             })
-    });
+    })
 
     it('Should retrieve the submitted post', (done) => {
         request(app)
@@ -148,5 +155,53 @@ describe('Create post', () => {
                 expect(res.body.comments).to.be.empty;
                 done();
             });
-    });
+    })
+
+    /**
+     * Cannot test post edition until login is implemented.
+     */
+    // it('Should edit the submitted post', (done) => {
+    //     request(app)
+    //         .put(`/post/${postId}`)
+    //         .send(editedPublicPost)
+    //         .expect(200)
+    //         .end((err, res) => {
+    //             expect(err).to.be.null;
+    //             done();
+    //         });
+    // })
+
+    // it('Should retrieve the edited post', (done) => {
+    //     request(app)
+    //         .get(`/post/${postId}`)
+    //         .expect(200)
+    //         .end((err, res) => {
+    //             expect(err).to.be.null;
+    //             expect(res.body).to.have.property('post');
+    //             expect(equalPosts(editedPublicPost, res.body.post)).to.be.true;
+    //             expect(res.body).to.have.property('comments');
+    //             expect(res.body.comments).to.be.empty;
+    //             done();
+    //         });
+    // })
+
+    it('Should delete the submitted post', (done) => {
+        request(app)
+            .delete(`/post/${postId}`)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
+    })
+
+    it('Should not find deleted post', (done) => {
+        request(app)
+            .get(`/post/${postId}`)
+            .expect(400)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
+    })
 });

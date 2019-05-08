@@ -1,0 +1,63 @@
+@import '../../styles/variables';
+
+$range-font-family: $default-font-family;
+$range-background-color: $white;
+$range-height: 6px;
+$range-handle-color: $white;
+$range-handle-size: 16px;
+$range-fill-color: $color-primary;
+
+.container {
+  all: initial;
+  display: block;
+  box-sizing: border-box;
+  height: 20px;
+  padding: 7px 0;
+  font-family: $range-font-family;
+
+  & :global(.rangeslider) {
+    position: relative;
+
+    &:hover {
+      & :global(.rangeslider__fill) {
+        background-color: $range-fill-color;
+      }
+    }
+  }
+
+  & :global(.rangeslider-horizontal) {
+    height: $range-height;
+    cursor: pointer;
+    border-radius: $range-height / 2;
+    background-color: $range-background-color;
+    box-shadow: inset 0 0 0 0.5px $range-fill-color;
+  }
+
+  & :global(.rangeslider__fill) {
+    top: 0;
+    display: block;
+    height: 100%;
+    transition: background-color ($default-transition-duration / 2) linear;
+    border-radius: ($range-height / 2) 0 0 ($range-height / 2);
+    background-color: rgba($range-fill-color, 0.75);
+  }
+
+  & :global(.rangeslider__handle) {
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    width: $range-handle-size;
+    height: $range-handle-size;
+    cursor: pointer;
+    border-radius: 1000px;
+    background-color: $range-handle-color;
+    box-shadow: inset 0 0 0 1px $range-fill-color;
+    transform: translateZ(0) translateX(-50%) translateY(-50%);
+    transition: box-shadow ($default-transition-duration / 2) linear;
+    outline: 0;
+
+    &:active {
+      box-shadow: inset 0 0 0 1.5px $range-fill-color;
+    }
+  }
+}

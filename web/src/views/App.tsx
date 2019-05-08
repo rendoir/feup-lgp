@@ -5,9 +5,11 @@ import Header from "../components/header/Header";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
+import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
+import Notifications from "./Notifications";
 import PostView from "./PostView";
 import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
@@ -20,7 +22,7 @@ class App extends React.Component {
       <div className="App">
         <Router>
           <ErrorBoundary>
-            <Header />
+            <Header title={"gNet"} />
             <Switch>
               <Route exact={true} path="/" component={Feed} />
               <Route path="/user/:id" component={Profile} />
@@ -30,6 +32,8 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={RegisterLanding} />
               <Route path="/search" component={SearchResults} />
+              <Route path="/conference/:id" component={Conference} />
+              <Route path="/notifications" component={Notifications} />
             </Switch>
           </ErrorBoundary>
         </Router>

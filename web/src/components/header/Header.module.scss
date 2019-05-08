@@ -1,0 +1,62 @@
+@import "../../styles/variables";
+
+$header-color: $black;
+$header-background-color: $color-primary;
+$header-height: 75px;
+$header-font-family: $default-font-family;
+$header-font-size: $default-font-size-large;
+
+.container {
+  color: $header-color;
+  background-color: lighten(rgba($header-background-color, 1), 5%);
+  font-family: $header-font-family;
+  font-size: $header-font-size;
+  font-weight: 500;
+}
+
+.wrapper {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.logo {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  color: $white !important;
+  text-decoration: none;
+  padding: 0 10px;
+
+  &:hover {
+    text-decoration: none;
+    color: $white;
+  }
+}
+
+.link {
+  text-decoration: none;
+  color: $white !important;
+  padding: $default-padding-small / 2;
+
+  &:hover {
+    text-decoration: none;
+    color: darken($white, 10%);
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-end;
+  align-content: center;
+  align-items: center;
+}
+
+.icon {
+  color: $white;
+}

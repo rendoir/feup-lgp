@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-
+import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
@@ -10,14 +10,26 @@ export async function createPost(req, res) {
     }
 
     try {
-        const post = (await query({
-            text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
-            VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
-            values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
-        })).rows[0];
-        saveFiles(req, res, post.id);
-        saveTags(req, res, post.id);
-        res.send({ id: post.id });
+        console.log('Created post on conference: ' + req.body.conference);
+        if ( req.body.conference > 0) {
+            const post = (await query({
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
+                VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
+                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+            })).rows[0];
+            saveFiles(req, res, post.id);
+            saveTags(req, res, post.id);
+            res.send({ id: post.id });
+        } else {
+            const post = (await query({
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
+                VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
+                values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
+            })).rows[0];
+            saveFiles(req, res, post.id);
+            saveTags(req, res, post.id);
+            res.send({ id: post.id });
+        }
     } catch (error) {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating a post' });
@@ -35,10 +47,10 @@ export function editPost(req, res) {
         text: `UPDATE posts
                 SET title = $2, content = $3, search_tokens = TO_TSVECTOR($2 || ' ' || $3), visibility = $4, date_updated = NOW()
                 WHERE id = $1`,
-        values: [req.body.id, req.body.title, req.body.text, req.body.visibility],
+        values: [req.params.id, req.body.title, req.body.text, req.body.visibility],
     }).then((result) => {
         editFiles(req, res);
-        saveTags(req, res, req.body.id);
+        saveTags(req, res, req.params.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -48,9 +60,9 @@ export function editPost(req, res) {
 
 export function deletePost(req, res) {
     query({
-        text: 'DELETE FROM posts WHERE id = $1', values: [req.body.id],
+        text: 'DELETE FROM posts WHERE id = $1', values: [req.params.id],
     }).then((result) => {
-        deleteFolderRecursive('uploads/' + req.body.id);
+        deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -67,12 +79,11 @@ export async function getPost(req, res) {
          * OR post is public
          * OR post is private to followers and user is a follower of the author
          */
-        const post = await query({
+        const post = (await query({
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
-                    INNER JOIN users a
-                    ON p.author = a.id
+                        INNER JOIN users a ON p.author = a.id
                     WHERE
                         p.id = $1
                         AND (p.author = $2
@@ -82,7 +93,7 @@ export async function getPost(req, res) {
                                 )
                             )`,
             values: [postId, userId],
-        });
+        })).rows[0];
         if (post == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
@@ -94,10 +105,8 @@ export async function getPost(req, res) {
         const comments = await query({
             text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                     FROM posts p
-                    LEFT JOIN comments c
-                    ON p.id = c.post
-                    INNER JOIN users a
-                    ON c.author = a.id
+                        LEFT JOIN comments c ON p.id = c.post
+                        INNER JOIN users a ON c.author = a.id
                     WHERE
                         p.id = $1
                         AND (p.author = $2
@@ -106,7 +115,7 @@ export async function getPost(req, res) {
                                 AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
                                 )
                             )
-                    ORDER BY c.date_updated ASC;`,
+                    ORDER BY c.date_updated ASC`,
             values: [postId, userId],
         });
 
@@ -138,13 +147,12 @@ export async function getPost(req, res) {
             values: [postId],
         });
         const result = {
-            post: post.rows[0],
+            post,
             comments: comments.rows,
             files: files.rows,
             likers: likers.rows,
             tags: tags.rows,
         };
-        console.log(result);
         res.send(result);
     } catch (error) {
         console.error(error);
@@ -470,4 +478,32 @@ export function deleteFolderRecursive(path) {
       });
       fs.rmdirSync(path);
     }
+}
+
+export function inviteUser(req, res) {
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
+        values: [req.body.invited_user, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function inviteSubscribers(req, res) {
+    const cookies = new Cookies(req.headers.cookie);
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                ON CONFLICT ON CONSTRAINT unique_invite
+                DO NOTHING`,
+        values: [req.params.id, cookies.get('user_id')],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
 }
