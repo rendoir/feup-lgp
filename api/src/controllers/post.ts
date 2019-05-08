@@ -233,12 +233,29 @@ export function unsubscribePost(req, res) {
 }
 
 export function rate(req, res) {
-    console.log('pls?');
-    console.log('evaluator: ', req.body.evaluator);
-    console.log('rate: ', req.body.rate);
-    console.log('post: ', req.params.id);
     query({
         text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
+        values: [req.body.evaluator, req.body.rate, req.params.id],
+    }).then((result) => {
+
+        query({
+            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            values: [req.body.newPostRating, req.params.id],
+        }).then((result2) => {
+            res.status(200).send();
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the rating of the post' });
+        });
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while rating an post' });
+    });
+}
+
+export function updateRate(req, res) {
+    query({
+        text: 'UPDATE posts_rates SET rate=$2 WHERE evaluator=$1 AND post=$3',
         values: [req.body.evaluator, req.body.rate, req.params.id],
     }).then((result) => {
 

@@ -123,6 +123,7 @@ class Post extends Component<IProps, IState> {
     this.handlePostReport = this.handlePostReport.bind(this);
     this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostUpdateRate = this.handlePostUpdateRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
@@ -333,11 +334,11 @@ class Post extends Component<IProps, IState> {
       const relevancy = Math.round(5 * rating + visibility_point - 2 * diff);
 
       console.log(
-        "Post ",
+        "Post number ",
         this.props.id,
-        ": ",
+        " with rating ",
         Number(this.state.userRateTotal) / this.state.numberOfRatings,
-        "with visibility ",
+        ", with visibility ",
         this.props.visibility,
         " and created ",
         diff,
@@ -388,12 +389,26 @@ class Post extends Component<IProps, IState> {
       );
     } else {
       return (
-        <div className="star-ratings-css-top" style={{ width: userRate }}>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
+        <div
+          className="star-ratings-css-top"
+          id="update-rate"
+          style={{ width: userRate }}
+        >
+          <span id="5" onClick={this.handlePostUpdateRate}>
+            ★
+          </span>
+          <span id="4" onClick={this.handlePostUpdateRate}>
+            ★
+          </span>
+          <span id="3" onClick={this.handlePostUpdateRate}>
+            ★
+          </span>
+          <span id="2" onClick={this.handlePostUpdateRate}>
+            ★
+          </span>
+          <span id="1" onClick={this.handlePostUpdateRate}>
+            ★
+          </span>
         </div>
       );
     }
@@ -420,41 +435,76 @@ class Post extends Component<IProps, IState> {
   }
 
   public handlePostRate(e: any) {
-    if (this.state.postRated) {
-      console.log("You already rated this post");
-    } else {
-      const rateTarget = e.target.id;
+    const rateTarget = e.target.id;
 
-      const incrementRate = Number(this.state.numberOfRatings) + 1;
-      this.setState({
-        numberOfRatings: incrementRate
-      });
-      const userRating =
-        Math.round(
-          Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20
-        ) / incrementRate;
-      let body = {};
-      body = {
-        evaluator: this.userId,
-        newPostRating: userRating,
-        rate: parseInt(rateTarget, 10)
-      };
+    const incrementRate = Number(this.state.numberOfRatings) + 1;
+    this.setState({
+      numberOfRatings: incrementRate
+    });
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate
+    );
+    let body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
 
-      console.log("Post Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-      return axios
-        .post(apiUrl, body)
-        .then(() => {
-          this.setState({
-            postRated: true,
-            userRateTotal:
-              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
-          });
-        })
-        .catch(() => {
-          console.log("Rating system failed");
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          postRated: true,
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal + parseInt(rateTarget, 10) * 20
         });
-    }
+        console.log("RATE: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Rating system failed");
+      });
+  }
+
+  public handlePostUpdateRate(e: any) {
+    const rateTarget = e.target.id;
+
+    let formerRate = this.state.userRate;
+    if (formerRate < 6) formerRate = formerRate * 20;
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) +
+        parseInt(rateTarget, 10) * 20 -
+        formerRate) /
+        Number(this.state.numberOfRatings)
+    );
+    let body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
+    console.log("TOTAL:", this.state.userRateTotal);
+    console.log("NUmber of ratings:", this.state.numberOfRatings);
+    console.log("Former rating: ", formerRate);
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/update_rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal +
+            parseInt(rateTarget, 10) * 20 -
+            formerRate
+        });
+        console.log("RATE UPDATED: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Updating rating system failed");
+      });
   }
 
   public handlePostSubscription() {

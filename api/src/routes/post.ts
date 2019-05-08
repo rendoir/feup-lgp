@@ -244,6 +244,23 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
 postRouter.post('/:id/rate', controller.rate);
 
 /**
+ * @api {post} /api/post/:id/update_rate Updates rate of a post
+ * @apiName Update-Rate-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   post             Id of the post being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/update_rate', controller.updateRate);
+
+/**
  * @api {post} /api/post/:id/invite Invite user to engage in post discussion
  * @apiName Invite-To-Post
  * @apiGroup Post
