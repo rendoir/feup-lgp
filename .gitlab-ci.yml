@@ -110,8 +110,8 @@ api_unit_tests:
     - chmod +x ../scripts/write_api_compose.sh
     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
     - docker-compose pull
-    - docker-compose up -d db
-    - sleep 30
+    # - docker-compose up -d db
+    # - sleep 30
     - docker-compose up --exit-code-from apitest
 
 release-web-staging:
