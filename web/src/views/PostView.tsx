@@ -16,7 +16,6 @@ interface IState {
   post: any;
   comments: any[];
   files: any[];
-  likers: any[];
   tags: any[];
   fetchingInfo: boolean;
 }
@@ -30,7 +29,6 @@ class PostView extends React.Component<IProps, IState> {
       fetchingInfo: true,
       files: [],
       id: 1,
-      likers: [],
       post: {
         author: "1",
         content: "",
@@ -66,7 +64,6 @@ class PostView extends React.Component<IProps, IState> {
           fetchingInfo: false,
           files: res.data.files,
           id: res.data.post.id,
-          likers: res.data.likers,
           post: res.data.post,
           tags: res.data.tags
         });
@@ -101,12 +98,10 @@ class PostView extends React.Component<IProps, IState> {
               this.state.post.first_name + " " + this.state.post.last_name
             }
             date={this.date()}
-            likes={this.state.post.likes}
             text={this.state.post.content}
             user_id={this.state.post.user_id}
             comments={this.state.comments}
             files={this.state.files}
-            likers={this.state.likers}
             tags={this.state.tags}
             visibility={this.state.post.visibility}
           />

@@ -65,13 +65,11 @@ class Feed extends React.Component<Props, State> {
           id={post.id}
           author={post.first_name + " " + post.last_name}
           text={post.content}
-          likes={post.likes}
           title={post.title}
           user_id={post.user_id}
           date={post.date_created.replace(/T.*/gi, "")}
           visibility={post.visibility}
           comments={post.comments}
-          likers={post.likers}
           tags={post.tags}
           files={post.files}
         />

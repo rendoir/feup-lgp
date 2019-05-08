@@ -9,7 +9,7 @@ export async function getFeed(req, res) {
         const result = await query({
             text: `SELECT *
                     FROM (SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
-                        p.visibility, p.date_created, p.date_updated, p.conference, p.relevancy, users.id AS user_id
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
@@ -20,8 +20,10 @@ export async function getFeed(req, res) {
                         ORDER BY date_created DESC
                         LIMIT 100
                         OFFSET $2)
-                    AS prelevancy
-                    ORDER BY prelevancy.relevancy DESC`,
+                    AS pvis
+                    ORDER BY pvis.visibility DESC
+                    LIMIT 20
+                    OFFSET $2`,
             values: [userId, offset],
         });
         const commentsToSend = [];

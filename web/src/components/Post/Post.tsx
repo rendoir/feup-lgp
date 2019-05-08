@@ -47,11 +47,9 @@ interface IProps {
   date: string;
   author: string;
   text: string | undefined;
-  likes: number;
   visibility: string;
   comments: any[];
   files?: MyFile[];
-  likers: any[];
   tags: any[];
   user_id: number;
 }
@@ -72,7 +70,6 @@ interface IState {
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
-  relevancy: boolean;
   tags: any[];
   userRate: number;
   userReport: boolean; // Tells if the logged user has reported this post
@@ -107,7 +104,6 @@ class Post extends Component<IProps, IState> {
       numberOfRatings: 1,
       postID: 0,
       postRated: false,
-      relevancy: false,
       tags: [],
       userRate: 50,
       userRateTotal: 50,
@@ -135,8 +131,6 @@ class Post extends Component<IProps, IState> {
     if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
       return <div>Loading...</div>;
     }
-
-    this.calculateRelevancy();
 
     return (
       <div>
@@ -302,67 +296,6 @@ class Post extends Component<IProps, IState> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
-  }
-
-  public calculateRelevancy() {
-    if (!this.state.relevancy) {
-      const created = this.props.date;
-      const today = new Date();
-      const year = created.substr(0, 4);
-      const month = created.substr(5, 2);
-      const day = created.substr(8, 2);
-      const createdDate = new Date(Number(year), Number(month), Number(day));
-      const diff = Math.floor(
-        (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
-          Date.UTC(
-            createdDate.getFullYear(),
-            createdDate.getMonth(),
-            createdDate.getDate()
-          )) /
-          (1000 * 60 * 60 * 24)
-      );
-      let visibilityPoint = 0;
-      if (this.props.visibility === "followers") {
-        visibilityPoint = 300;
-      }
-      let rating =
-        Number(this.state.userRateTotal) / this.state.numberOfRatings;
-      if (Number.isNaN(rating)) {
-        rating = 50;
-      }
-
-      const relevancyNumber = Math.round(
-        5 * rating + visibilityPoint - 2 * diff
-      );
-
-      console.log(
-        "Post number ",
-        this.props.id,
-        " with rating ",
-        Number(this.state.userRateTotal) / this.state.numberOfRatings,
-        ", with visibility ",
-        this.props.visibility,
-        " and created ",
-        diff,
-        " days ago. The relevancy is: ",
-        relevancyNumber
-      );
-
-      const apiUrl = getApiURL(`/post/${this.props.id}/update_relevancy`);
-      const body = {
-        relevancy: relevancyNumber
-      };
-      return axios
-        .post(apiUrl, body)
-        .then(() => {
-          this.setState({
-            relevancy: true
-          });
-        })
-        .catch(() => {
-          console.log("Relevancy system failed");
-        });
-    }
   }
 
   public handleStars() {
@@ -577,30 +510,6 @@ class Post extends Component<IProps, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
-  public apiDeleteLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .delete(postUrl, {
-        data: {
-          author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
-      .then(res => {
-        console.log("Post disliked - reloading page...");
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to delete like from a post"));
-  }
-
   public getCommentSection() {
     if (this.props.comments === [] || this.props.comments === undefined) {
       return <div className={`${styles.post_comment} w-100`} />;
@@ -631,34 +540,6 @@ class Post extends Component<IProps, IState> {
 
     return (
       <div className={`${styles.post_comment} w-100`}>{commentSection}</div>
-    );
-  }
-
-  public getLikers() {
-    const likedUsersDiv = this.props.likers.map((liker, idx) => {
-      return (
-        <span key={"user" + idx + "liked-post"} className="dropdown-item">
-          {liker.first_name} {liker.last_name}
-        </span>
-      );
-    });
-
-    return likedUsersDiv;
-  }
-
-  public getLikes() {
-    const likesDiv: any[] = [];
-    if (this.props.likes > 0) {
-      likesDiv.push(this.getLikers());
-    }
-
-    return (
-      <span
-        id={"post_" + this.props.id + "_span_show_likes"}
-        className="dropdown-menu dropdown-menu-right"
-      >
-        {likesDiv}
-      </span>
     );
   }
 
