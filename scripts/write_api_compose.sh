@@ -10,6 +10,4 @@ services:
       - DB_HOST=db
     depends_on:
       - db
-    command:
-      - ./wait-for-it.sh db:5432 -- npm test
   " >> docker-compose.yml

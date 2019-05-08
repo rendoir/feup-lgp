@@ -8,5 +8,6 @@ USER node
 RUN ls
 RUN mkdir -p uploads
 RUN npm install
+RUN ./wait-for-it.sh db:5432
 CMD npm test
 # CMD npm test && npm run report
