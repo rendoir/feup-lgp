@@ -10,17 +10,16 @@ export async function getFeed(req, res) {
             text: `SELECT *
                     FROM (SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, p.conference, p.relevancy, users.id AS user_id
-                    FROM posts p
-                        INNER JOIN users ON (users.id = p.author)
-                    WHERE
-                        (author = $1
-                        OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                            AND p.visibility IN ('public', 'followers')))
-                        AND
-                        p.conference IS null
-                    ORDER BY date_created DESC
-                    LIMIT 100
-                    OFFSET $2)
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (author = $1
+                                OR (author IN (SELECT followed FROM follows WHERE follower = $1)
+                                    AND p.visibility IN ('public', 'followers')))
+                            AND p.conference IS null
+                        ORDER BY date_created DESC
+                        LIMIT 100
+                        OFFSET $2)
                     AS prelevancy
                     ORDER BY prelevancy.relevancy DESC`,
             values: [userId, offset],
