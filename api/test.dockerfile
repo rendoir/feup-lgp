@@ -5,6 +5,7 @@ WORKDIR /home/node/app
 COPY . .
 RUN chmod -R 777 /home/node/app
 USER node
+RUN ls
 RUN mkdir -p uploads
 RUN npm install
 CMD npm test
