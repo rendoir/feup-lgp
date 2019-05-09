@@ -95,7 +95,6 @@ async function insertAdminUser() {
 }
 
 before((done) => {
-    this.timeout(10 * 1000);
     loadEnvironment();
     console.log('after load');
     cleanDb()
@@ -108,7 +107,7 @@ before((done) => {
         console.log('after assign');
         return done();
     });
-});
+}).timeout(10 * 1000);
 
 describe('Responds with error 404', () => {
     it('Should return an unauthorized response state', (done) => {
