@@ -4,8 +4,8 @@ ENV PRODUCTION true
 ARG POSTGRES_PASSWORD
 WORKDIR /home/node/app
 RUN apk add --no-cache postgresql-client
-RUN chmod -R 777 /home/node/app
 COPY . .
+RUN chmod -R 777 /home/node/app
 USER node
 RUN npm install
 RUN mkdir -p uploads
