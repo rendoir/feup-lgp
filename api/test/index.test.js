@@ -97,7 +97,7 @@ async function insertAdminUser() {
 }
 
 before(function(done) {
-    this.timeout(5000);
+    this.timeout(0);
     loadEnvironment();
     console.log('after load');
     cleanDb()
