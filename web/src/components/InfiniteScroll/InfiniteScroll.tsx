@@ -110,7 +110,6 @@ class InfiniteScroll extends Component<Props, State> {
           }
         })
         .then(results => {
-          console.log(results);
           const incoming = results.data;
 
           incoming.posts.map((post: PostProps, idx: number) => {
