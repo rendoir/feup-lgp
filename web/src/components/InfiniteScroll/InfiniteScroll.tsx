@@ -79,10 +79,8 @@ class InfiniteScroll extends Component<Props, State> {
               date={post.date}
               author={post.author}
               content={post.content}
-              likes={post.likes}
               visibility={post.visibility}
               comments={post.comments}
-              likers={post.likers}
               tags={post.tags}
               user_id={post.user_id}
             />
@@ -92,7 +90,7 @@ class InfiniteScroll extends Component<Props, State> {
         {error ? <div className={styles.error}>Error: {error}</div> : null}
         {isLoading ? (
           <div className={styles.spinner}>
-            <Icon icon={faSpinner} pulse={true} size={"2x"} />
+            <Icon icon={faSpinner} pulse={true} size={"2x"} theme={"primary"} />
           </div>
         ) : null}
         {!hasMore ? <div>You reached the end!</div> : null}
@@ -119,7 +117,6 @@ class InfiniteScroll extends Component<Props, State> {
               incoming.posts[idx].last_name;
             post.date = incoming.posts[idx].date_created.replace(/T.*/gi, "");
             post.comments = incoming.comments[idx];
-            post.likers = incoming.likers[idx];
             post.tags = incoming.tags[idx];
             post.files = incoming.files[idx];
             delete incoming.posts[idx].first_name;

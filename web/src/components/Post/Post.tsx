@@ -46,11 +46,9 @@ export type Props = {
   date: string;
   author: string;
   content: string | undefined;
-  likes: number;
   visibility: string;
   comments: any[];
   files?: MyFile[];
-  likers: any[];
   tags: any[];
   user_id: number;
 };
@@ -125,7 +123,6 @@ class Post extends Component<Props, IState> {
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleAddLike = this.handleAddLike.bind(this);
     this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
@@ -183,15 +180,6 @@ class Post extends Component<Props, IState> {
           {this.getFiles()}
           {this.getTags()}
           <div className={styles.post_stats}>
-            <span
-              key={this.id + "_span_like_button"}
-              role="button"
-              data-toggle="dropdown"
-              data-target={"#post_" + this.props.id + " show_likes"}
-            >
-              {this.props.likes} likes
-              {this.getLikes()}
-            </span>
             <span> {this.props.comments.length} comments</span>
             <fieldset className="rate">
               <div className="star-ratings-css">
@@ -349,38 +337,6 @@ class Post extends Component<Props, IState> {
       );
     }
   }
-
-  public userLiked() {
-    const userLoggedIn = 2;
-    const divStyle = { color: "black" };
-
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      divStyle.color = "blue";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
-        </div>
-      );
-    } else {
-      divStyle.color = "black";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
-        </div>
-      );
-    }
-  }
-
   public validComment() {
     return Boolean(this.state.commentValue);
   }
@@ -552,25 +508,6 @@ class Post extends Component<Props, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
-  public handleAddLike(event: any) {
-    event.preventDefault();
-
-    const userLoggedIn = 2;
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      this.apiDeleteLikeToPost();
-    } else {
-      this.apiAddLikeToPost();
-    }
-  }
-
   public apiAddLikeToPost() {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
@@ -647,34 +584,6 @@ class Post extends Component<Props, IState> {
     );
   }
 
-  public getLikers() {
-    const likedUsersDiv = this.props.likers.map((liker, idx) => {
-      return (
-        <span key={"user" + idx + "liked-post"} className="dropdown-item">
-          {liker.first_name} {liker.last_name}
-        </span>
-      );
-    });
-
-    return likedUsersDiv;
-  }
-
-  public getLikes() {
-    const likesDiv: any[] = [];
-    if (this.props.likes > 0) {
-      likesDiv.push(this.getLikers());
-    }
-
-    return (
-      <span
-        id={"post_" + this.props.id + "_span_show_likes"}
-        className="dropdown-menu dropdown-menu-right"
-      >
-        {likesDiv}
-      </span>
-    );
-  }
-
   private getUserInteractionButtons() {
     const subscribeIcon = this.state.userSubscription
       ? "fas fa-bell-slash"
@@ -685,7 +594,6 @@ class Post extends Component<Props, IState> {
 
     return (
       <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
         <button onClick={this.handlePostSubscription}>
           <i className={subscribeIcon} />
           <span>{subscribeBtnText}</span>

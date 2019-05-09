@@ -10,7 +10,7 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
     const loggedInUser = 1;
     const queryKeywords = keywords.join(' & ');
     return query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+        text: `SELECT p.id, first_name, last_name, p.title, p.content,
             p.visibility, p.date_created, p.date_updated, users.id AS user_id
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
@@ -34,7 +34,7 @@ function authorQuery(keywords: string[], tags: string[], offset: number, initial
     const loggedInUser = 1;
     const queryKeywords = keywords.join('|');
     return query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
+        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
