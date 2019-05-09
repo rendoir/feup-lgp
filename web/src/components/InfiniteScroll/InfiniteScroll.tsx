@@ -92,7 +92,7 @@ class InfiniteScroll extends Component<Props, State> {
         {error ? <div className={styles.error}>Error: {error}</div> : null}
         {isLoading ? (
           <div className={styles.spinner}>
-            <Icon icon={faSpinner} pulse={true} size={"2x"} />
+            <Icon icon={faSpinner} pulse={true} size={"2x"} theme={"primary"} />
           </div>
         ) : null}
         {!hasMore ? <div>You reached the end!</div> : null}
