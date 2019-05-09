@@ -89,6 +89,15 @@ async function insertAdminUser() {
 }
 
 before((done) => {
+    console.log('first');
+    await db.query({
+        text: `SELECT * FROM users LIMIT 1`,
+    });
+    console.log('second');
+    await db.query({
+        text: `SELEC * FROM users LIMIT 1`,
+    });
+    console.log('db should log error');
     loadEnvironment();
     cleanDb()
     .then(insertAdminUser)
