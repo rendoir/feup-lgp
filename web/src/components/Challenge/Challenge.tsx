@@ -4,11 +4,11 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "../Challenge.module.css";
 
+import CommentPost from "./CommentPost";
+import PostCreate from "./PostCreate";
 import QuestionAnswer from "./QuestionAnswer";
 import QuestionOptions from "./QuestionOptions";
 import TextChallenge from "./TextChallenge";
-import PostCreate from "./PostCreate";
-import CommentPost from "./CommentPost";
 
 export type Props = {
   id: number;
