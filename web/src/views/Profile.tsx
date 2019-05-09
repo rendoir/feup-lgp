@@ -293,7 +293,6 @@ class Profile extends React.Component<IProps, State> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
