@@ -8,7 +8,7 @@ export async function getFeed(req, res) {
     try {
         const result = await query({
             text: `SELECT *
-                    FROM (SELECT p.id, first_name, last_name, p.title, p.content, 
+                    FROM (SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
