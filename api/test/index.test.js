@@ -64,7 +64,7 @@ async function getTableNames() {
 }
 
 function cleanTable(table) {
-    db.query({
+    return db.query({
         text: `TRUNCATE ${table} CASCADE`, // cannot parameterize table names
     });
 }
@@ -74,9 +74,11 @@ async function cleanDb() {
         console.log('in clean');
         const tableNames = await getTableNames();
         console.log('after names');
+        const promises = [];
         for (const row of tableNames.rows) {
-            cleanTable(row.table_name);
+            promises.push(cleanTable(row.table_name));
         }
+        await Promise.all(promises);
         console.log('after all cleaned');
     } catch (error) {
         console.error(error);
