@@ -4,6 +4,7 @@ import { query } from '../db/db';
 
 export async function getFeed(req, res) {
     const offset = req.query.offset;
+    const limit = req.query.perPage;
     const userId = 1;
     try {
         const result = await query({
@@ -18,9 +19,25 @@ export async function getFeed(req, res) {
                         AND
                         p.conference IS null
                     ORDER BY date_created DESC
-                    LIMIT 10
-                    OFFSET $2`,
-            values: [userId, offset],
+                    LIMIT $2
+                    OFFSET $3`,
+          values: [userId, limit, offset],
+        });
+        const totalSize = await query({
+        text: `
+                    SELECT COUNT(id)
+                    FROM posts
+                    WHERE
+                        (
+                            author = $1
+                            OR (
+                                author IN (SELECT followed FROM follows WHERE follower = $1)
+                                AND visibility IN ('public','followers')
+                            )
+                        )
+                        AND conference IS null
+                  `,
+        values: [userId],
         });
         const commentsToSend = [];
         const likersToSend = [];
@@ -75,6 +92,7 @@ export async function getFeed(req, res) {
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
+          size: totalSize.rows[0].count,
         });
     } catch (error) {
         console.error(error);

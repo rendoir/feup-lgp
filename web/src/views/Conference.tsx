@@ -1,16 +1,3 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
-import { MouseEvent } from "react";
-import * as React from "react";
-import Avatar from "../components/Avatar/Avatar";
-import Chat from "../components/Chat/Chat";
-import Icon from "../components/Icon/Icon";
-import Livestream from "../components/Livestream/Livestream";
-import Post from "../components/Post/Post";
-import styles from "../components/Post/Post.module.css";
-import "../styles/Conference.css";
-import { getApiURL } from "../utils/apiURL";
-
 import {
   faGlobeAfrica,
   faLock,
@@ -18,8 +5,19 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import * as React from "react";
+import { MouseEvent } from "react";
+import Avatar from "../components/Avatar/Avatar";
+import Chat from "../components/Chat/Chat";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
+import Icon from "../components/Icon/Icon";
+import Livestream from "../components/Livestream/Livestream";
+import Post from "../components/Post/Post";
+import styles from "../components/Post/Post.module.css";
+import "../styles/Conference.css";
+import { getApiURL } from "../utils/apiURL";
 
 interface IProps {
   match: {
@@ -425,7 +423,7 @@ class Conference extends React.Component<IProps, IState> {
           key={post.id}
           id={post.id}
           author={post.first_name + " " + post.last_name}
-          text={post.content}
+          content={post.content}
           user_id={post.user_id}
           likes={post.likes}
           likers={post.likers}

@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as React from "react";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
 
@@ -41,11 +42,10 @@ class Feed extends React.Component<Props, State> {
       .then(res => {
         const postsComing = res.data;
 
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
-            (post.tags = postsComing.tags[idx]),
+        postsComing.posts.map((post: any, idx: any) =>
+          (post.comments = postsComing.comments[idx])(
+            (post.likers = postsComing.likers[idx])
+          )((post.tags = postsComing.tags[idx]))(
             (post.files = postsComing.files[idx])
           )
         );
@@ -64,7 +64,7 @@ class Feed extends React.Component<Props, State> {
           key={post.id}
           id={post.id}
           author={post.first_name + " " + post.last_name}
-          text={post.content}
+          content={post.content}
           likes={post.likes}
           title={post.title}
           user_id={post.user_id}
@@ -106,7 +106,10 @@ class Feed extends React.Component<Props, State> {
             <h5>Conferences</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-8">{this.getPosts()}</div>
+          <div className="middle col-lg-8">
+            <InfiniteScroll />
+            {/*{this.getPosts()}*/}
+          </div>
         </div>
       </div>
     );

@@ -102,7 +102,7 @@ class PostView extends React.Component<IProps, IState> {
             }
             date={this.date()}
             likes={this.state.post.likes}
-            text={this.state.post.content}
+            content={this.state.post.content}
             user_id={this.state.post.user_id}
             comments={this.state.comments}
             files={this.state.files}

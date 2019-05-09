@@ -1,22 +1,32 @@
 // - Import react components
+import {
+  faGlobeAfrica,
+  faLock,
+  faQuestion,
+  faUserFriends,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import classNames from "classnames";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
-
-// - Import styles
-import styles from "./Post.module.css";
-
+// - Import utils
+import { apiCheckPostUserReport } from "../../utils/apiReport";
+import { apiSubscription } from "../../utils/apiSubscription";
+import { getApiURL } from "../../utils/apiURL";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 // - Import app components
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
+import Icon from "../Icon/Icon";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import PostFile from "../PostFile/PostFile";
 import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import ReportModal from "../PostModal/ReportModal";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
+// - Import styles
+import styles from "./Post.module.css";
 
 type MyFile = {
   name: string;
@@ -25,28 +35,12 @@ type MyFile = {
   size: number;
 };
 
-// - Import utils
-import { apiCheckPostUserReport } from "../../utils/apiReport";
-import { apiSubscription } from "../../utils/apiSubscription";
-import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
-
-import {
-  faGlobeAfrica,
-  faLock,
-  faQuestion,
-  faUserFriends,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import { getApiURL } from "../../utils/apiURL";
-import Icon from "../Icon/Icon";
-import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
-
-interface IProps {
+export type Props = {
   id: number;
   title: string;
   date: string | undefined;
   author: string;
-  text: string | undefined;
+  content: string | undefined;
   likes: number;
   visibility: string;
   comments: any[];
@@ -54,7 +48,7 @@ interface IProps {
   likers: any[];
   tags: any[];
   user_id: number;
-}
+};
 
 interface IState {
   activePage: number;
@@ -83,12 +77,12 @@ interface IState {
 
 const cookies = new Cookies();
 
-class Post extends Component<IProps, IState> {
+class Post extends Component<Props, IState> {
   public static defaultProps = {};
   public id: string;
   public userId: number;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
 
     this.id = "post_" + this.props.id;
@@ -177,7 +171,7 @@ class Post extends Component<IProps, IState> {
             <h4> {this.props.title} </h4>
           </div>
           <div className={styles.post_content_text}>
-            <p> {this.props.text} </p>
+            <p> {this.props.content} </p>
           </div>
           {this.getImages()}
           {this.getVideos()}
