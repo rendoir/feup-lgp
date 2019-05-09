@@ -8,36 +8,35 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+            text: `SELECT *
+                    FROM (SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
-                    FROM posts p
-                        INNER JOIN users ON (users.id = p.author)
-                    WHERE
-                        (author = $1
-                        OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                            AND p.visibility IN ('public', 'followers')))
-                        AND
-                        p.conference IS null
-                    ORDER BY date_created DESC
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (author = $1
+                                OR (author IN (SELECT followed FROM follows WHERE follower = $1)
+                                    AND p.visibility IN ('public', 'followers')))
+                            AND p.conference IS null
+                        ORDER BY date_created DESC)
+                    AS pvis
+                    ORDER BY pvis.visibility DESC
                     LIMIT $2
                     OFFSET $3`,
-          values: [userId, limit, offset],
+            values: [userId, limit, offset],
         });
         const totalSize = await query({
-        text: `
-                    SELECT COUNT(id)
-                    FROM posts
-                    WHERE
-                        (
-                            author = $1
-                            OR (
-                                author IN (SELECT followed FROM follows WHERE follower = $1)
-                                AND visibility IN ('public','followers')
-                            )
-                        )
-                        AND conference IS null
-                  `,
-        values: [userId],
+          text: `SELECT COUNT(id)
+                  FROM posts
+                  WHERE (
+                    author = $1
+                    OR (
+                      author IN (SELECT followed FROM follows WHERE follower = $1)
+                      AND visibility IN ('public','followers')
+                    )
+                  )
+                  AND conference IS null`,
+          values: [userId],
         });
         const commentsToSend = [];
         const likersToSend = [];

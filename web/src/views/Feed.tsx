@@ -42,13 +42,12 @@ class Feed extends React.Component<Props, State> {
       .then(res => {
         const postsComing = res.data;
 
-        postsComing.posts.map((post: any, idx: any) =>
-          (post.comments = postsComing.comments[idx])(
-            (post.likers = postsComing.likers[idx])
-          )((post.tags = postsComing.tags[idx]))(
-            (post.files = postsComing.files[idx])
-          )
-        );
+        postsComing.posts.map((post: any, idx: any) => {
+          post.comments = postsComing.comments[idx];
+          post.likers = postsComing.likers[idx];
+          post.tags = postsComing.tags[idx];
+          post.files = postsComing.files[idx];
+        });
 
         this.setState({ fetchingInfo: false, posts: postsComing.posts });
       })

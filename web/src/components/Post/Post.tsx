@@ -1,32 +1,21 @@
 // - Import react components
-import {
-  faGlobeAfrica,
-  faLock,
-  faQuestion,
-  faUserFriends,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
-// - Import utils
-import { apiCheckPostUserReport } from "../../utils/apiReport";
-import { apiSubscription } from "../../utils/apiSubscription";
-import { getApiURL } from "../../utils/apiURL";
-import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
+// - Import styles
+import styles from "./Post.module.css";
+
 // - Import app components
 import Avatar from "../Avatar/Avatar";
 import Comment from "../Comment/Comment";
-import Icon from "../Icon/Icon";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import PostFile from "../PostFile/PostFile";
 import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
 import PostModal from "../PostModal/PostModal";
 import ReportModal from "../PostModal/ReportModal";
-import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
-// - Import styles
-import styles from "./Post.module.css";
+import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 type MyFile = {
   name: string;
@@ -35,10 +24,26 @@ type MyFile = {
   size: number;
 };
 
+// - Import utils
+import { apiCheckPostUserReport } from "../../utils/apiReport";
+import { apiSubscription } from "../../utils/apiSubscription";
+import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+
+import {
+  faGlobeAfrica,
+  faLock,
+  faQuestion,
+  faUserFriends,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
+import { getApiURL } from "../../utils/apiURL";
+import Icon from "../Icon/Icon";
+import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
+
 export type Props = {
   id: number;
   title: string;
-  date: string | undefined;
+  date: string;
   author: string;
   content: string | undefined;
   likes: number;
@@ -87,7 +92,6 @@ class Post extends Component<Props, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -116,6 +120,7 @@ class Post extends Component<Props, IState> {
     this.handlePostReport = this.handlePostReport.bind(this);
     this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostUpdateRate = this.handlePostUpdateRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
@@ -306,7 +311,7 @@ class Post extends Component<Props, IState> {
 
   public handleStars() {
     const userRate =
-      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
     if (!this.state.postRated) {
       return (
@@ -330,12 +335,16 @@ class Post extends Component<Props, IState> {
       );
     } else {
       return (
-        <div className="star-ratings-css-top" style={{ width: userRate }}>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
+        <div
+          className="star-ratings-css-top"
+          id="update-rate"
+          style={{ width: userRate }}
+        >
+          <span id="1">★</span>
+          <span id="2">★</span>
+          <span id="3">★</span>
+          <span id="4">★</span>
+          <span id="5">★</span>
         </div>
       );
     }
@@ -393,40 +402,78 @@ class Post extends Component<Props, IState> {
   }
 
   public handlePostRate(e: any) {
-    if (this.state.postRated) {
-      console.log("You already rated this post");
-    } else {
-      const rateTarget = e.target.id;
+    const rateTarget = e.target.id;
 
-      const incrementRate = Number(this.state.numberOfRatings) + 1;
-      this.setState({
-        numberOfRatings: incrementRate
-      });
-      const userRating =
-        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
-        incrementRate;
-      let body = {};
-      body = {
-        evaluator: this.userId,
-        newPostRating: userRating,
-        rate: parseInt(rateTarget, 10)
-      };
+    const incrementRate = Number(this.state.numberOfRatings) + 1;
+    this.setState({
+      numberOfRatings: incrementRate
+    });
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate
+    );
+    const body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
 
-      console.log("Post Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-      return axios
-        .post(apiUrl, body)
-        .then(() => {
-          this.setState({
-            postRated: true,
-            userRateTotal:
-              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
-          });
-        })
-        .catch(() => {
-          console.log("Rating system failed");
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          postRated: true,
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal + parseInt(rateTarget, 10) * 20
         });
+        console.log("RATE: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Rating system failed");
+      });
+  }
+
+  public handlePostUpdateRate(e: any) {
+    const rateTarget = e.target.id;
+
+    let formerRate = this.state.userRate;
+    if (formerRate < 6) {
+      formerRate = formerRate * 20;
     }
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) +
+        parseInt(rateTarget, 10) * 20 -
+        formerRate) /
+        Number(this.state.numberOfRatings)
+    );
+    const body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
+    console.log("TOTAL:", this.state.userRateTotal);
+    console.log("NUmber of ratings:", this.state.numberOfRatings);
+    console.log("Former rating: ", formerRate);
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/update_rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal +
+            parseInt(rateTarget, 10) * 20 -
+            formerRate
+        });
+        console.log("RATE UPDATED: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Updating rating system failed");
+      });
   }
 
   public handlePostSubscription() {
