@@ -71,12 +71,15 @@ function cleanTable(table) {
 
 async function cleanDb() {
     try {
+        console.log('in clean');
         const tableNames = await getTableNames();
+        console.log('after names');
         for (const row of tableNames.rows) {
             cleanTable(row.table_name);
         }
+        console.log('after all cleaned');
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -93,9 +96,12 @@ async function insertAdminUser() {
 
 before((done) => {
     loadEnvironment();
+    console.log('after load');
     cleanDb()
-    .then(insertAdminUser)
-    .then((adminId) => {
+    .then(() => {
+        console.log('before insert');
+        return insertAdminUser()
+    }).then((adminId) => {
         console.log('before assign');
         assignAuthorsToPosts(adminId);
         console.log('after assign');
