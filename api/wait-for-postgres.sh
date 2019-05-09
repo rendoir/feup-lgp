@@ -6,6 +6,7 @@ set -e
 host="$1"
 pg_password="$2"
 shift
+shift
 cmd="$@"
 
 until PGPASSWORD=$pg_password psql -h "$host" -U "postgres" -c '\q'; do
