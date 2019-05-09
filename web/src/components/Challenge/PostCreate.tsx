@@ -4,6 +4,8 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "./Challenge.module.css";
 
+import Input from "../Input/Input";
+
 export type Props = {
   id: number;
   title: string;
@@ -17,7 +19,7 @@ export type Props = {
 
 export type State = {};
 
-class TextChallenge extends Component<Props, State> {
+class PostCreate extends Component<Props, State> {
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -39,8 +41,9 @@ class TextChallenge extends Component<Props, State> {
           </div>
         </div>
         <div className="card-body">
-          <h6 className="card-title"> Challenge {this.props.id} </h6>
-          <p className="card-text"> {this.props.content} </p>
+          {this.parseContent()}
+          <hr key={"Hr_Challenge_" + this.props.id} />
+          {this.parsePrize()}
         </div>
         <div className={`card-footer ${styles.card_footer}`}>
           <button
@@ -48,6 +51,7 @@ class TextChallenge extends Component<Props, State> {
             className="btn btn-info"
             type="button"
             data-dismiss="modal"
+            onClick={this.solveChallenge}
           >
             Solve Challenge
           </button>
@@ -55,6 +59,45 @@ class TextChallenge extends Component<Props, State> {
       </div>
     );
   }
+
+  public parsePrize() {
+    let prize = "";
+
+    if (this.props.prize === "points") {
+      prize = `Win ${this.props.pointsPrize} points !`;
+    } else {
+      prize = `Win ${this.props.prize} !`;
+    }
+
+    return (
+      <p key={"Prize_Challenge_" + this.props.id} className="card-text">
+        {" "}
+        {prize}{" "}
+      </p>
+    );
+  }
+
+  public parseContent() {
+    const content = this.props.content;
+    let description = "";
+
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].startsWith("Description: ")) {
+        description = content[i].split("Description: ")[1];
+      }
+    }
+
+    return (
+      <div>
+        <h6 className="card-title"> {description} </h6>
+      </div>
+    );
+  }
+
+  public solveChallenge() {
+    return null;
+  }
 }
 
-export default TextChallenge;
+export default PostCreate;

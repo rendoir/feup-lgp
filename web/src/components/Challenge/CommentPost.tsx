@@ -18,18 +18,37 @@ export type Props = {
 };
 
 export type State = {
-  value: string;
+  description: string | undefined;
+  postToComment: number;
 };
 
-class QuestionAnswer extends Component<Props, State> {
+class CommentPost extends Component<Props, State> {
   public static defaultProps = {};
 
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      value: ""
+      description: undefined,
+      postToComment: 0
     };
+  }
+
+  public componentDidMount() {
+    const content = this.props.content;
+    let description = "";
+    let postToComment = 0;
+
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].startsWith("Description: ")) {
+        description = content[i].split("Description: ")[1];
+      } else if (content[i].startsWith("PostToComment: ")) {
+        postToComment = Number(content[i].split("PostToComment: ")[1]);
+      }
+
+      this.setState({ postToComment, description });
+    }
   }
 
   public render() {
@@ -84,31 +103,24 @@ class QuestionAnswer extends Component<Props, State> {
   }
 
   public parseContent() {
-    const content = this.props.content;
-    let question = "";
-    let correctAnswer = "";
-
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Question: ")) {
-        question = content[i].split("Question: ")[1];
-        if (!question.includes("?")) {
-          question += " ?";
-        }
-      } else if (content[i].startsWith("CorrectAnswer: ")) {
-        correctAnswer = content[i].split("CorrectAnswer: ")[1];
-      }
+    const title: any[] = [];
+    if (this.state.description !== undefined || this.state.description !== "") {
+      title.push(
+        <h6 key={"Desc_Challenge_" + this.props.id} className="card-title">
+          {" "}
+          {this.state.description}{" "}
+        </h6>
+      );
     }
 
     return (
       <div>
-        <h6 className="card-title">{question}</h6>
-        <Input
-          id="0"
-          onChange={value => this.setState({ value })}
-          placeholder="Write here your answer"
-          value={this.state.value}
-        />
+        {title}
+        <p className="card-text">
+          {" "}
+          Comment On Post {this.state.postToComment}.
+        </p>
+        {/* TODO: Get Title of Post to Comment */}
       </div>
     );
   }
@@ -118,4 +130,4 @@ class QuestionAnswer extends Component<Props, State> {
   }
 }
 
-export default QuestionAnswer;
+export default CommentPost;

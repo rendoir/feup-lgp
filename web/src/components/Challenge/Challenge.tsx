@@ -7,6 +7,8 @@ import styles from "../Challenge.module.css";
 import QuestionAnswer from "./QuestionAnswer";
 import QuestionOptions from "./QuestionOptions";
 import TextChallenge from "./TextChallenge";
+import PostCreate from "./PostCreate";
+import CommentPost from "./CommentPost";
 
 export type Props = {
   id: number;
@@ -39,9 +41,11 @@ class Challenge extends Component<Props, State> {
         return <QuestionOptions {...this.props} />;
       case "answer_question":
         return <QuestionAnswer {...this.props} />;
-      case "livestream_view":
-      case "comment_post":
       case "create_post":
+        return <PostCreate {...this.props} />;
+      case "comment_post":
+        return <CommentPost {...this.props} />;
+      case "livestream_view":
       default:
         return <TextChallenge {...this.props} />;
     }
