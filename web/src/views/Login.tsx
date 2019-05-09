@@ -13,8 +13,7 @@ class Login extends React.Component {
   public handleAuthentication(e: any) {
     e.preventDefault();
     console.log("AUTENTICATIOOON");
-    const userId = 1; // Fetch from API when login is implemented
-    cookies.set("user_id", userId, { path: "/" });
+    const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
     console.log("User id: ", cookies.get("user_id"));
   }
 

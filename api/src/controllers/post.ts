@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-
+import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
@@ -456,14 +456,14 @@ export async function editFiles(req, res) {
             await query({
                 text: `DELETE FROM files
                        WHERE post = $1 AND name = $2`,
-                values: [req.body.id, file.name],
+                values: [req.params.id, file.name],
             });
             // Delete file from filesystem
-            fs.unlinkSync('uploads/' + req.body.id + '/' + file.name);
+            fs.unlinkSync('uploads/' + req.params.id + '/' + file.name);
         }
     }
     // Add new files
-    saveFiles(req, res, req.body.id);
+    saveFiles(req, res, req.params.id);
 }
 
 export function deleteFolderRecursive(path) {
@@ -478,4 +478,32 @@ export function deleteFolderRecursive(path) {
       });
       fs.rmdirSync(path);
     }
+}
+
+export function inviteUser(req, res) {
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
+        values: [req.body.invited_user, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function inviteSubscribers(req, res) {
+    const cookies = new Cookies(req.headers.cookie);
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                ON CONFLICT ON CONSTRAINT unique_invite
+                DO NOTHING`,
+        values: [req.params.id, cookies.get('user_id')],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
 }
