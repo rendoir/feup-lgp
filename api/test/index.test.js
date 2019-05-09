@@ -93,7 +93,6 @@ async function insertAdminUser() {
 before(function(done) {
     this.timeout(0);
     loadEnvironment();
-    console.log('after load');
     cleanDb()
     .then(insertAdminUser)
     .then((adminId) => {
