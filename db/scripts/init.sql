@@ -86,6 +86,7 @@ CREATE TABLE posts (
     content_document TEXT ARRAY,
     rate INTEGER NOT NULL DEFAULT 50 CONSTRAINT post_rate_constraint CHECK (rate >= 1 AND rate <= 100),
     visibility visibility_enum NOT NULL DEFAULT 'public',
+    likes BIGINT DEFAULT 0,
     date_created TIMESTAMP DEFAULT NOW(),
     date_updated TIMESTAMP
 );
@@ -168,6 +169,42 @@ CREATE TABLE invites (
 
 ALTER TABLE IF EXISTS ONLY likes_a_comment
     ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
+
+/**
+* Likes on a Post
+*/
+CREATE TABLE likes_a_post (
+    post BIGINT REFERENCES posts ON DELETE CASCADE,
+    author BIGINT REFERENCES users ON DELETE CASCADE
+);
+
+ALTER TABLE IF EXISTS ONLY likes_a_post
+    ADD CONSTRAINT likes_a_post_pkey PRIMARY KEY (post, author);
+
+CREATE FUNCTION update_likes_post() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$BEGIN
+    UPDATE posts SET likes = likes + 1 WHERE id = NEW.post;
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER update_likes_of_a_post
+    AFTER INSERT ON likes_a_post
+    FOR EACH ROW
+EXECUTE PROCEDURE update_likes_post();
+
+CREATE FUNCTION delete_likes_post() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$BEGIN
+    UPDATE posts SET likes = likes - 1 WHERE id = OLD.post;
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER delete_likes_of_a_post
+    AFTER DELETE ON likes_a_post
+    FOR EACH ROW
+EXECUTE PROCEDURE delete_likes_post();
+
 
 /* If user expresses joins a conference, we can consider him as notified */
 CREATE FUNCTION notified_on_attendance_intent() RETURNS trigger

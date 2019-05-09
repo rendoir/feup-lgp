@@ -21,9 +21,9 @@ class Feed extends React.Component<Props, State> {
     };
   }
 
-  public componentDidMount() {
-    this.apiGetFeed();
-  }
+  // public componentDidMount() {
+  //   this.apiGetFeed();
+  // }
 
   public apiGetFeed() {
     let feedUrl = `${location.protocol}//${location.hostname}`;
@@ -81,9 +81,9 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
-      return null;
-    }
+    // if (this.state.fetchingInfo) {
+    //   return null;
+    // }
 
     const hardCodedConferences = [
       "Conference 1",

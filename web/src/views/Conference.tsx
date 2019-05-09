@@ -498,7 +498,9 @@ class Conference extends React.Component<IProps, IState> {
           key={post.id}
           id={post.id}
           author={post.first_name + " " + post.last_name}
-          text={post.content}
+          content={post.content}
+          likes={post.likes}
+          likers={post.likers}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}

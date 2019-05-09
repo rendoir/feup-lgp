@@ -8,21 +8,19 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT *
-                    FROM (SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
-                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
-                        FROM posts p
-                            INNER JOIN users ON (users.id = p.author)
-                        WHERE
-                            (author = $1
-                                OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                                    AND p.visibility IN ('public', 'followers')))
-                            AND p.conference IS null
-                        ORDER BY date_created DESC)
-                    AS pvis
-                    ORDER BY pvis.visibility DESC
-                    LIMIT $2
-                    OFFSET $3`,
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+                          p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                   FROM posts p
+                   INNER JOIN users ON (users.id = p.author)
+                   WHERE
+                        (author = $1
+                            OR (author IN (SELECT followed FROM follows WHERE follower = $1)
+                                AND p.visibility IN ('public', 'followers')
+                            )
+                        ) AND p.conference IS null
+                   ORDER BY p.date_created DESC, p.visibility DESC
+                   LIMIT $2
+                   OFFSET $3`,
             values: [userId, limit, offset],
         });
         const totalSize = await query({
@@ -91,7 +89,7 @@ export async function getFeed(req, res) {
             likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
-          size: totalSize.rows[0].count,
+            size: totalSize.rows[0].count,
         });
     } catch (error) {
         console.error(error);
