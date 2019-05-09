@@ -71,15 +71,12 @@ function cleanTable(table) {
 
 async function cleanDb() {
     try {
-        console.log('in clean');
         const tableNames = await getTableNames();
-        console.log('after names');
         const promises = [];
         for (const row of tableNames.rows) {
             promises.push(cleanTable(row.table_name));
         }
         await Promise.all(promises);
-        console.log('after all cleaned');
     } catch (error) {
         console.error(error);
     }
@@ -90,10 +87,7 @@ async function insertAdminUser() {
         text: `INSERT INTO users (email, pass, first_name, last_name, permissions)
             VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin')
             RETURNING id`,
-    }).then((res) => {
-        console.log('insert admin');
-        return res.rows[0].id;
-    });
+    }).then((res) => res.rows[0].id);
 }
 
 before(function(done) {
@@ -101,13 +95,9 @@ before(function(done) {
     loadEnvironment();
     console.log('after load');
     cleanDb()
-    .then(() => {
-        console.log('before insert');
-        return insertAdminUser()
-    }).then((adminId) => {
-        console.log('before assign');
+    .then(insertAdminUser)
+    .then((adminId) => {
         assignAuthorsToPosts(adminId);
-        console.log('after assign');
         return done();
     });
 });

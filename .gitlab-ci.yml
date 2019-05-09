@@ -4,7 +4,7 @@ services:
 
 stages:
   - build
-  # - lint
+  - lint
   - test
   - release
   # - deploy
@@ -27,39 +27,39 @@ variables:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
-# build_web:
-#   stage: build
-#   script:
-#     - mkdir -p web/docker
-#     - cd web
-#     - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
-#     - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
-#     # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
-#     - docker image build -t $WEB_PRE_IMAGE .
-#     - docker push $WEB_PRE_IMAGE
+build_web:
+  stage: build
+  script:
+    - mkdir -p web/docker
+    - cd web
+    # - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
+    # - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
+    # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
+    - docker image build -t $WEB_PRE_IMAGE .
+    - docker push $WEB_PRE_IMAGE
 
-# build_api:
-#   stage: build
-#   script:
-#     - mkdir -p api/docker
-#     - mv environment/prod.env api/docker/prod.env
-#     - cd api
-#     - echo "$API_CRT" | tr -d '\r' > docker/api.crt
-#     - echo "$API_KEY" | tr -d '\r' > docker/api.key
-#     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-#     - docker image build -t $API_PRE_IMAGE .
-#     - docker push $API_PRE_IMAGE
-#     - apidoc -i src/routes -o public
-#   artifacts:
-#     paths:
-#     - api/public
+build_api:
+  stage: build
+  script:
+    - mkdir -p api/docker
+    - mv environment/prod.env api/docker/prod.env
+    - cd api
+    # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
+    # - echo "$API_KEY" | tr -d '\r' > docker/api.key
+    - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
+    - docker image build -t $API_PRE_IMAGE .
+    - docker push $API_PRE_IMAGE
+    - apidoc -i src/routes -o public
+  artifacts:
+    paths:
+    - api/public
 
-# build_db:
-#   stage: build
-#   script:
-#     - cd db
-#     - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
-#     - docker push $DB_PRE_IMAGE
+build_db:
+  stage: build
+  script:
+    - cd db
+    - docker image build --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $DB_PRE_IMAGE .
+    - docker push $DB_PRE_IMAGE
 
 build_api_tests:
   stage: build
@@ -80,15 +80,15 @@ build_api_tests:
 #     - docker image build -t $E2E_TEST_IMAGE .
 #     - docker push $E2E_TEST_IMAGE
 
-# test_web_linter:
-#   stage: lint
-#   script:
-#     - cd web && npm install && npm run lint
+test_web_linter:
+  stage: lint
+  script:
+    - cd web && npm install && npm run lint
 
-# test_api_linter:
-#   stage: lint
-#   script:
-#     - cd api && npm install && npm run lint
+test_api_linter:
+  stage: lint
+  script:
+    - cd api && npm install && npm run lint
 
 # web_integration_tests:
 #   stage: test
@@ -110,8 +110,6 @@ api_unit_tests:
     - chmod +x ../scripts/write_api_compose.sh
     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
     - docker-compose pull
-    # - docker-compose up -d db
-    # - sleep 30
     - docker-compose up --exit-code-from apitest
 
 release-web-staging:
