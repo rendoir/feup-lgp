@@ -85,24 +85,20 @@ async function insertAdminUser() {
         text: `INSERT INTO users (email, pass, first_name, last_name, permissions)
             VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin')
             RETURNING id`,
-    }).then((res) => res.rows[0].id);
+    }).then((res) => {
+        console.log('insert admin');
+        return res.rows[0].id;
+    });
 }
 
-before(async (done) => {
-    console.log('first');
-    await db.query({
-        text: `SELECT * FROM users LIMIT 1`,
-    });
-    console.log('second');
-    await db.query({
-        text: `SELEC * FROM users LIMIT 1`,
-    });
-    console.log('db should log error');
+before((done) => {
     loadEnvironment();
     cleanDb()
     .then(insertAdminUser)
     .then((adminId) => {
+        console.log('before assign');
         assignAuthorsToPosts(adminId);
+        console.log('after assign');
         return done();
     });
 });
