@@ -43,6 +43,7 @@ interface IProps {
 }
 
 interface IState {
+  clickedChallenge: number | undefined;
   hasChat: boolean;
   step: Step;
   hasLiveStream: boolean;
@@ -94,6 +95,7 @@ class Conference extends React.Component<IProps, IState> {
     this.tags = [];
     this.state = {
       challenges: [],
+      clickedChallenge: undefined,
       date_end: "",
       date_start: "",
       description: "",
@@ -638,7 +640,14 @@ class Conference extends React.Component<IProps, IState> {
     }
   }
 
-  private handleChallengeClick() {}
+  private handleChallengeClick(challenge: number | undefined) {
+    if (challenge) {
+      document.body.style.overflow = "hidden";
+      this.setState({
+        clickedChallenge: challenge
+      } as IState);
+    }
+  }
 
   private getChallenges() {
     return (

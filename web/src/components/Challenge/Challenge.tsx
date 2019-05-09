@@ -3,6 +3,8 @@ import React, { Component } from "react";
 
 // - Import styles
 import styles from "../Challenge.module.css";
+
+import QuestionAnswer from "./QuestionAnswer";
 import QuestionOptions from "./QuestionOptions";
 import TextChallenge from "./TextChallenge";
 
@@ -35,6 +37,8 @@ class Challenge extends Component<Props, State> {
     switch (this.props.challengeType) {
       case "question_options":
         return <QuestionOptions {...this.props} />;
+      case "answer_question":
+        return <QuestionAnswer {...this.props} />;
       case "livestream_view":
       case "comment_post":
       case "create_post":

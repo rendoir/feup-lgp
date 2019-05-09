@@ -1,5 +1,11 @@
-.carousel_control_next, .carousel_control_prev
+.carousel_control_next, .carousel_control_prev, .carousel_indicators
 {
     filter: invert(100%);
+}
+
+.carousel_indicators {
+    margin-top: 1em;
+    margin-bottom: 0;
+    position: relative;
 }
   

@@ -4,8 +4,7 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "./Challenge.module.css";
 
-import Radio from "../Radio/Radio";
-import RadioGroup from "../Radio/RadioGroup";
+import Input from "../Input/Input";
 
 export type Props = {
   id: number;
@@ -22,7 +21,7 @@ export type State = {
   value: string;
 };
 
-class QuestionOptions extends Component<Props, State> {
+class QuestionAnswer extends Component<Props, State> {
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -56,7 +55,6 @@ class QuestionOptions extends Component<Props, State> {
     const content = this.props.content;
     let question = "";
     let correctAnswer = "";
-    const possibleAnswers: any[] = [];
 
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
@@ -64,36 +62,20 @@ class QuestionOptions extends Component<Props, State> {
         question = content[i].split("Question: ")[1];
       } else if (content[i].startsWith("CorrectAnswer: ")) {
         correctAnswer = content[i].split("CorrectAnswer: ")[1];
-      } else if (content[i].startsWith("Answer: ")) {
-        possibleAnswers.push(content[i].split("Answer: ")[1]);
-      }
-    }
-
-    const answers: any[] = [];
-
-    if (possibleAnswers.length > 0) {
-      for (let i = 0; i < possibleAnswers.length; i++) {
-        const value = "answer_" + i;
-        answers.push(<Radio value={value}>{possibleAnswers[i]}</Radio>);
-        answers.push(<br />);
       }
     }
 
     return (
       <div>
         <h6 className="card-title">{question}</h6>
-        <ul className="answers">
-          <RadioGroup
-            key={"Challenge_" + this.props.id}
-            onChange={value => this.setState({ value })}
-            value={this.state.value}
-          >
-            {answers}
-          </RadioGroup>
-        </ul>
+        <Input
+          id="0"
+          onChange={value => this.setState({ value })}
+          value={this.state.value}
+        />
       </div>
     );
   }
 }
 
-export default QuestionOptions;
+export default QuestionAnswer;

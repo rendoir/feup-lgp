@@ -30,7 +30,8 @@ CREATE TYPE challenge_type_enum AS ENUM (
     'question_options',
     'livestream_view',
     'comment_post',
-    'create_post'
+    'create_post',
+    'answer_question'
 );
 
 CREATE TABLE users (
@@ -677,3 +678,7 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 * CHALLENGES
 */
 INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference) VALUES ('Challenge Options 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'question_options','{"Question: What is the title of this conference","CorrectAnswer: Admin conference 1", "Answer: Admin conference 1","Answer: Admin conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}',1);
+INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference) VALUES ('Challenge Question 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'answer_question','{"Question: What is the title of this conference","CorrectAnswer: Admin conference 1"}',1);
+INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference) VALUES ('Challenge Comment Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'comment_post','{"PostToComment: 25"}',1);
+INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference) VALUES ('Challenge Create Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'create_post','{"Description: Create a Post in this conference where you explain why it is so important for you!"}',1);
+

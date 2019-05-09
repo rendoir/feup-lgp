@@ -12,7 +12,7 @@ export type Props = {
   id: number;
   challenges: any[];
   parent: Conference;
-  handleChallengeClick: (challenge: Challenge | undefined) => any;
+  handleChallengeClick: (challenge: number | undefined) => any;
 };
 
 export type State = {};
@@ -51,7 +51,7 @@ class ChallengeCarousel extends Component<Props, State> {
             className="post_content_media"
             onClick={this.props.handleChallengeClick.bind(
               this.props.parent,
-              this.props.challenges[i]
+              this.props.challenges[i].id
             )}
           >
             <Challenge
@@ -71,12 +71,11 @@ class ChallengeCarousel extends Component<Props, State> {
 
     return (
       <div
-        id={"imgCarousel" + this.props.id}
+        id={"challengeCarousel" + this.props.id}
         className="carousel slide"
         data-ride="carousel"
         data-interval="false"
       >
-        <ol className="carousel-indicators">{items}</ol>
         <div className="carousel-inner challenge">{challenges}</div>
         <a
           className={`carousel-control-prev ${styles.carousel_control_prev}`}
@@ -96,6 +95,9 @@ class ChallengeCarousel extends Component<Props, State> {
           <span className="carousel-control-next-icon" aria-hidden="true" />
           <span className="sr-only">Next</span>
         </a>
+        <ol className={`carousel-indicators ${styles.carousel_indicators}`}>
+          {items}
+        </ol>
       </div>
     );
   }
