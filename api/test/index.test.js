@@ -88,7 +88,7 @@ async function insertAdminUser() {
     }).then((res) => res.rows[0].id);
 }
 
-before((done) => {
+before(async (done) => {
     console.log('first');
     await db.query({
         text: `SELECT * FROM users LIMIT 1`,
