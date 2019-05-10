@@ -129,7 +129,29 @@ export let dictionary: Dictionary = {
   shop_you_have: { PT: "Tem", EN: "You have" },
   shop_points: { PT: "pontos!", EN: "points!" },
   shop_search_points: { PT: "Procurar produtos", EN: "Search products" },
-  shop_exchange: { PT: "Trocar", EN: "Exchange" }
+  shop_exchange: { PT: "Trocar", EN: "Exchange" },
+  tag_placeholder: {
+    PT: "Procure ou insira uma nova categoria e carregue Enter.",
+    EN: "Search for or insert a new tag and click Enter."
+  },
+  report: { PT: "Denúncia", EN: "Report" },
+  search_user: { PT: "Procurar utilizador", EN: "Search user" },
+  publication: { PT: "publicação", EN: "Post" },
+  comment: { PT: "comentário", EN: "comment" },
+  take_action: { PT: "Tomar ação", EN: "Take action" },
+  ban_user: { PT: "Banir utilizador", EN: "Ban user" },
+  delete_content: { PT: "Apagar conteúdo", EN: "Delete content" },
+  ignore: { PT: "Ignorar", EN: "Ignore" },
+  banned: { PT: "banido", EN: "banned" },
+  ban_action: { PT: "Banir", EN: "Ban" },
+  unban_action: { PT: "Desbanir", EN: "Unban" },
+  turn_admin: { PT: "Tornar admin", EN: "Turn admin" },
+  expel_admin: { PT: "Expulsar admin", EN: "Expel admin" },
+  conference_chat: { PT: "Chat da conferência", EN: "Conference Chat" },
+  chat_message_placeholder: {
+    PT: "Insira aqui a sua mensagem...",
+    EN: "Insert your message here..."
+  }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

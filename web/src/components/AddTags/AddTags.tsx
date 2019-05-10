@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./AddTags.module.css";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Option = {};
 
@@ -21,6 +22,8 @@ export interface IState {
 }
 
 class AddTags extends Component<IProps, IState> {
+  static contextType = LanguageContext;
+
   public tagInput: any;
 
   constructor(props: IProps) {
@@ -53,7 +56,7 @@ class AddTags extends Component<IProps, IState> {
               type="text"
               className={this.getInputRequiredClass("tags")}
               list="suggested-tags"
-              placeholder="Search for or write a new tag and click enter."
+              placeholder={dictionary.tag_placeholder[this.context]}
               onKeyDown={this.onSpacePress}
               ref={c => {
                 this.tagInput = c;

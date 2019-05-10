@@ -8,6 +8,8 @@ import styles from "./Chat.module.css";
 
 import { getApiURL } from "../../utils/apiURL";
 
+import { dictionary, LanguageContext } from "../../utils/language";
+
 type Message = {
   id: number;
   user: string;
@@ -21,6 +23,8 @@ type State = {
 };
 
 class Chat extends React.Component<RouteComponentProps<any>, State> {
+  static contextType = LanguageContext;
+
   private user: string;
   private i: number; // TODO DELETE
   private messagesEnd: any;
@@ -80,7 +84,9 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
   public render() {
     return (
       <div className={styles.chat}>
-        <div className={styles.chat_header}>Conference Chat</div>
+        <div className={styles.chat_header}>
+          {dictionary.conference_chat[this.context]}
+        </div>
 
         <div className={styles.chat_body}>
           <div className={stylesComments.post_comment + " w-100"}>
@@ -97,7 +103,7 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
         <form className={styles.chat_footer} onSubmit={this.onLiveChatSubmit}>
           <input
             type="text"
-            placeholder="Insert your message here..."
+            placeholder={dictionary.chat_message_placeholder[this.context]}
             onChange={this.onChangeLiveChatMessage}
             value={this.state.chatMessage}
           />

@@ -138,7 +138,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             <input
               className="form-control mr-1"
               type="text"
-              placeholder="Search user"
+              placeholder={dictionary.search_user[this.context]}
             />
             <button
               className="form-control btn btn-secondary my-2 my-sm-0"
