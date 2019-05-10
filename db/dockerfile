@@ -2,5 +2,6 @@ FROM postgres:11-alpine
 
 ARG POSTGRES_PASSWORD
 ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+VOLUME /var/lib/postgresql
 COPY ./scripts /docker-entrypoint-initdb.d
 EXPOSE 5432

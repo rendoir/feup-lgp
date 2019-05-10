@@ -3,8 +3,8 @@ FROM node:lts-alpine
 ENV PRODUCTION true
 WORKDIR /home/node/app
 COPY . .
-RUN mkdir -p uploads
 RUN npm install
+RUN mkdir -p uploads
 RUN chmod -R 777 /home/node/app/uploads
 RUN chown -R node: /home/node/app/uploads
 USER node
