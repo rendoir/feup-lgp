@@ -135,7 +135,7 @@ class Post extends Component<IProps, IState> {
 
   public render() {
     if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
-      return <div>Loading...</div>;
+      return null;
     }
 
     return (
