@@ -7,8 +7,7 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT *
-                    FROM (SELECT p.id, first_name, last_name, p.title, p.content,
+            text: `(SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
@@ -18,10 +17,19 @@ export async function getFeed(req, res) {
                                     AND p.visibility IN ('public', 'followers')))
                             AND p.conference IS null
                         ORDER BY date_created DESC
-                        LIMIT 100
+                        LIMIT 80
                         OFFSET $2)
-                    AS pvis
-                    ORDER BY pvis.visibility DESC
+                    UNION
+                    (SELECT p.id, first_name, last_name, p.title, p.content,
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (p.visibility = 'public')
+                        ORDER BY date_created DESC
+                        LIMIT 20
+                        OFFSET $2)
+                    ORDER BY date_created DESC
                     LIMIT 20
                     OFFSET $2`,
             values: [userId, offset],
