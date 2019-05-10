@@ -12,12 +12,15 @@ import { Request, Step } from "../CreateNewModal/types";
 import Icon from "../Icon/Icon";
 import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
 import styles from "./Header.module.css";
+import Select from "../Select/Select";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 type Props = {
   title: string;
   searchBar: boolean;
   onSearchClick?: (text: string, event: MouseEvent) => any;
   onProfileClick?: (event: MouseEvent) => any;
+  onLanguageChange: (lang: string) => any;
 };
 
 type State = {
@@ -45,6 +48,8 @@ type State = {
 };
 
 class Header extends PureComponent<Props, State> {
+  static contextType = LanguageContext;
+
   public static defaultProps = {
     logoRedirectToHome: false,
     searchBar: false
@@ -121,10 +126,10 @@ class Header extends PureComponent<Props, State> {
     return (
       <Nav className={"mr-auto"}>
         <Nav.Link href={"/"} className={styles.link}>
-          Home
+          {dictionary["home"][this.context]}
         </Nav.Link>
         <Nav.Link href={"/shop"} className={styles.link}>
-          Shop
+          {dictionary["shop"][this.context]}
         </Nav.Link>
       </Nav>
     );
@@ -133,6 +138,16 @@ class Header extends PureComponent<Props, State> {
   private renderButtons() {
     return (
       <Nav>
+        <Select
+          className="my-auto mx-2"
+          id="language_selector"
+          value={this.context}
+          options={[
+            { value: "EN", title: "English" },
+            { value: "PT", title: "Português" }
+          ]}
+          onChange={this.props.onLanguageChange}
+        />
         <Nav.Link href={"#"} onClick={this.handleClick} className={styles.link}>
           <Icon
             icon={faPlus}
@@ -141,11 +156,11 @@ class Header extends PureComponent<Props, State> {
             theme={"primary"}
             className={"mr-1"}
           />
-          New
+          {dictionary["new"][this.context]}
         </Nav.Link>
         <Nav.Link href={"/user/1"} className={styles.link}>
           <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
-          Profile
+          {dictionary["profile"][this.context]}
         </Nav.Link>
         {this.state.isOpen ? (
           <CreateNewModal
