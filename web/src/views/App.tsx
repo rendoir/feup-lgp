@@ -2,7 +2,12 @@ import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Header from "../components/header/Header";
-import { LanguageContext } from "../utils/language";
+import {
+  LanguageContext,
+  defaultLanguage,
+  preferedLanguage,
+  saveLanguage
+} from "../utils/language";
 import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
@@ -26,7 +31,7 @@ class App extends React.Component<{}, State> {
     super(props);
 
     this.state = {
-      language: "EN"
+      language: preferedLanguage ? preferedLanguage : defaultLanguage
     };
 
     this.onLanguageChange = this.onLanguageChange.bind(this);
@@ -62,6 +67,7 @@ class App extends React.Component<{}, State> {
     this.setState({
       language: lang
     });
+    saveLanguage(lang);
   }
 }
 

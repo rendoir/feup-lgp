@@ -1,5 +1,12 @@
 import React, { Context } from "react";
 
+export const defaultLanguage = "EN";
+export let preferedLanguage = localStorage.getItem("lang");
+
+export function saveLanguage(lang: string) {
+  localStorage.setItem("lang", lang);
+}
+
 type Dictionary = {
   [msg: string]: {
     [lang: string]: string;
@@ -81,5 +88,5 @@ export let dictionary: Dictionary = {
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
-  "EN"
+  defaultLanguage
 );
