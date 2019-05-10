@@ -29,6 +29,7 @@ type MyFile = {
 import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 import {
   faGlobeAfrica,
@@ -84,6 +85,8 @@ interface IState {
 const cookies = new Cookies();
 
 class Post extends Component<IProps, IState> {
+  static contextType = LanguageContext;
+
   public static defaultProps = {};
   public id: string;
   public userId: number;
@@ -190,10 +193,14 @@ class Post extends Component<IProps, IState> {
               data-toggle="dropdown"
               data-target={"#post_" + this.props.id + " show_likes"}
             >
-              {this.props.likes} likes
+              {this.props.likes} {dictionary["likes"][this.context]}
               {this.getLikes()}
             </span>
-            <span> {this.props.comments.length} comments</span>
+            <span>
+              {" "}
+              {this.props.comments.length}{" "}
+              {dictionary["comments"][this.context]}
+            </span>
             <fieldset className="rate">
               <div className="star-ratings-css">
                 {this.handleStars()}
@@ -235,7 +242,9 @@ class Post extends Component<IProps, IState> {
                 className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
                   this.state.commentValue
                 )}`}
-                placeholder="Insert your comment..."
+                placeholder={
+                  dictionary["insert_comment_placeholder"][this.context]
+                }
                 value={this.state.commentValue}
                 onChange={this.changeCommentValue}
                 onKeyDown={this.onEnterPress}
@@ -244,7 +253,7 @@ class Post extends Component<IProps, IState> {
               <button
                 className={`${styles.submit_comment} px-2 py-1`}
                 type="submit"
-                value="Submit"
+                value={dictionary.submit[this.context]}
                 disabled={!this.validComment()}
               >
                 <i className="fas fa-chevron-circle-right" />
@@ -364,7 +373,7 @@ class Post extends Component<IProps, IState> {
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
+          <span>{dictionary["like_action"][this.context]}</span>
         </div>
       );
     } else {
@@ -372,7 +381,7 @@ class Post extends Component<IProps, IState> {
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
+          <span>{dictionary["like_action"][this.context]}</span>
         </div>
       );
     }
@@ -639,8 +648,8 @@ class Post extends Component<IProps, IState> {
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary["unsubscribe_action"][this.context]
+      : dictionary["subscribe_action"][this.context];
 
     return (
       <div className={styles.post_actions}>
@@ -651,11 +660,11 @@ class Post extends Component<IProps, IState> {
         </button>
         <button>
           <i className="far fa-comment-alt" />
-          <span>Comment</span>
+          <span>{dictionary["comment_action"][this.context]}</span>
         </button>
         <button>
           <i className="fas fa-share-square" />
-          <span>Share</span>
+          <span>{dictionary["share_action"][this.context]}</span>
         </button>
       </div>
     );
@@ -795,7 +804,9 @@ class Post extends Component<IProps, IState> {
         onClick={this.handlePostReport}
         disabled={this.state.userReport}
       >
-        {this.state.userReport ? "Report already issued" : "Report post"}
+        {this.state.userReport
+          ? dictionary.report_post_issued[this.context]
+          : dictionary.report_post[this.context]}
       </button>
     );
     const editButton = (
@@ -806,7 +817,7 @@ class Post extends Component<IProps, IState> {
         data-toggle="modal"
         data-target={`#post_modal_Edit_${this.props.id}`}
       >
-        Edit Post
+        {dictionary.edit_post[this.context]}
       </button>
     );
     const deleteButton = (
@@ -817,7 +828,7 @@ class Post extends Component<IProps, IState> {
         data-toggle="modal"
         data-target={`#delete_post_modal_${this.props.id}`}
       >
-        Delete Post
+        {dictionary.delete_post[this.context]}
       </button>
     );
     const dropdownButtons = [reportButton, editButton, deleteButton];
