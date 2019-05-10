@@ -84,7 +84,25 @@ export let dictionary: Dictionary = {
   no_access_conference: {
     PT: "Não tem permissões para aceder a esta conferência",
     EN: "You don't have permissions to access this conference"
-  }
+  },
+  login: { PT: "Entrar", EN: "Login" },
+  username: { PT: "Nome de utilizador", EN: "Username" },
+  password: { PT: "Palavra passe", EN: "Password" },
+  notifications: { PT: "Notificações", EN: "Notifications" },
+  no_notifications: {
+    PT: "Erro ao adquirir notificações",
+    EN: "Error retrieving notifications."
+  },
+  error_notifications: {
+    PT: "Não tem notificações",
+    EN: "You have no notifications."
+  },
+  search_type: { PT: "Tipo de busca", EN: "Search type" },
+  all_users: { PT: "Todos os utilizadores", EN: "All users" },
+  administrators: { PT: "Administradores", EN: "Administrators" },
+  banned_users: { PT: "Utilizadores banidos", EN: "Banned users" },
+  admin_area: { PT: "Área de administração", EN: "Administration area" },
+  manage_users: { PT: "Gerir utilizadores", EN: "Manage users" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
+import { dictionary, LanguageContext } from "../utils/language";
 
 type BackofficeState = {
   usersAreaActive: boolean;
@@ -10,6 +11,8 @@ const PUBLICATION_NOTIFICATION = "publication";
 const COMMENT_NOTIFICATION = "comment";
 
 class Backoffice extends React.Component<{}, BackofficeState> {
+  static contextType = LanguageContext;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -36,21 +39,24 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           {/* Admin menu */}
           <div className="col-12 col-md-3">
             <div className="dropdown">
-              <h6 className="dropdown-header">Admin area</h6>
+              <h6 className="dropdown-header">
+                {dictionary.admin_area[this.context]}
+              </h6>
               <div className="dropdown-divider" />
               <a
                 id="manage_users"
                 className="dropdown-item"
                 onClick={this.handleUsersArea}
               >
-                Manage users
+                {dictionary.manage_users[this.context]}
               </a>
               <a
                 id="notifications"
                 className="dropdown-item"
                 onClick={this.handleNotifArea}
               >
-                Notifications <span className="badge badge-light">4</span>
+                {dictionary.notifications[this.context]}{" "}
+                <span className="badge badge-light">4</span>
               </a>
             </div>
           </div>
@@ -114,17 +120,17 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               aria-haspopup="true"
               aria-expanded="false"
             >
-              Search type
+              {dictionary.search_type[this.context]}
             </button>
             <div className="dropdown-menu">
               <a className="dropdown-item" href="#">
-                All users
+                {dictionary.all_users[this.context]}
               </a>
               <a className="dropdown-item" href="#">
-                Admins
+                {dictionary.administrators[this.context]}
               </a>
               <a className="dropdown-item" href="#">
-                Banned users
+                {dictionary.banned_users[this.context]}
               </a>
             </div>
           </div>

@@ -6,6 +6,7 @@ import "../styles/Notifications.css";
 // - Import utils
 import InviteNotification from "../components/InviteNotification/InviteNotification";
 import { apiGetNotifications } from "../utils/apiInvite";
+import { dictionary, LanguageContext } from "../utils/language";
 
 interface IState {
   fetchingNotifications: boolean;
@@ -15,6 +16,8 @@ interface IState {
 const cookies = new Cookies();
 
 class Notifications extends Component<{}, IState> {
+  static contextType = LanguageContext;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -38,11 +41,11 @@ class Notifications extends Component<{}, IState> {
 
   public getNotifications() {
     if (this.state.fetchingNotifications) {
-      return <div>Fetching notifications...</div>;
+      return null;
     } else if (!this.state.notifications) {
-      return <div>Error retrieving notifications.</div>;
+      return <div>{dictionary.error_notifications[this.context]}</div>;
     } else if (this.state.notifications.length === 0) {
-      return <div>You have no notifications.</div>;
+      return <div>{dictionary.no_notifications[this.context]}</div>;
     }
 
     const notificationList = this.state.notifications.map(notif => {
@@ -66,7 +69,7 @@ class Notifications extends Component<{}, IState> {
           <div className="panel panel-primary">
             <div className="panel-body">
               <div className="panel-title">
-                <h3>Notifications</h3>
+                <h3>{dictionary.notifications[this.context]}</h3>
               </div>
               <ul className="list-group">{this.getNotifications()}</ul>
             </div>
