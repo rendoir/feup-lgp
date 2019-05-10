@@ -16,7 +16,7 @@ type Dictionary = {
 export let dictionary: Dictionary = {
   home: { PT: "Início", EN: "Home" },
   shop: { PT: "Loja", EN: "Shop" },
-  search: { PT: "Busca", EN: "Search" },
+  search: { PT: "Procurar", EN: "Search" },
   new: { PT: "Novo", EN: "New" },
   profile: { PT: "Perfil", EN: "Profile" },
   conferences: { PT: "Conferências", EN: "Conferences" },
@@ -102,7 +102,34 @@ export let dictionary: Dictionary = {
   administrators: { PT: "Administradores", EN: "Administrators" },
   banned_users: { PT: "Utilizadores banidos", EN: "Banned users" },
   admin_area: { PT: "Área de administração", EN: "Administration area" },
-  manage_users: { PT: "Gerir utilizadores", EN: "Manage users" }
+  manage_users: { PT: "Gerir utilizadores", EN: "Manage users" },
+  description: {
+    PT: "Rede Social para profissionais e estudantes de saúde",
+    EN: "Social Network for medicine professionals and students"
+  },
+  document_sharing: { PT: "Partilha de Documentos", EN: "Document Sharing" },
+  comment_encourage: { PT: "Comente e Incentive", EN: "Comment and Encourage" },
+  search_find: { PT: "Procure e Encontre", EN: "Search and Find" },
+  description2: {
+    PT: "Teses, casos de estudo, video-conferências, ...",
+    EN: "Thesis, clinical cases, video conferences..."
+  },
+  signup: { PT: "Registar", EN: "Sign up" },
+  first_name: { PT: "Primeiro nome", EN: "First name" },
+  last_name: { PT: "Último nome", EN: "Last name" },
+  profession_field: { PT: "Profissão / Área", EN: "Profession / Field" },
+  workplace_institution: {
+    PT: "Local de Trabalho / Instituição",
+    EN: "Workplace / Institution"
+  },
+  search_results: { PT: "Resultados de Pesquisa", EN: "Search Results" },
+  posts_by_content: { PT: "Publicações por Conteúdo", EN: "Posts by Content" },
+  search_by_author: { PT: "Publicações por Autor", EN: "Posts by Author" },
+  search_users: { PT: "Utilizadores", EN: "Users" },
+  shop_you_have: { PT: "Tem", EN: "You have" },
+  shop_points: { PT: "pontos!", EN: "points!" },
+  shop_search_points: { PT: "Procurar produtos", EN: "Search products" },
+  shop_exchange: { PT: "Trocar", EN: "Exchange" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

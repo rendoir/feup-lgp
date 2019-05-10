@@ -1,8 +1,11 @@
 import * as React from "react";
 import Button from "../components/Button/Button";
 import "../styles/Shop.css";
+import { dictionary, LanguageContext } from "../utils/language";
 
 class Shop extends React.Component {
+  static contextType = LanguageContext;
+
   public render() {
     return (
       <div id="Shop" className="container">
@@ -13,20 +16,20 @@ class Shop extends React.Component {
               <div className="card h-100">
                 <div className="card-body">
                   <h6>
-                    You have
+                    {dictionary.shop_you_have[this.context]}
                     <a id="user-points"> x </a>
-                    points!
+                    {dictionary.shop_points[this.context]}
                   </h6>
                 </div>
                 <form id="shop-left-box" className="form-inline my-2 my-lg-0">
                   <h5 className="my-4" id="search-products">
-                    Search products:
+                    {dictionary.shop_search_points[this.context]}
                   </h5>
                   <input
                     id="search-shop-input"
                     className="form-control mr-sm-2"
                     type="text"
-                    placeholder="Search"
+                    placeholder={dictionary.search[this.context]}
                   />
                   <button
                     id="search-shop-button"
@@ -115,7 +118,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -150,7 +153,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -185,7 +188,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -220,7 +223,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -255,7 +258,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -290,7 +293,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -325,7 +328,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -360,7 +363,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -395,7 +398,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -430,7 +433,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -465,7 +468,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -500,7 +503,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
