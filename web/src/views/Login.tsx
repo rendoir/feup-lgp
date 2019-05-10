@@ -1,20 +1,22 @@
+import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
+import { getApiURL } from "../utils/apiURL";
 
 const cookies = new Cookies();
 
-class Login extends React.Component {
+type Props = {};
+
+type State = {
+  email: string;
+  password: string;
+};
+
+class Login extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
 
     this.handleAuthentication = this.handleAuthentication.bind(this);
-  }
-
-  public handleAuthentication(e: any) {
-    e.preventDefault();
-    console.log("AUTENTICATIOOON");
-    const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
-    console.log("User id: ", cookies.get("user_id"));
   }
 
   public render() {
@@ -29,8 +31,8 @@ class Login extends React.Component {
             <input
               type="email"
               className="form-control col"
-              id="inputUsername"
-              placeholder="Username"
+              id="inputEmail"
+              placeholder="E-mail"
             />
           </div>
           <div className="form-group mt-3">
@@ -49,6 +51,13 @@ class Login extends React.Component {
         </form>
       </div>
     );
+  }
+
+  private handleAuthentication(e: any) {
+    e.preventDefault();
+
+    const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
+    console.log("User id: ", cookies.get("user_id"));
   }
 }
 
