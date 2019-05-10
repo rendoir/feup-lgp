@@ -26,6 +26,9 @@ export async function getFeed(req, res) {
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
                             (p.visibility = 'public')
+                            AND p.conference IS null
+                            AND author != $1
+                            AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                         ORDER BY date_created DESC
                         LIMIT 20
                         OFFSET $2)
