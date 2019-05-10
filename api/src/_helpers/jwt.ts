@@ -9,8 +9,8 @@ export function jwtMiddleware() {
     return jwt({secret, isRevoked}).unless({
         path: [
             // public routes that don't require authentication
-            '/users',
             '/login',
+            '/register',
         ],
     });
 }

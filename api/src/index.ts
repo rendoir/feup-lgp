@@ -10,8 +10,8 @@ import * as express_session from 'express-session';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
-// import { jwtMiddleware } from './_helpers/jwt';
 import * as socketIo from 'socket.io';
+import { jwtMiddleware } from './_helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -65,8 +65,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Uncomment the following line when login is implemented.
-// app.use(jwtMiddleware());
+app.use(jwtMiddleware());
 
 // Define routes.
 app.use('/users', usersRouter);
