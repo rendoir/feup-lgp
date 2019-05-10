@@ -1,21 +1,26 @@
 import axios from "axios";
 import * as React from "react";
+import { RouteComponentProps } from "react-router";
 import Cookies from "universal-cookie";
 import { getApiURL } from "../utils/apiURL";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
 
 const cookies = new Cookies();
-
-type Props = {};
 
 type State = {
   email: string;
   password: string;
 };
 
-class Login extends React.Component<Props, State> {
+class Login extends React.Component<RouteComponentProps, State> {
+  private auth = new AuthHelperMethods();
+
   constructor(props: any) {
     super(props);
-
+    this.state = {
+      email: "",
+      password: ""
+    };
     this.handleAuthentication = this.handleAuthentication.bind(this);
   }
 
@@ -55,9 +60,17 @@ class Login extends React.Component<Props, State> {
 
   private handleAuthentication(e: any) {
     e.preventDefault();
-
-    const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
-    console.log("User id: ", cookies.get("user_id"));
+    this.auth
+      .login(this.state.email, this.state.password)
+      .then(res => {
+        console.log(res);
+        this.props.history.push("/");
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    // const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
+    // console.log("User id: ", cookies.get("user_id"));
   }
 }
 

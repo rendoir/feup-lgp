@@ -4,18 +4,22 @@ import decode from "jwt-decode";
 import { getApiURL } from "./apiURL";
 
 export default class AuthHelperMethods {
-  login = (email, password) => {
-    // Get a token from api server using the fetch api
-    return this.fetch(getApiURL(`/login`), {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }).then(res => {
+  login = async (email, password) => {
+    try {
+      // Get a token from api server using the fetch api
+      const res = await this.fetch(getApiURL(`/login`), {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password
+        })
+      });
       this.setToken(res.token); // Setting the token in localStorage
       return Promise.resolve(res);
-    });
+    } catch (err) {
+      console.error(err);
+      return Promise.reject(err);
+    }
   };
 
   loggedIn = () => {
