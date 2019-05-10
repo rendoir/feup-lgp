@@ -59,7 +59,7 @@ class SearchSimpleForm extends React.Component<
             type="text"
             name="search"
             onChange={this.handleInputChange}
-            placeholder={dictionary["search"][this.context]}
+            placeholder={dictionary.search[this.context]}
           />
           <button className="btn btn-secondary my-2 my-sm-0" type="submit">
             <i className="fas fa-search" />

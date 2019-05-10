@@ -193,13 +193,12 @@ class Post extends Component<IProps, IState> {
               data-toggle="dropdown"
               data-target={"#post_" + this.props.id + " show_likes"}
             >
-              {this.props.likes} {dictionary["likes"][this.context]}
+              {this.props.likes} {dictionary.likes[this.context]}
               {this.getLikes()}
             </span>
             <span>
               {" "}
-              {this.props.comments.length}{" "}
-              {dictionary["comments"][this.context]}
+              {this.props.comments.length} {dictionary.comments[this.context]}
             </span>
             <fieldset className="rate">
               <div className="star-ratings-css">
@@ -243,7 +242,7 @@ class Post extends Component<IProps, IState> {
                   this.state.commentValue
                 )}`}
                 placeholder={
-                  dictionary["insert_comment_placeholder"][this.context]
+                  dictionary.insert_comment_placeholder[this.context]
                 }
                 value={this.state.commentValue}
                 onChange={this.changeCommentValue}
@@ -373,7 +372,7 @@ class Post extends Component<IProps, IState> {
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>{dictionary["like_action"][this.context]}</span>
+          <span>{dictionary.like_action[this.context]}</span>
         </div>
       );
     } else {
@@ -381,7 +380,7 @@ class Post extends Component<IProps, IState> {
       return (
         <div>
           <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>{dictionary["like_action"][this.context]}</span>
+          <span>{dictionary.like_action[this.context]}</span>
         </div>
       );
     }
@@ -648,8 +647,8 @@ class Post extends Component<IProps, IState> {
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? dictionary["unsubscribe_action"][this.context]
-      : dictionary["subscribe_action"][this.context];
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
     return (
       <div className={styles.post_actions}>
@@ -660,11 +659,11 @@ class Post extends Component<IProps, IState> {
         </button>
         <button>
           <i className="far fa-comment-alt" />
-          <span>{dictionary["comment_action"][this.context]}</span>
+          <span>{dictionary.comment_action[this.context]}</span>
         </button>
         <button>
           <i className="fas fa-share-square" />
-          <span>{dictionary["share_action"][this.context]}</span>
+          <span>{dictionary.share_action[this.context]}</span>
         </button>
       </div>
     );

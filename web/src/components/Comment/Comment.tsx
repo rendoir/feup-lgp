@@ -110,7 +110,7 @@ class Comment extends Component<Props, State> {
                   data-toggle="collapse"
                   data-target={"#" + this.state.hrefComment + "_form"}
                 >
-                  {dictionary["reply_action"][this.context]}
+                  {dictionary.reply_action[this.context]}
                 </button>
               )}
               <a className={styles.post_date} href={"/post/" + this.id} />
@@ -149,7 +149,7 @@ class Comment extends Component<Props, State> {
                           this.state.commentValue
                         )}`}
                         placeholder={
-                          dictionary["insert_comment_placeholder"][this.context]
+                          dictionary.insert_comment_placeholder[this.context]
                         }
                         value={this.state.commentValue}
                         onChange={this.changeCommentValue}
@@ -200,7 +200,7 @@ class Comment extends Component<Props, State> {
               <div className="modal-body">
                 <input
                   placeholder={
-                    dictionary["insert_comment_placeholder"][this.context]
+                    dictionary.insert_comment_placeholder[this.context]
                   }
                   className="form-control"
                   value={this.state.commentText}
@@ -327,13 +327,13 @@ class Comment extends Component<Props, State> {
     if (foundValue != null) {
       return (
         <button className={styles.comment_action} onClick={this.handleAddLike}>
-          {dictionary["dislike_action"][this.context]}
+          {dictionary.dislike_action[this.context]}
         </button>
       );
     } else {
       return (
         <button className={styles.comment_action} onClick={this.handleAddLike}>
-          {dictionary["like_action"][this.context]}
+          {dictionary.like_action[this.context]}
         </button>
       );
     }
@@ -704,8 +704,8 @@ class Comment extends Component<Props, State> {
           data-toggle="collapse"
           data-target={"#" + this.state.hrefComment}
         >
-          {dictionary["see_replies"][this.context]} {this.state.comments.length}{" "}
-          {dictionary["replies"][this.context]}
+          {dictionary.see_replies[this.context]} {this.state.comments.length}{" "}
+          {dictionary.replies[this.context]}
         </button>
       );
     }

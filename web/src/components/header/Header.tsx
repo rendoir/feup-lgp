@@ -126,10 +126,10 @@ class Header extends PureComponent<Props, State> {
     return (
       <Nav className={"mr-auto"}>
         <Nav.Link href={"/"} className={styles.link}>
-          {dictionary["home"][this.context]}
+          {dictionary.home[this.context]}
         </Nav.Link>
         <Nav.Link href={"/shop"} className={styles.link}>
-          {dictionary["shop"][this.context]}
+          {dictionary.shop[this.context]}
         </Nav.Link>
       </Nav>
     );
@@ -156,11 +156,11 @@ class Header extends PureComponent<Props, State> {
             theme={"primary"}
             className={"mr-1"}
           />
-          {dictionary["new"][this.context]}
+          {dictionary.new[this.context]}
         </Nav.Link>
         <Nav.Link href={"/user/1"} className={styles.link}>
           <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
-          {dictionary["profile"][this.context]}
+          {dictionary.profile[this.context]}
         </Nav.Link>
         {this.state.isOpen ? (
           <CreateNewModal

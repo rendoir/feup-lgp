@@ -104,21 +104,21 @@ class Comment2 extends PureComponent<Props, State> {
         <div className={styles.footerLinks}>
           <a href="#" className={styles.link} onClick={this.handleLike}>
             <Icon icon={faThumbsUp} />
-            {dictionary["like_action"][this.context]}
+            {dictionary.like_action[this.context]}
           </a>
           {reply ? null : (
             <a href="#" className={styles.link}>
               <Icon icon={faReply} />
-              {dictionary["reply_action"][this.context]}
+              {dictionary.reply_action[this.context]}
             </a>
           )}
           <a href="#" className={styles.link}>
             <Icon icon={faEdit} />
-            {dictionary["edit_action"][this.context]}
+            {dictionary.edit_action[this.context]}
           </a>
           <a href="#" className={styles.link}>
             <Icon icon={faTrash} />
-            {dictionary["delete_action"][this.context]}
+            {dictionary.delete_action[this.context]}
           </a>
         </div>
         <div className={styles.footerLinks}>
@@ -154,7 +154,7 @@ class Comment2 extends PureComponent<Props, State> {
             onChange={message => this.setState({ message })}
             value={this.state.message}
             id={"1"}
-            placeholder={dictionary["insert_comment_placeholder"][this.context]}
+            placeholder={dictionary.insert_comment_placeholder[this.context]}
           />
         </div>
       </div>
