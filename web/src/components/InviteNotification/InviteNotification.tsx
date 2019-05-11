@@ -3,6 +3,7 @@ import React, { Component } from "react";
 // - Import utils
 import { apiUserJoinConference } from "../../utils/apiConference";
 import { apiInviteNotified } from "../../utils/apiInvite";
+import { apiSubscription } from "../../utils/apiSubscription";
 
 interface IProps {
   id: number;
@@ -34,7 +35,22 @@ class InviteNotification extends Component<IProps, IState> {
 
     // Joining posts is yet to be implemented
     if (this.props.subjectType === "conference") {
+      console.log("JOINOU CONFERENCIA");
       joinSuccess = await apiUserJoinConference(this.props.subjectId);
+    } else if (this.props.subjectType === "post") {
+      try {
+        console.log("JOINOU POST");
+        const loggedUserId = 1;
+        await apiSubscription(
+          "post",
+          "subscribe",
+          loggedUserId,
+          this.props.subjectId
+        );
+      } catch (error) {
+        console.log("Failed to subscribe post through invite");
+        joinSuccess = false;
+      }
     }
 
     if (!joinSuccess) {
@@ -63,7 +79,9 @@ class InviteNotification extends Component<IProps, IState> {
             onClick={this.handleAcceptInvite}
             style={{ cursor: "pointer" }}
           >
-            <p className="tooltipText">Join</p>
+            <p className="tooltipText">
+              {this.props.subjectType === "conference" ? "Join" : "Subscribe"}
+            </p>
           </span>
           <span
             className="far fa-minus-square fa-2x"

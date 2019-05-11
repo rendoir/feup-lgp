@@ -47,8 +47,6 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference the subscribers will be invited to
- * The user whose subscribers will be invited to the conference is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request

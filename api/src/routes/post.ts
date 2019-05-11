@@ -277,9 +277,11 @@ postRouter.post('/:id/invite', controller.inviteUser);
 postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
- * @api {get} /api/post/:id/amount_uninvited_subscribers Retrieve post inviter's amount of uninvited subscribers
+ * @api {post} /api/post/:id/amount_uninvited_subscribers Retrieve post inviter's amount of uninvited subscribers
  * @apiName Get-Amount-Uninvited-Subscribers
  * @apiGroup Post
+ *
+ * This endpoint needs to be called through POST due to error when calling GET
  *
  * @apiParam {number}   id    Id of the post
  *
@@ -292,9 +294,11 @@ postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 postRouter.post('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
 
 /**
- * @api {get} /api/post/:id/uninvited_users_info Retrieve the users that haven't been invited to a given post
+ * @api {post} /api/post/:id/uninvited_users_info Retrieve the users that haven't been invited to a given post
  * @apiName Get-Uninvited-Users-Info
  * @apiGroup Post
+ *
+ * This endpoint needs to be called through POST due to error when calling GET
  *
  * @apiParam {number}   id    Id of the post
  *

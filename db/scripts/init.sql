@@ -280,19 +280,23 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         follower NOT IN (SELECT * FROM retrieve_conference_invited_or_joined_users(_conference_id));
 $$ LANGUAGE SQL;
 -- POSTS
-CREATE OR REPLACE FUNCTION retrieve_post_invited_users(_post_id BIGINT)
+CREATE OR REPLACE FUNCTION retrieve_post_invited_or_subscribed_users(_post_id BIGINT)
 RETURNS TABLE(invited_user BIGINT) AS $$
 	SELECT invited_user
         FROM invites
-        WHERE invite_subject_id = _post_id AND invite_type = 'post';
+        WHERE invite_subject_id = _post_id AND invite_type = 'post'
+    UNION
+    SELECT subscriber
+        FROM posts_subscriptions
+        WHERE post = _post_id;
 $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION retrieve_post_uninvited_subscribers(_post_id BIGINT, _inviter_id BIGINT)
 RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
 	SELECT DISTINCT follower
-        FROM follows, posts
+        FROM follows
         WHERE followed = _inviter_id AND 
-        follower NOT IN (SELECT * FROM retrieve_post_invited_users(_post_id));
+        follower NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users(_post_id));
 $$ LANGUAGE SQL;
 
 

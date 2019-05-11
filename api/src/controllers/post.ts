@@ -480,31 +480,40 @@ export function deleteFolderRecursive(path) {
     }
 }
 
-export function inviteUser(req, res) {
+export async function inviteUser(req, res) {
+    console.log("INVITE USER");
+    console.log("post: ", req.params.id);
+    console.log("invited user: ", req.body.invited_user);
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
         values: [req.body.invited_user, req.params.id],
     }).then((result) => {
+        console.log("INVITED USER SUCCESSFULLY");
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+        res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
     });
 }
 
-export function inviteSubscribers(req, res) {
-    const cookies = new Cookies(req.headers.cookie);
+export async function inviteSubscribers(req, res) {
+    const loggedUserId = 3;
+    console.log("INVITE SUBSCRIBERS");
+    console.log("post: ", req.params.id);
+    console.log("inviter user id: ", loggedUserId);
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
-                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                  SELECT uninvited_subscriber, $1, 'post'
+                  FROM retrieve_post_uninvited_subscribers($1, $2)
                 ON CONFLICT ON CONSTRAINT unique_invite
                 DO NOTHING`,
-        values: [req.params.id, cookies.get('user_id')],
+        values: [req.params.id, loggedUserId],
     }).then((result) => {
+        console.log("INVITED SUBSCRIBERS SUCCESSFULLY");
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+        res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
     });
 }
 
@@ -531,7 +540,7 @@ export async function getUninvitedUsersInfo(req, res) {
         const uninvitedUsersQuery = await query({
             text: `SELECT id, first_name, last_name, home_town, university, work, work_field
                     FROM users
-                    WHERE id NOT IN (SELECT * FROM retrieve_post_invited_users($1)) AND id <> $2`,
+                    WHERE id NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users($1)) AND id <> $2`,
             values: [req.params.id, loggedUserId],
         });
         console.log("POST UNINVITED users: ", uninvitedUsersQuery.rows);

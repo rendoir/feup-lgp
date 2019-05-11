@@ -37,20 +37,19 @@
         background-color: $color-primary !important;
         color: white !important;
         border-radius: 15px !important;
-
-        display: block;
-        background: none;
         border: none;
         padding: 0.3em 0.5em;
     }
 
     #invite_modal_done {
         background-color: #428bca !important;
+        border: none;
     }
 
     #invite_user_input {
         border: 1px solid;
         width: 250px;
+        height: 37px;
         text-indent: 10px;
     }
 }

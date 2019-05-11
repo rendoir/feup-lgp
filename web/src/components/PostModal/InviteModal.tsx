@@ -157,7 +157,7 @@ class InviteModal extends Component<IProps, IState> {
       const inviteSuccess = await apiInviteUser(
         this.subjectId,
         user.id,
-        "conference"
+        this.subjectType
       );
 
       let afterInviteMessage = "User " + firstName + " " + lastName;

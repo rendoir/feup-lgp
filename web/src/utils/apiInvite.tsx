@@ -27,7 +27,7 @@ export async function apiInviteSubscribers(
   );
 
   try {
-    await axios.post(apiURL, {});
+    await axios.post(apiURL);
     return true;
   } catch (error) {
     console.log("Failed to invite subscribers");
@@ -44,10 +44,13 @@ export async function apiGetUninvitedSubscribersAmount(
   );
   console.log("GetUninvitedSubscribersAmount ", apiURL);
   try {
-    const res = await axios.post(apiURL);
+    const res =
+      inviteType === "conference"
+        ? await axios.get(apiURL)
+        : await axios.post(apiURL);
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited subscribers amount");
     return -1;
   }
 }
@@ -61,10 +64,13 @@ export async function apiGetUninvitedUsersInfo(
   );
   console.log("GetUninvitedUsersInfo ", apiURL);
   try {
-    const res = await axios.post(apiURL);
+    const res =
+      inviteType === "conference"
+        ? await axios.get(apiURL)
+        : await axios.post(apiURL);
     return res.data.uninvitedUsers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited users info");
     return null;
   }
 }
