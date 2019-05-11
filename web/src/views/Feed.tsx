@@ -1,7 +1,8 @@
-import axios from "axios";
 import * as React from "react";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
+import axiosInstance from "../utils/axiosInstance";
 
 type Props = {};
 
@@ -11,6 +12,8 @@ type State = {
 };
 
 class Feed extends React.Component<Props, State> {
+  private auth = new AuthHelperMethods();
+
   constructor(props: Props) {
     super(props);
 
@@ -25,16 +28,10 @@ class Feed extends React.Component<Props, State> {
   }
 
   public apiGetFeed() {
-    let feedUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      feedUrl += `:${process.env.REACT_APP_API_PORT}/feed`;
-    } else {
-      feedUrl += "/api/feed";
-    }
-    axios
-      .get(feedUrl, {
+    axiosInstance
+      .get("/feed", {
         headers: {
-          /*'Authorization': "Bearer " + getToken()*/
+          // 'Authorization': this.auth.getAuthHeader()
         },
         params: {}
       })

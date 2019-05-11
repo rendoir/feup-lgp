@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 
 import "./PostModal.css";
@@ -13,7 +12,7 @@ import PostFile from "../PostFile/PostFile";
 import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
-import { getApiURL } from "../../utils/apiURL";
+import axiosInstance from "../../utils/axiosInstance";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
@@ -119,14 +118,8 @@ class PostModal extends Component<IProps, IState> {
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/create";
-    axios
-      .post(postUrl, formData, {
+    axiosInstance
+      .post("/post/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -162,11 +155,9 @@ class PostModal extends Component<IProps, IState> {
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
 
-    const editUrl = getApiURL(`/post/${this.props.id}`);
-    axios
-      .put(editUrl, formData, {
+    axiosInstance
+      .put(`/post/${this.props.id}`, formData, {
         headers: {
-          /*'Authorization': "Bearer " + getToken()*/
           "Content-Type": "multipart/form-data"
         }
       })

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { getApiURL } from "./apiURL";
+import axiosInstance from "./axiosInstance";
 
 export async function apiGetUserInteractions(
   apiGroup: string,
@@ -17,6 +16,6 @@ export async function apiGetUserInteractions(
       break;
   }
 
-  const apiUrl = getApiURL(`/${apiGroup}/${subjectId}/user_interactions`);
-  return axios.post(apiUrl, body);
+  const apiUrl = `/${apiGroup}/${subjectId}/user_interactions`;
+  return axiosInstance.post(apiUrl, body);
 }

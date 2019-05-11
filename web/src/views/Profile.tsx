@@ -1,11 +1,10 @@
-import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
 import Avatar from "../components/Avatar/Avatar";
 import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
-import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+import axiosInstance from "../utils/axiosInstance";
 
 interface IProps {
   match: {
@@ -168,8 +167,8 @@ class Profile extends React.Component<IProps, State> {
       };
 
       console.log("User Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/users/${this.id}/rate`);
-      return axios
+      const apiUrl = `/users/${this.id}/rate`;
+      return axiosInstance
         .post(apiUrl, body)
         .then(() => {
           this.setState({
@@ -276,16 +275,8 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiGetFeedUser() {
-    let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
-    } else {
-      profileUrl += "/api/users/" + this.id;
-    }
-    axios
-      .get(profileUrl, {
-        headers: {}
-      })
+    axiosInstance
+      .get(`/users/${this.id}`)
       .then(res => {
         const postsComing = res.data;
         console.log(postsComing);

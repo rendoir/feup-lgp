@@ -3,15 +3,15 @@ import {
   faPlus,
   faUserMd
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import styles from "./Header.module.css";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
 import { Request, Step } from "../CreateNewModal/types";
 import Icon from "../Icon/Icon";
 import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
-import styles from "./Header.module.css";
+import axiosInstance from "../../utils/axiosInstance";
 
 type Props = {
   title: string;
@@ -171,12 +171,6 @@ class Header extends PureComponent<Props, State> {
   };
 
   private handleSubmit = (request: Request) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-
     if (request.type === "post") {
       const formData = new FormData();
       request.files.images.forEach((file, idx) =>
@@ -195,9 +189,8 @@ class Header extends PureComponent<Props, State> {
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
 
-      url += "/post/create";
-      axios
-        .post(url, formData, {
+      axiosInstance
+        .post("/post/create", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -209,9 +202,8 @@ class Header extends PureComponent<Props, State> {
         })
         .catch(() => console.log("Failed to create post"));
     } else {
-      url += "/conference/create";
-      axios
-        .post(url, {
+      axiosInstance
+        .post("/conference/create", {
           about: request.about,
           author: 1,
           avatar: request.avatar,
@@ -232,15 +224,8 @@ class Header extends PureComponent<Props, State> {
   };
 
   private getPossibleTags = (): void => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += `/tags`;
-
-    axios
-      .get(url)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         res.data.forEach(tag => {
           this.tags.push(tag.name);

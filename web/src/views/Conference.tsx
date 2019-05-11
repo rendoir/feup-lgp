@@ -1,5 +1,4 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { MouseEvent } from "react";
 import * as React from "react";
 import Avatar from "../components/Avatar/Avatar";
@@ -11,7 +10,6 @@ import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
-import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -30,6 +28,7 @@ import {
   apiUserJoinConference,
   apiUserLeaveConference
 } from "../utils/apiConference";
+import axiosInstance from "../utils/axiosInstance";
 
 interface IProps {
   match: {
@@ -176,9 +175,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiGetConference() {
-    const conferenceURL = getApiURL(`/conference/${this.id}`);
-    axios
-      .get(conferenceURL, {})
+    axiosInstance
+      .get(`/conference/${this.id}`)
       .then(res => {
         const conference = res.data.conference;
         let datestart = conference.datestart.split("T");
@@ -234,14 +232,9 @@ class Conference extends React.Component<IProps, IState> {
       });
     }
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
+    const postUrl = `/conference/${this.props.match.params.id}/change_privacy`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         id: this.props.match.params.id,
         privacy: privacyState
@@ -384,12 +377,6 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private handleSubmit = (request: Request) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-
     if (request.type === "post") {
       const formData = new FormData();
       request.files.images.forEach((file, idx) =>
@@ -409,9 +396,8 @@ class Conference extends React.Component<IProps, IState> {
       formData.append("visibility", request.privacy);
       formData.append("conference", this.id + "");
 
-      url += "/post/create";
-      axios
-        .post(url, formData, {
+      axiosInstance
+        .post("/post/create", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -426,15 +412,8 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private getPossibleTags = (): void => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += `/tags`;
-
-    axios
-      .get(url)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         res.data.forEach(tag => {
           this.tags.push(tag.name);

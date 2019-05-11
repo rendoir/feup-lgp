@@ -1,7 +1,7 @@
-import axios from "axios";
 import * as React from "react";
 
 import Post from "../components/Post/Post";
+import axiosInstance from "../utils/axiosInstance";
 
 interface IProps {
   match: {
@@ -48,14 +48,8 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public apiGetPost(id: number) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${id}`;
-    axios
-      .get(postUrl, {
+    axiosInstance
+      .get(`/post/${id}`, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }

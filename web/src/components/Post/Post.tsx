@@ -1,5 +1,4 @@
 // - Import react components
-import axios from "axios";
 import classNames from "classnames";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
@@ -37,7 +36,7 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
-import { getApiURL } from "../../utils/apiURL";
+import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
@@ -289,14 +288,9 @@ class Post extends Component<IProps, IState> {
   };
 
   public apiComments() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.state.postID}/comment/new`;
+    const postUrl = `/post/${this.state.postID}/comment/new`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
@@ -419,8 +413,8 @@ class Post extends Component<IProps, IState> {
       };
 
       console.log("Post Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-      return axios
+      const apiUrl = `/post/${this.props.id}/rate`;
+      return axiosInstance
         .post(apiUrl, body)
         .then(() => {
           this.setState({
@@ -531,14 +525,9 @@ class Post extends Component<IProps, IState> {
   }
 
   public apiAddLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
+    const postUrl = `/post/${this.props.id}/like`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         author: 2,
         headers: {}
@@ -550,20 +539,12 @@ class Post extends Component<IProps, IState> {
   }
 
   public apiDeleteLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
+    const postUrl = `/post/${this.props.id}/like`;
 
-    axios
+    axiosInstance
       .delete(postUrl, {
         data: {
           author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {

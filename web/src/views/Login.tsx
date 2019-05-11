@@ -1,8 +1,6 @@
-import axios from "axios";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import Cookies from "universal-cookie";
-import { getApiURL } from "../utils/apiURL";
 import AuthHelperMethods from "../utils/AuthHelperMethods";
 
 const cookies = new Cookies();
@@ -22,6 +20,7 @@ class Login extends React.Component<RouteComponentProps, State> {
       password: ""
     };
     this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   public render() {
@@ -37,6 +36,8 @@ class Login extends React.Component<RouteComponentProps, State> {
               type="email"
               className="form-control col"
               id="inputEmail"
+              name="email"
+              onChange={this.handleInputChange}
               placeholder="E-mail"
             />
           </div>
@@ -45,6 +46,8 @@ class Login extends React.Component<RouteComponentProps, State> {
               type="password"
               className="form-control col"
               id="inputPassword"
+              name="password"
+              onChange={this.handleInputChange}
               placeholder="Password"
             />
           </div>
@@ -71,6 +74,17 @@ class Login extends React.Component<RouteComponentProps, State> {
       });
     // const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
     // console.log("User id: ", cookies.get("user_id"));
+  }
+
+  private handleInputChange(event: any) {
+    const field = event.target.name;
+    const value = !event.target.value.replace(/\s/g, "").length
+      ? ""
+      : event.target.value; // Ignore input only containing white spaces
+
+    const partialState: any = {};
+    partialState[field] = value;
+    this.setState(partialState);
   }
 }
 

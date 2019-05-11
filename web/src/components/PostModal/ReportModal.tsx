@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -20,8 +19,6 @@ interface IProps {
 interface IState {
   reportReason: string;
 }
-
-const cookies = new Cookies();
 
 class ReportModal extends Component<IProps, IState> {
   public htmlId: string;

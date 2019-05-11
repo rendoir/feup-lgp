@@ -1,5 +1,3 @@
-import axios from "axios";
-
 /**
  * Returns the complete API URL for a given route
  *

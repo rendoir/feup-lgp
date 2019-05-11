@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
 
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
@@ -6,6 +5,7 @@ import classNames from "classnames";
 import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./AddTags.module.css";
+import axiosInstance from "../../utils/axiosInstance";
 
 export type Option = {};
 
@@ -75,15 +75,8 @@ class AddTags extends Component<IProps, IState> {
   }
 
   public getExistentTags() {
-    let getUrl = `${location.protocol}//${location.hostname}`;
-    getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    getUrl += `/tags`;
-
-    axios
-      .get(getUrl)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         this.setState({
           suggested_tags: res.data,
