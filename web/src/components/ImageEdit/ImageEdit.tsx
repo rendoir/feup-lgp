@@ -10,6 +10,7 @@ import HotKeys from "../HotKeys/HotKeys";
 import Icon from "../Icon/Icon";
 import Range from "../Range/Range";
 import styles from "./ImageEdit.module.css";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 type FooterRendererProps = {
   submit: () => any;
@@ -43,6 +44,8 @@ export type State = {
 };
 
 class ImageEdit extends PureComponent<Props, State> {
+  static contextType = LanguageContext;
+
   public static defaultProps = {
     height: 400,
     maxZoom: 2,
@@ -245,7 +248,7 @@ class ImageEdit extends PureComponent<Props, State> {
         rounded={false}
         onClick={this.handleSubmit}
       >
-        Save
+        {dictionary.save[this.context]}
       </Button>
     );
   }

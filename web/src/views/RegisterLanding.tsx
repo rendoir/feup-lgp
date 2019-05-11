@@ -11,7 +11,7 @@ class RegisterLanding extends React.Component {
         id="register-landing"
       >
         <div className="col-sm-4 mt-5" id="landing-info">
-          <h2>{dictionary.description[this.context]}</h2>
+          <h2>{dictionary.website_description[this.context]}</h2>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
             <h4>{dictionary.document_sharing[this.context]}</h4>
@@ -33,7 +33,9 @@ class RegisterLanding extends React.Component {
               <i className="fas fa-search fa-lg" />
             </div>
           </div>
-          <h2 className="mt-5 mb-5">{dictionary.description2[this.context]}</h2>
+          <h2 className="mt-5 mb-5">
+            {dictionary.website_description2[this.context]}
+          </h2>
         </div>
         <div className="col-9 col-sm-8 col-md-6 col-lg-4 mt-5">
           <form>

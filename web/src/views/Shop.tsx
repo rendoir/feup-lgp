@@ -104,7 +104,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item One</a>
                     </h4>
-                    <h5>10 points</h5>
+                    <h5>10 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!{" "}
@@ -139,7 +139,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Two</a>
                     </h4>
-                    <h5>149 points</h5>
+                    <h5>149 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur! Lorem ipsum dolor sit amet.
@@ -174,7 +174,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Three</a>
                     </h4>
-                    <h5>58 points</h5>
+                    <h5>58 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -209,7 +209,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Four</a>
                     </h4>
-                    <h5>94 points</h5>
+                    <h5>94 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -244,7 +244,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Five</a>
                     </h4>
-                    <h5>45 points</h5>
+                    <h5>45 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur! Lorem ipsum dolor sit amet.
@@ -279,7 +279,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Six</a>
                     </h4>
-                    <h5>8 points</h5>
+                    <h5>8 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -314,7 +314,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Seven</a>
                     </h4>
-                    <h5>82 points</h5>
+                    <h5>82 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -349,7 +349,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Eight</a>
                     </h4>
-                    <h5>85 points</h5>
+                    <h5>85 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -384,7 +384,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Nine</a>
                     </h4>
-                    <h5>46 points</h5>
+                    <h5>46 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -419,7 +419,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Ten</a>
                     </h4>
-                    <h5>43 points</h5>
+                    <h5>43 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -454,7 +454,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Eleven</a>
                     </h4>
-                    <h5>543 points</h5>
+                    <h5>543 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -489,7 +489,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Twelve</a>
                     </h4>
-                    <h5>666 points</h5>
+                    <h5>666 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!

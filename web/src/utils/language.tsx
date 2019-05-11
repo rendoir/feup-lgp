@@ -103,14 +103,14 @@ export let dictionary: Dictionary = {
   banned_users: { PT: "Utilizadores banidos", EN: "Banned users" },
   admin_area: { PT: "Área de administração", EN: "Administration area" },
   manage_users: { PT: "Gerir utilizadores", EN: "Manage users" },
-  description: {
+  website_description: {
     PT: "Rede Social para profissionais e estudantes de saúde",
     EN: "Social Network for medicine professionals and students"
   },
   document_sharing: { PT: "Partilha de Documentos", EN: "Document Sharing" },
   comment_encourage: { PT: "Comente e Incentive", EN: "Comment and Encourage" },
   search_find: { PT: "Procure e Encontre", EN: "Search and Find" },
-  description2: {
+  website_description2: {
     PT: "Teses, casos de estudo, video-conferências, ...",
     EN: "Thesis, clinical cases, video conferences..."
   },
@@ -127,7 +127,7 @@ export let dictionary: Dictionary = {
   search_by_author: { PT: "Publicações por Autor", EN: "Posts by Author" },
   search_users: { PT: "Utilizadores", EN: "Users" },
   shop_you_have: { PT: "Tem", EN: "You have" },
-  shop_points: { PT: "pontos!", EN: "points!" },
+  shop_points: { PT: "pontos", EN: "points" },
   shop_search_points: { PT: "Procurar produtos", EN: "Search products" },
   shop_exchange: { PT: "Trocar", EN: "Exchange" },
   tag_placeholder: {
@@ -151,7 +151,49 @@ export let dictionary: Dictionary = {
   chat_message_placeholder: {
     PT: "Insira aqui a sua mensagem...",
     EN: "Insert your message here..."
-  }
+  },
+  conference: { PT: "conferência", EN: "conference" },
+  post: { PT: "publicação", EN: "post" },
+  description: { PT: "Descrição", EN: "Description" },
+  description_placeholder: {
+    PT: "Escreva uma breve descrição",
+    EN: "Write a short description"
+  },
+  visibility_public: { PT: "Público", EN: "Public" },
+  visibility_followers: { PT: "Seguidores", EN: "Followers" },
+  visibility_private: { PT: "Privado", EN: "Private" },
+  visibility: { PT: "Visibilidade", EN: "Visibility" },
+  conference_local: { PT: "Local da conferência", EN: "Conference location" },
+  location: { PT: "Localização", EN: "Location" },
+  dates: { PT: "Datas", EN: "Dates" },
+  date_start: { PT: "Início", EN: "Start" },
+  date_end: { PT: "Fim", EN: "End" },
+  livestream: { PT: "Transmissão em direto", EN: "Livestream" },
+  livestream_url: { PT: "URL da transmissão em direto", EN: "Livestream URL" },
+  tags: { PT: "Categorias", EN: "Tags" },
+  files: { PT: "Ficheiros", EN: "Files" },
+  post_cap: { PT: "Publicação", EN: "Post" },
+  post_description: {
+    PT: "Publicações são o mecanismo básico de partilha de conhecimento",
+    EN: "Post are the basic mechanism used to share knowledge."
+  },
+  conference_cap: { PT: "Conferência", EN: "Conference" },
+  conference_description: {
+    PT: "Conferências são sessões formais para a discussão de um tópico",
+    EN: "Conferences are formal meetings for discussion of a particular topic."
+  },
+  new_f: { PT: "Nova", EN: "New" },
+  error_occurred: { PT: "Ocorreu um erro", EN: "An error occurred" },
+  next: { PT: "Continuar", EN: "Next" },
+  finish: { PT: "Concluir", EN: "Finish" },
+  edit_avatar: { PT: "Editar Avatar", EN: "Edit Avatar" },
+  new_conference_post: {
+    PT: "Nova publicação de conferência",
+    EN: "New Conference Post"
+  },
+  accept: { PT: "Aceitar", EN: "Accept" },
+  refuse: { PT: "Recusar", EN: "Refuse" },
+  invitation: { PT: "Foi convidado para ", EN: "You have been invited to" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
