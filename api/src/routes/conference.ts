@@ -157,11 +157,6 @@ conferenceRouter.get('/:id/check_participation', controller.checkUserParticipati
 conferenceRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
 
 /**
- * This is just an example on how to set cookies in a secure way, so that they dont get forged or accessed by XSS
- */
-conferenceRouter.post('/set_cookies', controller.setSecureCookiesExample);
-
-/**
  * @api {get} /api/conference/:id Get a conference
  * @apiName Get-A-Conference
  * @apiGroup Post

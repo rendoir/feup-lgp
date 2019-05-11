@@ -221,43 +221,6 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
   }
 }
 
-export function setSecureCookiesExample(req, res) {
-  console.log('SETTING COOKIES...');
-  try {
-      // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
-      // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
-      // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
-      // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
-
-      // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
-      // "req.cookies" para aceder a cookies mais tarde noutros requests.
-      // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
-      /*for (var key in req.cookies) {
-        res.clearCookie(key, { path: '/' });
-      }
-      for (var key in req.signedCookies) {
-        res.clearCookie(key, { path: '/' });
-      }*/
-
-      // res.cookie('user_id', 3);
-      // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
-
-      // res.cookie('user_id', 1, {signed: true, httpOnly: true});
-      // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
-      // the one the server will access cannot be forged by hackers using XSS
-      /*res.cookie('openExample', 'openExampleValue');
-      res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
-      res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
-      res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
-      req.session.firstName = 'bomdia';
-      console.log(req.session.id);
-      res.status(200).send('Cookies set');
-  } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in conference'));
-  }
-}
-
 export async function getConference(req, res) {
   const id = req.params.id;
   const user = 2;
