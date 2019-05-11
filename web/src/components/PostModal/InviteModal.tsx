@@ -29,7 +29,7 @@ interface IState {
 }
 
 class InviteModal extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public htmlId: string;
   public subjectId: number;

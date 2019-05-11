@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Radio from "../Radio/Radio";
 import RadioGroup from "../Radio/RadioGroup";
 import styles from "./CreateNewModal.module.css";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 type Props = {
   id: string;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LanguageContext, dictionary } from "../../utils/language";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 type BackofficeNotificationProps = {
   id: number;
@@ -16,7 +16,7 @@ export class BackofficeNotification extends React.Component<
   BackofficeNotificationProps,
   {}
 > {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);

@@ -2,7 +2,7 @@ import * as React from "react";
 import { dictionary, LanguageContext } from "../utils/language";
 
 class RegisterLanding extends React.Component {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public render() {
     return (

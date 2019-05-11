@@ -1,6 +1,7 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
 import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import IconButton from "../IconButton/IconButton";
@@ -18,14 +19,13 @@ import CreateGroupInfoForm from "./CreateGroupInfoForm";
 import CreateGroupTypeForm from "./CreateGroupTypeForm";
 import styles from "./CreateNewModal.module.css";
 import { Props } from "./types";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 type CreateNewModalState = {
   isPublic: boolean;
 };
 
 class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {
     id: "create_new_modal",

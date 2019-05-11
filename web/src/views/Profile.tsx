@@ -33,7 +33,7 @@ type State = {
 const cookies = new Cookies();
 
 class Profile extends React.Component<IProps, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page

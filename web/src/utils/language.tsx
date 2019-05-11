@@ -13,6 +13,7 @@ type Dictionary = {
   };
 };
 
+/* tslint:disable:object-literal-sort-keys */
 export let dictionary: Dictionary = {
   home: { PT: "Início", EN: "Home" },
   shop: { PT: "Loja", EN: "Shop" },

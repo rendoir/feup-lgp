@@ -11,7 +11,7 @@ const PUBLICATION_NOTIFICATION = "publication";
 const COMMENT_NOTIFICATION = "comment";
 
 class Backoffice extends React.Component<{}, BackofficeState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);

@@ -33,7 +33,7 @@ interface IState {
 }
 
 class DeleteModal extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public mode: string;
 

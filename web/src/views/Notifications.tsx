@@ -16,7 +16,7 @@ interface IState {
 const cookies = new Cookies();
 
 class Notifications extends Component<{}, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);

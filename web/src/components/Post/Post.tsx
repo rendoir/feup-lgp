@@ -85,7 +85,7 @@ interface IState {
 const cookies = new Cookies();
 
 class Post extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {};
   public id: string;

@@ -2,13 +2,13 @@ import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Header from "../components/header/Header";
+import "../styles/App.css";
 import {
-  LanguageContext,
   defaultLanguage,
+  LanguageContext,
   preferedLanguage,
   saveLanguage
 } from "../utils/language";
-import "../styles/App.css";
 
 import Backoffice from "./Backoffice";
 import Conference from "./Conference";

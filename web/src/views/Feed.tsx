@@ -12,7 +12,7 @@ type State = {
 };
 
 class Feed extends React.Component<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: Props) {
     super(props);

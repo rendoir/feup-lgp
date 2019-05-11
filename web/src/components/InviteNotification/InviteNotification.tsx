@@ -18,7 +18,7 @@ interface IState {
 }
 
 class InviteNotification extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);

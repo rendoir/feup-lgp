@@ -80,7 +80,7 @@ interface IState {
 }
 
 class Conference extends React.Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public id: number;
   public userId: number;

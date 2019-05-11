@@ -30,7 +30,7 @@ class SearchSimpleForm extends React.Component<
   RouteComponentProps<any>,
   State
 > {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: RouteComponentProps<any>) {
     super(props);

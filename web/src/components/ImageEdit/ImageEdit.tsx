@@ -4,13 +4,13 @@ import Croppie from "croppie";
 import "croppie/croppie.css";
 import React, { MouseEvent, PureComponent, ReactNode } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import { dictionary, LanguageContext } from "../../utils/language";
 import { listen } from "../../utils/listen";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import Icon from "../Icon/Icon";
 import Range from "../Range/Range";
 import styles from "./ImageEdit.module.css";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 type FooterRendererProps = {
   submit: () => any;
@@ -44,7 +44,7 @@ export type State = {
 };
 
 class ImageEdit extends PureComponent<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {
     height: 400,

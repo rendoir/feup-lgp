@@ -6,13 +6,13 @@ import React, {
   PureComponent
 } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import { dictionary, LanguageContext } from "../../utils/language";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import Select from "../Select/Select";
 import Switcher from "../Switcher/Switcher";
 import Tag from "../Tags/Tag";
 import styles from "./CreateNewModal.module.css";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
   id: string;
@@ -47,7 +47,7 @@ export type State = {
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {
     about: "",

@@ -23,7 +23,7 @@ type State = {
 };
 
 class Chat extends React.Component<RouteComponentProps<any>, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   private user: string;
   private i: number; // TODO DELETE

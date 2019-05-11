@@ -25,7 +25,7 @@ interface IState {
 const cookies = new Cookies();
 
 class ReportModal extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public htmlId: string;
   public loggedUserId: number;

@@ -48,7 +48,7 @@ export type State = {
 const cookies = new Cookies();
 
 class Comment extends Component<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {};
   public id: string;

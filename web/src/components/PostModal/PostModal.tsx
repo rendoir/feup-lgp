@@ -52,7 +52,7 @@ interface IState {
 }
 
 class PostModal extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public mode: string;
   public addTags: any;
@@ -239,8 +239,8 @@ class PostModal extends Component<IProps, IState> {
     this.visibilityOptions = [
       { value: "public", title: dictionary.visibility_public[this.context] },
       {
-        value: "followers",
-        title: dictionary.visibility_followers[this.context]
+        title: dictionary.visibility_followers[this.context],
+        value: "followers"
       },
       { value: "private", title: dictionary.visibility_private[this.context] }
     ];

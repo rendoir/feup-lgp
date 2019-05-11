@@ -4,7 +4,7 @@ import "../styles/Shop.css";
 import { dictionary, LanguageContext } from "../utils/language";
 
 class Shop extends React.Component {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public render() {
     return (

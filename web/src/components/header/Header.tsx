@@ -7,13 +7,13 @@ import axios from "axios";
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { dictionary, LanguageContext } from "../../utils/language";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
 import { Request, Step } from "../CreateNewModal/types";
 import Icon from "../Icon/Icon";
 import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
-import styles from "./Header.module.css";
 import Select from "../Select/Select";
-import { dictionary, LanguageContext } from "../../utils/language";
+import styles from "./Header.module.css";
 
 type Props = {
   title: string;
@@ -48,7 +48,7 @@ type State = {
 };
 
 class Header extends PureComponent<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static defaultProps = {
     logoRedirectToHome: false,

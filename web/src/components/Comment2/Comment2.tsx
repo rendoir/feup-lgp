@@ -7,9 +7,9 @@ import {
 import classNames from "classnames";
 import React, { MouseEvent, PureComponent, ReactNode } from "react";
 import { Avatar, Icon, InputNext } from "../../components";
+import { dictionary, LanguageContext } from "../../utils/language";
 import { AvatarPlaceholder } from "../../utils/types";
 import styles from "./Comment2.module.css";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
   avatar: Avatar;
@@ -36,7 +36,7 @@ type State = {
 };
 
 class Comment2 extends PureComponent<Props, State> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   private static defaultProps = {
     edited: false,

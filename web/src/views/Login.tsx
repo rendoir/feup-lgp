@@ -5,7 +5,7 @@ import { dictionary, LanguageContext } from "../utils/language";
 const cookies = new Cookies();
 
 class Login extends React.Component {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);

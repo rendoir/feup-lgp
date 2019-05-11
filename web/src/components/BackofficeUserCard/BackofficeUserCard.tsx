@@ -18,7 +18,7 @@ export class BackofficeUserCard extends React.Component<
   BackofficeUserCardProps,
   {}
 > {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public static readonly BANNED_USER = "banned";
   public static readonly ADMIN_USER = "admin";

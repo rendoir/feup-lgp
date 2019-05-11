@@ -3,10 +3,10 @@ import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
 
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
+import { dictionary, LanguageContext } from "../../utils/language";
 import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./AddTags.module.css";
-import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Option = {};
 
@@ -22,7 +22,7 @@ export interface IState {
 }
 
 class AddTags extends Component<IProps, IState> {
-  static contextType = LanguageContext;
+  public static contextType = LanguageContext;
 
   public tagInput: any;
 
