@@ -11,6 +11,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 import { getApiURL } from "../../utils/apiURL";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 const CREATE_MODE = "Create";
 const DELETE_MODE = "Delete";
@@ -32,6 +33,8 @@ interface IState {
 }
 
 class DeleteModal extends Component<IProps, IState> {
+  static contextType = LanguageContext;
+
   public mode: string;
 
   public image: any = React.createRef();
@@ -122,7 +125,7 @@ class DeleteModal extends Component<IProps, IState> {
           data-dismiss="modal"
           onClick={this.handlePostDeletion}
         >
-          {"Yes"}
+          {dictionary.yes[this.context]}
         </button>
       </div>
     );
@@ -146,7 +149,9 @@ class DeleteModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {`${this.mode} Post`}
+                {`${dictionary[this.mode][this.context]} ${
+                  dictionary.post[this.context]
+                }`}
               </h5>
               <button
                 type="button"
@@ -158,10 +163,7 @@ class DeleteModal extends Component<IProps, IState> {
               </button>
             </div>
             <div className="modal-body">
-              <p>
-                Are you sure you want do delete this post? It can't be retrieved
-                later.
-              </p>
+              <p>{dictionary.confirm_delete_post[this.context]}</p>
             </div>
             <div className="modal-footer">
               <button
@@ -169,7 +171,7 @@ class DeleteModal extends Component<IProps, IState> {
                 className="btn btn-danger"
                 data-dismiss="modal"
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

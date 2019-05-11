@@ -9,6 +9,7 @@ import "./PostModal.css";
 
 // - Import utils
 import { apiReportComment, apiReportPost } from "../../utils/apiReport";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
   /* Only pass one of the parameters according to the content type */
@@ -24,6 +25,8 @@ interface IState {
 const cookies = new Cookies();
 
 class ReportModal extends Component<IProps, IState> {
+  static contextType = LanguageContext;
+
   public htmlId: string;
   public loggedUserId: number;
   public reportDescription: any = React.createRef();
@@ -84,12 +87,12 @@ class ReportModal extends Component<IProps, IState> {
     return (
       <form className="was-validated">
         <div className="mb-3">
-          <h5>Report reason</h5>
+          <h5>{dictionary.report_reason[this.context]}</h5>
           <textarea
             name="text"
             className={this.getInputRequiredClass(this.state.reportReason)}
             onChange={this.handleInputChange}
-            placeholder="Insert report reason"
+            placeholder={dictionary.report_reason[this.context]}
             value={this.state.reportReason}
             required={true}
           />
@@ -97,7 +100,7 @@ class ReportModal extends Component<IProps, IState> {
             className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.reportReason)}
           >
-            Reason must be provided
+            {dictionary.report_reason_required[this.context]}
           </div>
         </div>
       </form>
@@ -113,7 +116,7 @@ class ReportModal extends Component<IProps, IState> {
         onClick={this.handleReportCreation}
         disabled={!this.validReport()}
       >
-        Submit report
+        {dictionary.report_submit[this.context]}
       </button>
     );
   }
@@ -136,7 +139,7 @@ class ReportModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                Content Report
+                {dictionary.content_report[this.context]}
               </h5>
               <button
                 type="button"
@@ -156,7 +159,7 @@ class ReportModal extends Component<IProps, IState> {
                 data-dismiss="modal"
                 onClick={this.props.reportCancelHandler}
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

@@ -193,7 +193,87 @@ export let dictionary: Dictionary = {
   },
   accept: { PT: "Aceitar", EN: "Accept" },
   refuse: { PT: "Recusar", EN: "Refuse" },
-  invitation: { PT: "Foi convidado para ", EN: "You have been invited to" }
+  invitation: { PT: "Foi convidado para ", EN: "You have been invited to" },
+  Create: { PT: "Criar", EN: "Create" },
+  Delete: { PT: "Apagar", EN: "Delete" },
+  Edit: { PT: "Editar", EN: "Edit" },
+  confirm_delete_post: {
+    PT:
+      "Tem a certeza que deseja apagar esta publicação? Não será possível recuperá-la.",
+    EN:
+      "Are you sure you want do delete this post? It can't be retrieved later."
+  },
+  user: { PT: "Utilizador", EN: "User" },
+  invite_success: {
+    PT: "foi aceite com sucesso.",
+    EN: "was successfully invited."
+  },
+  invite_error: {
+    PT: "não pôde ser convidado. Ocorreu um erro",
+    EN: "couldn't be invited. An error occurred."
+  },
+  invite_no_user: {
+    PT: "Nenhum utilizador não convidado com o nome",
+    EN: "No uninvited user called"
+  },
+  invite_no_users: {
+    PT: "Não exitem utilizadores não convidados",
+    EN: "There are no uninvited users left"
+  },
+  invite_fetching_uninvited: {
+    PT: "Carregando utilizadores não convidados...",
+    EN: "Fetching uninvited users..."
+  },
+  invite: { PT: "Convidar", EN: "Invite" },
+  invite_fetching_subscribers: {
+    PT: "Carregando subscritores não convidados...",
+    EN: "Fetching uninvited subscribers..."
+  },
+  invite_all_subs: {
+    PT: "Convidar todos os subscritos",
+    EN: "Invite all subscribers"
+  },
+  invite_all_subs_done: {
+    PT: "Todos os subscritos foram convidados",
+    EN: "All subscribers have been invited"
+  },
+  inviting_subs: { PT: "Convidando subscritos", EN: "Inviting subscribers..." },
+  invite_without: { PT: "sem convite", EN: "without invitation" },
+  invite_error_sub: {
+    PT:
+      "Erro ao carregar subscritos não convidados. Tente novamente mais tarde",
+    EN: "Error fetching uninvited subscribers. Try again later."
+  },
+  invite_users_to: {
+    PT: "Convide utilizadores para a sua",
+    EN: "Invite users to your"
+  },
+  done: { PT: "Concluído", EN: "Done" },
+  report_reason: { PT: "Razão de reportar", EN: "Report reason" },
+  report_reason_required: {
+    PT: "Uma razão de reportar deve ser introduzida",
+    EN: "A report reason must be provided"
+  },
+  report_submit: { PT: "Submeter denúncia", EN: "Submit report" },
+  content_report: { PT: "Denúncia de Conteúdo", EN: "Content Report" },
+  insert_title: { PT: "Insira um título", EN: "Insert title" },
+  title_required: {
+    PT: "Um título deve ser introduzido",
+    EN: "Title must be provided"
+  },
+  body: { PT: "Conteúdo", EN: "Body" },
+  insert_body: { PT: "Insira conteúdo", EN: "Insert body" },
+  body_required: {
+    PT: "Conteúdo deve ser introduzido",
+    EN: "Body must be provided"
+  },
+  insert_files: {
+    PT: "Insira imagens, videos e documentos",
+    EN: "Insert images, videos and documents"
+  },
+  create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
+  save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  empty: { PT: "", EN: "" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
