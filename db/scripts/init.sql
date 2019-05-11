@@ -296,8 +296,8 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         follower NOT IN (SELECT * FROM retrieve_post_invited_users(_post_id));
 $$ LANGUAGE SQL;
 
-
-INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('adminooooo@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
+-- Unhashed password: 'adminadmin'
+INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('admin@gmail.com','d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
 INSERT INTO users (email, pass, first_name, last_name, bio, university, work, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe','ICBAS', 'ICBAS', 'Surgeon', 'user');
 INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user2@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'John', 'User', 'FMUC', 'user');
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, work_field, permissions) VALUES ('user3@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Michael', 'Meyers', 'ICBAS', 'Portalegre', 'Cardiology', 'user');
