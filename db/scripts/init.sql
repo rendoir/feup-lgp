@@ -287,12 +287,11 @@ RETURNS TABLE(invited_user BIGINT) AS $$
         WHERE invite_subject_id = _post_id AND invite_type = 'post';
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION retrieve_post_uninvited_subscribers(_post_id BIGINT)
+CREATE OR REPLACE FUNCTION retrieve_post_uninvited_subscribers(_post_id BIGINT, _inviter_id BIGINT)
 RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
-	SELECT follower
+	SELECT DISTINCT follower
         FROM follows, posts
-        WHERE followed = author AND 
-        posts.id = _post_id AND
+        WHERE followed = _inviter_id AND 
         follower NOT IN (SELECT * FROM retrieve_post_invited_users(_post_id));
 $$ LANGUAGE SQL;
 
@@ -314,11 +313,18 @@ INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 3);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 3, 4);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (3, 1, 4);
 
+/**
+* CONFERENCES
+*/
 INSERT INTO conferences(author, title, about, local, dateStart, dateEnd) VALUES (1, 'Admin conference 1', 'This conference was created by an admin', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
 INSERT INTO conferences(author, title, about, local, dateStart, dateEnd) VALUES (2, 'User conference 1', 'This conference was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
 INSERT INTO conferences(author, title, about, local, dateStart, dateEnd) VALUES (3, 'User conference 2', 'This conference was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
 INSERT INTO conferences(author, title, about, local, dateStart, dateEnd) VALUES (1, 'Admin conference 2', 'This conference was created by an admin', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
 INSERT INTO conferences(author, title, about, local, dateStart, dateEnd) VALUES (2, 'User conference 3', 'This conference was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
+INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'conf 6', 'this is a public conference, any person can join', 'local', '2019-05-01 21:30', 'public');
+INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (3, 'conference 7', 'this is a followers or invite only conference (visibility: followers)', 'local', '2019-05-01 21:30', 'followers');
+INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'confer 8', 'this is an invite only conference (visibility: private)', 'local', '2019-05-01 21:30', 'private');
+
 
 INSERT INTO conf_users (id, conference, conf_permissions) VALUES (1, 1, 'admin');
 INSERT INTO conf_users (id, conference, conf_permissions) VALUES (2, 1, 'moderator');
@@ -591,7 +597,6 @@ INSERT INTO posts_tags (post,tag) VALUES (3,30);
 INSERT INTO posts_tags (post,tag) VALUES (3,32);
 
 
-
 /**
 * POST - Subscriptions/Rates
 */
@@ -602,14 +607,6 @@ INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 3, 2);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 4, 3);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 5, 1);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 1);
-
-
-/**
-* CONFERENCES
-*/
-INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is a public conference, any person can join', 'local', 'data inicio', 'public');
-INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (3, 'titulo', 'this is a followers or invite only conference (visibility: followers)', 'local', 'data inicio', 'followers');
-INSERT INTO conferences (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is an invite only conference (visibility: private)', 'local', 'data inicio', 'private');
 
 
 /**

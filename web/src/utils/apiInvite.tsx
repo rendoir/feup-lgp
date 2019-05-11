@@ -42,9 +42,9 @@ export async function apiGetUninvitedSubscribersAmount(
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/amount_uninvited_subscribers`
   );
-
+  console.log("GetUninvitedSubscribersAmount ", apiURL);
   try {
-    const res = await axios.get(apiURL);
+    const res = await axios.post(apiURL);
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
     console.log("Failed to invite subscribers");
@@ -59,9 +59,9 @@ export async function apiGetUninvitedUsersInfo(
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/uninvited_users_info`
   );
-
+  console.log("GetUninvitedUsersInfo ", apiURL);
   try {
-    const res = await axios.get(apiURL);
+    const res = await axios.post(apiURL);
     return res.data.uninvitedUsers;
   } catch (error) {
     console.log("Failed to invite subscribers");

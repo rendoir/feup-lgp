@@ -507,3 +507,37 @@ export function inviteSubscribers(req, res) {
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
     });
 }
+
+export async function amountSubscribersUninvited(req, res) {
+    console.log("POST AMOUNT UNINVITED SUBSCRIBERS");
+    const loggedUserId = 3;
+    try {
+        const amountUninvitedSubscribersQuery = await query({
+            text: `SELECT COUNT(*) FROM retrieve_post_uninvited_subscribers($1, $2)`,
+            values: [req.params.id, loggedUserId],
+        });
+        console.log("POST UNINVITED SUBSCRIBER count: ", amountUninvitedSubscribersQuery.rows[0].count);
+        res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving uninvited subscribers count in post'));
+    }
+}
+
+export async function getUninvitedUsersInfo(req, res) {
+    console.log("POST UNINVITED USERS");
+    const loggedUserId = 3;
+    try {
+        const uninvitedUsersQuery = await query({
+            text: `SELECT id, first_name, last_name, home_town, university, work, work_field
+                    FROM users
+                    WHERE id NOT IN (SELECT * FROM retrieve_post_invited_users($1)) AND id <> $2`,
+            values: [req.params.id, loggedUserId],
+        });
+        console.log("POST UNINVITED users: ", uninvitedUsersQuery.rows);
+        res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post uninvited users info'));
+    }
+}
