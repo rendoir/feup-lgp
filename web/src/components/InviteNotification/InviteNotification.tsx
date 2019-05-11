@@ -35,11 +35,9 @@ class InviteNotification extends Component<IProps, IState> {
 
     // Joining posts is yet to be implemented
     if (this.props.subjectType === "conference") {
-      console.log("JOINOU CONFERENCIA");
       joinSuccess = await apiUserJoinConference(this.props.subjectId);
     } else if (this.props.subjectType === "post") {
       try {
-        console.log("JOINOU POST");
         const loggedUserId = 1;
         await apiSubscription(
           "post",

@@ -42,7 +42,7 @@ export async function apiGetUninvitedSubscribersAmount(
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/amount_uninvited_subscribers`
   );
-  console.log("GetUninvitedSubscribersAmount ", apiURL);
+
   try {
     const res =
       inviteType === "conference"
@@ -62,7 +62,7 @@ export async function apiGetUninvitedUsersInfo(
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/uninvited_users_info`
   );
-  console.log("GetUninvitedUsersInfo ", apiURL);
+
   try {
     const res =
       inviteType === "conference"

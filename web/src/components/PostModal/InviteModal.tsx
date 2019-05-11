@@ -37,7 +37,7 @@ class InviteModal extends Component<IProps, IState> {
     this.subjectId = this.props.postId || this.props.conferenceId || -1;
     this.subjectType = this.props.postId ? "post" : "conference";
     this.htmlId = `invite_${this.subjectType}_modal_${this.subjectId}`;
-    console.log("invite modal id: ", this.htmlId);
+
     this.state = {
       afterInviteMessage: "",
       fetchingUninvitedSubs: true,

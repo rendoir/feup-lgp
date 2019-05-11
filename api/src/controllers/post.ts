@@ -481,14 +481,10 @@ export function deleteFolderRecursive(path) {
 }
 
 export async function inviteUser(req, res) {
-    console.log("INVITE USER");
-    console.log("post: ", req.params.id);
-    console.log("invited user: ", req.body.invited_user);
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
         values: [req.body.invited_user, req.params.id],
     }).then((result) => {
-        console.log("INVITED USER SUCCESSFULLY");
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -498,9 +494,6 @@ export async function inviteUser(req, res) {
 
 export async function inviteSubscribers(req, res) {
     const loggedUserId = 3;
-    console.log("INVITE SUBSCRIBERS");
-    console.log("post: ", req.params.id);
-    console.log("inviter user id: ", loggedUserId);
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
                   SELECT uninvited_subscriber, $1, 'post'
@@ -509,7 +502,6 @@ export async function inviteSubscribers(req, res) {
                 DO NOTHING`,
         values: [req.params.id, loggedUserId],
     }).then((result) => {
-        console.log("INVITED SUBSCRIBERS SUCCESSFULLY");
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -518,14 +510,12 @@ export async function inviteSubscribers(req, res) {
 }
 
 export async function amountSubscribersUninvited(req, res) {
-    console.log("POST AMOUNT UNINVITED SUBSCRIBERS");
     const loggedUserId = 3;
     try {
         const amountUninvitedSubscribersQuery = await query({
             text: `SELECT COUNT(*) FROM retrieve_post_uninvited_subscribers($1, $2)`,
             values: [req.params.id, loggedUserId],
         });
-        console.log("POST UNINVITED SUBSCRIBER count: ", amountUninvitedSubscribersQuery.rows[0].count);
         res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
     } catch (error) {
         console.error(error);
@@ -534,7 +524,6 @@ export async function amountSubscribersUninvited(req, res) {
 }
 
 export async function getUninvitedUsersInfo(req, res) {
-    console.log("POST UNINVITED USERS");
     const loggedUserId = 3;
     try {
         const uninvitedUsersQuery = await query({
@@ -543,7 +532,6 @@ export async function getUninvitedUsersInfo(req, res) {
                     WHERE id NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users($1)) AND id <> $2`,
             values: [req.params.id, loggedUserId],
         });
-        console.log("POST UNINVITED users: ", uninvitedUsersQuery.rows);
         res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
     } catch (error) {
         console.error(error);
