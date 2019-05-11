@@ -105,9 +105,27 @@ class Header extends PureComponent<Props, State> {
         <Navbar.Collapse id={"navbar-nav"}>
           {this.renderLinks()}
           <SearchSimpleForm />
+          {this.renderLanguageSelector()}
           {this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
+    );
+  }
+
+  private renderLanguageSelector() {
+    return (
+      <div className={styles.language_wrapper + " my-auto"}>
+        <Select
+          className="my-auto"
+          id="language_selector"
+          value={this.context}
+          options={[
+            { value: "EN", title: "English" },
+            { value: "PT", title: "Português" }
+          ]}
+          onChange={this.props.onLanguageChange}
+        />
+      </div>
     );
   }
 
@@ -138,16 +156,6 @@ class Header extends PureComponent<Props, State> {
   private renderButtons() {
     return (
       <Nav>
-        <Select
-          className="my-auto mx-2"
-          id="language_selector"
-          value={this.context}
-          options={[
-            { value: "EN", title: "English" },
-            { value: "PT", title: "Português" }
-          ]}
-          onChange={this.props.onLanguageChange}
-        />
         <Nav.Link href={"#"} onClick={this.handleClick} className={styles.link}>
           <Icon
             icon={faPlus}
