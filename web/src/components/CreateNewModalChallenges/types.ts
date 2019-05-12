@@ -36,9 +36,8 @@ export type RequestChallenge = {
   question: string;
   correctAnswer: string;
   options: string[];
-  switcher: string;
   prize: string;
-  pointsPrize: string;
+  prizePoints: string;
 };
 
 export type StepChallenge = "type" | "info";
@@ -49,7 +48,7 @@ export type Props = {
   step: StepChallenge;
   error?: string | null;
   pending: boolean;
-  tags?: string[];
+  options?: string[];
   request: RequestChallenge;
   shortnamePrefix?: string;
   autoFocus: boolean;

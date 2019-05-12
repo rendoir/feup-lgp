@@ -7,9 +7,7 @@ import React, {
 } from "react";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import OptionAnswer from "../OptionAnswer/OptionAnswer";
-import RadioGroup from "../Radio/RadioGroup";
 import Select from "../Select/Select";
-import Switcher from "../Switcher/Switcher";
 import styles from "./CreateNewModal.module.css";
 
 export type Props = {
@@ -20,26 +18,21 @@ export type Props = {
   dateStart: string;
   dateEnd: string;
   prize: string;
-  pointsPrize: string;
+  prizePoints: string;
   post: string;
   question: string;
   correctAnswer: string;
   options: string[];
-  switcher: string;
   className?: string;
   vertical: boolean;
   isPublicGroupEnabled: boolean;
   aboutMaxLength?: number;
   onSubmit: (event: Event) => void;
   onChange: (value: string, event: ChangeEvent) => void;
+  onOptionChange: (opt: string) => any;
 };
 
 export type State = {
-  prize: string;
-  pointsPrize: string;
-  post: string;
-  question: string;
-  correctAnswer: string;
   options: string[];
   optionsInput: string;
 };
@@ -50,7 +43,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     aboutMaxLength: 3000,
     dateEnd: "",
     dateStart: "",
-    switcher: "false",
+    pointsPrize: "",
+    prize: "",
     title: "",
     vertical: false
   };
@@ -59,18 +53,22 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      correctAnswer: "",
       options: [],
-      optionsInput: "",
-      pointsPrize: "",
-      post: "",
-      prize: "",
-      question: ""
+      optionsInput: ""
     };
   }
 
   public render() {
-    const { id, type, about, aboutMaxLength, title, vertical } = this.props;
+    const {
+      id,
+      type,
+      about,
+      aboutMaxLength,
+      title,
+      vertical,
+      prize,
+      prizePoints
+    } = this.props;
 
     const className = classNames(
       styles.info,
@@ -88,7 +86,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_title`}
             name={"title"}
             onChange={this.props.onChange}
-            placeholder={`${type} title`}
+            placeholder="Challenge title"
             label={`Title`}
             value={title}
             htmlAutoFocus={true}
@@ -118,6 +116,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               name={"dateStart"}
               label={"Start"}
               type={"datetime-local"}
+              required={true}
             />
             <InputNext
               onChange={this.props.onChange}
@@ -126,6 +125,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               name={"dateEnd"}
               label={"End"}
               type={"datetime-local"}
+              required={true}
             />
           </div>
           <div id={`${id}_challenge_prize`}>
@@ -133,22 +133,26 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               Prize
             </label>
             <InputNext
+              className={styles.input}
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_description`}
-              value={this.props.prize}
-              placeholder={"Write a short description of the prize given"}
+              value={prize}
+              placeholder={"Write a short description of the prize to give"}
               name={"prize"}
               label={"Prize"}
               type={"text"}
+              required={true}
             />
             <InputNext
+              className={styles.input}
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_points`}
-              value={this.props.pointsPrize}
-              placeholder={"If prize is not in points, input 0"}
-              name={"points"}
-              label={"Prize Points"}
+              value={prizePoints}
+              placeholder={"If prize is not points, write '0"}
+              name={"prizePoints"}
+              label={"Points"}
               type={"text"}
+              required={true}
             />
           </div>
           <hr />
@@ -181,6 +185,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         options.push(this.state.optionsInput);
       }
       this.setState({ options, optionsInput: "" });
+      this.props.onOptionChange(this.state.optionsInput);
     }
   };
 
@@ -261,6 +266,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     options = options.filter(x => x !== opt);
 
     this.setState({ options });
+    this.props.onOptionChange(opt);
   };
 
   private renderCorrectAnswer() {

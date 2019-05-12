@@ -4,7 +4,6 @@ import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import IconButton from "../IconButton/IconButton";
-import ImageEdit from "../ImageEdit/ImageEdit";
 import { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import {
   ModalBody,
@@ -28,7 +27,7 @@ class CreateNewModalChallenge extends PureComponent<
   CreateNewModalState
 > {
   public static defaultProps = {
-    id: "create_new_modal",
+    id: "create_new_challenge_modal",
     isMaxGroupSizeVisible: false,
     isPublicGroupEnabled: true
   };
@@ -102,6 +101,25 @@ class CreateNewModalChallenge extends PureComponent<
 
     return <div className={styles.error}>An error occurred</div>;
   }
+
+  private handleOptionChange = (opt: string) => {
+    const options = this.props.request.options;
+
+    if (options.includes(opt)) {
+      for (let i = 0; i < options.length; i++) {
+        if (options[i] === opt) {
+          options.splice(i, 1);
+          break;
+        }
+      }
+    } else {
+      options.push(opt);
+    }
+    this.props.onRequestChange({
+      ...this.props.request,
+      options
+    });
+  };
 
   private renderTypeStep() {
     const {
@@ -193,14 +211,14 @@ class CreateNewModalChallenge extends PureComponent<
             dateStart={request.dateStart}
             dateEnd={request.dateEnd}
             prize={request.prize}
-            pointsPrize={request.pointsPrize}
+            prizePoints={request.prizePoints}
             post={request.post}
             question={request.question}
             correctAnswer={request.correctAnswer}
             options={request.options}
-            switcher={request.switcher}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
+            onOptionChange={this.handleOptionChange}
             isPublicGroupEnabled={this.props.isPublicGroupEnabled}
           />
         </ModalBody>

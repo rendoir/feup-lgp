@@ -7,3 +7,4 @@ export * from './comment';
 export * from './conference';
 export * from './search';
 export * from './tags';
+export * from './challenge';

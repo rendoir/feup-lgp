@@ -98,9 +98,8 @@ interface IState {
     question: string;
     correctAnswer: string;
     options: string[];
-    switcher: string;
     prize: string;
-    pointsPrize: string;
+    prizePoints: string;
   };
 }
 
@@ -155,11 +154,10 @@ class Conference extends React.Component<IProps, IState> {
         dateEnd: "",
         dateStart: "",
         options: [],
-        pointsPrize: "",
         post: "",
         prize: "",
+        prizePoints: "",
         question: "",
-        switcher: "false",
         title: "",
         type: "question"
       },
@@ -473,7 +471,46 @@ class Conference extends React.Component<IProps, IState> {
     }
   };
 
-  private handleSubmitChallenge = (request: RequestChallenge) => {};
+  private handleSubmitChallenge = (request: RequestChallenge) => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+
+    const formData = new FormData();
+
+    formData.append("type", request.type);
+    formData.append("title", request.title);
+    formData.append("text", request.about);
+    formData.append("dateEnd", request.dateEnd);
+    formData.append("dateStart", request.dateStart);
+    formData.append("prize", request.prize);
+    formData.append("prizePoints", request.prizePoints);
+
+    formData.append("question", request.question);
+    formData.append("correctAnswer", request.correctAnswer);
+    request.options.forEach((opt, i) =>
+      formData.append("options[" + i + "]", opt)
+    );
+
+    formData.append("post", request.post);
+    formData.append("conf_id", String(this.id));
+
+    url += `/conference/${this.id}/challenge/create`;
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(res => {
+        console.log("Challenge created - reloading page...");
+        window.location.reload();
+        this.resetState();
+      })
+      .catch(() => console.log("Failed to create post"));
+  };
 
   private getPossibleTags = (): void => {
     let url = `${location.protocol}//${location.hostname}`;
@@ -528,13 +565,12 @@ class Conference extends React.Component<IProps, IState> {
         dateEnd: "",
         dateStart: "",
         options: [],
-        pointsPrize: "",
         post: "",
         prize: "",
+        prizePoints: "",
         question: "",
-        switcher: "false",
         title: "",
-        type: "post"
+        type: "question"
       },
       stepChallenge: "type"
     });
@@ -645,7 +681,7 @@ class Conference extends React.Component<IProps, IState> {
             pending={false}
             onSubmit={this.handleSubmitChallenge}
             onStepChange={step => this.setState({ stepChallenge: step })}
-            maxGroupSize={5}
+            maxGroupSize={10}
             request={this.state.requestChallenge}
             onRequestChange={request =>
               this.setState({ requestChallenge: request })
@@ -726,6 +762,7 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getChallenges() {
+    console.log(this.state.challenges);
     return (
       <div className="p-0 m-0">
         <h6>
