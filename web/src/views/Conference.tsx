@@ -22,9 +22,14 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
-import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
+import CreateNewModalChallenge from "../components/CreateNewModalChallenges/CreateNewModalChallenge";
+
 import { Request, Step } from "../components/CreateNewModal/types";
+import {
+  RequestChallenge,
+  StepChallenge
+} from "../components/CreateNewModalChallenges/types";
 
 // - Import utils
 import {
@@ -46,6 +51,7 @@ interface IState {
   clickedChallenge: number | undefined;
   hasChat: boolean;
   step: Step;
+  stepChallenge: StepChallenge;
   hasLiveStream: boolean;
   livestreamUrl: string;
   posts: any[];
@@ -59,6 +65,7 @@ interface IState {
   userParticipation: boolean;
   waitingUserJoinLeave: boolean;
   isHidden: boolean;
+  isChallengeModalOpen: boolean;
   owner_id: number;
   owner_name: string;
   privacy: string;
@@ -81,6 +88,20 @@ interface IState {
     livestream: string;
     switcher: string;
   };
+  requestChallenge: {
+    type: "post" | "options" | "question" | "comment";
+    title: string;
+    about: string;
+    dateStart: string;
+    dateEnd: string;
+    post: string;
+    question: string;
+    correctAnswer: string;
+    options: string[];
+    switcher: string;
+    prize: string;
+    pointsPrize: string;
+  };
 }
 
 class Conference extends React.Component<IProps, IState> {
@@ -101,6 +122,7 @@ class Conference extends React.Component<IProps, IState> {
       description: "",
       hasChat: true,
       hasLiveStream: true,
+      isChallengeModalOpen: false,
       isHidden: false,
       livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
       owner_id: 1,
@@ -127,7 +149,22 @@ class Conference extends React.Component<IProps, IState> {
         title: "",
         type: "post"
       },
+      requestChallenge: {
+        about: "",
+        correctAnswer: "",
+        dateEnd: "",
+        dateStart: "",
+        options: [],
+        pointsPrize: "",
+        post: "",
+        prize: "",
+        question: "",
+        switcher: "false",
+        title: "",
+        type: "question"
+      },
       step: "type",
+      stepChallenge: "type",
       title: "",
       userCanJoin: false,
       userParticipation: false,
@@ -436,6 +473,8 @@ class Conference extends React.Component<IProps, IState> {
     }
   };
 
+  private handleSubmitChallenge = (request: RequestChallenge) => {};
+
   private getPossibleTags = (): void => {
     let url = `${location.protocol}//${location.hostname}`;
     url +=
@@ -479,6 +518,28 @@ class Conference extends React.Component<IProps, IState> {
       step: "type"
     });
   };
+
+  private resetStateChallenge = () => {
+    this.setState({
+      isChallengeModalOpen: false,
+      requestChallenge: {
+        about: "",
+        correctAnswer: "",
+        dateEnd: "",
+        dateStart: "",
+        options: [],
+        pointsPrize: "",
+        post: "",
+        prize: "",
+        question: "",
+        switcher: "false",
+        title: "",
+        type: "post"
+      },
+      stepChallenge: "type"
+    });
+  };
+
   private renderStream() {
     return (
       <div className="conf_head w-100">
@@ -574,16 +635,26 @@ class Conference extends React.Component<IProps, IState> {
           <i className="fas fa-video" />
           Start livestream
         </button>
-        <button
-          type="button"
-          data-toggle="modal"
-          data-target="#challenge_modal_Create"
-        >
+        <button type="button" onClick={this.handleCreateChallenge}>
           <i className="fas fa-puzzle-piece" />
           Create challenge
         </button>
         {/* Challenge Create Modal */}
-        <ChallengeModal id={0} conference_id={this.id} />
+        {this.state.isChallengeModalOpen ? (
+          <CreateNewModalChallenge
+            pending={false}
+            onSubmit={this.handleSubmitChallenge}
+            onStepChange={step => this.setState({ stepChallenge: step })}
+            maxGroupSize={5}
+            request={this.state.requestChallenge}
+            onRequestChange={request =>
+              this.setState({ requestChallenge: request })
+            }
+            onClose={this.resetStateChallenge}
+            autoFocus={false}
+            step={this.state.stepChallenge}
+          />
+        ) : null}
         <button>
           <i className="fas fa-pen" />
           Edit conference
@@ -600,6 +671,11 @@ class Conference extends React.Component<IProps, IState> {
       </div>
     );
   }
+
+  private handleCreateChallenge = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isChallengeModalOpen: true });
+  };
 
   private getJoinButton() {
     let buttonClass = this.state.userParticipation ? "leave" : "join";
