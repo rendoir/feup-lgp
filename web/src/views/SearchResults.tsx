@@ -4,6 +4,7 @@ import * as React from "react";
 
 import Post from "../components/Post/Post";
 import UserCard from "../components/UserCard/UserCard";
+import { dictionary, LanguageContext } from "../utils/language";
 
 type Props = {
   location: any;
@@ -33,6 +34,8 @@ type SearchParameters = {
 };
 
 export default class SearchResults extends React.Component<Props, State> {
+  public static contextType = LanguageContext;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -83,16 +86,18 @@ export default class SearchResults extends React.Component<Props, State> {
           {/* Search menu */}
           <div className="col-12 col-md-3">
             <div className="dropdown">
-              <h6 className="dropdown-header">Search results</h6>
+              <h6 className="dropdown-header">
+                {dictionary.search_results[this.context]}
+              </h6>
               <div className="dropdown-divider" />
               <a className="dropdown-item" onClick={this.handlePostsArea}>
-                Posts by Content
+                {dictionary.posts_by_content[this.context]}
               </a>
               <a className="dropdown-item" onClick={this.handlePostsAuthorArea}>
-                Posts by Author
+                {dictionary.search_by_author[this.context]}
               </a>
               <a className="dropdown-item" onClick={this.handleUsersArea}>
-                Users
+                {dictionary.search_users[this.context]}
               </a>
             </div>
           </div>

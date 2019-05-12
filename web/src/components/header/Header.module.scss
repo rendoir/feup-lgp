@@ -60,3 +60,14 @@ $header-font-size: $default-font-size-large;
 .icon {
   color: $white;
 }
+
+.language_wrapper {
+  margin-left: 0;
+  margin-right: 0;
+
+  @media (min-width: 992px) {
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    width: 150px;
+  }
+}

@@ -6,6 +6,7 @@ import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
 import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
   match: {
@@ -32,6 +33,8 @@ type State = {
 const cookies = new Cookies();
 
 class Profile extends React.Component<IProps, State> {
+  public static contextType = LanguageContext;
+
   public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page
 
@@ -72,8 +75,8 @@ class Profile extends React.Component<IProps, State> {
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
     return (
       <div className="Profile">
@@ -332,7 +335,7 @@ class Profile extends React.Component<IProps, State> {
     if (this.state.user.home_town) {
       return (
         <li>
-          <i className="fas fa-home" /> Lives in {this.state.user.home_town}
+          <i className="fas fa-home" /> {this.state.user.home_town}
         </li>
       );
     }
