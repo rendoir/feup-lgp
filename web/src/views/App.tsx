@@ -53,7 +53,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/login" component={Login} />
                 <Route path="/register" component={RegisterLanding} />
                 <Route path="/search" component={SearchResults} />
-                <Route path="/conference/:id" component={Talk} />
+                <Route path="/talk/:id" component={Talk} />
                 <Route path="/notifications" component={Notifications} />
               </Switch>
             </ErrorBoundary>

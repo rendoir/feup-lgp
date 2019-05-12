@@ -232,7 +232,7 @@ class Header extends PureComponent<Props, State> {
         })
         .catch(() => console.log("Failed to create post"));
     } else {
-      url += "/conference/create";
+      url += "/talk/create";
       axios
         .post(url, {
           about: request.about,
@@ -247,7 +247,7 @@ class Header extends PureComponent<Props, State> {
         })
         .then(res => {
           console.log(`Conference with id = ${res.data.id} created`);
-          window.location.href = "/conference/" + res.data.id;
+          window.location.href = "/talk/" + res.data.id;
           this.resetState();
         })
         .catch(error => console.log("Failed to create conference. " + error));

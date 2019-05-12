@@ -5,7 +5,7 @@ import * as controller from '../controllers/talks';
 export const talkRouter = Router();
 
 /**
- * @api {post} /api/conference Create a conference
+ * @api {post} /api/talk Create a conference
  * @apiName Create-A-Conference
  * @apiGroup Post
  *
@@ -26,7 +26,7 @@ export const talkRouter = Router();
 talkRouter.post('/create', controller.createConference);
 
 /**
- * @api {post} /api/conference/:id/invite Invite user to conference
+ * @api {post} /api/talk/:id/invite Invite user to conference
  * @apiName Invite-To-Conference
  * @apiGroup Conference
  *
@@ -42,7 +42,7 @@ talkRouter.post('/create', controller.createConference);
 talkRouter.post('/:id/invite', controller.inviteUser);
 
 /**
- * @api {post} /api/conference/:id/invite_subscribers Invite subscribers of the inviter user to conference
+ * @api {post} /api/talk/:id/invite_subscribers Invite subscribers of the inviter user to conference
  * @apiName Invite-Subscribers-To-Conference
  * @apiGroup Conference
  *
@@ -59,7 +59,7 @@ talkRouter.post('/:id/invite', controller.inviteUser);
 talkRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
- * @api {get} /api/conference/:id/amount_uninvited_subscribers Retrieve conference author's amount of uninvited subscribers
+ * @api {get} /api/talk/:id/amount_uninvited_subscribers Retrieve conference author's amount of uninvited subscribers
  * @apiName Get-Amount-Uninvited-Subscribers
  * @apiGroup Conference
  *
@@ -74,7 +74,7 @@ talkRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
 
 /**
- * @api {get} /api/conference/:id/uninvited_users_info Retrieve the users that haven't been invited and haven't joined a given conference
+ * @api {get} /api/talk/:id/uninvited_users_info Retrieve the users that haven't been invited and haven't joined a given conference
  * @apiName Get-Uninvited-Users-Info
  * @apiGroup Conference
  *
@@ -89,7 +89,7 @@ talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribers
 talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
 
 /**
- * @api {post} /api/conference/:id/add_participant Add user to conference participants
+ * @api {post} /api/talk/:id/add_participant Add user to conference participants
  * @apiName Add-Conference-Participant
  * @apiGroup Conference
  *
@@ -106,7 +106,7 @@ talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
 talkRouter.post('/:id/add_participant', controller.addParticipantUser);
 
 /**
- * @api {delete} /api/conference/:id/remove_participant Remove a user participation in a conference
+ * @api {delete} /api/talk/:id/remove_participant Remove a user participation in a conference
  * @apiName Remove-Conference-Attendance-Intention
  * @apiGroup Conference
  *
@@ -123,7 +123,7 @@ talkRouter.post('/:id/add_participant', controller.addParticipantUser);
 talkRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
 
 /**
- * @api {get} /api/conference/:id/check_participant Check if a user is participating in a conference
+ * @api {get} /api/talk/:id/check_participant Check if a user is participating in a conference
  * @apiName Check-Conference-Participation
  * @apiGroup Conference
  *
@@ -140,7 +140,7 @@ talkRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
 talkRouter.get('/:id/check_participation', controller.checkUserParticipation);
 
 /**
- * @api {get} /api/conference/:id/check_user_access Check if a user is allowed to join a conference
+ * @api {get} /api/talk/:id/check_user_access Check if a user is allowed to join a conference
  * @apiName Check-User-Access
  * @apiGroup Conference
  *
@@ -162,7 +162,7 @@ talkRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
 talkRouter.post('/set_cookies', controller.setSecureCookiesExample);
 
 /**
- * @api {get} /api/conference/:id Get a conference
+ * @api {get} /api/talk/:id Get a conference
  * @apiName Get-A-Conference
  * @apiGroup Post
  *
@@ -177,7 +177,7 @@ talkRouter.post('/set_cookies', controller.setSecureCookiesExample);
 talkRouter.get('/:id', controller.getConference);
 
 /**
- * @api {post} /api/conference/:id/change_privacy Change the privacy of a conference
+ * @api {post} /api/talk/:id/change_privacy Change the privacy of a conference
  * @apiName Change-Privacy-Conference
  * @apiGroup Post
  *

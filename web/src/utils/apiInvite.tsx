@@ -96,7 +96,7 @@ export async function apiGetNotifications() {
 // this is just a test function for cookies (not working)
 async function setCookies(): Promise<void> {
   console.log("a fazer set das cookies");
-  const apiURL = getApiURL(`/conference/set_cookies`);
+  const apiURL = getApiURL(`/talk/set_cookies`);
 
   try {
     const res = axios.post(

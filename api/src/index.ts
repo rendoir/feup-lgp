@@ -76,7 +76,7 @@ app.use('/post', postRouter);
 app.use('/admin', adminRouter);
 app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
-app.use('/conference', talkRouter);
+app.use('/talk', talkRouter);
 app.use('/search', searchRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');

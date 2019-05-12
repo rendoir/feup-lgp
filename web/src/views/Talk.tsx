@@ -179,7 +179,7 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiGetConference() {
-    const conferenceURL = getApiURL(`/conference/${this.id}`);
+    const conferenceURL = getApiURL(`/talk/${this.id}`);
     axios
       .get(conferenceURL, {})
       .then(res => {
@@ -241,7 +241,7 @@ class Conference extends React.Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
+    postUrl += `/talk/${this.props.match.params.id}/change_privacy`;
 
     axios
       .post(postUrl, {
