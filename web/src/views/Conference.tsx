@@ -489,7 +489,17 @@ class Conference extends React.Component<IProps, IState> {
     formData.append("prizePoints", request.prizePoints);
 
     formData.append("question", request.question);
-    formData.append("correctAnswer", request.correctAnswer);
+
+    let correctAns = "";
+
+    if (request.type === "options") {
+      correctAns = request.options[Number(request.correctAnswer)];
+    } else {
+      correctAns = request.correctAnswer;
+    }
+
+    formData.append("correctAnswer", correctAns);
+
     request.options.forEach((opt, i) =>
       formData.append("options[" + i + "]", opt)
     );
@@ -689,6 +699,7 @@ class Conference extends React.Component<IProps, IState> {
             onClose={this.resetStateChallenge}
             autoFocus={false}
             step={this.state.stepChallenge}
+            posts={this.state.posts}
           />
         ) : null}
         <button>

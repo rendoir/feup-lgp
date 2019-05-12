@@ -49,6 +49,7 @@ export type Props = {
   error?: string | null;
   pending: boolean;
   options?: string[];
+  posts?: any[];
   request: RequestChallenge;
   shortnamePrefix?: string;
   autoFocus: boolean;

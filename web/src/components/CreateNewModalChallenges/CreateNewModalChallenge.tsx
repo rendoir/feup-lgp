@@ -213,6 +213,7 @@ class CreateNewModalChallenge extends PureComponent<
             prize={request.prize}
             prizePoints={request.prizePoints}
             post={request.post}
+            posts={this.props.posts}
             question={request.question}
             correctAnswer={request.correctAnswer}
             options={request.options}

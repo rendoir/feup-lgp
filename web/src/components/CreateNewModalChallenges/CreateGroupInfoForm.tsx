@@ -20,6 +20,7 @@ export type Props = {
   prize: string;
   prizePoints: string;
   post: string;
+  posts?: any[];
   question: string;
   correctAnswer: string;
   options: string[];
@@ -300,19 +301,32 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
   private renderCommentFields() {
     const { id } = this.props;
+    const postValues: any[] = [];
+
+    if (this.props.posts === undefined) {
+      return null;
+    }
+
+    this.props.posts.map(post =>
+      postValues.push({
+        title: post.title || "",
+        value: post.id || ""
+      })
+    );
 
     return (
-      <div>
-        <InputNext
-          className={styles.input}
+      <div className={styles.Wrapper}>
+        <br />
+        <label htmlFor={`${id}_post`} className={styles.dates}>
+          Post To Comment
+        </label>
+        <Select
           id={`${id}_post`}
           name={"post"}
-          onChange={this.props.onChange}
-          placeholder="post title"
-          label={`Post To Comment`}
           value={this.props.post}
-          htmlAutoFocus={true}
-          required={true}
+          label={""}
+          options={postValues}
+          onChange={this.props.onChange}
         />
       </div>
     );

@@ -22,7 +22,11 @@ export async function createChallenge(req, res) {
     }
 
     let type = '';
-    const points = Number(req.body.prizePoints) || 0;
+    let points = 0;
+
+    if (isNaN(Number(req.body.prizePoints)) !== false) {
+        points = Number(req.body.prizePoints);
+    }
 
     switch (req.body.type) {
         case 'post': {
@@ -48,8 +52,7 @@ export async function createChallenge(req, res) {
         }
         case 'comment': {
             type = 'comment_post';
-            // get this.body.post
-            content.push('PostToComment: 25');
+            content.push('PostToComment: ' + req.body.post);
             break;
         }
         default:

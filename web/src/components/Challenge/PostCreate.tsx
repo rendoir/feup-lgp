@@ -63,7 +63,10 @@ class PostCreate extends Component<Props, State> {
   public parsePrize() {
     let prize = "";
 
-    if (this.props.prize === "points") {
+    if (
+      this.props.prize.includes("points") ||
+      this.props.prize.includes("Points")
+    ) {
       prize = `Win ${this.props.pointsPrize} points !`;
     } else {
       prize = `Win ${this.props.prize} !`;
