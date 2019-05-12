@@ -1,12 +1,11 @@
 import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
 
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
+import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./AddTags.module.css";
-import axiosInstance from "../../utils/axiosInstance";
 
 export type Option = {};
 
