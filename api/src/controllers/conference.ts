@@ -260,6 +260,8 @@ export function setSecureCookiesExample(req, res) {
 
 export async function getConference(req, res) {
   const id = req.params.id;
+  const limit = req.query.perPage;
+  const offset = req.query.offset;
   const user = 2;
   try {
     /**
@@ -296,13 +298,20 @@ export async function getConference(req, res) {
                         INNER JOIN users ON (users.id = p.author)
 					WHERE p.conference = $1
                     ORDER BY p.date_created DESC
-                    LIMIT 10`,
-      values: [id],
+                    LIMIT $2
+                    OFFSET $3`,
+      values: [id, limit, offset],
     });
     if (postsResult == null) {
       res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
       return;
     }
+    const totalSize = await query({
+      text: `SELECT COUNT(id)
+              FROM posts
+              WHERE conference = $1`,
+      values: [id],
+    });
     const commentsToSend = [];
     const tagsToSend = [];
     const filesToSend = [];
@@ -346,6 +355,7 @@ export async function getConference(req, res) {
       comments: commentsToSend,
       tags: tagsToSend,
       files: filesToSend,
+      size: totalSize.rows[0].count,
     };
     res.send(result);
   } catch (error) {

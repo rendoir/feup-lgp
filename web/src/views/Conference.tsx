@@ -5,6 +5,7 @@ import * as React from "react";
 import Avatar from "../components/Avatar/Avatar";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
@@ -319,7 +320,10 @@ class Conference extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {this.getPosts()}
+              {/*{this.getPosts()}*/}
+              <InfiniteScroll
+                requestUrl={getApiURL(`/conference/${this.id}`)}
+              />
             </div>
           </div>
         </div>
