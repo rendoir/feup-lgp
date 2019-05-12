@@ -30,6 +30,7 @@ import {
 } from "../utils/apiConference";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -602,4 +603,4 @@ class Conference extends React.Component<IProps, IState> {
   }
 }
 
-export default Conference;
+export default withAuth(Conference);

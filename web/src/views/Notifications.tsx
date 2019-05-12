@@ -7,6 +7,7 @@ import "../styles/Notifications.css";
 import InviteNotification from "../components/InviteNotification/InviteNotification";
 import { apiGetNotifications } from "../utils/apiInvite";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IState {
   fetchingNotifications: boolean;
@@ -80,4 +81,4 @@ class Notifications extends Component<{}, IState> {
   }
 }
 
-export default Notifications;
+export default withAuth(Notifications);

@@ -40,10 +40,7 @@ export default function withAuth(AuthComponent) {
           console.log("confirmed!");
           return (
             /* component that is currently being wrapper(App.js) */
-            <AuthComponent
-              history={this.props.history}
-              confirm={this.state.confirm}
-            />
+            <AuthComponent {...this.props} confirm={this.state.confirm} />
           );
         } else {
           console.log("not confirmed!");

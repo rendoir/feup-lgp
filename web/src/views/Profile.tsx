@@ -6,6 +6,7 @@ import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -386,4 +387,4 @@ class Profile extends React.Component<IProps, State> {
   }
 }
 
-export default Profile;
+export default withAuth(Profile);

@@ -2,6 +2,7 @@ import * as React from "react";
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 type BackofficeState = {
   usersAreaActive: boolean;
@@ -244,4 +245,4 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 }
 
-export default Backoffice;
+export default withAuth(Backoffice);

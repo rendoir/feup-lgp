@@ -2,6 +2,7 @@ import * as React from "react";
 
 import Post from "../components/Post/Post";
 import axiosInstance from "../utils/axiosInstance";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -105,4 +106,4 @@ class PostView extends React.Component<IProps, IState> {
   }
 }
 
-export default PostView;
+export default withAuth(PostView);
