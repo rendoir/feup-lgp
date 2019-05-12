@@ -1,8 +1,8 @@
 import * as React from "react";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
-import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../utils/language";
 
 type Props = {};
 
@@ -12,7 +12,7 @@ type State = {
 };
 
 class Feed extends React.Component<Props, State> {
-  private auth = new AuthHelperMethods();
+  public static contextType = LanguageContext;
 
   constructor(props: Props) {
     super(props);
@@ -30,9 +30,6 @@ class Feed extends React.Component<Props, State> {
   public apiGetFeed() {
     axiosInstance
       .get("/feed", {
-        headers: {
-          // 'Authorization': this.auth.getAuthHeader()
-        },
         params: {}
       })
       .then(res => {
@@ -41,7 +38,6 @@ class Feed extends React.Component<Props, State> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
@@ -62,13 +58,11 @@ class Feed extends React.Component<Props, State> {
           id={post.id}
           author={post.first_name + " " + post.last_name}
           text={post.content}
-          likes={post.likes}
           title={post.title}
           user_id={post.user_id}
           date={post.date_created.replace(/T.*/gi, "")}
           visibility={post.visibility}
           comments={post.comments}
-          likers={post.likers}
           tags={post.tags}
           files={post.files}
         />
@@ -100,7 +94,7 @@ class Feed extends React.Component<Props, State> {
       <div id="Feed" className="container my-5">
         <div className="row">
           <div className="left col-lg-3 mr-5">
-            <h5>Conferences</h5>
+            <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
           <div className="middle col-lg-8">{this.getPosts()}</div>

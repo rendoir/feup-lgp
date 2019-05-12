@@ -5,6 +5,7 @@ import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 import axiosInstance from "../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
   match: {
@@ -31,6 +32,8 @@ type State = {
 const cookies = new Cookies();
 
 class Profile extends React.Component<IProps, State> {
+  public static contextType = LanguageContext;
+
   public id: number; // Id of the profile's user
   public observerId: number; // Id of the user visiting the page
 
@@ -71,8 +74,8 @@ class Profile extends React.Component<IProps, State> {
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
     return (
       <div className="Profile">
@@ -284,7 +287,6 @@ class Profile extends React.Component<IProps, State> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
@@ -324,7 +326,7 @@ class Profile extends React.Component<IProps, State> {
     if (this.state.user.home_town) {
       return (
         <li>
-          <i className="fas fa-home" /> Lives in {this.state.user.home_town}
+          <i className="fas fa-home" /> {this.state.user.home_town}
         </li>
       );
     }
@@ -370,8 +372,6 @@ class Profile extends React.Component<IProps, State> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}

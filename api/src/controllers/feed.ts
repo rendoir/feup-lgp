@@ -7,23 +7,37 @@ export async function getFeed(req, res) {
     const userId = req.user.id;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+            text: `(SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
-                    FROM posts p
-                        INNER JOIN users ON (users.id = p.author)
-                    WHERE
-                        (author = $1
-                        OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                            AND p.visibility IN ('public', 'followers')))
-                        AND
-                        p.conference IS null
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (author = $1
+                                OR (author IN (SELECT followed FROM follows WHERE follower = $1)
+                                    AND p.visibility IN ('public', 'followers')))
+                            AND p.conference IS null
+                        ORDER BY date_created DESC
+                        LIMIT 80
+                        OFFSET $2)
+                    UNION
+                    (SELECT p.id, first_name, last_name, p.title, p.content,
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (p.visibility = 'public')
+                            AND p.conference IS null
+                            AND author != $1
+                            AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
+                        ORDER BY date_created DESC
+                        LIMIT 20
+                        OFFSET $2)
                     ORDER BY date_created DESC
-                    LIMIT 10
+                    LIMIT 20
                     OFFSET $2`,
             values: [userId, offset],
         });
         const commentsToSend = [];
-        const likersToSend = [];
         const tagsToSend = [];
         const filesToSend = [];
         for (const post of result.rows) {
@@ -37,14 +51,6 @@ export async function getFeed(req, res) {
                         WHERE
                             p.id = $1
                         ORDER BY c.date_updated ASC`,
-                values: [post.id],
-            });
-            const likersPost = await query({
-                text: `SELECT a.id, a.first_name, a.last_name
-                        FROM likes_a_post l
-                        INNER JOIN users a
-                        ON l.author = a.id
-                        WHERE l.post = $1`,
                 values: [post.id],
             });
             const tagsPost = await query({
@@ -65,14 +71,12 @@ export async function getFeed(req, res) {
                 values: [post.id],
             });
             commentsToSend.push(comment.rows);
-            likersToSend.push(likersPost.rows);
             tagsToSend.push(tagsPost.rows);
             filesToSend.push(files.rows);
         }
         res.send({
             posts: result.rows,
             comments: commentsToSend,
-            likers: likersToSend,
             tags: tagsToSend,
             files: filesToSend,
         });

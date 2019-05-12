@@ -128,40 +128,6 @@ postRouter.post('/:id/subscribe', controller.subscribePost);
 postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.post('/:id/like', controller.addALikeToPost);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.delete('/:id/like', controller.deleteALikeToPost);
-
-/**
  * @api {post} /api/post/:id/report Report a post
  * @apiName Report-Post
  * @apiGroup Post
@@ -244,6 +210,23 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
 postRouter.post('/:id/rate', controller.rate);
 
 /**
+ * @api {post} /api/post/:id/update_rate Updates rate of a post
+ * @apiName Update-Rate-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   evaluator        Id of the user that intends to evaluate
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   post             Id of the post being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/update_rate', controller.updateRate);
+
+/**
  * @api {post} /api/post/:id/invite Invite user to engage in post discussion
  * @apiName Invite-To-Post
  * @apiGroup Post
@@ -275,3 +258,23 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *     }
  */
 postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
+
+/**
+ * @api {post} /api/post/:id/update_relevancy Update relevancy of a post
+ * @apiName Update-Relevancy-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id Id of the post.
+ * @apiParam {String}   relevancy Relevancy of the post.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while updating relevancy of a post'
+ *     }
+ */
+postRouter.post('/:id/update_relevancy', controller.updateRelevancy);

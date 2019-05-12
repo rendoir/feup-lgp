@@ -6,18 +6,22 @@ import {
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import styles from "./Header.module.css";
+
+import axiosInstance from "../../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../../utils/language";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
 import { Request, Step } from "../CreateNewModal/types";
 import Icon from "../Icon/Icon";
 import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
-import axiosInstance from "../../utils/axiosInstance";
+import Select from "../Select/Select";
+import styles from "./Header.module.css";
 
 type Props = {
   title: string;
   searchBar: boolean;
   onSearchClick?: (text: string, event: MouseEvent) => any;
   onProfileClick?: (event: MouseEvent) => any;
+  onLanguageChange: (lang: string) => any;
 };
 
 type State = {
@@ -45,6 +49,8 @@ type State = {
 };
 
 class Header extends PureComponent<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     logoRedirectToHome: false,
     searchBar: false
@@ -100,9 +106,27 @@ class Header extends PureComponent<Props, State> {
         <Navbar.Collapse id={"navbar-nav"}>
           {this.renderLinks()}
           <SearchSimpleForm />
+          {this.renderLanguageSelector()}
           {this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
+    );
+  }
+
+  private renderLanguageSelector() {
+    return (
+      <div className={styles.language_wrapper + " my-auto"}>
+        <Select
+          className="my-auto"
+          id="language_selector"
+          value={this.context}
+          options={[
+            { value: "EN", title: "English" },
+            { value: "PT", title: "Português" }
+          ]}
+          onChange={this.props.onLanguageChange}
+        />
+      </div>
     );
   }
 
@@ -121,10 +145,10 @@ class Header extends PureComponent<Props, State> {
     return (
       <Nav className={"mr-auto"}>
         <Nav.Link href={"/"} className={styles.link}>
-          Home
+          {dictionary.home[this.context]}
         </Nav.Link>
         <Nav.Link href={"/shop"} className={styles.link}>
-          Shop
+          {dictionary.shop[this.context]}
         </Nav.Link>
       </Nav>
     );
@@ -141,11 +165,11 @@ class Header extends PureComponent<Props, State> {
             theme={"primary"}
             className={"mr-1"}
           />
-          New
+          {dictionary.new[this.context]}
         </Nav.Link>
         <Nav.Link href={"/user/1"} className={styles.link}>
           <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
-          Profile
+          {dictionary.profile[this.context]}
         </Nav.Link>
         {this.state.isOpen ? (
           <CreateNewModal

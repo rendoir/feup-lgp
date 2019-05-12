@@ -1,6 +1,8 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
+import { dictionary, LanguageContext } from "../../utils/language";
+
 import "./SearchSimpleForm.scss";
 
 type State = {
@@ -28,6 +30,8 @@ class SearchSimpleForm extends React.Component<
   RouteComponentProps<any>,
   State
 > {
+  public static contextType = LanguageContext;
+
   constructor(props: RouteComponentProps<any>) {
     super(props);
     this.state = {
@@ -55,7 +59,7 @@ class SearchSimpleForm extends React.Component<
             type="text"
             name="search"
             onChange={this.handleInputChange}
-            placeholder="Search"
+            placeholder={dictionary.search[this.context]}
           />
           <button className="btn btn-secondary my-2 my-sm-0" type="submit">
             <i className="fas fa-search" />

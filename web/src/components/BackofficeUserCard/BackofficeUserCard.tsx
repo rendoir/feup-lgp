@@ -1,4 +1,5 @@
 import React from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 type BackofficeUserCardProps = {
   name: string;
@@ -17,6 +18,8 @@ export class BackofficeUserCard extends React.Component<
   BackofficeUserCardProps,
   {}
 > {
+  public static contextType = LanguageContext;
+
   public static readonly BANNED_USER = "banned";
   public static readonly ADMIN_USER = "admin";
 
@@ -38,13 +41,15 @@ export class BackofficeUserCard extends React.Component<
           </div>
           <div className="col-12 col-lg-8 mb-2 mb-lg-0">
             <p className="card-text">
-              <strong>Email:</strong> {this.props.email}
+              <strong>E-mail:</strong> {this.props.email}
             </p>
             <p className="card-text">
-              <strong>Institution/College:</strong> {this.props.institution}
+              <strong>{dictionary.workplace_institution[this.context]}:</strong>{" "}
+              {this.props.institution}
             </p>
             <p className="card-text">
-              <strong>Profession/Course:</strong> {this.props.profession}
+              <strong>{dictionary.profession_field[this.context]}:</strong>{" "}
+              {this.props.profession}
             </p>
           </div>
           {this.getButtons()}
@@ -59,7 +64,7 @@ export class BackofficeUserCard extends React.Component<
         className="btn btn-danger btn-block"
         onClick={this.props.banHandler}
       >
-        Ban
+        {dictionary.ban_action[this.context]}
       </button>
     );
     const unbanButton = (
@@ -67,7 +72,7 @@ export class BackofficeUserCard extends React.Component<
         className="btn btn-primary btn-block"
         onClick={this.props.unbanHandler}
       >
-        Unban
+        {dictionary.unban_action[this.context]}
       </button>
     );
     const turnAdminButton = (
@@ -75,7 +80,7 @@ export class BackofficeUserCard extends React.Component<
         className="btn btn-info btn-block"
         onClick={this.props.turnAdminHandler}
       >
-        Turn admin
+        {dictionary.turn_admin[this.context]}
       </button>
     );
     const expelAdminButton = (
@@ -83,7 +88,7 @@ export class BackofficeUserCard extends React.Component<
         className="btn btn-primary btn-block"
         onClick={this.props.expelAdminHandler}
       >
-        Expel admin
+        {dictionary.expel_admin[this.context]}
       </button>
     );
 

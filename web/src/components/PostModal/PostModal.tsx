@@ -13,6 +13,7 @@ import Select from "../Select/Select";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
 import axiosInstance from "../../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 const CREATE_MODE = "Create";
 const EDIT_MODE = "Edit";
@@ -50,14 +51,12 @@ interface IState {
 }
 
 class PostModal extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public mode: string;
   public addTags: any;
 
-  private visibilityOptions = [
-    { value: "public", title: "Public" },
-    { value: "followers", title: "Followers" },
-    { value: "private", title: "Private" }
-  ];
+  private visibilityOptions: any;
 
   constructor(props: IProps) {
     super(props);
@@ -228,17 +227,26 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public getPostForm() {
+    this.visibilityOptions = [
+      { value: "public", title: dictionary.visibility_public[this.context] },
+      {
+        title: dictionary.visibility_followers[this.context],
+        value: "followers"
+      },
+      { value: "private", title: dictionary.visibility_private[this.context] }
+    ];
+
     return (
       <form className="was-validated">
         <div className="mb-3">
-          <h5>Title</h5>
+          <h5>{dictionary.title[this.context]}</h5>
           <input
             name="title"
             type="text"
             autoComplete="off"
             className={this.getInputRequiredClass(this.state.title)}
             onChange={this.handleInputChange}
-            placeholder="Insert title"
+            placeholder={dictionary.insert_title[this.context]}
             value={this.state.title}
             required={true}
           />
@@ -246,17 +254,17 @@ class PostModal extends Component<IProps, IState> {
             className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.title)}
           >
-            Title must be provided
+            {dictionary.title_required[this.context]}
           </div>
         </div>
 
         <div className="mb-3">
-          <h5>Body</h5>
+          <h5>{dictionary.body[this.context]}</h5>
           <textarea
             name="text"
             className={this.getInputRequiredClass(this.state.text)}
             onChange={this.handleInputChange}
-            placeholder="Insert body"
+            placeholder={dictionary.insert_body[this.context]}
             value={this.state.text}
             required={true}
           />
@@ -264,29 +272,29 @@ class PostModal extends Component<IProps, IState> {
             className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.text)}
           >
-            Body must be provided
+            {dictionary.body_required[this.context]}
           </div>
         </div>
 
         <div className="mb-3">
-          <h5>Visibility</h5>
+          <h5>{dictionary.visibility[this.context]}</h5>
           <Select
             name="visibility_select"
             id="visibility_select"
             onChange={visibility => this.setState({ visibility })}
             value={this.state.visibility}
-            placeholder="Visibility"
+            placeholder={dictionary.visibility[this.context]}
             options={this.visibilityOptions}
           />
         </div>
 
         <div className="mb-3">
-          <h5>Tags</h5>
+          <h5>{dictionary.tags[this.context]}</h5>
           <AddTags onChange={this.handleTagsChange} tags={this.props.tags} />
         </div>
 
         <div>
-          <h5>Files</h5>
+          <h5>{dictionary.files[this.context]}</h5>
         </div>
         {this.getRemovedFiles()}
         <div className="custom-file">
@@ -339,7 +347,7 @@ class PostModal extends Component<IProps, IState> {
     this.state.docs.forEach(file => (label += file.name + " "));
 
     if (label === "") {
-      label = "Insert images, videos and documents";
+      label = dictionary.insert_files[this.context];
     }
 
     return label;
@@ -358,7 +366,9 @@ class PostModal extends Component<IProps, IState> {
         }
         disabled={!this.validPost()}
       >
-        {this.mode === CREATE_MODE ? "Create new post" : "Save changes"}
+        {this.mode === CREATE_MODE
+          ? dictionary.create_new_post[this.context]
+          : dictionary.save_changes[this.context]}
       </button>
     );
   }
@@ -390,7 +400,9 @@ class PostModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {`${this.mode} Post`}
+                {`${dictionary[this.mode][this.context]} ${
+                  dictionary.post_cap[this.context]
+                }`}
               </h5>
               <button
                 type="button"
@@ -409,7 +421,7 @@ class PostModal extends Component<IProps, IState> {
                 data-dismiss="modal"
                 onClick={this.handlePostCancel}
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

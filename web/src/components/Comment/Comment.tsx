@@ -18,6 +18,7 @@ import styles from "./../Post/Post.module.scss";
 // - Import utils
 import { apiCheckCommentUserReport } from "../../utils/apiReport";
 import axiosInstance from "../../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
@@ -44,6 +45,8 @@ export type State = {
 };
 
 class Comment extends Component<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
   public id: string;
   public loggedUserId: number;
@@ -104,7 +107,7 @@ class Comment extends Component<Props, State> {
                   data-toggle="collapse"
                   data-target={"#" + this.state.hrefComment + "_form"}
                 >
-                  Reply
+                  {dictionary.reply_action[this.context]}
                 </button>
               )}
               <a className={styles.post_date} href={"/post/" + this.id} />
@@ -142,7 +145,9 @@ class Comment extends Component<Props, State> {
                         className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
                           this.state.commentValue
                         )}`}
-                        placeholder="Insert your comment..."
+                        placeholder={
+                          dictionary.insert_comment_placeholder[this.context]
+                        }
                         value={this.state.commentValue}
                         onChange={this.changeCommentValue}
                         onKeyDown={this.onEnterPress}
@@ -151,7 +156,7 @@ class Comment extends Component<Props, State> {
                       <button
                         className={`${styles.submit_comment} px-2 py-1`}
                         type="submit"
-                        value="Submit"
+                        value={dictionary.submit[this.context]}
                         disabled={!this.validComment()}
                       >
                         <i className="fas fa-chevron-circle-right" />
@@ -178,7 +183,7 @@ class Comment extends Component<Props, State> {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title" id="editCommentModal">
-                  Edit Comment
+                  {dictionary.edit_comment[this.context]}
                   <button
                     type="button"
                     className="close"
@@ -191,7 +196,9 @@ class Comment extends Component<Props, State> {
               </div>
               <div className="modal-body">
                 <input
-                  placeholder="Insert your comment here"
+                  placeholder={
+                    dictionary.insert_comment_placeholder[this.context]
+                  }
                   className="form-control"
                   value={this.state.commentText}
                   onChange={event =>
@@ -208,7 +215,7 @@ class Comment extends Component<Props, State> {
                     this.setState({ commentText: this.props.text })
                   }
                 >
-                  Cancel
+                  {dictionary.cancel[this.context]}
                 </button>
                 <div>
                   {this.handleRedirect()}
@@ -218,7 +225,7 @@ class Comment extends Component<Props, State> {
                     data-dismiss="modal"
                     onClick={this.apiEditComment}
                   >
-                    Save
+                    {dictionary.save[this.context]}
                   </button>
                 </div>
               </div>
@@ -251,10 +258,7 @@ class Comment extends Component<Props, State> {
                 </button>
               </div>
               <div className="modal-body">
-                <p>
-                  Are you sure you want do delete this comment? It can't be
-                  retrieved later.
-                </p>
+                <p>{dictionary.confirm_delete[this.context]}</p>
               </div>
               <div className="modal-footer">
                 <button
@@ -262,7 +266,7 @@ class Comment extends Component<Props, State> {
                   className="btn btn-danger"
                   data-dismiss="modal"
                 >
-                  Cancel
+                  {dictionary.cancel[this.context]}
                 </button>
                 {this.getActionButton()}
               </div>
@@ -320,13 +324,13 @@ class Comment extends Component<Props, State> {
     if (foundValue != null) {
       return (
         <button className={styles.comment_action} onClick={this.handleAddLike}>
-          Dislike
+          {dictionary.dislike_action[this.context]}
         </button>
       );
     } else {
       return (
         <button className={styles.comment_action} onClick={this.handleAddLike}>
-          Like
+          {dictionary.like_action[this.context]}
         </button>
       );
     }
@@ -540,7 +544,9 @@ class Comment extends Component<Props, State> {
         onClick={this.handleCommentReport}
         disabled={this.state.userReport}
       >
-        {this.state.userReport ? "Report already issued" : "Report comment"}
+        {this.state.userReport
+          ? dictionary.report_comment_issued[this.context]
+          : dictionary.report_comment[this.context]}
       </button>
     );
     const editButton = (
@@ -552,7 +558,7 @@ class Comment extends Component<Props, State> {
         data-target={`#edit_comment_modal_${this.props.title}`}
         onClick={() => this.setState({ commentText: this.props.text })}
       >
-        Edit Comment
+        {dictionary.edit_comment[this.context]}
       </button>
     );
     const deleteButton = (
@@ -563,7 +569,7 @@ class Comment extends Component<Props, State> {
         data-toggle="modal"
         data-target={`#delete_comment_modal_${this.props.title}`}
       >
-        Delete Comment
+        {dictionary.delete_comment[this.context]}
       </button>
     );
     const dropdownButtons = [reportButton, editButton, deleteButton];
@@ -580,7 +586,7 @@ class Comment extends Component<Props, State> {
           data-dismiss="modal"
           onClick={this.handleCommentDeletion}
         >
-          {"Yes"}
+          {dictionary.yes[this.context]}
         </button>
       </div>
     );
@@ -663,7 +669,8 @@ class Comment extends Component<Props, State> {
           data-toggle="collapse"
           data-target={"#" + this.state.hrefComment}
         >
-          See {this.state.comments.length} Replies
+          {dictionary.see_replies[this.context]} {this.state.comments.length}{" "}
+          {dictionary.replies[this.context]}
         </button>
       );
     }

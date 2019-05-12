@@ -2,8 +2,7 @@ import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import Cookies from "universal-cookie";
 import AuthHelperMethods from "../utils/AuthHelperMethods";
-
-const cookies = new Cookies();
+import { dictionary, LanguageContext } from "../utils/language";
 
 type State = {
   email: string;
@@ -11,6 +10,7 @@ type State = {
 };
 
 class Login extends React.Component<RouteComponentProps, State> {
+  public static contextType = LanguageContext;
   private auth = new AuthHelperMethods();
 
   constructor(props: any) {
@@ -30,7 +30,7 @@ class Login extends React.Component<RouteComponentProps, State> {
         id="register-landing"
       >
         <form onSubmit={this.handleAuthentication}>
-          <h3 className="text-center">Login</h3>
+          <h3 className="text-center">{dictionary.login[this.context]}</h3>
           <div className="form-group mt-3">
             <input
               type="email"
@@ -38,7 +38,7 @@ class Login extends React.Component<RouteComponentProps, State> {
               id="inputEmail"
               name="email"
               onChange={this.handleInputChange}
-              placeholder="E-mail"
+              placeholder={dictionary.email[this.context]}
             />
           </div>
           <div className="form-group mt-3">
@@ -48,12 +48,12 @@ class Login extends React.Component<RouteComponentProps, State> {
               id="inputPassword"
               name="password"
               onChange={this.handleInputChange}
-              placeholder="Password"
+              placeholder={dictionary.password[this.context]}
             />
           </div>
           <div className="mt-5 text-center">
             <button type="submit" className="btn btn-primary">
-              Login
+              {dictionary.login[this.context]}
             </button>
           </div>
         </form>

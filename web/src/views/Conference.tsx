@@ -29,6 +29,7 @@ import {
   apiUserLeaveConference
 } from "../utils/apiConference";
 import axiosInstance from "../utils/axiosInstance";
+import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
   match: {
@@ -78,6 +79,8 @@ interface IState {
 }
 
 class Conference extends React.Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public id: number;
   public userId: number;
   public tags: string[];
@@ -189,7 +192,6 @@ class Conference extends React.Component<IProps, IState> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
@@ -262,8 +264,10 @@ class Conference extends React.Component<IProps, IState> {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
-            <h4>Title: {this.state.title}</h4>
-            <h5>This conference has been closed!</h5>
+            <h4>
+              {dictionary.title[this.context]}: {this.state.title}
+            </h4>
+            <h5>{dictionary.closed_conference[this.context]}</h5>
           </div>
 
           <div className="container my-5">
@@ -292,7 +296,7 @@ class Conference extends React.Component<IProps, IState> {
             <div className="conf_posts">
               {this.getJoinButton()}
               <button className="create" onClick={this.createConfPost}>
-                Create Post
+                {dictionary.create_post[this.context]}
               </button>
               {this.state.postModalOpen ? (
                 <CreateNewModal
@@ -320,7 +324,7 @@ class Conference extends React.Component<IProps, IState> {
     if (this.state.isHidden) {
       return (
         <div id="hidden_info">
-          <b>The conference was closed to all users!</b>
+          <b>{dictionary.closed_conference[this.context]}</b>
         </div>
       );
     }
@@ -328,8 +332,8 @@ class Conference extends React.Component<IProps, IState> {
 
   public getDropdownButtons() {
     const hideBtnText = this.state.isHidden
-      ? "Reopen Conference"
-      : "Hide Conference";
+      ? dictionary.reopen_conference[this.context]
+      : dictionary.hide_conference[this.context];
 
     const reportButton = (
       <button
@@ -341,7 +345,7 @@ class Conference extends React.Component<IProps, IState> {
         // onClick={this.handleConferenceReport}
         // disabled={this.state.userReport}
       >
-        Report conference
+        {dictionary.report_conference[this.context]}
       </button>
     );
     const deleteButton = (
@@ -364,7 +368,7 @@ class Conference extends React.Component<IProps, IState> {
         data-toggle="modal"
         // data-target={`#archive_conference_modal${this.props.id}`}
       >
-        Archive Conference
+        {dictionary.archive_conference[this.context]}
       </button>
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
@@ -479,8 +483,6 @@ class Conference extends React.Component<IProps, IState> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}
@@ -523,33 +525,33 @@ class Conference extends React.Component<IProps, IState> {
 
   private getAdminButtons() {
     const hideBtnText = this.state.isHidden
-      ? "Reopen Conference"
-      : "Hide Conference";
+      ? dictionary.reopen_conference[this.context]
+      : dictionary.hide_conference[this.context];
 
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
-        <h6>Administrator</h6>
+        <h6>{dictionary.administrator[this.context]}</h6>
         <button
           data-toggle="modal"
           data-target={`#invite_conference_modal_${this.id}`}
         >
           <i className="fas fa-envelope" />
-          Invite users
+          {dictionary.invite_users[this.context]}
         </button>
         {/* Invite Users */}
         <InviteModal conferenceId={this.id} />
 
         <button>
           <i className="fas fa-video" />
-          Start livestream
+          {dictionary.start_livestream_conference[this.context]}
         </button>
         <button>
           <i className="fas fa-puzzle-piece" />
-          Create challenge
+          {dictionary.create_challenge_conference[this.context]}
         </button>
         <button>
           <i className="fas fa-archive" />
-          Archive conference
+          {dictionary.archive_conference[this.context]}
         </button>
         <button onClick={this.handleHideConference}>
           <i className="fas fa-trash" />
@@ -563,12 +565,12 @@ class Conference extends React.Component<IProps, IState> {
   private getJoinButton() {
     let buttonClass = this.state.userParticipation ? "leave" : "join";
     let buttonText = this.state.userParticipation
-      ? "Leave conference"
-      : "Join conference";
+      ? dictionary.leave_conference[this.context]
+      : dictionary.join_conference[this.context];
 
     if (!this.state.userCanJoin) {
       buttonClass = "cannot_join";
-      buttonText = "You don't have permission to access this conference";
+      buttonText = dictionary.no_access_conference[this.context];
     }
     // TODO: METER EFEITOS AO CARREGAR
     return (
