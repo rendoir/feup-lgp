@@ -11,7 +11,6 @@ import {
 } from "../utils/language";
 
 import Backoffice from "./Backoffice";
-import Talk from "./Talk";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
@@ -21,6 +20,7 @@ import Profile from "./Profile";
 import RegisterLanding from "./RegisterLanding";
 import SearchResults from "./SearchResults";
 import Shop from "./Shop";
+import Talk from "./Talk";
 
 type State = {
   language: string;

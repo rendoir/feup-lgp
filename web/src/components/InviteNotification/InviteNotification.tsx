@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
 // - Import utils
-import { apiUserJoinTalk } from "../../utils/apiTalk";
 import { apiInviteNotified } from "../../utils/apiInvite";
+import { apiUserJoinTalk } from "../../utils/apiTalk";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
