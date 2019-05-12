@@ -158,7 +158,7 @@ export async function getProfilePosts(req, res) {
     const offset = req.query.offset;
     try {
         const result = await query({
-            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content, p.likes,
+            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
                 p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON (p.author = a.id)
@@ -178,7 +178,6 @@ export async function getProfilePosts(req, res) {
             return;
         }
         const commentsToSend = [];
-        const likersToSend = [];
         const tagsToSend = [];
         const filesToSend = [];
         for (const post of result.rows) {
@@ -192,14 +191,6 @@ export async function getProfilePosts(req, res) {
                         WHERE
                             p.id = $1
                         ORDER BY c.date_updated ASC`,
-                values: [post.id],
-            });
-            const likersPost = await query({
-                text: `SELECT a.id, a.first_name, a.last_name
-                        FROM likes_a_post l
-                        INNER JOIN users a
-                        ON l.author = a.id
-                        WHERE l.post = $1`,
                 values: [post.id],
             });
             const tagsPost = await query({
@@ -220,7 +211,6 @@ export async function getProfilePosts(req, res) {
                 values: [post.id],
             });
             commentsToSend.push(comment.rows);
-            likersToSend.push(likersPost.rows);
             tagsToSend.push(tagsPost.rows);
             filesToSend.push(files.rows);
         }
@@ -234,7 +224,7 @@ export async function getProfilePosts(req, res) {
         res.send({
             posts: result.rows,
             comments: commentsToSend,
-            likers: likersToSend,
+
             tags: tagsToSend,
             files: filesToSend,
             user: profileInfo.rows[0],

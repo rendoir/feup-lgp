@@ -197,8 +197,6 @@ export default class SearchResults extends React.Component<Props, State> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers || []}
           tags={post.tags || []}
           comments={post.comments || []}
           title={post.title}
@@ -220,8 +218,6 @@ export default class SearchResults extends React.Component<Props, State> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers || []}
           tags={post.tags || []}
           comments={post.comments || []}
           title={post.title}
