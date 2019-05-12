@@ -4,7 +4,7 @@ import { query } from '../db/db';
 
 export async function getFeed(req, res) {
     const offset = req.query.offset;
-    const userId = 1;
+    const userId = req.user.id;
     try {
         const result = await query({
             text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,

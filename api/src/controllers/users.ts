@@ -246,7 +246,7 @@ export async function getProfilePosts(req, res) {
 }
 
 export async function getNotifications(req, res) {
-    const userId = 1;
+    const userId = req.user.id;
     try {
       const unseenInvitesQuery = await query({
         text: `SELECT DISTINCT invites.id, invite_subject_id,
@@ -270,7 +270,7 @@ export async function getNotifications(req, res) {
 }
 
 export function inviteNotified(req, res) {
-    const userId = 1;
+    const userId = req.user.id;
     query({
         text: `UPDATE invites SET user_notified = TRUE
                 WHERE id = $1 AND

@@ -43,8 +43,6 @@ export type State = {
   userReport: boolean; // Tells if the logged user has reported this post
 };
 
-const cookies = new Cookies();
-
 class Comment extends Component<Props, State> {
   public static defaultProps = {};
   public id: string;

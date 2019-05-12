@@ -72,7 +72,7 @@ export function deletePost(req, res) {
 
 export async function getPost(req, res) {
     const postId = req.params.id;
-    const userId = 1; // logged in user
+    const userId = req.user.id; // logged in user
     try {
         /**
          * Post must be owned by user

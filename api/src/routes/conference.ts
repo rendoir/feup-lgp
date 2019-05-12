@@ -94,7 +94,7 @@ conferenceRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersIn
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference the user wants to participate in
- * The user who intends to participate in the conference is the logged in user, which means we can access his id through cookies.
+ * The user who intends to participate in the conference is the logged in user, which means we can access his id through req.user.id.
  * This way, we don't need to pass it as a request parameter.
  *
  * @apiErrorExample Error-Response:
@@ -111,8 +111,7 @@ conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference the user does not intend to attend anymore
- * The user who wants to remove his intent to attend the conference is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
+ * The user who wants to remove his intent to attend the conference is the logged in user.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -128,8 +127,7 @@ conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantU
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference in which we are verifying the user participation
- * The user whose participation we in conference is being verified is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
+ * The user whose participation we in conference is being verified is the logged in user.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -145,8 +143,7 @@ conferenceRouter.get('/:id/check_participation', controller.checkUserParticipati
  * @apiGroup Conference
  *
  * @apiParam {number}   id    Id of the conference in which we are verifying if the user can join
- * The user whose access to the conference we want to verify is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
+ * The user whose access to the conference we want to verify is the logged in user.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
