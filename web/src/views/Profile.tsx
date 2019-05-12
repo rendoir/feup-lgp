@@ -2,6 +2,7 @@ import axios from "axios";
 import * as React from "react";
 import Cookies from "universal-cookie";
 import Avatar from "../components/Avatar/Avatar";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
 import { getApiURL } from "../utils/apiURL";
@@ -62,7 +63,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   public componentDidMount() {
-    this.apiGetFeedUser();
+    this.apiGetUser();
     this.apiGetUserUserInteractions();
   }
 
@@ -78,6 +79,12 @@ class Profile extends React.Component<IProps, State> {
       ? dictionary.unsubscribe_action[this.context]
       : dictionary.subscribe_action[this.context];
 
+    let profileUrl = `${location.protocol}//${location.hostname}`;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}/posts`;
+    } else {
+      profileUrl += "/api/users/" + this.id + "/posts";
+    }
     return (
       <div className="Profile">
         <main id="profile" className="container">
@@ -142,7 +149,9 @@ class Profile extends React.Component<IProps, State> {
               </ul>
             </div>
             <div id="right-div">
-              <div className="col-lg-14">{this.getProfilePosts()}</div>
+              <div className={"col-lg-14"}>
+                <InfiniteScroll requestUrl={profileUrl} />
+              </div>
             </div>
           </div>
         </main>
@@ -278,7 +287,7 @@ class Profile extends React.Component<IProps, State> {
     }
   }
 
-  private apiGetFeedUser() {
+  private apiGetUser() {
     let profileUrl = `${location.protocol}//${location.hostname}`;
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
       profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
@@ -290,22 +299,7 @@ class Profile extends React.Component<IProps, State> {
         headers: {}
       })
       .then(res => {
-        const postsComing = res.data;
-        console.log(postsComing);
-
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-
-        this.setState({
-          fetchingInfo: false,
-          posts: postsComing.posts,
-          user: postsComing.user
-        });
+        this.setState({ user: res.data.user });
       })
       .catch(() => console.log("Failed to get posts"));
   }
@@ -380,8 +374,6 @@ class Profile extends React.Component<IProps, State> {
           id={post.id}
           author={post.first_name + " " + post.last_name}
           content={post.content}
-          likes={post.likes}
-          likers={post.likers}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}
