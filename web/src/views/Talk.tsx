@@ -60,7 +60,7 @@ interface IState {
   privacy: string;
   postModalOpen: boolean;
   request: {
-    type: "post" | "conference";
+    type: "post" | "talk";
     title: string;
     about: string;
     avatar?: File;
@@ -79,7 +79,7 @@ interface IState {
   };
 }
 
-class Conference extends React.Component<IProps, IState> {
+class Talk extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   public id: number;
@@ -131,20 +131,20 @@ class Conference extends React.Component<IProps, IState> {
       waitingUserJoinLeave: false
     };
 
-    this.handleHideConference = this.handleHideConference.bind(this);
+    this.handleHideTalk = this.handleHideTalk.bind(this);
     this.getHiddenInfo = this.getHiddenInfo.bind(this);
-    this.handleJoinConference = this.handleJoinConference.bind(this);
-    this.handleLeaveConference = this.handleLeaveConference.bind(this);
+    this.handleJoinTalk = this.handleJoinTalk.bind(this);
+    this.handleLeaveTalk = this.handleLeaveTalk.bind(this);
   }
 
   public componentDidMount() {
-    this.apiGetConference();
+    this.apiGetTalk();
     this.getPossibleTags();
     this.apiGetUserCanJoin();
     this.apiGetUserParticipation();
   }
 
-  public async handleJoinConference() {
+  public async handleJoinTalk() {
     if (this.state.waitingUserJoinLeave) {
       return;
     }
@@ -161,7 +161,7 @@ class Conference extends React.Component<IProps, IState> {
     });
   }
 
-  public async handleLeaveConference() {
+  public async handleLeaveTalk() {
     if (this.state.waitingUserJoinLeave) {
       return;
     }
@@ -178,15 +178,15 @@ class Conference extends React.Component<IProps, IState> {
     });
   }
 
-  public apiGetConference() {
-    const conferenceURL = getApiURL(`/talk/${this.id}`);
+  public apiGetTalk() {
+    const talkURL = getApiURL(`/talk/${this.id}`);
     axios
-      .get(conferenceURL, {})
+      .get(talkURL, {})
       .then(res => {
-        const conference = res.data.conference;
-        let datestart = conference.datestart.split("T");
+        const talk = res.data.talk;
+        let datestart = talk.datestart.split("T");
         datestart = datestart[0] + " " + datestart[1];
-        let dateend = conference.dateend.split("T");
+        let dateend = talk.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
         const postsComing = res.data;
@@ -199,7 +199,7 @@ class Conference extends React.Component<IProps, IState> {
           )
         );
 
-        if (conference.privacy === "closed") {
+        if (talk.privacy === "closed") {
           this.setState({
             isHidden: true
           });
@@ -208,20 +208,20 @@ class Conference extends React.Component<IProps, IState> {
         this.setState({
           date_end: dateend,
           date_start: datestart,
-          description: conference.about,
-          livestreamUrl: conference.livestream_url,
-          owner_id: conference.user_id,
-          owner_name: conference.first_name + conference.last_name,
-          place: conference.local,
+          description: talk.about,
+          livestreamUrl: talk.livestream_url,
+          owner_id: talk.user_id,
+          owner_name: talk.first_name + talk.last_name,
+          place: talk.local,
           posts: postsComing.posts,
-          privacy: conference.local,
-          title: conference.title
+          privacy: talk.local,
+          title: talk.title
         });
       })
-      .catch(() => console.log("Failed to get conference info"));
+      .catch(() => console.log("Failed to get talk info"));
   }
 
-  public handleHideConference() {
+  public handleHideTalk() {
     let privacyState = "closed";
 
     if (this.state.isHidden) {
@@ -249,7 +249,7 @@ class Conference extends React.Component<IProps, IState> {
         privacy: privacyState
       })
       .then(res => {
-        console.log("Conference hidden...");
+        console.log("Talk hidden...");
       })
       .catch(() => console.log("Failed to update privacy"));
   }
@@ -267,12 +267,12 @@ class Conference extends React.Component<IProps, IState> {
   public render() {
     if (this.state.isHidden && this.userId === this.state.owner_id) {
       return (
-        <div id="Conference" className="my-5">
+        <div id="Talk" className="my-5">
           <div className="container my-5">
             <h4>
               {dictionary.title[this.context]}: {this.state.title}
             </h4>
-            <h5>{dictionary.closed_conference[this.context]}</h5>
+            <h5>{dictionary.closed_talk[this.context]}</h5>
           </div>
 
           <div className="container my-5">
@@ -284,7 +284,7 @@ class Conference extends React.Component<IProps, IState> {
       );
     } else {
       return (
-        <div id="Conference" className="my-5">
+        <div id="Talk" className="my-5">
           <div className="container my-5">
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
@@ -329,7 +329,7 @@ class Conference extends React.Component<IProps, IState> {
     if (this.state.isHidden) {
       return (
         <div id="hidden_info">
-          <b>{dictionary.closed_conference[this.context]}</b>
+          <b>{dictionary.closed_talk[this.context]}</b>
         </div>
       );
     }
@@ -337,8 +337,8 @@ class Conference extends React.Component<IProps, IState> {
 
   public getDropdownButtons() {
     const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_conference[this.context]
-      : dictionary.hide_conference[this.context];
+      ? dictionary.reopen_talk[this.context]
+      : dictionary.hide_talk[this.context];
 
     const reportButton = (
       <button
@@ -347,10 +347,10 @@ class Conference extends React.Component<IProps, IState> {
         type="button"
         data-toggle="modal"
         // data-target={`#report_post_modal_${this.props.id}`}
-        // onClick={this.handleConferenceReport}
+        // onClick={this.handleTalkReport}
         // disabled={this.state.userReport}
       >
-        {dictionary.report_conference[this.context]}
+        {dictionary.report_talk[this.context]}
       </button>
     );
     const deleteButton = (
@@ -359,8 +359,8 @@ class Conference extends React.Component<IProps, IState> {
         className="dropdown-item"
         type="button"
         data-toggle="modal"
-        onClick={this.handleHideConference}
-        // data-target={`#delete_conference_modal${this.props.id}`}
+        onClick={this.handleHideTalk}
+        // data-target={`#delete_talk_modal${this.props.id}`}
       >
         {hideBtnText}
       </button>
@@ -371,9 +371,9 @@ class Conference extends React.Component<IProps, IState> {
         className="dropdown-item"
         type="button"
         data-toggle="modal"
-        // data-target={`#archive_conference_modal${this.props.id}`}
+        // data-target={`#archive_talk_modal${this.props.id}`}
       >
-        {dictionary.archive_conference[this.context]}
+        {dictionary.archive_talk[this.context]}
       </button>
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
@@ -409,7 +409,7 @@ class Conference extends React.Component<IProps, IState> {
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
-      formData.append("conference", this.id + "");
+      formData.append("talk", this.id + "");
 
       url += "/post/create";
       axios
@@ -544,35 +544,35 @@ class Conference extends React.Component<IProps, IState> {
 
   private getAdminButtons() {
     const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_conference[this.context]
-      : dictionary.hide_conference[this.context];
+      ? dictionary.reopen_talk[this.context]
+      : dictionary.hide_talk[this.context];
 
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
         <button
           data-toggle="modal"
-          data-target={`#invite_conference_modal_${this.id}`}
+          data-target={`#invite_talk_modal_${this.id}`}
         >
           <i className="fas fa-envelope" />
           {dictionary.invite_users[this.context]}
         </button>
         {/* Invite Users */}
-        <InviteModal conferenceId={this.id} />
+        <InviteModal talkId={this.id} />
 
         <button>
           <i className="fas fa-video" />
-          {dictionary.start_livestream_conference[this.context]}
+          {dictionary.start_livestream_talk[this.context]}
         </button>
         <button>
           <i className="fas fa-puzzle-piece" />
-          {dictionary.create_challenge_conference[this.context]}
+          {dictionary.create_challenge_talk[this.context]}
         </button>
         <button>
           <i className="fas fa-archive" />
-          {dictionary.archive_conference[this.context]}
+          {dictionary.archive_talk[this.context]}
         </button>
-        <button onClick={this.handleHideConference}>
+        <button onClick={this.handleHideTalk}>
           <i className="fas fa-trash" />
           {hideBtnText}
         </button>
@@ -584,12 +584,12 @@ class Conference extends React.Component<IProps, IState> {
   private getJoinButton() {
     let buttonClass = this.state.userParticipation ? "leave" : "join";
     let buttonText = this.state.userParticipation
-      ? dictionary.leave_conference[this.context]
-      : dictionary.join_conference[this.context];
+      ? dictionary.leave_talk[this.context]
+      : dictionary.join_talk[this.context];
 
     if (!this.state.userCanJoin) {
       buttonClass = "cannot_join";
-      buttonText = dictionary.no_access_conference[this.context];
+      buttonText = dictionary.no_access_talk[this.context];
     }
     // TODO: METER EFEITOS AO CARREGAR
     return (
@@ -597,8 +597,8 @@ class Conference extends React.Component<IProps, IState> {
         className={`join_button ${buttonClass}`}
         onClick={
           this.state.userParticipation
-            ? this.handleLeaveConference
-            : this.handleJoinConference
+            ? this.handleLeaveTalk
+            : this.handleJoinTalk
         }
         disabled={!this.state.userCanJoin}
       >
@@ -621,4 +621,4 @@ class Conference extends React.Component<IProps, IState> {
   }
 }
 
-export default Conference;
+export default Talk;

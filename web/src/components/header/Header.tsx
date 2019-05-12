@@ -28,7 +28,7 @@ type State = {
   isOpen: boolean;
   step: Step;
   request: {
-    type: "post" | "conference";
+    type: "post" | "talk";
     title: string;
     about: string;
     avatar?: File;
@@ -246,11 +246,11 @@ class Header extends PureComponent<Props, State> {
           title: request.title
         })
         .then(res => {
-          console.log(`Conference with id = ${res.data.id} created`);
+          console.log(`talk with id = ${res.data.id} created`);
           window.location.href = "/talk/" + res.data.id;
           this.resetState();
         })
-        .catch(error => console.log("Failed to create conference. " + error));
+        .catch(error => console.log("Failed to create talk. " + error));
     }
   };
 

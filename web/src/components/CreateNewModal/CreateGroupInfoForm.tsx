@@ -16,7 +16,7 @@ import styles from "./CreateNewModal.module.css";
 
 export type Props = {
   id: string;
-  type: "post" | "conference";
+  type: "post" | "talk";
   title: string;
   about: string;
   avatar?: File;
@@ -85,7 +85,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={className}>
-        {type === "conference" ? this.renderAvatar() : null}
+        {type === "talk" ? this.renderAvatar() : null}
         <form id={id} autoComplete={"off"} className={styles.form}>
           <InputNext
             className={styles.input}
@@ -113,7 +113,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           />
           {this.renderPrivacy()}
           {type === "post" ? this.renderPostFields() : null}
-          {type === "conference" ? this.renderConferenceFields() : null}
+          {type === "talk" ? this.rendertalkFields() : null}
         </form>
       </div>
     );
@@ -226,26 +226,26 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     );
   }
 
-  private renderConferenceFields() {
+  private rendertalkFields() {
     const { id, local } = this.props;
 
     return (
       <div className={styles.shortnameWrapper}>
         <InputNext
           onChange={this.props.onChange}
-          id={`${id}_conference_local`}
+          id={`${id}_talk_local`}
           value={local}
           name={"local"}
-          placeholder={dictionary.conference_local[this.context]}
+          placeholder={dictionary.talk_local[this.context]}
           label={dictionary.location[this.context]}
         />
-        <div id={`${id}_conference_dates`}>
-          <label htmlFor={`${id}_conference_dates`} className={styles.dates}>
+        <div id={`${id}_talk_dates`}>
+          <label htmlFor={`${id}_talk_dates`} className={styles.dates}>
             {dictionary.dates[this.context]}
           </label>
           <InputNext
             onChange={this.props.onChange}
-            id={`${id}_conference_date_start`}
+            id={`${id}_talk_date_start`}
             value={this.props.dateStart}
             name={"dateStart"}
             label={dictionary.date_start[this.context]}
@@ -253,18 +253,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           />
           <InputNext
             onChange={this.props.onChange}
-            id={`${id}_conference_date_end`}
+            id={`${id}_talk_date_end`}
             value={this.props.dateEnd}
             name={"dateEnd"}
             label={dictionary.date_end[this.context]}
             type={"datetime-local"}
           />
         </div>
-        <div id={`${id}_conference_livestream`}>
-          <label
-            htmlFor={`${id}_conference_livestream`}
-            className={styles.dates}
-          >
+        <div id={`${id}_talk_livestream`}>
+          <label htmlFor={`${id}_talk_livestream`} className={styles.dates}>
             {dictionary.livestream[this.context]}
           </label>
           <Switcher

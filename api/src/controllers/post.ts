@@ -10,12 +10,12 @@ export async function createPost(req, res) {
     }
 
     try {
-        console.log('Created post on conference: ' + req.body.conference);
-        if ( req.body.conference > 0) {
+        console.log('Created post on talk: ' + req.body.talk);
+        if ( req.body.talk > 0) {
             const post = (await query({
-                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, talk)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
-                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.talk],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);

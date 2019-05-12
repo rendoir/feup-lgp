@@ -86,15 +86,15 @@ class Feed extends React.Component<Props, State> {
       return null;
     }
 
-    const hardCodedConferences = [
-      "Conference 1",
-      "Conference 45465",
-      "Conference 45",
-      "Conference 46848",
-      "Big Conference name to test css properly, omg this name is not over yet"
+    const hardCodedTalks = [
+      "Talk 1",
+      "Talk 45465",
+      "Talk 45",
+      "Talk 46848",
+      "Big Talk name to test css properly, omg this name is not over yet"
     ];
-    const conferences = hardCodedConferences.map(title => (
-      <a key={title} className="conference-link d-block my-2">
+    const talks = hardCodedTalks.map(title => (
+      <a key={title} className="talk-link d-block my-2">
         {title}
       </a>
     ));
@@ -103,8 +103,8 @@ class Feed extends React.Component<Props, State> {
       <div id="Feed" className="container my-5">
         <div className="row">
           <div className="left col-lg-3 mr-5">
-            <h5>{dictionary.conferences[this.context]}</h5>
-            {conferences}
+            <h5>{dictionary.talks[this.context]}</h5>
+            {talks}
           </div>
           <div className="middle col-lg-8">{this.getPosts()}</div>
         </div>

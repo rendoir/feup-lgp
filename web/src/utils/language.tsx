@@ -20,7 +20,7 @@ export let dictionary: Dictionary = {
   search: { PT: "Procurar", EN: "Search" },
   new: { PT: "Novo", EN: "New" },
   profile: { PT: "Perfil", EN: "Profile" },
-  conferences: { PT: "Conferências", EN: "Conferences" },
+  talks: { PT: "Palestras", EN: "Talks" },
   like_action: { PT: "Gostar", EN: "Like" },
   dislike_action: { PT: "Não gostar", EN: "Dislike" },
   comment_action: { PT: "Comentar", EN: "Comment" },
@@ -66,25 +66,25 @@ export let dictionary: Dictionary = {
   unknown_error: { PT: "Erro desconhecido", EN: "Something went wrong" },
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
-  closed_conference: {
-    PT: "Esta conferência foi encerrada!",
-    EN: "This conference has been closed!"
+  closed_talk: {
+    PT: "Esta palestra foi encerrada!",
+    EN: "This talk has been closed!"
   },
-  reopen_conference: { PT: "Reabrir conferência", EN: "Reopen conference" },
-  hide_conference: { PT: "Esconder conferência", EN: "Hide conference" },
-  report_conference: { PT: "Reportar conferência", EN: "Report conference" },
-  archive_conference: { PT: "Arquivar conferência", EN: "Archive conference" },
-  start_livestream_conference: {
+  reopen_talk: { PT: "Reabrir palestra", EN: "Reopen talk" },
+  hide_talk: { PT: "Esconder palestra", EN: "Hide talk" },
+  report_talk: { PT: "Reportar palestra", EN: "Report talk" },
+  archive_talk: { PT: "Arquivar palestra", EN: "Archive talk" },
+  start_livestream_talk: {
     PT: "Começar transmissão em direto",
     EN: "Start livestream"
   },
-  create_challenge_conference: { PT: "Criar desafio", EN: "Create challenge" },
+  create_challenge_talk: { PT: "Criar desafio", EN: "Create challenge" },
   invite_users: { PT: "Convidar utilizadores", EN: "Invite users" },
-  leave_conference: { PT: "Sair da conferência", EN: "Leave conference" },
-  join_conference: { PT: "Entrar na conferência", EN: "Join conference" },
-  no_access_conference: {
-    PT: "Não tem permissões para aceder a esta conferência",
-    EN: "You don't have permissions to access this conference"
+  leave_talk: { PT: "Sair da palestra", EN: "Leave talk" },
+  join_talk: { PT: "Entrar na palestra", EN: "Join talk" },
+  no_access_talk: {
+    PT: "Não tem permissões para aceder a esta palestra",
+    EN: "You don't have permissions to access this talk"
   },
   login: { PT: "Entrar", EN: "Login" },
   username: { PT: "Nome de utilizador", EN: "Username" },
@@ -112,8 +112,8 @@ export let dictionary: Dictionary = {
   comment_encourage: { PT: "Comente e Incentive", EN: "Comment and Encourage" },
   search_find: { PT: "Procure e Encontre", EN: "Search and Find" },
   website_description2: {
-    PT: "Teses, casos de estudo, video-conferências, ...",
-    EN: "Thesis, clinical cases, video conferences..."
+    PT: "Teses, casos de estudo, video-palestras, ...",
+    EN: "Thesis, clinical cases, video talks..."
   },
   signup: { PT: "Registar", EN: "Sign up" },
   first_name: { PT: "Primeiro nome", EN: "First name" },
@@ -148,12 +148,12 @@ export let dictionary: Dictionary = {
   unban_action: { PT: "Desbanir", EN: "Unban" },
   turn_admin: { PT: "Tornar admin", EN: "Turn admin" },
   expel_admin: { PT: "Expulsar admin", EN: "Expel admin" },
-  conference_chat: { PT: "Chat da conferência", EN: "Conference Chat" },
+  talk_chat: { PT: "Chat da palestra", EN: "Talk Chat" },
   chat_message_placeholder: {
     PT: "Insira aqui a sua mensagem...",
     EN: "Insert your message here..."
   },
-  conference: { PT: "conferência", EN: "conference" },
+  talk: { PT: "palestra", EN: "talk" },
   post: { PT: "publicação", EN: "post" },
   description: { PT: "Descrição", EN: "Description" },
   description_placeholder: {
@@ -164,7 +164,7 @@ export let dictionary: Dictionary = {
   visibility_followers: { PT: "Seguidores", EN: "Followers" },
   visibility_private: { PT: "Privado", EN: "Private" },
   visibility: { PT: "Visibilidade", EN: "Visibility" },
-  conference_local: { PT: "Local da conferência", EN: "Conference location" },
+  talk_local: { PT: "Local da palestra", EN: "alk location" },
   location: { PT: "Localização", EN: "Location" },
   dates: { PT: "Datas", EN: "Dates" },
   date_start: { PT: "Início", EN: "Start" },
@@ -178,19 +178,19 @@ export let dictionary: Dictionary = {
     PT: "Publicações são o mecanismo básico de partilha de conhecimento",
     EN: "Post are the basic mechanism used to share knowledge."
   },
-  conference_cap: { PT: "Conferência", EN: "Conference" },
-  conference_description: {
-    PT: "Conferências são sessões formais para a discussão de um tópico",
-    EN: "Conferences are formal meetings for discussion of a particular topic."
+  talk_cap: { PT: "Palestra", EN: "Talk" },
+  talk_description: {
+    PT: "Palestras são sessões formais para a discussão de um tópico",
+    EN: "Talks are formal meetings for discussion of a particular topic."
   },
   new_f: { PT: "Nova", EN: "New" },
   error_occurred: { PT: "Ocorreu um erro", EN: "An error occurred" },
   next: { PT: "Continuar", EN: "Next" },
   finish: { PT: "Concluir", EN: "Finish" },
   edit_avatar: { PT: "Editar Avatar", EN: "Edit Avatar" },
-  new_conference_post: {
-    PT: "Nova publicação de conferência",
-    EN: "New Conference Post"
+  new_talk_post: {
+    PT: "Nova publicação de palestra",
+    EN: "New talk Post"
   },
   accept: { PT: "Aceitar", EN: "Accept" },
   refuse: { PT: "Recusar", EN: "Refuse" },

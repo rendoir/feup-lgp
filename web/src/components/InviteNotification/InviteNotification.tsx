@@ -8,7 +8,7 @@ import { dictionary, LanguageContext } from "../../utils/language";
 interface IProps {
   id: number;
   subjectId: number;
-  subjectType: string; // 'post' or 'conference'
+  subjectType: string; // 'post' or 'talk'
   subjectTitle: string;
 }
 
@@ -36,7 +36,7 @@ class InviteNotification extends Component<IProps, IState> {
     let joinSuccess: boolean = true;
 
     // Joining posts is yet to be implemented
-    if (this.props.subjectType === "conference") {
+    if (this.props.subjectType === "talk") {
       joinSuccess = await apiUserJoinTalk(this.props.subjectId);
     }
 

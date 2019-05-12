@@ -4,7 +4,7 @@ import { getApiURL } from "./apiURL";
 export async function apiInviteUser(
   inviteSubjectId: number,
   invitedUserId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<boolean> {
   const apiURL = getApiURL(`/${inviteType}/${inviteSubjectId}/invite`);
   const body = { invited_user: invitedUserId };
@@ -20,7 +20,7 @@ export async function apiInviteUser(
 
 export async function apiInviteSubscribers(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<boolean> {
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/invite_subscribers`
@@ -37,7 +37,7 @@ export async function apiInviteSubscribers(
 
 export async function apiGetUninvitedSubscribersAmount(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<number> {
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/amount_uninvited_subscribers`
@@ -54,7 +54,7 @@ export async function apiGetUninvitedSubscribersAmount(
 
 export async function apiGetUninvitedUsersInfo(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ) {
   const apiURL = getApiURL(
     `/${inviteType}/${inviteSubjectId}/uninvited_users_info`

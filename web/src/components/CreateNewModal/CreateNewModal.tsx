@@ -352,7 +352,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          {dictionary.new_conference_post[this.context]}
+          {dictionary.new_talk_post[this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}

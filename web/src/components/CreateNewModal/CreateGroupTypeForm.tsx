@@ -8,7 +8,7 @@ type Props = {
   id: string;
   context: any;
   maxGroupSize: number;
-  type: "post" | "conference";
+  type: "post" | "talk";
   onChange: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -27,11 +27,11 @@ function CreateGroupTypeForm(props: Props) {
           {dictionary.post_description[props.context]}
         </div>
         <br />
-        <Radio value={"conference"} id={`${props.id}_type_channel`}>
-          {dictionary.conference_cap[props.context]}
+        <Radio value={"talk"} id={`${props.id}_type_channel`}>
+          {dictionary.talk_cap[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          {dictionary.conference_description[props.context]}
+          {dictionary.talk_description[props.context]}
         </div>
       </RadioGroup>
     </div>
