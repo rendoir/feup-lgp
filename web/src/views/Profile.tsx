@@ -380,6 +380,8 @@ class Profile extends React.Component<IProps, State> {
           id={post.id}
           author={post.first_name + " " + post.last_name}
           content={post.content}
+          likes={post.likes}
+          likers={post.likers}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}
