@@ -320,7 +320,6 @@ class Conference extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {/*{this.getPosts()}*/}
               <InfiniteScroll
                 requestUrl={getApiURL(`/conference/${this.id}`)}
               />
@@ -491,34 +490,6 @@ class Conference extends React.Component<IProps, IState> {
         </div>
       </div>
     );
-  }
-
-  private getPosts() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
-
-    const postsDiv: any[] = [];
-
-    for (const post of this.state.posts) {
-      postsDiv.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          content={post.content}
-          user_id={post.user_id}
-          comments={post.comments || []}
-          tags={post.tags}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-          files={post.files}
-        />
-      );
-    }
-
-    return postsDiv;
   }
 
   private getDetails() {
