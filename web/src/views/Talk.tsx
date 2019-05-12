@@ -214,7 +214,7 @@ class Talk extends React.Component<IProps, IState> {
           owner_name: talk.first_name + talk.last_name,
           place: talk.local,
           posts: postsComing.posts,
-          privacy: talk.local,
+          privacy: talk.privacy,
           title: talk.title
         });
       })
@@ -559,11 +559,6 @@ class Talk extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal talkId={this.id} />
-
-        <button>
-          <i className="fas fa-video" />
-          {dictionary.start_livestream_talk[this.context]}
-        </button>
         <button>
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
