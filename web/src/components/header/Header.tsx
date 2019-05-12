@@ -6,7 +6,10 @@ import {
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { withRouter, RouteComponentProps } from "react-router";
 
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
@@ -18,7 +21,6 @@ import styles from "./Header.module.css";
 
 type Props = {
   title: string;
-  searchBar: boolean;
   onSearchClick?: (text: string, event: MouseEvent) => any;
   onProfileClick?: (event: MouseEvent) => any;
   onLanguageChange: (lang: string) => any;
@@ -48,17 +50,12 @@ type State = {
   };
 };
 
-class Header extends PureComponent<Props, State> {
+class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   public static contextType = LanguageContext;
-
-  public static defaultProps = {
-    logoRedirectToHome: false,
-    searchBar: false
-  };
-
+  private auth = new AuthHelperMethods();
   private tags: string[];
 
-  constructor(props: Props) {
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -167,10 +164,27 @@ class Header extends PureComponent<Props, State> {
           />
           {dictionary.new[this.context]}
         </Nav.Link>
-        <Nav.Link href={"/user/1"} className={styles.link}>
-          <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
-          {dictionary.profile[this.context]}
-        </Nav.Link>
+        <NavDropdown
+          alignRight={true}
+          title={
+            <div style={{ display: "inline-block" }} className={styles.link}>
+              <Icon icon={faUserMd} size={"lg"} className={styles.icon} />{" "}
+              {dictionary.user_dropdown[this.context]}
+            </div>
+          }
+          id="header_user_dropdown"
+        >
+          <NavDropdown.Item href="/user/me">
+            {dictionary.profile[this.context]}
+          </NavDropdown.Item>
+          <NavDropdown.Item href="#action/3.2">
+            {dictionary.edit_profile[this.context]}
+          </NavDropdown.Item>
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={this.onClickLogout}>
+            {dictionary.logout[this.context]}
+          </NavDropdown.Item>
+        </NavDropdown>
         {this.state.isOpen ? (
           <CreateNewModal
             pending={false}
@@ -188,6 +202,11 @@ class Header extends PureComponent<Props, State> {
       </Nav>
     );
   }
+
+  private onClickLogout = (event: any) => {
+    this.auth.logout();
+    this.props.history.push("/");
+  };
 
   private handleClick = (event: MouseEvent): void => {
     event.preventDefault();
@@ -285,4 +304,4 @@ class Header extends PureComponent<Props, State> {
   };
 }
 
-export default Header;
+export default withRouter(Header);
