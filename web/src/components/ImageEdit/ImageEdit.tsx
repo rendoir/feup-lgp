@@ -4,6 +4,7 @@ import Croppie from "croppie";
 import "croppie/croppie.css";
 import React, { MouseEvent, PureComponent, ReactNode } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import { dictionary, LanguageContext } from "../../utils/language";
 import { listen } from "../../utils/listen";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
@@ -43,6 +44,8 @@ export type State = {
 };
 
 class ImageEdit extends PureComponent<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     height: 400,
     maxZoom: 2,
@@ -245,7 +248,7 @@ class ImageEdit extends PureComponent<Props, State> {
         rounded={false}
         onClick={this.handleSubmit}
       >
-        Save
+        {dictionary.save[this.context]}
       </Button>
     );
   }

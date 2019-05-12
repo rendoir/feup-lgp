@@ -67,7 +67,7 @@ body {
     }
 
     &-top {
-      color: #e7711b;
+      color: blue;
       padding: 0;
       position: absolute;
       z-index: 0;
@@ -91,15 +91,24 @@ body {
 
     #rate span:hover:before,
     #rate span:hover ~ span:before {
-      color: #e7711b;
+      color: blue;
       content: "\2605";
       position: absolute;
     }
 
-    #rate p{
-      color: #000000;
-      font-size: small;
+    #update-rate{
+      color: #e7711b;
+      /*unicode-bidi: bidi-override;
+      direction: rtl;*/
     }
+
+    #update-rate span:hover:before,
+    #update-rate span:hover ~ span:before {
+      color: blue;
+      /*content: "\2605";
+      position: absolute;*/
+    }
+
   }
 
   #hiddenConference a{

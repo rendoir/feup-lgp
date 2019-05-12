@@ -1,10 +1,12 @@
 import React, { ChangeEvent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Radio from "../Radio/Radio";
 import RadioGroup from "../Radio/RadioGroup";
 import styles from "./CreateNewModal.module.css";
 
 type Props = {
   id: string;
+  context: any;
   maxGroupSize: number;
   type: "post" | "conference";
   onChange: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
@@ -19,17 +21,17 @@ function CreateGroupTypeForm(props: Props) {
           htmlAutoFocus={true}
           id={`${props.id}_type_group`}
         >
-          Post
+          {dictionary.post_cap[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          Post are the basic mechanism used to share knowledge.
+          {dictionary.post_description[props.context]}
         </div>
         <br />
         <Radio value={"conference"} id={`${props.id}_type_channel`}>
-          Conference
+          {dictionary.conference_cap[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          Conferences are formal meetings for discussion of a particular topic.
+          {dictionary.conference_description[props.context]}
         </div>
       </RadioGroup>
     </div>

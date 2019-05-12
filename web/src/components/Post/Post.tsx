@@ -30,6 +30,7 @@ type MyFile = {
 import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 import {
   faGlobeAfrica,
@@ -45,14 +46,12 @@ import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 interface IProps {
   id: number;
   title: string;
-  date: string | undefined;
+  date: string;
   author: string;
   text: string | undefined;
-  likes: number;
   visibility: string;
   comments: any[];
   files?: MyFile[];
-  likers: any[];
   tags: any[];
   user_id: number;
 }
@@ -85,6 +84,8 @@ interface IState {
 const cookies = new Cookies();
 
 class Post extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
   public id: string;
   public userId: number;
@@ -94,7 +95,6 @@ class Post extends Component<IProps, IState> {
 
     this.id = "post_" + this.props.id;
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    console.log(this.props);
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -123,17 +123,17 @@ class Post extends Component<IProps, IState> {
     this.handlePostReport = this.handlePostReport.bind(this);
     this.handleReportCancel = this.handleReportCancel.bind(this);
     this.handlePostRate = this.handlePostRate.bind(this);
+    this.handlePostUpdateRate = this.handlePostUpdateRate.bind(this);
     this.handlePostSubscription = this.handlePostSubscription.bind(this);
     this.handleAddComment = this.handleAddComment.bind(this);
     this.changeCommentValue = this.changeCommentValue.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleAddLike = this.handleAddLike.bind(this);
     this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
   public render() {
     if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
-      return <div>Loading...</div>;
+      return null;
     }
 
     return (
@@ -185,16 +185,10 @@ class Post extends Component<IProps, IState> {
           {this.getFiles()}
           {this.getTags()}
           <div className={styles.post_stats}>
-            <span
-              key={this.id + "_span_like_button"}
-              role="button"
-              data-toggle="dropdown"
-              data-target={"#post_" + this.props.id + " show_likes"}
-            >
-              {this.props.likes} likes
-              {this.getLikes()}
+            <span>
+              {" "}
+              {this.props.comments.length} {dictionary.comments[this.context]}
             </span>
-            <span> {this.props.comments.length} comments</span>
             <fieldset className="rate">
               <div className="star-ratings-css">
                 {this.handleStars()}
@@ -238,7 +232,9 @@ class Post extends Component<IProps, IState> {
                 className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
                   this.state.commentValue
                 )}`}
-                placeholder="Insert your comment..."
+                placeholder={
+                  dictionary.insert_comment_placeholder[this.context]
+                }
                 value={this.state.commentValue}
                 onChange={this.changeCommentValue}
                 onKeyDown={this.onEnterPress}
@@ -247,7 +243,7 @@ class Post extends Component<IProps, IState> {
               <button
                 className={`${styles.submit_comment} px-2 py-1`}
                 type="submit"
-                value="Submit"
+                value={dictionary.submit[this.context]}
                 disabled={!this.validComment()}
               >
                 <i className="fas fa-chevron-circle-right" />
@@ -315,7 +311,7 @@ class Post extends Component<IProps, IState> {
 
   public handleStars() {
     const userRate =
-      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+      (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
     if (!this.state.postRated) {
       return (
@@ -339,43 +335,16 @@ class Post extends Component<IProps, IState> {
       );
     } else {
       return (
-        <div className="star-ratings-css-top" style={{ width: userRate }}>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-        </div>
-      );
-    }
-  }
-
-  public userLiked() {
-    const userLoggedIn = 2;
-    const divStyle = { color: "black" };
-
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      divStyle.color = "blue";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
-        </div>
-      );
-    } else {
-      divStyle.color = "black";
-      return (
-        <div>
-          <i className="fas fa-thumbs-up" style={divStyle} />
-          <span>Like</span>
+        <div
+          className="star-ratings-css-top"
+          id="update-rate"
+          style={{ width: userRate }}
+        >
+          <span id="1">★</span>
+          <span id="2">★</span>
+          <span id="3">★</span>
+          <span id="4">★</span>
+          <span id="5">★</span>
         </div>
       );
     }
@@ -402,40 +371,78 @@ class Post extends Component<IProps, IState> {
   }
 
   public handlePostRate(e: any) {
-    if (this.state.postRated) {
-      console.log("You already rated this post");
-    } else {
-      const rateTarget = e.target.id;
+    const rateTarget = e.target.id;
 
-      const incrementRate = Number(this.state.numberOfRatings) + 1;
-      this.setState({
-        numberOfRatings: incrementRate
-      });
-      const userRating =
-        (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
-        incrementRate;
-      let body = {};
-      body = {
-        evaluator: this.userId,
-        newPostRating: userRating,
-        rate: parseInt(rateTarget, 10)
-      };
+    const incrementRate = Number(this.state.numberOfRatings) + 1;
+    this.setState({
+      numberOfRatings: incrementRate
+    });
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) + parseInt(rateTarget, 10) * 20) /
+        incrementRate
+    );
+    const body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
 
-      console.log("Post Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-      return axios
-        .post(apiUrl, body)
-        .then(() => {
-          this.setState({
-            postRated: true,
-            userRateTotal:
-              this.state.userRateTotal + parseInt(rateTarget, 10) * 20
-          });
-        })
-        .catch(() => {
-          console.log("Rating system failed");
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          postRated: true,
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal + parseInt(rateTarget, 10) * 20
         });
+        console.log("RATE: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Rating system failed");
+      });
+  }
+
+  public handlePostUpdateRate(e: any) {
+    const rateTarget = e.target.id;
+
+    let formerRate = this.state.userRate;
+    if (formerRate < 6) {
+      formerRate = formerRate * 20;
     }
+    const userRating = Math.round(
+      (Number(this.state.userRateTotal) +
+        parseInt(rateTarget, 10) * 20 -
+        formerRate) /
+        Number(this.state.numberOfRatings)
+    );
+    const body = {
+      evaluator: this.userId,
+      newPostRating: userRating,
+      rate: parseInt(rateTarget, 10)
+    };
+    console.log("TOTAL:", this.state.userRateTotal);
+    console.log("NUmber of ratings:", this.state.numberOfRatings);
+    console.log("Former rating: ", formerRate);
+    console.log("Post Rating updated to: ", userRating);
+    const apiUrl = getApiURL(`/post/${this.props.id}/update_rate`);
+    return axios
+      .post(apiUrl, body)
+      .then(() => {
+        this.setState({
+          userRate: parseInt(rateTarget, 10) * 20,
+          userRateTotal:
+            this.state.userRateTotal +
+            parseInt(rateTarget, 10) * 20 -
+            formerRate
+        });
+        console.log("RATE UPDATED: ", this.state.userRate);
+      })
+      .catch(() => {
+        console.log("Updating rating system failed");
+      });
   }
 
   public handlePostSubscription() {
@@ -514,68 +521,6 @@ class Post extends Component<IProps, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
-  public handleAddLike(event: any) {
-    event.preventDefault();
-
-    const userLoggedIn = 2;
-    const foundValue = this.props.likers.find(e => {
-      if (e.id === userLoggedIn.toString()) {
-        return e;
-      } else {
-        return null;
-      }
-    });
-
-    if (foundValue != null) {
-      this.apiDeleteLikeToPost();
-    } else {
-      this.apiAddLikeToPost();
-    }
-  }
-
-  public apiAddLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .post(postUrl, {
-        author: 2,
-        headers: {}
-      })
-      .then(res => {
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to add like to comment"));
-  }
-
-  public apiDeleteLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .delete(postUrl, {
-        data: {
-          author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
-      .then(res => {
-        console.log("Post disliked - reloading page...");
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to delete like from a post"));
-  }
-
   public getCommentSection() {
     if (this.props.comments === [] || this.props.comments === undefined) {
       return <div className={`${styles.post_comment} w-100`} />;
@@ -609,56 +554,27 @@ class Post extends Component<IProps, IState> {
     );
   }
 
-  public getLikers() {
-    const likedUsersDiv = this.props.likers.map((liker, idx) => {
-      return (
-        <span key={"user" + idx + "liked-post"} className="dropdown-item">
-          {liker.first_name} {liker.last_name}
-        </span>
-      );
-    });
-
-    return likedUsersDiv;
-  }
-
-  public getLikes() {
-    const likesDiv: any[] = [];
-    if (this.props.likes > 0) {
-      likesDiv.push(this.getLikers());
-    }
-
-    return (
-      <span
-        id={"post_" + this.props.id + "_span_show_likes"}
-        className="dropdown-menu dropdown-menu-right"
-      >
-        {likesDiv}
-      </span>
-    );
-  }
-
   private getUserInteractionButtons() {
     const subscribeIcon = this.state.userSubscription
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
     return (
       <div className={styles.post_actions}>
-        <button onClick={this.handleAddLike}>{this.userLiked()}</button>
         <button onClick={this.handlePostSubscription}>
           <i className={subscribeIcon} />
           <span>{subscribeBtnText}</span>
         </button>
         <button>
           <i className="far fa-comment-alt" />
-          <span>Comment</span>
+          <span>{dictionary.comment_action[this.context]}</span>
         </button>
         <button>
           <i className="fas fa-share-square" />
-          <span>Share</span>
+          <span>{dictionary.share_action[this.context]}</span>
         </button>
       </div>
     );
@@ -796,7 +712,7 @@ class Post extends Component<IProps, IState> {
         data-toggle="modal"
         data-target={`#invite_post_modal_${this.props.id}`}
       >
-        Invite users to discussion
+        {dictionary.invite_discussion[this.context]}
       </button>
     );
     const reportButton = (
@@ -809,7 +725,9 @@ class Post extends Component<IProps, IState> {
         onClick={this.handlePostReport}
         disabled={this.state.userReport}
       >
-        {this.state.userReport ? "Report already issued" : "Report post"}
+        {this.state.userReport
+          ? dictionary.report_post_issued[this.context]
+          : dictionary.report_post[this.context]}
       </button>
     );
     const editButton = (
@@ -820,7 +738,7 @@ class Post extends Component<IProps, IState> {
         data-toggle="modal"
         data-target={`#post_modal_Edit_${this.props.id}`}
       >
-        Edit Post
+        {dictionary.edit_post[this.context]}
       </button>
     );
     const deleteButton = (
@@ -831,7 +749,7 @@ class Post extends Component<IProps, IState> {
         data-toggle="modal"
         data-target={`#delete_post_modal_${this.props.id}`}
       >
-        Delete Post
+        {dictionary.delete_post[this.context]}
       </button>
     );
     const dropdownButtons = [

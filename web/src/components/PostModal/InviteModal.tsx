@@ -9,6 +9,7 @@ import {
   apiInviteSubscribers,
   apiInviteUser
 } from "../../utils/apiInvite";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
   /* Only pass one of the parameters according to the content type */
@@ -28,6 +29,8 @@ interface IState {
 }
 
 class InviteModal extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public htmlId: string;
   public subjectId: number;
   public subjectType: string;
@@ -160,11 +163,12 @@ class InviteModal extends Component<IProps, IState> {
         this.subjectType
       );
 
-      let afterInviteMessage = "User " + firstName + " " + lastName;
+      let afterInviteMessage =
+        dictionary.user[this.context] + " " + firstName + " " + lastName;
       if (inviteSuccess) {
-        afterInviteMessage += " was successfully invited";
+        afterInviteMessage += " " + dictionary.invite_success[this.context];
       } else {
-        afterInviteMessage += " couldn't be invited. An error occurred.";
+        afterInviteMessage += " " + dictionary.invite_error[this.context];
       }
 
       this.setState({ afterInviteMessage });
@@ -177,20 +181,20 @@ class InviteModal extends Component<IProps, IState> {
     if (!userFound) {
       this.setState({
         afterInviteMessage:
-          "No uninvited user called " +
+          dictionary.invite_no_user[this.context] +
+          " " +
           firstName +
           " " +
-          lastName +
-          " was found"
+          lastName
       });
     }
   }
 
   public getInviteUserForm() {
     if (this.state.fetchingUninvitedUsers) {
-      return <div>Fetching uninvited users...</div>;
+      return <div>{dictionary.invite_fetching_uninvited[this.context]}</div>;
     } else if (this.state.uninvitedUsers.length === 0) {
-      return <div>There are no uninvited users left</div>;
+      return <div>{dictionary.invite_no_users[this.context]}</div>;
     }
 
     const searchUserInput = (
@@ -199,7 +203,7 @@ class InviteModal extends Component<IProps, IState> {
         id="invite_user_input"
         className="mr-sm-2"
         type="search"
-        placeholder="Insert user's first and last name"
+        placeholder={dictionary.invite_discussion_placeholder[this.context]}
         aria-label="Search"
         value={this.state.inviteUserInput}
         onChange={this.handlerInviteUserInputChange}
@@ -212,7 +216,7 @@ class InviteModal extends Component<IProps, IState> {
         type="button"
         onClick={this.handleInviteUser}
       >
-        Invite
+        {dictionary.invite[this.context]}
       </button>
     );
 
@@ -221,22 +225,25 @@ class InviteModal extends Component<IProps, IState> {
 
   public getInviteSubscribersButton() {
     if (this.state.fetchingUninvitedSubs) {
-      return <div>Fetching uninvited subscribers..</div>;
+      return <div>{dictionary.invite_fetching_subscribers[this.context]}</div>;
     }
 
     let invSubscribersText =
       this.state.uninvitedSubscribersAmount > 0
-        ? "Invite all subscribers"
-        : "All subscribers have been invited";
+        ? dictionary.invite_all_subs[this.context]
+        : dictionary.invite_all_subs_done[this.context];
     let invSubscribersDisclosure = "";
     if (this.state.waitingSubscribersInvitation) {
-      invSubscribersText = "Inviting subscribers...";
+      invSubscribersText = dictionary.inviting_subs[this.context];
     } else if (this.state.uninvitedSubscribersAmount > 0) {
       invSubscribersDisclosure =
-        "(" + this.state.uninvitedSubscribersAmount + " without invitation)";
+        "(" +
+        this.state.uninvitedSubscribersAmount +
+        " " +
+        dictionary.invite_without[this.context] +
+        ")";
     } else if (this.state.uninvitedSubscribersAmount < 0) {
-      invSubscribersText =
-        "Error fetching uninvited subscribers. Try again later.";
+      invSubscribersText = dictionary.invite_error_sub[this.context];
     }
 
     const invSubscribersButton = (
@@ -271,7 +278,9 @@ class InviteModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {`Invite users to your ${this.subjectType}`}
+                {`${dictionary.invite_users_to[this.context]} ${
+                  dictionary[this.subjectType][this.context]
+                }`}
               </h5>
               <button
                 type="button"
@@ -301,7 +310,7 @@ class InviteModal extends Component<IProps, IState> {
                 type="button"
                 data-dismiss="modal"
               >
-                Done
+                {dictionary.done[this.context]}
               </button>
             </div>
           </div>

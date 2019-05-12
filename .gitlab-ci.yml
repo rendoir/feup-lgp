@@ -32,8 +32,8 @@ build_web:
   script:
     - mkdir -p web/docker
     - cd web
-    - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
-    - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
+    # - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
+    # - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
     # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
     - docker image build -t $WEB_PRE_IMAGE .
     - docker push $WEB_PRE_IMAGE
@@ -44,8 +44,8 @@ build_api:
     - mkdir -p api/docker
     - mv environment/prod.env api/docker/prod.env
     - cd api
-    - echo "$API_CRT" | tr -d '\r' > docker/api.crt
-    - echo "$API_KEY" | tr -d '\r' > docker/api.key
+    # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
+    # - echo "$API_KEY" | tr -d '\r' > docker/api.key
     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
     - docker image build -t $API_PRE_IMAGE .
     - docker push $API_PRE_IMAGE
@@ -70,7 +70,7 @@ build_api_tests:
     # - echo "$API_CRT" | tr -d '\r' > docker/api.crt
     # - echo "$API_KEY" | tr -d '\r' > docker/api.key
     - echo "$SECRETS" | tr -d '\r' > docker/secrets.env
-    - docker image build -f test.dockerfile -t $API_TEST_IMAGE .
+    - docker image build -f test.dockerfile --build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD -t $API_TEST_IMAGE .
     - docker push $API_TEST_IMAGE
 
 # build_e2e_tests:
@@ -110,8 +110,6 @@ api_unit_tests:
     - chmod +x ../scripts/write_api_compose.sh
     - ../scripts/write_api_compose.sh $CI_COMMIT_REF_SLUG
     - docker-compose pull
-    - docker-compose up -d db
-    - sleep 30
     - docker-compose up --exit-code-from apitest
 
 release-web-staging:

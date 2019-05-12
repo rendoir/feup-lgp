@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import { apiUserJoinConference } from "../../utils/apiConference";
 import { apiInviteNotified } from "../../utils/apiInvite";
 import { apiSubscription } from "../../utils/apiSubscription";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
   id: number;
@@ -18,6 +19,8 @@ interface IState {
 }
 
 class InviteNotification extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   constructor(props: any) {
     super(props);
 
@@ -78,7 +81,9 @@ class InviteNotification extends Component<IProps, IState> {
             style={{ cursor: "pointer" }}
           >
             <p className="tooltipText">
-              {this.props.subjectType === "conference" ? "Join" : "Subscribe"}
+              {this.props.subjectType === "conference"
+                ? dictionary.join[this.context]
+                : dictionary.subscribe_action[this.context]}
             </p>
           </span>
           <span
@@ -86,7 +91,7 @@ class InviteNotification extends Component<IProps, IState> {
             onClick={this.handleRejectInvite}
             style={{ cursor: "pointer" }}
           >
-            <p>Refuse</p>
+            <p>{dictionary.refuse[this.context]}</p>
           </span>
         </div>
       </li>
@@ -101,12 +106,12 @@ class InviteNotification extends Component<IProps, IState> {
 
   private getMessage() {
     if (this.state.joinFailed) {
-      return <div>Error accepting invite. Try again later.</div>;
+      return <div>{dictionary.error_occurred[this.context]}</div>;
     }
 
     return (
       <label htmlFor="checkbox">
-        You have been invited to {this.props.subjectType}: '
+        {dictionary.invitation[this.context]} {this.props.subjectType}: '
         <a href={`/${this.props.subjectType}/${this.props.subjectId}`}>
           {this.props.subjectTitle}
         </a>
