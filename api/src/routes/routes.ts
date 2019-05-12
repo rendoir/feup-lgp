@@ -4,6 +4,6 @@ export * from './post';
 export * from './users';
 export * from './admin';
 export * from './comment';
-export * from './conference';
+export * from './talk';
 export * from './search';
 export * from './tags';

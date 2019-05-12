@@ -10,7 +10,7 @@ import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
-import "../styles/Conference.css";
+import "../styles/Talk.css";
 import { getApiURL } from "../utils/apiURL";
 
 import {
@@ -25,11 +25,11 @@ import { Request, Step } from "../components/CreateNewModal/types";
 
 // - Import utils
 import {
-  apiCheckUserCanJoinConference,
-  apiCheckUserConferenceParticipation,
-  apiUserJoinConference,
-  apiUserLeaveConference
-} from "../utils/apiConference";
+  apiCheckUserCanJoinTalk,
+  apiCheckUserTalkParticipation,
+  apiUserJoinTalk,
+  apiUserLeaveTalk
+} from "../utils/apiTalk";
 import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
@@ -154,7 +154,7 @@ class Conference extends React.Component<IProps, IState> {
       waitingUserJoinLeave: true
     });
 
-    const joinSuccess = await apiUserJoinConference(this.id);
+    const joinSuccess = await apiUserJoinTalk(this.id);
     this.setState({
       userParticipation: joinSuccess,
       waitingUserJoinLeave: false
@@ -171,7 +171,7 @@ class Conference extends React.Component<IProps, IState> {
       waitingUserJoinLeave: true
     });
 
-    const leaveSuccess = await apiUserLeaveConference(this.id);
+    const leaveSuccess = await apiUserLeaveTalk(this.id);
     this.setState({
       userParticipation: !leaveSuccess,
       waitingUserJoinLeave: false
@@ -255,14 +255,12 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public async apiGetUserCanJoin() {
-    const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
+    const canJoin: boolean = await apiCheckUserCanJoinTalk(this.id);
     this.setState({ userCanJoin: canJoin });
   }
 
   public async apiGetUserParticipation() {
-    const participant: boolean = await apiCheckUserConferenceParticipation(
-      this.id
-    );
+    const participant: boolean = await apiCheckUserTalkParticipation(this.id);
     this.setState({ userParticipation: participant });
   }
 

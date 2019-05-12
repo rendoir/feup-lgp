@@ -1,8 +1,8 @@
 'use strict';
 import { Router } from 'express';
-import * as controller from '../controllers/conference';
+import * as controller from '../controllers/talks';
 
-export const conferenceRouter = Router();
+export const talkRouter = Router();
 
 /**
  * @api {post} /api/conference Create a conference
@@ -23,7 +23,7 @@ export const conferenceRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/create', controller.createConference);
+talkRouter.post('/create', controller.createConference);
 
 /**
  * @api {post} /api/conference/:id/invite Invite user to conference
@@ -39,7 +39,7 @@ conferenceRouter.post('/create', controller.createConference);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/:id/invite', controller.inviteUser);
+talkRouter.post('/:id/invite', controller.inviteUser);
 
 /**
  * @api {post} /api/conference/:id/invite_subscribers Invite subscribers of the inviter user to conference
@@ -56,7 +56,7 @@ conferenceRouter.post('/:id/invite', controller.inviteUser);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
+talkRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
 
 /**
  * @api {get} /api/conference/:id/amount_uninvited_subscribers Retrieve conference author's amount of uninvited subscribers
@@ -71,7 +71,7 @@ conferenceRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
+talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
 
 /**
  * @api {get} /api/conference/:id/uninvited_users_info Retrieve the users that haven't been invited and haven't joined a given conference
@@ -86,7 +86,7 @@ conferenceRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubsc
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
+talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
 
 /**
  * @api {post} /api/conference/:id/add_participant Add user to conference participants
@@ -103,7 +103,7 @@ conferenceRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersIn
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
+talkRouter.post('/:id/add_participant', controller.addParticipantUser);
 
 /**
  * @api {delete} /api/conference/:id/remove_participant Remove a user participation in a conference
@@ -120,7 +120,7 @@ conferenceRouter.post('/:id/add_participant', controller.addParticipantUser);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
+talkRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
 
 /**
  * @api {get} /api/conference/:id/check_participant Check if a user is participating in a conference
@@ -137,7 +137,7 @@ conferenceRouter.delete('/:id/remove_participant', controller.removeParticipantU
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/check_participation', controller.checkUserParticipation);
+talkRouter.get('/:id/check_participation', controller.checkUserParticipation);
 
 /**
  * @api {get} /api/conference/:id/check_user_access Check if a user is allowed to join a conference
@@ -154,12 +154,12 @@ conferenceRouter.get('/:id/check_participation', controller.checkUserParticipati
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
+talkRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
 
 /**
  * This is just an example on how to set cookies in a secure way, so that they dont get forged or accessed by XSS
  */
-conferenceRouter.post('/set_cookies', controller.setSecureCookiesExample);
+talkRouter.post('/set_cookies', controller.setSecureCookiesExample);
 
 /**
  * @api {get} /api/conference/:id Get a conference
@@ -174,7 +174,7 @@ conferenceRouter.post('/set_cookies', controller.setSecureCookiesExample);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id', controller.getConference);
+talkRouter.get('/:id', controller.getConference);
 
 /**
  * @api {post} /api/conference/:id/change_privacy Change the privacy of a conference
@@ -190,4 +190,4 @@ conferenceRouter.get('/:id', controller.getConference);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
+talkRouter.post('/:id/change_privacy', controller.changePrivacy);

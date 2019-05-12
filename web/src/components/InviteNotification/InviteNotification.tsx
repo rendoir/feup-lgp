@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 // - Import utils
-import { apiUserJoinConference } from "../../utils/apiConference";
+import { apiUserJoinTalk } from "../../utils/apiTalk";
 import { apiInviteNotified } from "../../utils/apiInvite";
 import { dictionary, LanguageContext } from "../../utils/language";
 
@@ -37,7 +37,7 @@ class InviteNotification extends Component<IProps, IState> {
 
     // Joining posts is yet to be implemented
     if (this.props.subjectType === "conference") {
-      joinSuccess = await apiUserJoinConference(this.props.subjectId);
+      joinSuccess = await apiUserJoinTalk(this.props.subjectId);
     }
 
     if (!joinSuccess) {
