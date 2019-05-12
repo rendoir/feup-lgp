@@ -3,6 +3,7 @@ import Post from "../components/Post/Post";
 import "../styles/Feed.css";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 type Props = {};
 
@@ -104,4 +105,4 @@ class Feed extends React.Component<Props, State> {
   }
 }
 
-export default Feed;
+export default withAuth(Feed);

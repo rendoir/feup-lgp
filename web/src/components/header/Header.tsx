@@ -7,7 +7,7 @@ import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { withRouter, RouteComponentProps } from "react-router";
+import { RouteComponentProps, withRouter } from "react-router";
 
 import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import axiosInstance from "../../utils/axiosInstance";
@@ -205,7 +205,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   private onClickLogout = (event: any) => {
     this.auth.logout();
-    this.props.history.push("/");
+    window.location.reload();
   };
 
   private handleClick = (event: MouseEvent): void => {
