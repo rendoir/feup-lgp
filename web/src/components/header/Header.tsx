@@ -101,10 +101,10 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         {this.renderBrand()}
         <Navbar.Toggle aria-controls={"navbar-nav"} />
         <Navbar.Collapse id={"navbar-nav"}>
-          {this.renderLinks()}
-          <SearchSimpleForm />
+          {this.auth.loggedIn() && this.renderLinks()}
+          {this.auth.loggedIn() && <SearchSimpleForm />}
           {this.renderLanguageSelector()}
-          {this.renderButtons()}
+          {this.auth.loggedIn() && this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
     );

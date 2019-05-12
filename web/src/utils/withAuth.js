@@ -3,7 +3,7 @@ import AuthHelperMethods from "./AuthHelperMethods";
 
 /* A higher order component is frequently written as a function that returns a class. */
 export default function withAuth(AuthComponent, adminOnly = false) {
-  const Auth = new AuthHelperMethods();
+  const auth = new AuthHelperMethods();
 
   return class AuthWrapped extends Component {
     state = {
@@ -14,13 +14,15 @@ export default function withAuth(AuthComponent, adminOnly = false) {
     /* In the componentDidMount, we would want to do a couple of important tasks in order to verify the current users authentication status
     prior to granting them entrance into the app. */
     componentDidMount() {
-      if (!Auth.loggedIn()) {
+      if (!auth.loggedIn()) {
         this.props.history.replace("/login");
       } else {
         /* Try to get confirmation message from the Auth helper. */
         try {
-          const user = Auth.getUserPayload();
-          console.log("confirmation is:", user);
+          const user = auth.getUserPayload();
+          if (!this._hasPermissions(user)) {
+            this.props.history.replace("/");
+          }
           this.setState({
             user,
             loaded: true
@@ -28,24 +30,24 @@ export default function withAuth(AuthComponent, adminOnly = false) {
         } catch (err) {
           /* Oh snap! Looks like there's an error so we'll print it out and log the user out for security reasons. */
           console.log(err);
-          Auth.logout();
+          auth.logout();
           this.props.history.replace("/login");
         }
       }
     }
 
     render() {
-      if (this.state.loaded && this.state.user && this._hasPermissions()) {
+      if (this.state.loaded && this.state.user) {
         return (
           /* component that is currently being wrapped (App.js) */
-          <AuthComponent {...this.props} confirm={this.state.confirm} />
+          <AuthComponent {...this.props} user={this.state.user} />
         );
       }
       return null;
     }
 
-    _hasPermissions() {
-      return !adminOnly || this.state.user.permission === "admin";
+    _hasPermissions(user) {
+      return !adminOnly || user.permission === "admin";
     }
   };
 }

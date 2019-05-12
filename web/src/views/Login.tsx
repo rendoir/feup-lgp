@@ -1,8 +1,8 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
-import Cookies from "universal-cookie";
 import AuthHelperMethods from "../utils/AuthHelperMethods";
 import { dictionary, LanguageContext } from "../utils/language";
+import withoutAuth from "../utils/withoutAuth";
 
 type State = {
   email: string;
@@ -86,4 +86,4 @@ class Login extends React.Component<RouteComponentProps, State> {
   }
 }
 
-export default Login;
+export default withoutAuth(Login);

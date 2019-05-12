@@ -1,5 +1,6 @@
 import * as React from "react";
 import { dictionary, LanguageContext } from "../utils/language";
+import withoutAuth from "../utils/withoutAuth";
 
 class RegisterLanding extends React.Component {
   public static contextType = LanguageContext;
@@ -102,4 +103,4 @@ class RegisterLanding extends React.Component {
   }
 }
 
-export default RegisterLanding;
+export default withoutAuth(RegisterLanding);

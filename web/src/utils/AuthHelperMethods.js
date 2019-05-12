@@ -58,7 +58,7 @@ export default class AuthHelperMethods {
 
   getUserPayload = () => {
     // Using jwt-decode npm package to decode the token
-    let answer = decode(this.getToken());
+    let answer = this.getToken() ? decode(this.getToken()) : null;
     return answer;
   };
 
