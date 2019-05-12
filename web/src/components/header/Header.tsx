@@ -86,7 +86,9 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   }
 
   public componentDidMount(): void {
-    this.getPossibleTags();
+    if (this.auth.loggedIn()) {
+      this.getPossibleTags();
+    }
   }
 
   public render() {

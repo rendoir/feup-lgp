@@ -66,7 +66,6 @@ class Login extends React.Component<RouteComponentProps, State> {
     this.auth
       .login(this.state.email, this.state.password)
       .then(res => {
-        console.log(res);
         this.props.history.push("/");
       })
       .catch(err => {
