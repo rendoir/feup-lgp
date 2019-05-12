@@ -17,6 +17,7 @@ import styles from "./../Post/Post.module.scss";
 
 // - Import utils
 import { apiCheckCommentUserReport } from "../../utils/apiReport";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 
@@ -51,11 +52,13 @@ class Comment extends Component<Props, State> {
   public id: string;
   public loggedUserId: number;
 
+  private auth = new AuthHelperMethods();
+
   constructor(props: Props) {
     super(props);
 
     this.id = "comment_" + this.props.title;
-    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.loggedUserId = this.auth.getUserPayload().id;
 
     this.state = {
       commentID: 0,

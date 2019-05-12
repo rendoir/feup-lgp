@@ -8,6 +8,7 @@ import "./PostModal.css";
 
 // - Import utils
 import { apiReportComment, apiReportPost } from "../../utils/apiReport";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
@@ -28,13 +29,15 @@ class ReportModal extends Component<IProps, IState> {
   public loggedUserId: number;
   public reportDescription: any = React.createRef();
 
+  private auth = new AuthHelperMethods();
+
   constructor(props: IProps) {
     super(props);
 
     this.htmlId = props.postId
       ? `report_post_modal_${props.postId}`
       : `report_comment_modal_${props.commentId}`;
-    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.loggedUserId = this.auth.getUserPayload().id;
 
     this.state = { reportReason: "" };
 

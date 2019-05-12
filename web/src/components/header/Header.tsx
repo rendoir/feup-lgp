@@ -174,7 +174,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           }
           id="header_user_dropdown"
         >
-          <NavDropdown.Item href="/user/me">
+          <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
             {dictionary.profile[this.context]}
           </NavDropdown.Item>
           <NavDropdown.Item href="#action/3.2">

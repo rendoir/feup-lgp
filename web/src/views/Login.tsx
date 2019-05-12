@@ -72,8 +72,6 @@ class Login extends React.Component<RouteComponentProps, State> {
       .catch(err => {
         console.error(err);
       });
-    // const userId = 20; // Fetch from API when login is implemented by using 'cookies.get("user_id")'
-    // console.log("User id: ", cookies.get("user_id"));
   }
 
   private handleInputChange(event: any) {

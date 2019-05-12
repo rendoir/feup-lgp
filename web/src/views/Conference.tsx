@@ -28,6 +28,7 @@ import {
   apiUserJoinConference,
   apiUserLeaveConference
 } from "../utils/apiConference";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
@@ -82,14 +83,15 @@ interface IState {
 class Conference extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public id: number;
-  public userId: number;
-  public tags: string[];
+  private id: number;
+  private userId: number;
+  private tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.userId = this.auth.getUserPayload().id;
     this.tags = [];
     this.state = {
       date_end: "",

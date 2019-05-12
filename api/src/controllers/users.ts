@@ -154,7 +154,8 @@ export function rate(req, res) {
 }
 
 export async function getProfilePosts(req, res) {
-    const userId = req.params.id; const userloggedId = 1; // logged in user
+    const userId = req.params.id;
+    const userloggedId = req.user.id; // logged in user
     const offset = req.query.offset;
     try {
         const result = await query({

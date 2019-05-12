@@ -37,6 +37,7 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
@@ -85,14 +86,16 @@ class Post extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {};
-  public id: string;
-  public userId: number;
+
+  private id: string;
+  private userId: number;
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
 
     this.id = "post_" + this.props.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.userId = this.auth.getUserPayload().id;
     this.state = {
       activePage: 1,
       clickedImage: undefined,
