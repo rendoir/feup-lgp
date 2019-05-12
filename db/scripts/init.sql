@@ -278,11 +278,15 @@ INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 3);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 3, 4);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (3, 1, 4);
 
-INSERT INTO talks(author, title, about, local, dateStart, dateEnd) VALUES (1, 'Admin talk 1', 'This talk was created by an admin', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
-INSERT INTO talks(author, title, about, local, dateStart, dateEnd) VALUES (2, 'User talk 1', 'This talk was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
-INSERT INTO talks(author, title, about, local, dateStart, dateEnd) VALUES (3, 'User talk 2', 'This talk was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
-INSERT INTO talks(author, title, about, local, dateStart, dateEnd) VALUES (1, 'Admin talk 2', 'This talk was created by an admin', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
-INSERT INTO talks(author, title, about, local, dateStart, dateEnd) VALUES (2, 'User talk 3', 'This talk was created by an user', 'Porto', '2019-05-05 21:30', '2019-05-06 21:30');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (1, 'Chill Music', 'This talk was created by an admin that likes chill music', 'https://www.youtube.com/embed/hHW1oY26kxQ' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (2, 'Nasa Talk', 'This talk was created by an user that likes Nasa', 'https://www.youtube.com/embed/4993sBLAzGA' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (3, 'User talk 2', 'This talk was created by an user', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (1, 'Admin talk 2', 'This talk was created by an admin', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (2, 'User talk 3', 'This talk was created by an user', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (4, 'Titulo', 'This is a public talk, any person can join', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (3, 'Titulo', 'This is a followers or invite only talk (visibility: followers)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'followers');
+INSERT INTO talks(author, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (4, 'Titulo', 'This is an invite only talk (visibility: private)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'private');
+
 
 INSERT INTO conf_users (id, talk, conf_permissions) VALUES (1, 1, 'admin');
 INSERT INTO conf_users (id, talk, conf_permissions) VALUES (2, 1, 'moderator');
@@ -295,7 +299,7 @@ INSERT INTO conf_users (id, talk, conf_permissions) VALUES (1, 3, 'user');
 INSERT INTO conf_users (id, talk, conf_permissions) VALUES (3, 3, 'moderator');
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2018-12-03');
-INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This post should NOT be visible in feed of user 1', 'public', '2018-12-03');
+INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user 3', 'public', '2018-12-03');
 INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', '2018-12-02');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'followers', '2018-12-01');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', 'public', '2018-12-23');
@@ -606,13 +610,6 @@ INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 3, 16);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 4, 17);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (2, 1, 17);
 INSERT INTO posts_rates (evaluator, rate, post) VALUES (3, 2, 19);
-
-/**
-* talkS
-*/
-INSERT INTO talks (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is a public talk, any person can join', 'local', 'data inicio', 'public');
-INSERT INTO talks (author, title, about, local, dateStart, privacy) VALUES (3, 'titulo', 'this is a followers or invite only talk (visibility: followers)', 'local', 'data inicio', 'followers');
-INSERT INTO talks (author, title, about, local, dateStart, privacy) VALUES (4, 'titulo', 'this is an invite only talk (visibility: private)', 'local', 'data inicio', 'private');
 
 
 /**
