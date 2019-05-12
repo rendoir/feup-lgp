@@ -28,6 +28,7 @@ type MyFile = {
 import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 import {
   faGlobeAfrica,
@@ -81,6 +82,8 @@ interface IState {
 const cookies = new Cookies();
 
 class Post extends Component<Props, IState> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
   public id: string;
   public userId: number;
@@ -128,7 +131,7 @@ class Post extends Component<Props, IState> {
 
   public render() {
     if (this.state.isFetching || this.state.fetchingPostUserInteractions) {
-      return <div>Loading...</div>;
+      return null;
     }
 
     return (
@@ -180,7 +183,10 @@ class Post extends Component<Props, IState> {
           {this.getFiles()}
           {this.getTags()}
           <div className={styles.post_stats}>
-            <span> {this.props.comments.length} comments</span>
+            <span>
+              {" "}
+              {this.props.comments.length} {dictionary.comments[this.context]}
+            </span>
             <fieldset className="rate">
               <div className="star-ratings-css">
                 {this.handleStars()}
@@ -222,7 +228,9 @@ class Post extends Component<Props, IState> {
                 className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
                   this.state.commentValue
                 )}`}
-                placeholder="Insert your comment..."
+                placeholder={
+                  dictionary.insert_comment_placeholder[this.context]
+                }
                 value={this.state.commentValue}
                 onChange={this.changeCommentValue}
                 onKeyDown={this.onEnterPress}
@@ -231,7 +239,7 @@ class Post extends Component<Props, IState> {
               <button
                 className={`${styles.submit_comment} px-2 py-1`}
                 type="submit"
-                value="Submit"
+                value={dictionary.submit[this.context]}
                 disabled={!this.validComment()}
               >
                 <i className="fas fa-chevron-circle-right" />
@@ -337,6 +345,7 @@ class Post extends Component<Props, IState> {
       );
     }
   }
+
   public validComment() {
     return Boolean(this.state.commentValue);
   }
@@ -508,49 +517,6 @@ class Post extends Component<Props, IState> {
     this.setState({ activePage: Number(target.innerHTML) });
   }
 
-  public apiAddLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .post(postUrl, {
-        author: 2,
-        headers: {}
-      })
-      .then(res => {
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to add like to comment"));
-  }
-
-  public apiDeleteLikeToPost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.id}/like`;
-
-    axios
-      .delete(postUrl, {
-        data: {
-          author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
-      .then(res => {
-        console.log("Post disliked - reloading page...");
-        window.location.reload();
-      })
-      .catch(() => console.log("Failed to delete like from a post"));
-  }
-
   public getCommentSection() {
     if (this.props.comments === [] || this.props.comments === undefined) {
       return <div className={`${styles.post_comment} w-100`} />;
@@ -589,8 +555,8 @@ class Post extends Component<Props, IState> {
       ? "fas fa-bell-slash"
       : "fas fa-bell";
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
     return (
       <div className={styles.post_actions}>
@@ -600,11 +566,11 @@ class Post extends Component<Props, IState> {
         </button>
         <button>
           <i className="far fa-comment-alt" />
-          <span>Comment</span>
+          <span>{dictionary.comment_action[this.context]}</span>
         </button>
         <button>
           <i className="fas fa-share-square" />
-          <span>Share</span>
+          <span>{dictionary.share_action[this.context]}</span>
         </button>
       </div>
     );
@@ -744,7 +710,9 @@ class Post extends Component<Props, IState> {
         onClick={this.handlePostReport}
         disabled={this.state.userReport}
       >
-        {this.state.userReport ? "Report already issued" : "Report post"}
+        {this.state.userReport
+          ? dictionary.report_post_issued[this.context]
+          : dictionary.report_post[this.context]}
       </button>
     );
     const editButton = (
@@ -755,7 +723,7 @@ class Post extends Component<Props, IState> {
         data-toggle="modal"
         data-target={`#post_modal_Edit_${this.props.id}`}
       >
-        Edit Post
+        {dictionary.edit_post[this.context]}
       </button>
     );
     const deleteButton = (
@@ -766,7 +734,7 @@ class Post extends Component<Props, IState> {
         data-toggle="modal"
         data-target={`#delete_post_modal_${this.props.id}`}
       >
-        Delete Post
+        {dictionary.delete_post[this.context]}
       </button>
     );
     const dropdownButtons = [reportButton, editButton, deleteButton];

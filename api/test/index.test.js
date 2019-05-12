@@ -59,12 +59,12 @@ async function getTableNames() {
         text: `SELECT table_name
                 FROM information_schema.tables
                 WHERE table_type = 'BASE TABLE'
-                    AND table_schema NOT IN ('pg_catalog', 'information_schema');`
+                    AND table_schema NOT IN ('pg_catalog', 'information_schema')`
     });
 }
 
 function cleanTable(table) {
-    db.query({
+    return db.query({
         text: `TRUNCATE ${table} CASCADE`, // cannot parameterize table names
     });
 }
@@ -72,11 +72,13 @@ function cleanTable(table) {
 async function cleanDb() {
     try {
         const tableNames = await getTableNames();
+        const promises = [];
         for (const row of tableNames.rows) {
-            cleanTable(row.table_name);
+            promises.push(cleanTable(row.table_name));
         }
+        await Promise.all(promises);
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -88,7 +90,8 @@ async function insertAdminUser() {
     }).then((res) => res.rows[0].id);
 }
 
-before((done) => {
+before(function(done) {
+    this.timeout(0);
     loadEnvironment();
     cleanDb()
     .then(insertAdminUser)

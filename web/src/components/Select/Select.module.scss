@@ -36,6 +36,8 @@ $select-focus-outline-color: rgba($select-focus-border-color, 0.2);
   justify-content: center;
   width: 100%;
   margin-bottom: $default-padding;
+  margin-left: 0;
+  margin-right: 0;
 
   & .wrapper {
     width: 100%;

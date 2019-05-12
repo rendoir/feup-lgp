@@ -8,32 +8,43 @@ export async function getFeed(req, res) {
     const userId = 1;
     try {
         const result = await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content,
-                          p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
-                   FROM posts p
-                   INNER JOIN users ON (users.id = p.author)
-                   WHERE
-                        (author = $1
-                            OR (author IN (SELECT followed FROM follows WHERE follower = $1)
-                                AND p.visibility IN ('public', 'followers')
-                            )
-                        ) AND p.conference IS null
-                   ORDER BY p.date_created DESC, p.visibility DESC
-                   LIMIT $2
-                   OFFSET $3`,
+            text: `(SELECT p.id, first_name, last_name, p.title, p.content,
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (author = $1
+                                OR (author IN (SELECT followed FROM follows WHERE follower = $1)
+                                    AND p.visibility IN ('public', 'followers')))
+                            AND p.conference IS null
+                        ORDER BY date_created DESC)
+                    UNION
+                    (SELECT p.id, first_name, last_name, p.title, p.content,
+                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        FROM posts p
+                            INNER JOIN users ON (users.id = p.author)
+                        WHERE
+                            (p.visibility = 'public')
+                            AND p.conference IS null
+                            AND author != $1
+                            AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
+                        ORDER BY date_created DESC)
+                    ORDER BY date_created DESC
+                    LIMIT $2
+                    OFFSET $3`,
             values: [userId, limit, offset],
         });
         const totalSize = await query({
           text: `SELECT COUNT(id)
-                  FROM posts
-                  WHERE (
-                    author = $1
-                    OR (
-                      author IN (SELECT followed FROM follows WHERE follower = $1)
-                      AND visibility IN ('public','followers')
+                    FROM posts
+                    WHERE (
+                      author = $1
+                      OR (
+                        author IN (SELECT followed FROM follows WHERE follower = $1)
+                        AND visibility IN ('public','followers')
+                      )
                     )
-                  )
-                  AND conference IS null`,
+                    AND conference IS null`,
           values: [userId],
         });
         const commentsToSend = [];

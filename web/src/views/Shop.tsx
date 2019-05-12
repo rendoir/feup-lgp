@@ -1,8 +1,11 @@
 import * as React from "react";
 import Button from "../components/Button/Button";
 import "../styles/Shop.css";
+import { dictionary, LanguageContext } from "../utils/language";
 
 class Shop extends React.Component {
+  public static contextType = LanguageContext;
+
   public render() {
     return (
       <div id="Shop" className="container">
@@ -13,20 +16,20 @@ class Shop extends React.Component {
               <div className="card h-100">
                 <div className="card-body">
                   <h6>
-                    You have
+                    {dictionary.shop_you_have[this.context]}
                     <a id="user-points"> x </a>
-                    points!
+                    {dictionary.shop_points[this.context]}
                   </h6>
                 </div>
                 <form id="shop-left-box" className="form-inline my-2 my-lg-0">
                   <h5 className="my-4" id="search-products">
-                    Search products:
+                    {dictionary.shop_search_points[this.context]}
                   </h5>
                   <input
                     id="search-shop-input"
                     className="form-control mr-sm-2"
                     type="text"
-                    placeholder="Search"
+                    placeholder={dictionary.search[this.context]}
                   />
                   <button
                     id="search-shop-button"
@@ -101,7 +104,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item One</a>
                     </h4>
-                    <h5>10 points</h5>
+                    <h5>10 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!{" "}
@@ -115,7 +118,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -136,7 +139,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Two</a>
                     </h4>
-                    <h5>149 points</h5>
+                    <h5>149 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur! Lorem ipsum dolor sit amet.
@@ -150,7 +153,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -171,7 +174,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Three</a>
                     </h4>
-                    <h5>58 points</h5>
+                    <h5>58 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -185,7 +188,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -206,7 +209,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Four</a>
                     </h4>
-                    <h5>94 points</h5>
+                    <h5>94 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -220,7 +223,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -241,7 +244,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Five</a>
                     </h4>
-                    <h5>45 points</h5>
+                    <h5>45 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur! Lorem ipsum dolor sit amet.
@@ -255,7 +258,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -276,7 +279,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Six</a>
                     </h4>
-                    <h5>8 points</h5>
+                    <h5>8 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -290,7 +293,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -311,7 +314,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Seven</a>
                     </h4>
-                    <h5>82 points</h5>
+                    <h5>82 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -325,7 +328,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -346,7 +349,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Eight</a>
                     </h4>
-                    <h5>85 points</h5>
+                    <h5>85 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -360,7 +363,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -381,7 +384,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Nine</a>
                     </h4>
-                    <h5>46 points</h5>
+                    <h5>46 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -395,7 +398,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -416,7 +419,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Ten</a>
                     </h4>
-                    <h5>43 points</h5>
+                    <h5>43 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -430,7 +433,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -451,7 +454,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Eleven</a>
                     </h4>
-                    <h5>543 points</h5>
+                    <h5>543 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -465,7 +468,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>
@@ -486,7 +489,7 @@ class Shop extends React.Component {
                     <h4 className="card-title">
                       <a href="#">Item Twelve</a>
                     </h4>
-                    <h5>666 points</h5>
+                    <h5>666 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Amet numquam aspernatur!
@@ -500,7 +503,7 @@ class Shop extends React.Component {
                         size="small"
                         wide={true}
                       >
-                        Exchange
+                        {dictionary.shop_exchange[this.context]}
                       </Button>
                     </div>
                   </div>

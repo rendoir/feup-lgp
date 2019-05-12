@@ -3,6 +3,7 @@ import * as React from "react";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
+import { dictionary, LanguageContext } from "../utils/language";
 
 type Props = {};
 
@@ -12,6 +13,8 @@ type State = {
 };
 
 class Feed extends React.Component<Props, State> {
+  public static contextType = LanguageContext;
+
   constructor(props: Props) {
     super(props);
 
@@ -42,12 +45,13 @@ class Feed extends React.Component<Props, State> {
       .then(res => {
         const postsComing = res.data;
 
-        postsComing.posts.map((post: any, idx: any) => {
-          post.comments = postsComing.comments[idx];
-          post.likers = postsComing.likers[idx];
-          post.tags = postsComing.tags[idx];
-          post.files = postsComing.files[idx];
-        });
+        postsComing.posts.map(
+          (post: any, idx: any) => (
+            (post.comments = postsComing.comments[idx]),
+            (post.tags = postsComing.tags[idx]),
+            (post.files = postsComing.files[idx])
+          )
+        );
 
         this.setState({ fetchingInfo: false, posts: postsComing.posts });
       })
@@ -100,7 +104,7 @@ class Feed extends React.Component<Props, State> {
       <div id="Feed" className="container my-5">
         <div className="row">
           <div className="left col-lg-3 mr-5">
-            <h5>Conferences</h5>
+            <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
           <div className="middle col-lg-8">

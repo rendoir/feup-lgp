@@ -21,7 +21,8 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
                                         WHERE pt.post = p.id))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
-                        OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
+                        OR (p.visibility = 'followers' AND (p.author IN (SELECT followed FROM follows WHERE follower = $1)
+                                                            OR p.author = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
                 ORDER BY date_created DESC
                 LIMIT 10

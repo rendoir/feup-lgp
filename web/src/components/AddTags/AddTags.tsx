@@ -3,6 +3,7 @@ import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
 
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
+import { dictionary, LanguageContext } from "../../utils/language";
 import { ColorTheme } from "../../utils/types";
 import Icon from "../Icon/Icon";
 import styles from "./AddTags.module.css";
@@ -21,6 +22,8 @@ export interface IState {
 }
 
 class AddTags extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public tagInput: any;
 
   constructor(props: IProps) {
@@ -53,7 +56,7 @@ class AddTags extends Component<IProps, IState> {
               type="text"
               className={this.getInputRequiredClass("tags")}
               list="suggested-tags"
-              placeholder="Search for or write a new tag and click enter."
+              placeholder={dictionary.tag_placeholder[this.context]}
               onKeyDown={this.onSpacePress}
               ref={c => {
                 this.tagInput = c;

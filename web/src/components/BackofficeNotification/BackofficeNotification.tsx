@@ -1,4 +1,5 @@
 import * as React from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 
 type BackofficeNotificationProps = {
   id: number;
@@ -15,6 +16,8 @@ export class BackofficeNotification extends React.Component<
   BackofficeNotificationProps,
   {}
 > {
+  public static contextType = LanguageContext;
+
   constructor(props: any) {
     super(props);
   }
@@ -24,7 +27,10 @@ export class BackofficeNotification extends React.Component<
       <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
           <div className="mt-2" style={{ textTransform: "capitalize" }}>
-            <b>{this.props.notificationType} Report</b>
+            <b>
+              {dictionary[this.props.notificationType][this.context]}{" "}
+              {dictionary.report[this.context]}
+            </b>
           </div>
           <button
             className="close align-self-end"
@@ -37,9 +43,9 @@ export class BackofficeNotification extends React.Component<
         <div className="dropdown-divider p" />
 
         <p className="report_message">
-          <a href={`/user/${this.props.username}`}>{this.props.username}</a>'s{" "}
-          {this.props.notificationType}: <a href="#">"{this.props.content}"</a>{" "}
-          has been reported.
+          <a href={`/user/${this.props.username}`}>{this.props.username}</a>{" "}
+          {dictionary[this.props.notificationType][this.context]}:{" "}
+          <a href="#">"{this.props.content}"</a>
         </p>
 
         <div className="col-12 mb-3 mt-2 dropdown d-flex justify-content-end">
@@ -50,7 +56,7 @@ export class BackofficeNotification extends React.Component<
             aria-haspopup="true"
             aria-expanded="false"
           >
-            Take action
+            {dictionary.take_action[this.context]}
           </button>
           <div className="dropdown-menu">
             <a
@@ -58,21 +64,21 @@ export class BackofficeNotification extends React.Component<
               href="#"
               onClick={this.props.banUserHandler}
             >
-              Ban user
+              {dictionary.ban_user[this.context]}
             </a>
             <a
               className="dropdown-item"
               href="#"
               onClick={this.props.deleteContentHandler}
             >
-              Delete content
+              {dictionary.delete_content[this.context]}
             </a>
             <a
               className="dropdown-item"
               href="#"
               onClick={this.props.ignoreHandler}
             >
-              Ignore
+              {dictionary.ignore[this.context]}
             </a>
           </div>
         </div>
