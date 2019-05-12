@@ -200,7 +200,9 @@ export async function getPostUserInteractions(req, res) {
 
 export function subscribePost(req, res) {
     query({
-        text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
+        text: `INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)
+                ON CONFLICT ON CONSTRAINT pk_posts_subscriptions
+                DO NOTHING`,
         values: [req.body.userId, req.params.id],
     }).then((result) => {
         res.status(200).send();

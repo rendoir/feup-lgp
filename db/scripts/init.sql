@@ -134,7 +134,7 @@ CREATE TABLE posts_tags (
 CREATE TABLE posts_subscriptions (
     subscriber BIGINT REFERENCES users ON DELETE CASCADE,
     post BIGINT REFERENCES posts ON DELETE CASCADE,
-    PRIMARY KEY(subscriber, post)
+    CONSTRAINT pk_posts_subscriptions PRIMARY KEY(subscriber, post)
 );
 
 CREATE TABLE posts_rates (

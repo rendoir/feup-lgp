@@ -91,12 +91,12 @@ export let dictionary: Dictionary = {
   password: { PT: "Palavra passe", EN: "Password" },
   notifications: { PT: "Notificações", EN: "Notifications" },
   no_notifications: {
-    PT: "Erro ao adquirir notificações",
-    EN: "Error retrieving notifications."
-  },
-  error_notifications: {
     PT: "Não tem notificações",
     EN: "You have no notifications."
+  },
+  error_notifications: {
+    PT: "Erro ao adquirir notificações",
+    EN: "Error retrieving notifications."
   },
   search_type: { PT: "Tipo de busca", EN: "Search type" },
   all_users: { PT: "Todos os utilizadores", EN: "All users" },
