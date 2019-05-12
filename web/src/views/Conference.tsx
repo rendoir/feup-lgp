@@ -191,7 +191,6 @@ class Conference extends React.Component<IProps, IState> {
         postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
@@ -500,8 +499,6 @@ class Conference extends React.Component<IProps, IState> {
           author={post.first_name + " " + post.last_name}
           text={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}
