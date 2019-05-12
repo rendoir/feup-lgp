@@ -245,4 +245,4 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 }
 
-export default withAuth(Backoffice);
+export default withAuth(Backoffice, true);
