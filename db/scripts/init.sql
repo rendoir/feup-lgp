@@ -262,9 +262,10 @@ $$ LANGUAGE SQL;
 
 -- Unhashed password: 'adminadmin'
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('admin@gmail.com','d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
-INSERT INTO users (email, pass, first_name, last_name, bio, university, work, permissions) VALUES ('user1@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'User', 'Doe','ICBAS', 'ICBAS', 'Surgeon', 'user');
-INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user2@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'John', 'User', 'FMUC', 'user');
-INSERT INTO users (email, pass, first_name, last_name, bio, home_town, work_field, permissions) VALUES ('user3@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Michael', 'Meyers', 'ICBAS', 'Portalegre', 'Cardiology', 'user');
+-- Following unhashed passwords: 'useruser'
+INSERT INTO users (email, pass, first_name, last_name, bio, university, work, permissions) VALUES ('user1@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'User', 'Doe','ICBAS', 'ICBAS', 'Surgeon', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user2@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'John', 'User', 'FMUC', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, home_town, work_field, permissions) VALUES ('user3@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'Michael', 'Meyers', 'ICBAS', 'Portalegre', 'Cardiology', 'user');
 
 
 INSERT INTO follows (follower, followed) VALUES (1, 2);
