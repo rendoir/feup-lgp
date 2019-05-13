@@ -3,15 +3,18 @@ import axios from "axios";
 import React, { Component, Fragment } from "react";
 import Icon from "../Icon/Icon";
 import Post, { Props as PostProps } from "../Post/Post";
+import UserCard, { Props as UserProps } from "../UserCard/UserCard";
 import styles from "./InfiniteScroll.module.css";
 
 export type Props = {
   requestUrl: string;
+  requestParams?: object;
   itemsPerPage: number;
+  type: "posts" | "users";
 };
 
 export type State = {
-  content: PostProps[];
+  content: PostProps[] | UserProps[];
   error: boolean;
   hasMore: boolean;
   isLoading: boolean;
@@ -30,7 +33,8 @@ function defaultUrl() {
 class InfiniteScroll extends Component<Props, State> {
   public static defaultProps = {
     itemsPerPage: 10,
-    requestUrl: defaultUrl()
+    requestUrl: defaultUrl(),
+    type: "posts"
   };
 
   constructor(props: Props) {
@@ -45,7 +49,8 @@ class InfiniteScroll extends Component<Props, State> {
 
     window.onscroll = () => {
       const {
-        loadMore,
+        LoadMorePosts,
+        LoadMoreUsers,
         state: { error, isLoading, hasMore }
       } = this;
 
@@ -57,13 +62,13 @@ class InfiniteScroll extends Component<Props, State> {
         window.innerHeight + document.documentElement.scrollTop ===
         document.documentElement.offsetHeight
       ) {
-        loadMore();
+        this.props.type === "posts" ? LoadMorePosts() : LoadMoreUsers();
       }
     };
   }
 
   public componentWillMount(): void {
-    this.loadMore();
+    this.props.type === "posts" ? this.LoadMorePosts() : this.LoadMoreUsers();
   }
 
   public render() {
@@ -71,21 +76,33 @@ class InfiniteScroll extends Component<Props, State> {
 
     return (
       <div>
-        {content.map(post => (
-          <Fragment key={post.id}>
-            <Post
-              id={post.id}
-              title={post.title}
-              date={post.date}
-              author={post.author}
-              content={post.content}
-              visibility={post.visibility}
-              comments={post.comments}
-              tags={post.tags}
-              user_id={post.user_id}
-            />
-          </Fragment>
-        ))}
+        {this.props.type === "posts"
+          ? (content as PostProps[]).map(post => (
+              <Fragment key={post.id}>
+                <Post
+                  id={post.id}
+                  title={post.title}
+                  date={post.date}
+                  author={post.author}
+                  content={post.content}
+                  visibility={post.visibility}
+                  comments={post.comments}
+                  tags={post.tags}
+                  user_id={post.user_id}
+                />
+              </Fragment>
+            ))
+          : (content as UserProps[]).map(user => (
+              <Fragment key={user.id}>
+                <UserCard
+                  id={user.id}
+                  first_name={user.first_name}
+                  last_name={user.last_name}
+                  rate={user.rate}
+                  date_created={user.date_created}
+                />
+              </Fragment>
+            ))}
         <hr />
         {error ? <div className={styles.error}>Error: {error}</div> : null}
         {isLoading ? (
@@ -98,16 +115,25 @@ class InfiniteScroll extends Component<Props, State> {
     );
   }
 
-  private loadMore = () => {
+  private LoadMorePosts = () => {
+    let params = this.props.requestParams;
+    if (!params) {
+      params = {
+        offset: this.state.content.length,
+        perPage: this.props.itemsPerPage
+      };
+    } else {
+      // @ts-ignore
+      params.offset = this.state.content.length;
+      // @ts-ignore
+      params.perPage = this.props.itemsPerPage;
+    }
+
     this.setState({ isLoading: true }, () => {
       axios
-        .get(this.props.requestUrl, {
-          params: {
-            offset: this.state.content.length,
-            perPage: this.props.itemsPerPage
-          }
-        })
+        .get(this.props.requestUrl, { params })
         .then(results => {
+          console.log(results);
           const incoming = results.data;
 
           incoming.posts.map((post: PostProps, idx: number) => {
@@ -116,9 +142,9 @@ class InfiniteScroll extends Component<Props, State> {
               " " +
               incoming.posts[idx].last_name;
             post.date = incoming.posts[idx].date_created.replace(/T.*/gi, "");
-            post.comments = incoming.comments[idx];
-            post.tags = incoming.tags[idx];
-            post.files = incoming.files[idx];
+            post.comments = incoming.posts[idx].comments;
+            post.tags = incoming.posts[idx].tags;
+            post.files = incoming.posts[idx].files;
             delete incoming.posts[idx].first_name;
             delete incoming.posts[idx].last_name;
             delete incoming.posts[idx].date_created;
@@ -127,6 +153,41 @@ class InfiniteScroll extends Component<Props, State> {
 
           this.setState({
             content: [...this.state.content, ...incoming.posts],
+            hasMore: this.state.content.length < Number(incoming.size),
+            isLoading: false
+          });
+        })
+        .catch(err => {
+          this.setState({
+            error: err.message,
+            isLoading: false
+          });
+        });
+    });
+  };
+
+  private LoadMoreUsers = () => {
+    let params = this.props.requestParams;
+    if (!params) {
+      params = {
+        offset: this.state.content.length,
+        perPage: this.props.itemsPerPage
+      };
+    } else {
+      // @ts-ignore
+      params.offset = this.state.content.length;
+      // @ts-ignore
+      params.perPage = this.props.itemsPerPage;
+    }
+
+    this.setState({ isLoading: true }, () => {
+      axios
+        .get(this.props.requestUrl, { params })
+        .then(results => {
+          const incoming = results.data;
+
+          this.setState({
+            content: [...this.state.content, ...incoming.users],
             hasMore: this.state.content.length < Number(incoming.size),
             isLoading: false
           });

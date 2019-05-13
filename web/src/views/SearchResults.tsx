@@ -1,6 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 import * as React from "react";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 
 import Post from "../components/Post/Post";
 import UserCard from "../components/UserCard/UserCard";
@@ -28,13 +29,24 @@ enum SearchType {
 type SearchParameters = {
   k: string[]; // keywords
   tags?: string[];
-  type?: SearchType;
+  t?: SearchType;
   di?: string; // initial date
   df?: string; // final date
 };
 
 export default class SearchResults extends React.Component<Props, State> {
   public static contextType = LanguageContext;
+
+  private static getSearchUrl() {
+    let searchUrl = `${location.protocol}//${location.hostname}`;
+    searchUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    searchUrl += "/search";
+
+    return searchUrl;
+  }
 
   constructor(props: Props) {
     super(props);
@@ -43,9 +55,10 @@ export default class SearchResults extends React.Component<Props, State> {
       posts: [],
       postsAreaActive: true,
       postsAuthorAreaActive: false,
-      searchParams: queryString.parse(
-        this.props.location.search
-      ) as SearchParameters,
+      searchParams: {
+        ...(queryString.parse(this.props.location.search) as SearchParameters),
+        t: 1
+      },
       users: [],
       usersAreaActive: false
     };
@@ -122,7 +135,7 @@ export default class SearchResults extends React.Component<Props, State> {
           df: this.state.searchParams.df,
           di: this.state.searchParams.di,
           k: this.state.searchParams.k,
-          t: this.state.searchParams.type,
+          t: this.state.searchParams.t,
           tags: this.state.searchParams.tags
         }
       })
@@ -131,10 +144,10 @@ export default class SearchResults extends React.Component<Props, State> {
         this.setState({
           authorPosts: r.authorPosts,
           posts: r.posts,
-          postsAreaActive: r.retrievePosts || r.retrieveAll,
-          postsAuthorAreaActive: r.retrievePostsByAuthor,
+          postsAreaActive: true,
+          postsAuthorAreaActive: false,
           users: r.users,
-          usersAreaActive: r.retrieveUsers
+          usersAreaActive: false
         });
       });
   }
@@ -143,6 +156,10 @@ export default class SearchResults extends React.Component<Props, State> {
     this.setState({
       postsAreaActive: true,
       postsAuthorAreaActive: false,
+      searchParams: {
+        ...this.state.searchParams,
+        t: 1
+      },
       usersAreaActive: false
     });
   }
@@ -151,6 +168,10 @@ export default class SearchResults extends React.Component<Props, State> {
     this.setState({
       postsAreaActive: false,
       postsAuthorAreaActive: true,
+      searchParams: {
+        ...this.state.searchParams,
+        t: 2
+      },
       usersAreaActive: false
     });
   }
@@ -159,6 +180,10 @@ export default class SearchResults extends React.Component<Props, State> {
     this.setState({
       postsAreaActive: false,
       postsAuthorAreaActive: false,
+      searchParams: {
+        ...this.state.searchParams,
+        t: 3
+      },
       usersAreaActive: true
     });
   }
@@ -166,7 +191,10 @@ export default class SearchResults extends React.Component<Props, State> {
   private getPostsArea() {
     return (
       <div id="search-res-posts-area" className="col-12 col-md-9">
-        {this.getPosts()}
+        <InfiniteScroll
+          requestUrl={SearchResults.getSearchUrl()}
+          requestParams={this.state.searchParams}
+        />
       </div>
     );
   }
@@ -174,7 +202,10 @@ export default class SearchResults extends React.Component<Props, State> {
   private getPostsAuthorArea() {
     return (
       <div id="search-res-posts-author-area" className="col-12 col-md-9">
-        {this.getPostsByAuthor()}
+        <InfiniteScroll
+          requestUrl={SearchResults.getSearchUrl()}
+          requestParams={this.state.searchParams}
+        />
       </div>
     );
   }
@@ -182,62 +213,12 @@ export default class SearchResults extends React.Component<Props, State> {
   private getUsersArea() {
     return (
       <div id="search-res-users-area" className="col-12 col-md-9">
-        {this.getUsers()}
+        <InfiniteScroll
+          requestUrl={SearchResults.getSearchUrl()}
+          requestParams={this.state.searchParams}
+          type={"users"}
+        />
       </div>
     );
-  }
-
-  private getPosts() {
-    const postElements: any[] = [];
-    for (const post of this.state.posts) {
-      postElements.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          content={post.content}
-          likes={post.likes}
-          likers={post.likers}
-          user_id={post.user_id}
-          tags={post.tags || []}
-          comments={post.comments || []}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-        />
-      );
-    }
-    return postElements;
-  }
-
-  private getPostsByAuthor() {
-    const postElements: any[] = [];
-    for (const post of this.state.authorPosts) {
-      postElements.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          content={post.content}
-          likes={post.likes}
-          likers={post.likers}
-          user_id={post.user_id}
-          tags={post.tags || []}
-          comments={post.comments || []}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-        />
-      );
-    }
-    return postElements;
-  }
-
-  private getUsers() {
-    const userElements: any[] = [];
-    for (const user of this.state.users) {
-      userElements.push(<UserCard key={user.id} {...user} />);
-    }
-    return userElements;
   }
 }
