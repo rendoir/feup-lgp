@@ -15,7 +15,7 @@ export default function withAuth(AuthComponent, adminOnly = false) {
     prior to granting them entrance into the app. */
     componentDidMount() {
       if (!auth.loggedIn()) {
-        this.props.history.replace("/login");
+        this.props.history.replace("/landing");
       } else {
         /* Try to get confirmation message from the Auth helper. */
         try {
@@ -31,7 +31,7 @@ export default function withAuth(AuthComponent, adminOnly = false) {
           /* Oh snap! Looks like there's an error so we'll print it out and log the user out for security reasons. */
           console.log(err);
           auth.logout();
-          this.props.history.replace("/login");
+          this.props.history.replace("/landing");
         }
       }
     }
