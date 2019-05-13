@@ -20,7 +20,7 @@ export async function register(req, res) {
             values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
                 req.body.work, req.body.work_field, req.body.home_town, req.body.university, 'user'],
         }).then((result2) => {
-            console.log("User created!");
+            console.log('User created!');
         }).catch((error) => {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while registering a new user' });
@@ -33,12 +33,12 @@ export async function register(req, res) {
     });
 }
 
-export async function checkEmail(req, res){
+export async function checkEmail(req, res) {
     query({
         text: 'SELECT * from users',
     }).then((result) => {
         console.log('res: ', result);
-        if(result.rowCount === 0) {
+        if (result.rowCount === 0) {
             res.send(false);
         } else {
             res.send(true);

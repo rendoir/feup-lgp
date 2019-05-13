@@ -37,10 +37,10 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    registerRouter,
     searchRouter,
     tagsRouter,
     usersRouter,
-    registerRouter,
 } from './routes/routes';
 // Create a new Express application.
 export const app = express();
