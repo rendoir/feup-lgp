@@ -208,8 +208,9 @@ class Conference extends React.Component<IProps, IState> {
             isHidden: true
           });
         }
-
+        console.log(res.data.conference);
         this.setState({
+          archived: conference.archived,
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
@@ -514,7 +515,6 @@ class Conference extends React.Component<IProps, IState> {
 
   private archiveConf() {
     this.apiSetArchived();
-    alert("Conferencia Arquivada");
   }
 
   private getPosts() {
