@@ -1,5 +1,4 @@
 import * as React from "react";
-import Cookies from "universal-cookie";
 import Avatar from "../components/Avatar/Avatar";
 import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
@@ -30,18 +29,14 @@ type State = {
   fetchingInfo: boolean;
 };
 
-const cookies = new Cookies();
-
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
-  public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
-    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
-    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id;
 
     this.state = {
       fetchingInfo: true,
@@ -165,7 +160,6 @@ class Profile extends React.Component<IProps, State> {
         incrementRate;
       let body = {};
       body = {
-        evaluator: this.observerId,
         newUserRating: userRating,
         rate: parseInt(rateTarget, 10)
       };
@@ -195,7 +189,7 @@ class Profile extends React.Component<IProps, State> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -203,11 +197,11 @@ class Profile extends React.Component<IProps, State> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  private apiSubscription(endpoint: string) {
-    apiSubscription("users", endpoint, this.observerId, this.id)
+  private apiSubscription(method: string) {
+    apiSubscription("users", method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -215,7 +209,7 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -223,7 +217,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.observerId, this.id)
+    apiGetUserInteractions("users", this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,

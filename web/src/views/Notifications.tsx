@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 import "../styles/Notifications.css";
 
@@ -13,8 +12,6 @@ interface IState {
   fetchingNotifications: boolean;
   notifications: any[];
 }
-
-const cookies = new Cookies();
 
 class Notifications extends Component<{}, IState> {
   public static contextType = LanguageContext;

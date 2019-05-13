@@ -11,9 +11,10 @@ export function createComment(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [req.body.author, req.body.post_id, req.body.comment],
+        values: [userId, req.body.post_id, req.body.comment],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -29,10 +30,11 @@ export async function createNewCommentForComment(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     try {
         await query({
-        text: 'INSERT INTO comments (author, post, comment_ref, comment) VALUES ($1, (SELECT post FROM comments WHERE id = $1),$2, $3)',
-        values: [req.body.author, req.params.id, req.body.comment]});
+        text: 'INSERT INTO comments (author, post, comment_ref, comment) VALUES ($1, (SELECT post FROM comments WHERE id = $1), $2, $3)',
+        values: [userId, req.params.id, req.body.comment]});
         res.status(200).send();
     } catch (error) {
         console.log('\n\nERROR:', error);
@@ -49,7 +51,7 @@ export function editComment(req, res) {
 
     query({
         // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE comments SET comment=$2 WHERE id=$1',
+        text: 'UPDATE comments SET comment = $2 WHERE id = $1',
         values: [req.body.id, req.body.comment],
     }).then(() => {
         res.status(200).send({ newComment: req.body.comment });
@@ -60,11 +62,11 @@ export function editComment(req, res) {
 }
 
 export function addALikeToComment(req, res) {
-    // To change when loggin
+    const userId = req.user.id;
     const commentId = req.params.id;
     query({
-        text: `INSERT INTO likes_a_comment (comment,author) VALUES ($1,$2)`,
-        values: [commentId, req.body.author],
+        text: `INSERT INTO likes_a_comment (comment, author) VALUES ($1, $2)`,
+        values: [commentId, userId],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -92,7 +94,7 @@ export function getWhoLikedComment(req, res) {
 
 export function deleteComment(req, res) {
     query({
-        text: 'DELETE FROM comments WHERE id=$1', values: [req.body.id],
+        text: 'DELETE FROM comments WHERE id = $1', values: [req.body.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -141,9 +143,10 @@ export function reportComment(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
         text: `INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES ($1, $2, 'comment', $3)`,
-        values: [req.body.reporter, req.params.id, req.body.reason],
+        values: [userId, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
     }).catch((error) => {
@@ -153,13 +156,14 @@ export function reportComment(req, res) {
 }
 
 export async function checkCommentUserReport(req, res) {
+    const userId = req.user.id;
     try {
         const reportQuery = await query({
             text: `SELECT *
                     FROM content_reports
                     WHERE
                         reporter = $1 AND content_id = $2 AND content_type = 'comment'`,
-            values: [req.body.reporter, req.params.id],
+            values: [userId, req.params.id],
         });
 
         const result = { report: Boolean(reportQuery.rows[0]) };

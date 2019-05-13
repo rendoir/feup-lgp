@@ -85,7 +85,6 @@ postRouter.get('/:id', controller.getPost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -96,12 +95,11 @@ postRouter.get('/:id', controller.getPost);
 postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
 
 /**
- * @api {post} /api/post/:id/subscribe Set a post subscription for a given user
+ * @api {post} /api/post/:id/subscription Set a post subscription for a given user
  * @apiName Subscribe-Post
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -109,15 +107,14 @@ postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/subscribe', controller.subscribePost);
+postRouter.post('/:id/subscription', controller.subscribePost);
 
 /**
- * @api {post} /api/post/:id/unsubscribe Remove a post subscription for a given user
+ * @api {delete} /api/post/:id/subscription Remove a post subscription for a given user
  * @apiName Unsubscribe-Post
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -125,7 +122,7 @@ postRouter.post('/:id/subscribe', controller.subscribePost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
+postRouter.delete('/:id/subscription', controller.unsubscribePost);
 
 /**
  * @api {post} /api/post/:id/report Report a post
@@ -133,7 +130,6 @@ postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post being reported
- * @apiParam {number}   reporter   Id of the user issuing the report
  * @apiParam {string}   reason   Reason of the report
  *
  * @apiErrorExample Error-Response:
@@ -150,7 +146,6 @@ postRouter.post('/:id/report', controller.reportPost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post whose report we want to verify
- * @apiParam {number}   reporter   Id of the user we want to verify if reported the comment
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -158,7 +153,7 @@ postRouter.post('/:id/report', controller.reportPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/check_report', controller.checkPostUserReport);
+postRouter.get('/:id/report', controller.checkPostUserReport);
 
 /**
  * @api {post} /api/post/:id/:filename Gets the contents of a file
@@ -197,7 +192,6 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
  * @apiName Rate-Post
  * @apiGroup Post
  *
- * @apiParam {String}   evaluator        Id of the user that intends to evaluate
  * @apiParam {Number}   rate             Rate of the User
  * @apiParam {String}   post             Id of the post being rated
  *
@@ -214,7 +208,6 @@ postRouter.post('/:id/rate', controller.rate);
  * @apiName Update-Rate-Post
  * @apiGroup Post
  *
- * @apiParam {String}   evaluator        Id of the user that intends to evaluate
  * @apiParam {Number}   rate             Rate of the User
  * @apiParam {String}   post             Id of the post being rated
  *
@@ -224,7 +217,7 @@ postRouter.post('/:id/rate', controller.rate);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/update_rate', controller.updateRate);
+postRouter.put('/:id/rate', controller.updateRate);
 
 /**
  * @api {post} /api/post/:id/invite Invite user to engage in post discussion
@@ -248,8 +241,7 @@ postRouter.post('/:id/invite', controller.inviteUser);
  * @apiGroup Post
  *
  * @apiParam {number}   id    Id of the post the subscribers will be invited to
- * The user whose subscribers will be invited to the post is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
+ * The user whose subscribers will be invited to the post is the logged in user.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -258,23 +250,3 @@ postRouter.post('/:id/invite', controller.inviteUser);
  *     }
  */
 postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
-
-/**
- * @api {post} /api/post/:id/update_relevancy Update relevancy of a post
- * @apiName Update-Relevancy-Post
- * @apiGroup Post
- *
- * @apiParam {String}   id Id of the post.
- * @apiParam {String}   relevancy Relevancy of the post.
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error ocurred while updating relevancy of a post'
- *     }
- */
-postRouter.post('/:id/update_relevancy', controller.updateRelevancy);

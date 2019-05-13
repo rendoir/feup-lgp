@@ -2,21 +2,11 @@ import axiosInstance from "./axiosInstance";
 
 export async function apiSubscription(
   apiGroup: string,
-  endpoint: string,
-  userId: number,
+  method: string,
   subjectId: number
 ) {
-  let body = {};
-  switch (apiGroup) {
-    case "users":
-      body = { follower: userId };
-      break;
-
-    case "post":
-      body = { userId };
-      break;
-  }
-
-  const apiUrl = `/${apiGroup}/${subjectId}/${endpoint}`;
-  return axiosInstance.post(apiUrl, body);
+  const apiUrl = `/${apiGroup}/${subjectId}/subscription`;
+  return method === "post"
+    ? axiosInstance.post(apiUrl)
+    : axiosInstance.delete(apiUrl);
 }

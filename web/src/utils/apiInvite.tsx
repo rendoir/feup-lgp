@@ -85,35 +85,3 @@ export async function apiGetNotifications() {
     return null;
   }
 }
-
-// this is just a test function for cookies (not working)
-async function setCookies(): Promise<void> {
-  console.log("a fazer set das cookies");
-
-  try {
-    const res = axiosInstance.post(`/conference/set_cookies`);
-    console.log("acabou de por cookies");
-    // console.log("cookies set msg: ", res.data);
-  } catch (error) {
-    console.log("Failed to set cookies");
-  }
-  // const cookies = new Cookies();
-
-  /*console.log("openExample", cookies.get("openExample"));
-    cookies.set("openExample", 'openExampleChangedByXSS', { path: "/" });
-    console.log("signedOpenExample", cookies.get("signedOpenExample"));
-    cookies.set("signedOpenExample", 'signedOpenExampleChangedByXSS', { path: "/" });
-    console.log("serverExample", cookies.get("serverExample"));
-    cookies.set("serverExample", 'serverExampleChangedByXSS', { path: "/" });
-    console.log("signedServerExample", cookies.get("signedServerExample"));
-    cookies.set("signedServerExample", 'signedServerExampleChangedByXSS', { path: "/" });
-  
-    console.log("DEPOIS DA MUDANÇA");
-    console.log("openExample", cookies.get("openExample"));
-  
-    console.log("signedOpenExample", cookies.get("signedOpenExample"));
-  
-    console.log("serverExample", cookies.get("serverExample"));
-  
-    console.log("signedServerExample", cookies.get("signedServerExample"));*/
-}

@@ -3,7 +3,6 @@
 import Avatar from "../Avatar/Avatar";
 
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 // - Import app components
 import ReportModal from "../PostModal/ReportModal";
@@ -50,7 +49,6 @@ class Comment extends Component<Props, State> {
 
   public static defaultProps = {};
   public id: string;
-  public loggedUserId: number;
 
   private auth = new AuthHelperMethods();
 
@@ -58,7 +56,6 @@ class Comment extends Component<Props, State> {
     super(props);
 
     this.id = "comment_" + this.props.title;
-    this.loggedUserId = this.auth.getUserPayload().id;
 
     this.state = {
       commentID: 0,
@@ -346,7 +343,6 @@ class Comment extends Component<Props, State> {
 
     axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {}
       })
@@ -400,10 +396,7 @@ class Comment extends Component<Props, State> {
   }
 
   public async apiGetCommentUserReport(commentId: number) {
-    const userReport: boolean = await apiCheckCommentUserReport(
-      commentId,
-      this.loggedUserId
-    );
+    const userReport: boolean = await apiCheckCommentUserReport(commentId);
     this.setState({ userReport });
   }
 
@@ -426,10 +419,7 @@ class Comment extends Component<Props, State> {
     }/like`;
 
     axiosInstance
-      .post(postUrl, {
-        author: 2,
-        headers: {}
-      })
+      .post(postUrl)
       .then(res => {
         console.log("Comment liked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
@@ -443,14 +433,7 @@ class Comment extends Component<Props, State> {
     }/like`;
 
     axiosInstance
-      .delete(postUrl, {
-        data: {
-          author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
+      .delete(postUrl)
       .then(res => {
         console.log("Comment disliked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);

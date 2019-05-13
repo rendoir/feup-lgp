@@ -1,7 +1,5 @@
 // - Import react components
-import classNames from "classnames";
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -80,22 +78,12 @@ interface IState {
   waitingSubscriptionRequest: boolean;
 }
 
-const cookies = new Cookies();
-
 class Post extends Component<IProps, IState> {
   public static contextType = LanguageContext;
-
-  public static defaultProps = {};
-
-  private id: string;
-  private userId: number;
-  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
 
-    this.id = "post_" + this.props.id;
-    this.userId = this.auth.getUserPayload().id;
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -287,11 +275,10 @@ class Post extends Component<IProps, IState> {
   };
 
   public apiComments() {
-    const postUrl = `/post/${this.state.postID}/comment/new`;
+    const postUrl = `/post/${this.state.postID}/comment`;
 
     axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
         post_id: this.state.postID
@@ -376,7 +363,6 @@ class Post extends Component<IProps, IState> {
         incrementRate
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
@@ -410,7 +396,6 @@ class Post extends Component<IProps, IState> {
         Number(this.state.numberOfRatings)
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
@@ -418,9 +403,9 @@ class Post extends Component<IProps, IState> {
     console.log("NUmber of ratings:", this.state.numberOfRatings);
     console.log("Former rating: ", formerRate);
     console.log("Post Rating updated to: ", userRating);
-    const apiUrl = `/post/${this.props.id}/update_rate`;
+    const apiUrl = `/post/${this.props.id}/rate`;
     try {
-      await axiosInstance.post(apiUrl, body);
+      await axiosInstance.put(apiUrl, body);
       this.setState({
         userRate: parseInt(rateTarget, 10) * 20,
         userRateTotal:
@@ -440,7 +425,7 @@ class Post extends Component<IProps, IState> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -448,11 +433,11 @@ class Post extends Component<IProps, IState> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  public apiSubscription(endpoint: string) {
-    apiSubscription("post", endpoint, this.userId, this.props.id)
+  public apiSubscription(method: string) {
+    apiSubscription("post", method, this.props.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -460,7 +445,7 @@ class Post extends Component<IProps, IState> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -468,7 +453,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public apiGetPostUserInteractions() {
-    apiGetUserInteractions("post", this.userId, this.props.id)
+    apiGetUserInteractions("post", this.props.id)
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
@@ -487,10 +472,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public async apiGetPostUserReport() {
-    const userReport: boolean = await apiCheckPostUserReport(
-      this.props.id,
-      this.userId
-    );
+    const userReport: boolean = await apiCheckPostUserReport(this.props.id);
     this.setState({ userReport });
   }
 

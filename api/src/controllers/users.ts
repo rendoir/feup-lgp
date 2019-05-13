@@ -58,10 +58,8 @@ export class UserToken {
 }
 
 export async function getUserUserInteractions(req, res) {
-    const observerUser = req.body.observer;
+    const userId = req.user.id;
     const targetUser = req.params.id;
-    console.log('your user id: ', observerUser);
-    console.log('you want to rate this user: ', targetUser);
     try {
         const totalRatingsQuery = await query({
             text: `SELECT count(*)
@@ -80,14 +78,14 @@ export async function getUserUserInteractions(req, res) {
                     FROM users_rates
                     WHERE
                         evaluator = $1 AND target_user = $2`,
-            values: [observerUser, targetUser],
+            values: [userId, targetUser],
         });
         const subscriptionQuery = await query({
             text: `SELECT *
                     FROM follows
                     WHERE
                         follower = $1 AND followed = $2`,
-            values: [observerUser, targetUser],
+            values: [userId, targetUser],
         });
 
         // tslint:disable-next-line: no-shadowed-variable
@@ -109,9 +107,10 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
-        values: [req.body.follower, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -121,9 +120,10 @@ export function subscribeUser(req, res) {
 }
 
 export function unsubscribeUser(req, res) {
+    const userId = req.user.id;
     query({
         text: 'DELETE FROM follows WHERE follower = $1 AND followed = $2',
-        values: [req.body.follower, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -133,9 +133,10 @@ export function unsubscribeUser(req, res) {
 }
 
 export function rate(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
-        values: [req.body.evaluator, req.body.rate, req.params.id],
+        values: [userId, req.body.rate, req.params.id],
     }).then((result) => {
 
         query({

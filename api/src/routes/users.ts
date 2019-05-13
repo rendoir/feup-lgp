@@ -69,11 +69,10 @@ usersRouter.get('/:id', controller.getProfilePosts);
 usersRouter.post('/:id/user_interactions', controller.getUserUserInteractions);
 
 /**
- * @api {post} /api/users/:id/subscribe Set a user subscription
+ * @api {post} /api/users/:id/subscription Set a user subscription
  * @apiName Subscribe-User
  * @apiGroup Users
  *
- * @apiParam {number}   follower   Id of the user that intends to subscribe
  * @apiParam {number}   id   Id of the user being subscribed
  *
  * @apiErrorExample Error-Response:
@@ -82,14 +81,13 @@ usersRouter.post('/:id/user_interactions', controller.getUserUserInteractions);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/:id/subscribe', controller.subscribeUser);
+usersRouter.post('/:id/subscription', controller.subscribeUser);
 
 /**
- * @api {post} /api/users/:id/unsubscribe Remove a user subscription
+ * @api {delete} /api/users/:id/subscription Remove a user subscription
  * @apiName Unsubscribe-User
  * @apiGroup Users
  *
- * @apiParam {number}   follower   Id of the user removing the subscription
  * @apiParam {number}   id   Id of the user that was being subscribed
  *
  * @apiErrorExample Error-Response:
@@ -98,14 +96,13 @@ usersRouter.post('/:id/subscribe', controller.subscribeUser);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/:id/unsubscribe', controller.unsubscribeUser);
+usersRouter.delete('/:id/subscription', controller.unsubscribeUser);
 
 /**
  * @api {post} /api/users/rate Rate a user
  * @apiName Rate-User
  * @apiGroup Users
  *
- * @apiParam {String}   evaluator        Id of the user that intends to evaluate
  * @apiParam {Number}   rate             Rate of the User
  * @apiParam {String}   target_user      Id of the user being rated
  *
@@ -124,8 +121,6 @@ usersRouter.post('/:id/rate', controller.rate);
  *
  * @apiParam {number}   id  This id can be set to any value, since it will not be used. It's in the URL due to route problems.
  *
- * The logged user id is required, but we can access it through cookies. Therefore, no parameter is required.
- *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -142,8 +137,7 @@ usersRouter.get('/:id/notifications', controller.getNotifications);
  * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL due to route problems.
  * @apiParam {number}   inviteId    Id of the invite being set as seen by the user
  *
- * The user who saw the invite notification is the logged in user, which means we can access his id through cookies.
- * This way, we don't need to pass it as a request parameter.
+ * The user who saw the invite notification is the logged in user.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request

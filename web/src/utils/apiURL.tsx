@@ -5,8 +5,8 @@
  *
  * Route examples:
  * '/post/3'
- * '/users/subscribe'
- * '/post/subscribe'
+ * '/users/subscription'
+ * '/post/subscription'
  */
 export function getApiURL(route: string) {
   let apiURL = `${location.protocol}//${location.hostname}`;
