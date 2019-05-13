@@ -394,7 +394,6 @@ export async function archiveConference(req, res) {
 export async function unarchiveConference(req, res) {
   const id = req.params.id;
   try {
-    console.log('id asdasd ' + id);
     const archivedConference = await query({
       text: `UPDATE conferences
 				  SET archived = FALSE
