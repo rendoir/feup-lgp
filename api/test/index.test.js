@@ -189,35 +189,32 @@ describe('Post', () => {
             });
     })
 
-    /**
-     * Cannot test post edition until login is implemented.
-     */
-    // it('Should edit the submitted post', (done) => {
-    //     request(app)
-    //         .put(`/post/${postId}`)
-            // .set('authorization', 'Bearer ' + admin.jwt)
-    //         .send(editedPublicPost)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             expect(err).to.be.null;
-    //             done();
-    //         });
-    // })
+    it('Should edit the submitted post', (done) => {
+        request(app)
+            .put(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send(editedPublicPost)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
 
-    // it('Should retrieve the edited post', (done) => {
-    //     request(app)
-    //         .get(`/post/${postId}`)
-            // .set('authorization', 'Bearer ' + admin.jwt)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             expect(err).to.be.null;
-    //             expect(res.body).to.have.property('post');
-    //             expect(equalPosts(editedPublicPost, res.body.post)).to.be.true;
-    //             expect(res.body).to.have.property('comments');
-    //             expect(res.body.comments).to.be.empty;
-    //             done();
-    //         });
-    // })
+    it('Should retrieve the edited post', (done) => {
+        request(app)
+            .get(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('post');
+                expect(equalPosts(editedPublicPost, res.body.post)).to.be.true;
+                expect(res.body).to.have.property('comments');
+                expect(res.body.comments).to.be.empty;
+                done();
+            });
+    })
 
     it('Should delete the submitted post', (done) => {
         request(app)
