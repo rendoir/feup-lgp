@@ -81,7 +81,7 @@ class CommentPost extends Component<Props, State> {
         let titlePost: string | undefined = "";
 
         const state = res.data.state;
-        if (state !== []) {
+        if (state.length > 0) {
           isComplete = res.data.state[0].complete;
         }
 

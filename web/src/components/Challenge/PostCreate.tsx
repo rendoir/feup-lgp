@@ -71,7 +71,7 @@ class PostCreate extends Component<Props, State> {
       .then(res => {
         let isComplete: boolean | undefined;
         const state = res.data.state;
-        if (state !== []) {
+        if (state.length > 0) {
           isComplete = res.data.state[0].complete;
         }
         this.setState({

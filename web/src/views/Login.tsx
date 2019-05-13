@@ -1,9 +1,12 @@
 import * as React from "react";
 import Cookies from "universal-cookie";
+import { dictionary, LanguageContext } from "../utils/language";
 
 const cookies = new Cookies();
 
 class Login extends React.Component {
+  public static contextType = LanguageContext;
+
   constructor(props: any) {
     super(props);
 
@@ -24,13 +27,13 @@ class Login extends React.Component {
         id="register-landing"
       >
         <form onSubmit={this.handleAuthentication}>
-          <h3 className="text-center">Login</h3>
+          <h3 className="text-center">{dictionary.login[this.context]}</h3>
           <div className="form-group mt-3">
             <input
               type="email"
               className="form-control col"
               id="inputUsername"
-              placeholder="Username"
+              placeholder={dictionary.username[this.context]}
             />
           </div>
           <div className="form-group mt-3">
@@ -38,12 +41,12 @@ class Login extends React.Component {
               type="password"
               className="form-control col"
               id="inputPassword"
-              placeholder="Password"
+              placeholder={dictionary.password[this.context]}
             />
           </div>
           <div className="mt-5 text-center">
             <button type="submit" className="btn btn-primary">
-              Login
+              {dictionary.login[this.context]}
             </button>
           </div>
         </form>

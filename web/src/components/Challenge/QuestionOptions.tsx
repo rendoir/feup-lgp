@@ -92,7 +92,7 @@ class QuestionOptions extends Component<IProps, IState> {
         let value = "";
         let isCorrect: boolean | undefined;
 
-        if (res.data.state !== []) {
+        if (res.data.state.length > 0) {
           value = res.data.state[0].answer;
           isCorrect = res.data.state[0].complete;
         }
@@ -246,7 +246,7 @@ class QuestionOptions extends Component<IProps, IState> {
         author: 1, // When loggin, this is the user logged in
         challenge: this.props.id,
         challenge_answer: this.state.value,
-        completion: this.state.isCorrect,
+        completion: this.state.isCorrect ? true : false,
         headers: {}
       })
       .then(res => {

@@ -1,6 +1,9 @@
 import * as React from "react";
+import { dictionary, LanguageContext } from "../utils/language";
 
 class RegisterLanding extends React.Component {
+  public static contextType = LanguageContext;
+
   public render() {
     return (
       <div
@@ -8,44 +11,42 @@ class RegisterLanding extends React.Component {
         id="register-landing"
       >
         <div className="col-sm-4 mt-5" id="landing-info">
-          <h2>
-            Social Network for medicine professionals and medicin students.
-          </h2>
+          <h2>{dictionary.website_description[this.context]}</h2>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Document Sharing</h4>
+            <h4>{dictionary.document_sharing[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="far fa-folder-open fa-lg" />
             </div>
           </div>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Comment and Encourage</h4>
+            <h4>{dictionary.comment_encourage[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="far fa-comment-dots fa-lg" />
             </div>
           </div>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Search and Find</h4>
+            <h4>{dictionary.search_find[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="fas fa-search fa-lg" />
             </div>
           </div>
           <h2 className="mt-5 mb-5">
-            Thesis, clinical cases, video conferences...
+            {dictionary.website_description2[this.context]}
           </h2>
         </div>
         <div className="col-9 col-sm-8 col-md-6 col-lg-4 mt-5">
           <form>
-            <h3 className="text-center">Sign up</h3>
+            <h3 className="text-center">{dictionary.signup[this.context]}</h3>
             <div className="mt-5 form-row">
               <div className="form-group col-6">
                 <input
                   type="text"
                   className="form-control"
                   id="inputFirstName"
-                  placeholder="First Name"
+                  placeholder={dictionary.first_name[this.context]}
                 />
               </div>
               <div className="form-group col-6">
@@ -53,7 +54,7 @@ class RegisterLanding extends React.Component {
                   type="text"
                   className="form-control"
                   id="inputLastName"
-                  placeholder="Last Name"
+                  placeholder={dictionary.last_name[this.context]}
                 />
               </div>
             </div>
@@ -62,7 +63,7 @@ class RegisterLanding extends React.Component {
                 type="text"
                 className="form-control col"
                 id="inputInstituicao"
-                placeholder="Workplace/Institution"
+                placeholder={dictionary.workplace_institution[this.context]}
               />
             </div>
             <div className="form-group mt-3">
@@ -70,7 +71,7 @@ class RegisterLanding extends React.Component {
                 type="text"
                 className="form-control col"
                 id="inputProfissaoCurso"
-                placeholder="Profession/Field"
+                placeholder={dictionary.profession_field[this.context]}
               />
             </div>
             <div className="form-group mt-3">
@@ -78,7 +79,7 @@ class RegisterLanding extends React.Component {
                 type="email"
                 className="form-control col"
                 id="inputEmail"
-                placeholder="Institucional E-mail"
+                placeholder="E-mail"
               />
             </div>
             <div className="form-group mt-3">
@@ -86,12 +87,12 @@ class RegisterLanding extends React.Component {
                 type="password"
                 className="form-control col"
                 id="inputPassword"
-                placeholder="Password"
+                placeholder={dictionary.password[this.context]}
               />
             </div>
             <div className="mt-5 text-center">
               <button type="submit" className="btn btn-primary">
-                Register
+                {dictionary.signup[this.context]}
               </button>
             </div>
           </form>
