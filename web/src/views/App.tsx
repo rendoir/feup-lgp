@@ -11,6 +11,7 @@ import {
 } from "../utils/language";
 
 import Backoffice from "./Backoffice";
+import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
 import Login from "./Login";
@@ -54,6 +55,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/register" component={RegisterLanding} />
                 <Route path="/search" component={SearchResults} />
                 <Route path="/talk/:id" component={Talk} />
+                <Route path="/conference/:id" component={Conference} />
                 <Route path="/notifications" component={Notifications} />
               </Switch>
             </ErrorBoundary>

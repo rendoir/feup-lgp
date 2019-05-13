@@ -33,6 +33,7 @@ if (process.env.PRODUCTION === 'true') {
 import {
     adminRouter,
     commentRouter,
+    conferenceRouter,
     feedRouter,
     loginRouter,
     postRouter,
@@ -78,6 +79,7 @@ app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.use('/talk', talkRouter);
 app.use('/search', searchRouter);
+app.use('/conference', conferenceRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });
