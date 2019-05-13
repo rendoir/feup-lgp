@@ -135,7 +135,7 @@ describe('Post', () => {
 
     it('Should submit a new public post', (done) => {
         request(app)
-            .post('/post/create')
+            .post('/post')
             .send(publicPost)
             .expect(200)
             .end((err, res) => {

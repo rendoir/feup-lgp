@@ -229,13 +229,12 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       );
       request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
 
-      formData.append("author", "1");
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
 
       axiosInstance
-        .post("/post/create", formData, {
+        .post("/post", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -248,9 +247,8 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         .catch(() => console.log("Failed to create post"));
     } else {
       axiosInstance
-        .post("/conference/create", {
+        .post("/conference", {
           about: request.about,
-          author: 1,
           avatar: request.avatar,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,

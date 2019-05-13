@@ -23,7 +23,7 @@ export const conferenceRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.post('/create', controller.createConference);
+conferenceRouter.post('/', controller.createConference);
 
 /**
  * @api {post} /api/conference/:id/invite Invite user to conference

@@ -16,6 +16,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field about cannot be empty',
     });
+    return;
   }
   if (!req.body.local.trim()) {
     console.log('\n\nError: Conference local cannot be empty');
@@ -23,6 +24,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field local cannot be empty',
     });
+    return;
   }
   if (!req.body.dateStart.trim()) {
     console.log('\n\nError: Conference starting date cannot be empty');
@@ -30,6 +32,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field date start cannot be empty',
     });
+    return;
   }
   if (req.body.dateEnd.trim()) {
     if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
@@ -40,14 +43,17 @@ export function createConference(req, res) {
         message: 'An error occurred while crating a new conference. ' +
           'The field date end cannot be a date previous to date start',
       });
+      return;
     }
   }
+
+  const userId = req.user.id;
 
   query({
     text: 'INSERT INTO conferences (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
     values: [
-      req.body.author,
+      userId,
       req.body.title,
       req.body.about,
       req.body.livestream,

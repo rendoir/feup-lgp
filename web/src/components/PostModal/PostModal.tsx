@@ -117,7 +117,7 @@ class PostModal extends Component<IProps, IState> {
     formData.append("visibility", this.state.visibility);
 
     axiosInstance
-      .post("/post/create", formData, {
+      .post("/post", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }

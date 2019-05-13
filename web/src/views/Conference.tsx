@@ -397,14 +397,13 @@ class Conference extends React.Component<IProps, IState> {
       );
       request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
 
-      formData.append("author", "1");
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
       formData.append("conference", this.id + "");
 
       axiosInstance
-        .post("/post/create", formData, {
+        .post("/post", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }

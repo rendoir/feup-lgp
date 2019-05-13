@@ -1,7 +1,6 @@
 'use strict';
 import { Router } from 'express';
 import * as controller from '../controllers/post';
-import {usersRouter} from './users';
 
 export const postRouter = Router();
 
@@ -22,7 +21,7 @@ export const postRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/create', controller.createPost);
+postRouter.post('/', controller.createPost);
 
 /**
  * @api {post} /api/post/edit Edit a post
