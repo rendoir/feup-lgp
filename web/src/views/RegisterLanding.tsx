@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as React from "react";
 import { getApiURL } from "../utils/apiURL";
+import { dictionary, LanguageContext } from "../utils/language";
 
 type State = {
   confirmPasswordError: boolean;
@@ -28,6 +29,8 @@ type State = {
 };
 
 class RegisterLanding extends React.Component<{}, State> {
+  public static contextType = LanguageContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -35,20 +38,20 @@ class RegisterLanding extends React.Component<{}, State> {
       confirmPasswordErrorMessage: "",
       email: "",
       emailError: true,
-      emailErrorMessage: "Invalid e-mail.",
+      emailErrorMessage: "",
       emailExists: true,
       emailHadInteraction: false,
       first_name: "",
       first_nameError: true,
-      first_nameErrorMessage: "Invalid name",
+      first_nameErrorMessage: "",
       home_town: "",
       last_name: "",
       last_nameError: true,
-      last_nameErrorMessage: "Invalid name",
+      last_nameErrorMessage: "",
       loading: false,
       password: "",
       passwordError: true,
-      passwordErrorMessage: "The password must have at least 8 characters.",
+      passwordErrorMessage: "",
       passwordHadInteraction: false,
       university: "",
       work: "",
@@ -186,55 +189,59 @@ class RegisterLanding extends React.Component<{}, State> {
         id="register-landing"
       >
         <div className="col-sm-4 mt-5" id="landing-info">
-          <h2>Social Network for medicine professionals and students.</h2>
+          <h2>{dictionary.website_description[this.context]}</h2>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Document Sharing</h4>
+            <h4>{dictionary.document_sharing[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="far fa-folder-open fa-lg" />
             </div>
           </div>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Comment and Encourage</h4>
+            <h4>{dictionary.comment_encourage[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="far fa-comment-dots fa-lg" />
             </div>
           </div>
           <div className="row mt-5">
             <div className="col-sm-1 col-md-1 col-lg-1" />
-            <h4>Search and Find</h4>
+            <h4>{dictionary.search_find[this.context]}</h4>
             <div className="col-sm-2 col-md-2 col-lg-2">
               <i className="fas fa-search fa-lg" />
             </div>
           </div>
           <h2 className="mt-5 mb-5">
-            Thesis, clinical cases, video conferences...
+            {dictionary.website_description2[this.context]}
           </h2>
         </div>
         <div className="col-9 col-sm-8 col-md-6 col-lg-4 mt-5">
           <form>
-            <h3 className="text-center">Sign up</h3>
+            <h3 className="text-center">{dictionary.signup[this.context]}</h3>
             <div className="mt-5 form-row">
               <div className="form-group col-6">
                 <input
                   type="text"
                   className="form-control"
                   id="inputFirstName"
-                  placeholder="First Name"
+                  placeholder={dictionary.first_name[this.context]}
                   onChange={e => this.validate("first_name", e.target.value)}
                 />
-                <p id="firstNameErrorMessage">Invalid name.</p>
+                <p id="firstNameErrorMessage">
+                  {dictionary.invalid_name[this.context]}
+                </p>
               </div>
               <div className="form-group col-6">
                 <input
                   type="text"
                   className="form-control"
                   id="inputLastName"
-                  placeholder="Last Name"
+                  placeholder={dictionary.last_name[this.context]}
                   onChange={e => this.validate("last_name", e.target.value)}
                 />
-                <p id="lastNameErrorMessage">Invalid name.</p>
+                <p id="lastNameErrorMessage">
+                  {dictionary.invalid_name[this.context]}
+                </p>
               </div>
             </div>
             <div className="form-group mt-3">
@@ -242,7 +249,7 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="text"
                 className="form-control col"
                 id="inputInstituicao"
-                placeholder="Workplace/Institution (Optional)"
+                placeholder={dictionary.workplace_institution[this.context]}
                 onChange={e => this.validate("work", e.target.value)}
               />
             </div>
@@ -251,7 +258,7 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="text"
                 className="form-control col"
                 id="inputProfissaoCurso"
-                placeholder="Profession/Field (Optional)"
+                placeholder={dictionary.profession_field[this.context]}
                 onChange={e => this.validate("work_field", e.target.value)}
               />
             </div>
@@ -260,7 +267,7 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="text"
                 className="form-control col"
                 id="inputHomeTown"
-                placeholder="Hometown (Optional)"
+                placeholder={dictionary.hometown[this.context]}
                 onChange={e => this.validate("home_town", e.target.value)}
               />
             </div>
@@ -269,7 +276,7 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="text"
                 className="form-control col"
                 id="inputUniversity"
-                placeholder="University (Optional)"
+                placeholder={dictionary.university[this.context]}
                 onChange={e => this.validate("university", e.target.value)}
               />
             </div>
@@ -278,22 +285,23 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="email"
                 className="form-control col"
                 id="inputEmail"
-                placeholder="Institutional e-mail"
+                placeholder="Email"
                 onChange={e => this.validate("email", e.target.value)}
               />
-              <p id="emailErrorMessage">Invalid e-mail.</p>
+              <p id="emailErrorMessage">
+                {dictionary.invalid_email[this.context]}
+              </p>
             </div>
             <div className="form-group mt-3">
               <input
                 type="password"
                 className="form-control col"
                 id="inputPassword"
-                placeholder="Password"
+                placeholder={dictionary.password[this.context]}
                 onChange={e => this.validate("password", e.target.value)}
               />
               <p id="passwordErrorMessage">
-                Password must have at least a number and be 8 characters of
-                length.
+                {dictionary.invalid_password[this.context]}
               </p>
             </div>
             <div>
@@ -301,12 +309,14 @@ class RegisterLanding extends React.Component<{}, State> {
                 type="password"
                 className="form-control col"
                 id="inputConfirmPassword"
-                placeholder="Confirm Password"
+                placeholder={dictionary.confirm_password[this.context]}
                 onChange={e =>
                   this.validate("confirm_password", e.target.value)
                 }
               />
-              <p id="confirmPasswordErrorMessage">Passwords do not match!</p>
+              <p id="confirmPasswordErrorMessage">
+                {dictionary.invalid_confirm_password[this.context]}
+              </p>
             </div>
             <div className="mt-5 text-center">
               <button
@@ -314,7 +324,7 @@ class RegisterLanding extends React.Component<{}, State> {
                 className="btn btn-primary"
                 onClick={this.handlePress}
               >
-                Register
+                {dictionary.register[this.context]}
               </button>
             </div>
           </form>
