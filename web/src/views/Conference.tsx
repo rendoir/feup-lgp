@@ -24,6 +24,7 @@ import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
 
 // - Import utils
+import TalkCard from "../components/TalkCard/TalkCard";
 import {
   apiCheckUserCanJoinTalk,
   apiCheckUserTalkParticipation,
@@ -31,7 +32,6 @@ import {
   apiUserLeaveTalk
 } from "../utils/apiTalk";
 import { dictionary, LanguageContext } from "../utils/language";
-import TalkCard from "../components/TalkCard/TalkCard";
 
 interface IProps {
   match: {
