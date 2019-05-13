@@ -102,7 +102,6 @@ export function solveChallenge(req, res) {
 
 export async function getSolvedStateForUser(req, res) {
 
-
     try {
         const postTitle = (await query({
             text: `SELECT title
