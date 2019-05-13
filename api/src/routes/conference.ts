@@ -191,3 +191,33 @@ conferenceRouter.get('/:id', controller.getConference);
  *     }
  */
 conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
+
+/**
+ * @api {get} /api/post/:post_id/comments_author Get comments of a post
+ * @apiName Get-Comments-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post to get info
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getCommentsOfPostAndAuthor);
+
+/**
+ * @api {get} /api/post/:post_id/comments_author Get comments of a post
+ * @apiName Get-Comments-Post
+ * @apiGroup Post
+ *
+ * @apiParam {String}   post.id   Number of the post to get info
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/posts_author', controller.getPostsAuthor);

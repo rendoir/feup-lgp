@@ -386,3 +386,46 @@ export function changePrivacy(req, res) {
     res.status(400).send({ message: 'An error ocurred while changing the privacy of a conference' });
   });
 }
+
+export async function getCommentsOfPostAndAuthor(req, res) {
+  query({
+    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+              FROM posts p
+                  LEFT JOIN comments c ON p.id = c.post
+                  INNER JOIN users a ON c.author = a.id
+              WHERE
+                  p.id = $1
+                  AND (p.author = $2
+                      OR p.visibility = 'public'
+                      OR (p.visibility = 'followers'
+                          AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                          )
+                      )
+              ORDER BY c.date_updated ASC`,
+    values: [req.params.id, req.query.author],
+  }).then((result) => {
+    res.send(result.rows);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export function getPostsAuthor(req, res) {
+  query({
+    text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+      p.visibility, p.date_created, p.date_updated, users.id AS user_id
+      FROM posts p
+      INNER JOIN users ON (users.id = p.author)
+      WHERE p.conference = $1
+      AND p.author = $2
+      ORDER BY p.date_created DESC
+      LIMIT 10`,
+    values: [req.params.id, req.query.author]
+  }).then((result) => {
+    res.send(result.rows);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}

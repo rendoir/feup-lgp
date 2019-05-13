@@ -83,9 +83,9 @@ class QuestionAnswer extends Component<Props, State> {
         let value = "";
         let isCorrect: boolean | undefined;
 
-        if (res.data !== []) {
-          value = res.data[0].answer;
-          isCorrect = res.data[0].complete;
+        if (res.data.state !== []) {
+          value = res.data.state[0].answer;
+          isCorrect = res.data.state[0].complete;
         }
 
         this.setState({ question, correctAnswer, isCorrect, value });

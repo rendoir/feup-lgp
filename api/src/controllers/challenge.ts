@@ -100,19 +100,33 @@ export function solveChallenge(req, res) {
     });
 }
 
-export function getSolvedStateForUser(req, res) {
+export async function getSolvedStateForUser(req, res) {
 
-    query({
-        text: `SELECT answer, complete FROM user_challenge
-                WHERE user_challenge.challenged = $1 AND user_challenge.challenge = $2`,
-        values: [
-            req.query.author,
-            req.query.challenge,
-        ],
-    }).then((result) => {
-        res.send(result.rows);
-    }).catch((error) => {
+
+    try {
+        const postTitle = (await query({
+            text: `SELECT title
+                        FROM posts
+                        WHERE posts.id = $1`,
+            values: [req.query.post],
+        })).rows[0];
+
+        const title = (postTitle !== undefined) ? postTitle.title : undefined;
+
+        const result = (await query({
+            text: `SELECT answer, complete FROM user_challenge
+                    WHERE user_challenge.challenged = $1 AND user_challenge.challenge = $2`,
+            values: [
+                req.query.author,
+                req.query.challenge,
+            ],
+        }));
+
+        res.send({state: result.rows, title});
+
+    } catch (error) {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while getting the state of a challenge from a conference' });
-    });
+        res.status(400).send({ message: 'An error ocurred while creating a post' });
+    }
+
 }

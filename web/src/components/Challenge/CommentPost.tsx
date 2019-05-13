@@ -1,3 +1,5 @@
+import axios from "axios";
+
 // - Import react components
 import React, { Component } from "react";
 
@@ -7,6 +9,7 @@ import styles from "./Challenge.module.css";
 import Input from "../Input/Input";
 
 export type Props = {
+  confId: number;
   id: number;
   title: string;
   challengeType: string;
@@ -20,6 +23,8 @@ export type Props = {
 export type State = {
   description: string | undefined;
   postToComment: number;
+  isComplete: boolean | undefined;
+  titlePost: string | undefined;
 };
 
 class CommentPost extends Component<Props, State> {
@@ -30,8 +35,12 @@ class CommentPost extends Component<Props, State> {
 
     this.state = {
       description: undefined,
-      postToComment: 0
+      isComplete: undefined,
+      postToComment: 0,
+      titlePost: ""
     };
+
+    this.handleSolveChallenge = this.handleSolveChallenge.bind(this);
   }
 
   public componentDidMount() {
@@ -46,9 +55,53 @@ class CommentPost extends Component<Props, State> {
       } else if (content[i].startsWith("PostToComment: ")) {
         postToComment = Number(content[i].split("PostToComment: ")[1]);
       }
-
-      this.setState({ postToComment, description });
     }
+
+    this.apiSolvedState(description, postToComment);
+  }
+
+  public apiSolvedState(description: string, postToComment: number) {
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+
+    axios
+      .get(getUrl, {
+        params: {
+          author: 1, // When loggin, this is the user logged in
+          challenge: this.props.id,
+          post: postToComment
+        }
+      })
+      .then(res => {
+        let isComplete: boolean | undefined;
+        let titlePost: string | undefined = "";
+
+        const state = res.data.state;
+        if (state !== []) {
+          isComplete = res.data.state[0].complete;
+        }
+
+        if (res.data.title !== undefined) {
+          titlePost = res.data.title;
+        }
+        this.setState({
+          description,
+          isComplete,
+          postToComment,
+          titlePost
+        });
+      })
+      .catch(() => {
+        console.log("Failed to get state of challenge");
+        this.setState({
+          description,
+          postToComment
+        });
+      });
   }
 
   public render() {
@@ -76,7 +129,8 @@ class CommentPost extends Component<Props, State> {
             className="btn btn-info"
             type="button"
             data-dismiss="modal"
-            onClick={this.solveChallenge}
+            onClick={this.handleSolveChallenge}
+            disabled={this.getButtonRequiredClass()}
           >
             Solve Challenge
           </button>
@@ -114,19 +168,86 @@ class CommentPost extends Component<Props, State> {
     }
 
     return (
-      <div>
+      <div className={this.getInputRequiredStyle()}>
         {title}
         <p className="card-text">
           {" "}
-          Comment On Post {this.state.postToComment}.
+          Comment On Post with title: "{this.state.titlePost}".
         </p>
-        {/* TODO: Get Title of Post to Comment */}
       </div>
     );
   }
 
-  public solveChallenge() {
-    return null;
+  public getInputRequiredStyle() {
+    let css = `${styles.normal}`;
+
+    if (this.state.isComplete === true) {
+      css = `${styles.correct_answer}`;
+    } else if (this.state.isComplete === false) {
+      css = `${styles.wrong_answer}`;
+    }
+
+    return css;
+  }
+
+  public getButtonRequiredClass() {
+    return this.state.isComplete !== undefined ? true : false;
+  }
+
+  public handleSolveChallenge() {
+    if (this.apiGetPostCommentChallenge()) {
+      this.apiSolveChallenge();
+    }
+  }
+
+  public apiGetPostCommentChallenge() {
+    let commented: boolean = false;
+
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += `/conference/${this.props.confId}/post/${
+      this.state.postToComment
+    }/comments_author`;
+
+    axios
+      .get(getUrl, { params: { author: 1 } })
+      .then(res => {
+        const comments = res.data;
+        comments === [] ? (commented = true) : (commented = false);
+        this.setState({ isComplete: commented });
+      })
+      .catch(() => {
+        console.log("Failed to get comments of post refered on challenge");
+        commented = false;
+      });
+
+    return commented;
+  }
+
+  public apiSolveChallenge() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+
+    axios
+      .post(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        challenge: this.props.id,
+        challenge_answer: "",
+        completion: this.state.isComplete ? true : false,
+        headers: {}
+      })
+      .then(res => {
+        console.log("Challenge solved - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
   }
 }
 
