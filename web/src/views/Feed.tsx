@@ -3,6 +3,7 @@ import * as React from "react";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
 import { dictionary, LanguageContext } from "../utils/language";
+import { Avatar } from "../components";
 
 type Props = {};
 
@@ -85,6 +86,14 @@ class Feed extends React.Component<Props, State> {
     return postsDiv;
   }
 
+  public randomAvat() {
+    const min = 1;
+    const max = 100;
+    const rand = min + Math.random() * (max - min);
+
+    return rand;
+  }
+
   public render() {
     if (this.state.fetchingInfo) {
       return null;
@@ -113,7 +122,7 @@ class Feed extends React.Component<Props, State> {
         {nome.first_name} {nome.last_name}
       </a>
     ));
-    // href={"/user/" + this.props.user_id}
+
     return (
       <div id="Feed" className="container mt-5">
         <div className="row">
