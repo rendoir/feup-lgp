@@ -19,7 +19,6 @@ class TalkCard extends React.Component<Props> {
   }
 
   public render() {
-    console.log(this.props.avatar);
     return (
       <div id="talk-card-comp" className="card mb-2">
         <a href={"/talk/" + this.props.id}>
