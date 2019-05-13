@@ -262,7 +262,7 @@ class Conference extends React.Component<IProps, IState> {
   public apiSetArchived() {
     const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
     axios
-      .post(conferenceURL, {})
+      .post(conferenceURL)
       .then()
       .catch(() => console.log("Failed to archive conference"));
 
@@ -274,7 +274,7 @@ class Conference extends React.Component<IProps, IState> {
   public apiSetUnarchived() {
     const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
     axios
-      .delete(conferenceURL, {})
+      .delete(conferenceURL)
       .then()
       .catch(() => console.log("Failed to unarchive conference"));
 
