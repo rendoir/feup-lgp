@@ -98,6 +98,7 @@ export function getWhoLikedComment(req, res) {
 
 // Can only delete if user is author or admin.
 export function deleteComment(req, res) {
+    const userId = req.user.id;
     query({
         text: `DELETE FROM comments
                 WHERE id = $1
