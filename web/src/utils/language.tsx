@@ -74,6 +74,10 @@ export let dictionary: Dictionary = {
   hide_conference: { PT: "Esconder conferência", EN: "Hide conference" },
   report_conference: { PT: "Reportar conferência", EN: "Report conference" },
   archive_conference: { PT: "Arquivar conferência", EN: "Archive conference" },
+  unarchive_conference: {
+    PT: "Desarquivar conferência",
+    EN: "Unarchive conference"
+  },
   start_livestream_conference: {
     PT: "Começar transmissão em direto",
     EN: "Start livestream"

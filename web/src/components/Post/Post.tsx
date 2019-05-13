@@ -1,6 +1,5 @@
 // - Import react components
 import axios from "axios";
-import classNames from "classnames";
 import React, { Component } from "react";
 import Cookies from "universal-cookie";
 
@@ -43,18 +42,18 @@ import { getApiURL } from "../../utils/apiURL";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
-interface IProps {
+export type Props = {
   id: number;
   title: string;
   date: string;
   author: string;
-  text: string | undefined;
+  content: string | undefined;
   visibility: string;
   comments: any[];
   files?: MyFile[];
   tags: any[];
   user_id: number;
-}
+};
 
 interface IState {
   activePage: number;
@@ -83,14 +82,14 @@ interface IState {
 
 const cookies = new Cookies();
 
-class Post extends Component<IProps, IState> {
+class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {};
   public id: string;
   public userId: number;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
 
     this.id = "post_" + this.props.id;
@@ -178,7 +177,7 @@ class Post extends Component<IProps, IState> {
             <h4> {this.props.title} </h4>
           </div>
           <div className={styles.post_content_text}>
-            <p> {this.props.text} </p>
+            <p> {this.props.content} </p>
           </div>
           {this.getImages()}
           {this.getVideos()}

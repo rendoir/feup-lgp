@@ -57,6 +57,23 @@ export class UserToken {
     }
 }
 
+export async function getUser(req, res) {
+    const id = req.params.id;
+    try {
+        const user = await query({
+            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
+                    FROM users
+                    WHERE id = $1
+                    `,
+            values: [id],
+        });
+
+        res.send({ user: user.rows[0] });
+    } catch (e) {
+        console.log('Error getting user info. Error: ' + e.message);
+    }
+}
+
 export async function getUserUserInteractions(req, res) {
     const observerUser = req.body.observer;
     const targetUser = req.params.id;
@@ -155,6 +172,7 @@ export function rate(req, res) {
 
 export async function getProfilePosts(req, res) {
     const userId = req.params.id; const userloggedId = 1; // logged in user
+    const limit = req.query.perPage;
     const offset = req.query.offset;
     try {
         const result = await query({
@@ -169,17 +187,24 @@ export async function getProfilePosts(req, res) {
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
                                 OR $1=$2))
                     ORDER BY p.date_created DESC
-                    LIMIT 10
-                    OFFSET $3`,
-            values: [userId, userloggedId, offset],
+                    LIMIT $3
+                    OFFSET $4`,
+            values: [userId, userloggedId, limit, offset],
         });
         if (result == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
         }
-        const commentsToSend = [];
-        const tagsToSend = [];
-        const filesToSend = [];
+        const totalSize = await query({
+            text: `SELECT COUNT(id)
+                    FROM posts
+                    WHERE author = $1 AND
+							          (visibility = 'public'
+							          OR (visibility= 'private' AND author = $2)
+							          OR (visibility = 'followers' AND (author IN (SELECT followed FROM follows WHERE follower = $1))
+							          OR $1=$2))`,
+            values: [userId, userloggedId],
+        });
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -210,24 +235,13 @@ export async function getProfilePosts(req, res) {
                             p.id = $1`,
                 values: [post.id],
             });
-            commentsToSend.push(comment.rows);
-            tagsToSend.push(tagsPost.rows);
-            filesToSend.push(files.rows);
+            post.comments = comment.rows;
+            post.tags = tagsPost.rows;
+            post.files = files.rows;
         }
-        const profileInfo = await query({
-            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
-                FROM users
-                WHERE id = $1
-             `,
-            values: [userId],
-        });
         res.send({
             posts: result.rows,
-            comments: commentsToSend,
-
-            tags: tagsToSend,
-            files: filesToSend,
-            user: profileInfo.rows[0],
+            size: totalSize.rows[0].count,
         });
     } catch (error) {
         console.error(error);
