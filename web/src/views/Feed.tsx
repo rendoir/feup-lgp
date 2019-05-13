@@ -1,9 +1,9 @@
 import axios from "axios";
 import * as React from "react";
+import { Avatar } from "../components";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
 import { dictionary, LanguageContext } from "../utils/language";
-import { Avatar } from "../components";
 
 type Props = {};
 
