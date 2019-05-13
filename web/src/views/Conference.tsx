@@ -773,7 +773,6 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getChallenges() {
-    console.log(this.state.challenges);
     return (
       <div className="p-0 m-0">
         <h6>

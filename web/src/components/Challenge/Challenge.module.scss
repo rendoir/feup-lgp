@@ -6,3 +6,18 @@
 .challenge_end {
     color: royalblue;
 }
+
+.correct_answer input {
+    background-color: green;
+    color: white;
+}
+
+.wrong_answer input {
+    background-color: red;
+    color: white;
+}
+
+.normal input {
+    background-color: white;
+    color: black;
+}

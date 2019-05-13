@@ -193,14 +193,15 @@ CREATE TABLE challenges (
 CREATE TABLE user_challenge (
     challenged BIGINT REFERENCES users ON DELETE CASCADE,
     challenge BIGINT REFERENCES challenges ON DELETE CASCADE,
-    completed BOOLEAN DEFAULT FALSE,
+    answer TEXT,
+    complete BOOLEAN DEFAULT FALSE,
     PRIMARY KEY(challenged, challenge)
 );
 
 CREATE FUNCTION update_points_user() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN
-    IF NEW.complete == TRUE THEN
+    IF NEW.complete IS TRUE THEN
         UPDATE conf_users SET points = points + (SELECT points_prize FROM challenges WHERE id = NEW.challenge) WHERE id = NEW.challenged;
     END IF;
     RETURN NEW;

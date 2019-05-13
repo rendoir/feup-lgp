@@ -1,3 +1,5 @@
+import axios from "axios";
+
 // - Import react components
 import React, { Component } from "react";
 
@@ -7,6 +9,7 @@ import styles from "./Challenge.module.css";
 import Input from "../Input/Input";
 
 export type Props = {
+  confId: number;
   id: number;
   title: string;
   challengeType: string;
@@ -18,7 +21,10 @@ export type Props = {
 };
 
 export type State = {
+  correctAnswer: string;
+  isCorrect: boolean | undefined;
   value: string;
+  question: string;
 };
 
 class QuestionAnswer extends Component<Props, State> {
@@ -28,8 +34,66 @@ class QuestionAnswer extends Component<Props, State> {
     super(props);
 
     this.state = {
+      correctAnswer: "",
+      isCorrect: undefined,
+      question: "",
       value: ""
     };
+
+    this.handleSolveChallenge = this.handleSolveChallenge.bind(this);
+  }
+
+  public componentDidMount() {
+    const content = this.props.content;
+    let question = "";
+    let correctAnswer = "";
+
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].startsWith("Question: ")) {
+        question = content[i].split("Question: ")[1];
+        if (!question.includes("?")) {
+          question += " ?";
+        }
+      } else if (content[i].startsWith("CorrectAnswer: ")) {
+        correctAnswer = content[i].split("CorrectAnswer: ")[1];
+      }
+    }
+
+    this.apiSolvedState(question, correctAnswer);
+  }
+
+  public apiSolvedState(question: string, correctAnswer: string) {
+    let getUrl = `${location.protocol}//${location.hostname}`;
+    getUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+
+    axios
+      .get(getUrl, {
+        params: {
+          author: 1, // When loggin, this is the user logged in
+          challenge: this.props.id,
+          headers: {}
+        }
+      })
+      .then(res => {
+        let value = "";
+        let isCorrect: boolean | undefined;
+
+        if (res.data !== []) {
+          value = res.data[0].answer;
+          isCorrect = res.data[0].complete;
+        }
+
+        this.setState({ question, correctAnswer, isCorrect, value });
+      })
+      .catch(() => {
+        console.log("Failed to get state of challenge");
+        this.setState({ question, correctAnswer });
+      });
   }
 
   public render() {
@@ -57,7 +121,8 @@ class QuestionAnswer extends Component<Props, State> {
             className="btn btn-info"
             type="button"
             data-dismiss="modal"
-            onClick={this.solveChallenge}
+            onClick={this.handleSolveChallenge}
+            disabled={this.getButtonRequiredClass()}
           >
             Solve Challenge
           </button>
@@ -84,37 +149,68 @@ class QuestionAnswer extends Component<Props, State> {
   }
 
   public parseContent() {
-    const content = this.props.content;
-    let question = "";
-    let correctAnswer = "";
-
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Question: ")) {
-        question = content[i].split("Question: ")[1];
-        if (!question.includes("?")) {
-          question += " ?";
-        }
-      } else if (content[i].startsWith("CorrectAnswer: ")) {
-        correctAnswer = content[i].split("CorrectAnswer: ")[1];
-      }
-    }
-
     return (
       <div>
-        <h6 className="card-title">{question}</h6>
+        <h6 className="card-title">{this.state.question}</h6>
         <Input
           id="0"
+          className={this.getInputRequiredStyle()}
           onChange={value => this.setState({ value })}
           placeholder="Write here your answer"
           value={this.state.value}
+          disabled={this.getButtonRequiredClass()}
         />
       </div>
     );
   }
 
-  public solveChallenge() {
-    return null;
+  public getInputRequiredStyle() {
+    let css = `${styles.normal}`;
+
+    if (this.state.isCorrect === true) {
+      css = `${styles.correct_answer}`;
+    } else if (this.state.isCorrect === false) {
+      css = `${styles.wrong_answer}`;
+    }
+
+    return css;
+  }
+
+  public getButtonRequiredClass() {
+    return this.state.isCorrect !== undefined ? true : false;
+  }
+
+  public handleSolveChallenge() {
+    if (this.state.value === this.state.correctAnswer) {
+      this.setState({ isCorrect: true });
+    } else {
+      this.setState({ isCorrect: false });
+    }
+
+    this.apiSolveChallenge();
+  }
+
+  public apiSolveChallenge() {
+    let postUrl = `${location.protocol}//${location.hostname}`;
+    postUrl +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+
+    axios
+      .post(postUrl, {
+        author: 1, // When loggin, this is the user logged in
+        challenge: this.props.id,
+        challenge_answer: this.state.value,
+        completion: this.state.isCorrect ? true : false,
+        headers: {}
+      })
+      .then(res => {
+        console.log("Challenge solved - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create comment"));
   }
 }
 

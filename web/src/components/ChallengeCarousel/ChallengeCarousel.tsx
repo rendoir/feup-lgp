@@ -55,6 +55,7 @@ class ChallengeCarousel extends Component<Props, State> {
             )}
           >
             <Challenge
+              confId={this.props.id}
               id={this.props.challenges[i].id}
               title={this.props.challenges[i].title}
               challengeType={this.props.challenges[i].challengetype}

@@ -80,3 +80,39 @@ export async function createChallenge(req, res) {
         res.status(400).send({ message: 'An error ocurred while adding a challenge to a conference' });
     });
 }
+
+export function solveChallenge(req, res) {
+    query({
+        text: `INSERT INTO user_challenge
+                (challenged, challenge, answer, complete)
+                VALUES ($1, $2, $3, $4)`,
+        values: [
+            req.body.author,
+            req.body.challenge,
+            req.body.challenge_answer,
+            req.body.completion,
+        ],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while adding a challenge to a conference' });
+    });
+}
+
+export function getSolvedStateForUser(req, res) {
+
+    query({
+        text: `SELECT answer, complete FROM user_challenge
+                WHERE user_challenge.challenged = $1 AND user_challenge.challenge = $2`,
+        values: [
+            req.query.author,
+            req.query.challenge,
+        ],
+    }).then((result) => {
+        res.send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while getting the state of a challenge from a conference' });
+    });
+}
