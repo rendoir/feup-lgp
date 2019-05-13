@@ -33,8 +33,10 @@ export async function createNewCommentForComment(req, res) {
     const userId = req.user.id;
     try {
         await query({
-        text: 'INSERT INTO comments (author, post, comment_ref, comment) VALUES ($1, (SELECT post FROM comments WHERE id = $1), $2, $3)',
-        values: [userId, req.params.id, req.body.comment]});
+            text: `INSERT INTO comments (author, post, comment_ref, comment)
+                    VALUES ($1, (SELECT post FROM comments WHERE id = $1), $2, $3)`,
+            values: [userId, req.params.id, req.body.comment],
+        });
         res.status(200).send();
     } catch (error) {
         console.log('\n\nERROR:', error);
@@ -42,6 +44,7 @@ export async function createNewCommentForComment(req, res) {
     }
 }
 
+// Can only edit if user is author.
 export function editComment(req, res) {
     if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
@@ -49,10 +52,11 @@ export function editComment(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
-        // Add image, video and document when we figure out how to store them (Update route documentation after adding them)
-        text: 'UPDATE comments SET comment = $2 WHERE id = $1',
-        values: [req.body.id, req.body.comment],
+        text: `UPDATE comments SET comment = $2
+                WHERE id = $1 AND author = $3`,
+        values: [req.body.id, req.body.comment, userId],
     }).then(() => {
         res.status(200).send({ newComment: req.body.comment });
     }).catch((error) => {
@@ -92,9 +96,13 @@ export function getWhoLikedComment(req, res) {
     });
 }
 
+// Can only delete if user is author or admin.
 export function deleteComment(req, res) {
     query({
-        text: 'DELETE FROM comments WHERE id = $1', values: [req.body.id],
+        text: `DELETE FROM comments
+                WHERE id = $1
+                    AND (author = $2 OR 'admin' = (SELECT permissions FROM users WHERE id = $2))`,
+        values: [req.body.id, userId],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -105,7 +113,7 @@ export function deleteComment(req, res) {
 
 export function deleteALikeToComment(req, res) {
     query({
-        text: 'DELETE FROM likes_a_comment WHERE comment=$1 AND author=$2', values: [req.params.id, req.body.author],
+        text: 'DELETE FROM likes_a_comment WHERE comment = $1 AND author = $2', values: [req.params.id, req.body.author],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

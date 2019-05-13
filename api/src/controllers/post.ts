@@ -36,6 +36,9 @@ export async function createPost(req, res) {
     }
 }
 
+/**
+ * Can only edit if user is author.
+ */
 export function editPost(req, res) {
     if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
@@ -43,11 +46,12 @@ export function editPost(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
         text: `UPDATE posts
                 SET title = $2, content = $3, search_tokens = TO_TSVECTOR($2 || ' ' || $3), visibility = $4, date_updated = NOW()
-                WHERE id = $1`,
-        values: [req.params.id, req.body.title, req.body.text, req.body.visibility],
+                WHERE id = $1 AND author = $5`,
+        values: [req.params.id, req.body.title, req.body.text, req.body.visibility, userId],
     }).then((result) => {
         editFiles(req, res);
         saveTags(req, res, req.params.id);
@@ -58,9 +62,15 @@ export function editPost(req, res) {
     });
 }
 
+/**
+ * Can only delete if user is author or admin.
+ */
 export function deletePost(req, res) {
+    const userId = req.user.id;
     query({
-        text: 'DELETE FROM posts WHERE id = $1', values: [req.params.id],
+        text: `DELETE FROM posts
+                WHERE id = $1
+                    AND (author = $2 OR 'admin' = (SELECT permissions FROM users WHERE id = $2))`, values: [req.params.id, userId],
     }).then((result) => {
         deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
@@ -72,7 +82,7 @@ export function deletePost(req, res) {
 
 export async function getPost(req, res) {
     const postId = req.params.id;
-    const userId = req.user.id; // logged in user
+    const userId = req.user.id;
     try {
         /**
          * Post must be owned by user
