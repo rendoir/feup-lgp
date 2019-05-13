@@ -10,6 +10,9 @@ import OptionAnswer from "../OptionAnswer/OptionAnswer";
 import Select from "../Select/Select";
 import styles from "./CreateNewModal.module.css";
 
+// - Import utils
+import { dictionary, LanguageContext } from "../../utils/language";
+
 export type Props = {
   id: string;
   type: "question" | "options" | "post" | "comment";
@@ -39,6 +42,8 @@ export type State = {
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     about: "",
     aboutMaxLength: 3000,
@@ -87,8 +92,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_title`}
             name={"title"}
             onChange={this.props.onChange}
-            placeholder="Challenge title"
-            label={`Title`}
+            placeholder={dictionary.challenge_title[this.context]}
+            label={dictionary.title[this.context]}
             value={title}
             htmlAutoFocus={true}
             required={true}
@@ -98,8 +103,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_about`}
             name={"about"}
             onChange={this.props.onChange}
-            placeholder="Write a short description of this Challenge."
-            label={`Description`}
+            placeholder={dictionary.chal_description_placeholder[this.context]}
+            label={dictionary.description[this.context]}
             type={"textarea"}
             rows={5}
             value={about || ""}
@@ -108,14 +113,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           />
           <div id={`${id}_challenge_dates`}>
             <label htmlFor={`${id}_challenge_dates`} className={styles.dates}>
-              Dates
+              {dictionary.dates[this.context]}
             </label>
             <InputNext
               onChange={this.props.onChange}
               id={`${id}_challenge_date_start`}
               value={this.props.dateStart}
               name={"dateStart"}
-              label={"Start"}
+              label={dictionary.date_start[this.context]}
               type={"datetime-local"}
               required={true}
             />
@@ -124,23 +129,23 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               id={`${id}_challenge_date_end`}
               value={this.props.dateEnd}
               name={"dateEnd"}
-              label={"End"}
+              label={dictionary.date_end[this.context]}
               type={"datetime-local"}
               required={true}
             />
           </div>
           <div id={`${id}_challenge_prize`}>
             <label htmlFor={`${id}_challenge_prize`} className={styles.dates}>
-              Prize
+              {dictionary.prize[this.context]}
             </label>
             <InputNext
               className={styles.input}
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_description`}
               value={prize}
-              placeholder={"Write a short description of the prize to give"}
+              placeholder={dictionary.prize_desc[this.context]}
               name={"prize"}
-              label={"Prize"}
+              label={dictionary.prize[this.context]}
               type={"text"}
               required={true}
             />
@@ -149,9 +154,9 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_points`}
               value={prizePoints}
-              placeholder={"If prize is not points, write '0"}
+              placeholder={dictionary.points_desc[this.context]}
               name={"prizePoints"}
-              label={"Points"}
+              label={dictionary.pontos[this.context]}
               type={"text"}
               required={true}
             />
@@ -200,8 +205,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_question`}
           name={"question"}
           onChange={this.props.onChange}
-          placeholder="question"
-          label={`Question`}
+          placeholder={dictionary.question[this.context]}
+          label={dictionary.question[this.context]}
           value={this.props.question}
           htmlAutoFocus={true}
           required={true}
@@ -211,8 +216,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_correctAnswer`}
           name={"correctAnswer"}
           onChange={this.props.onChange}
-          placeholder="Correct Answer"
-          label={`Correct Answer`}
+          placeholder={dictionary.correct_answer[this.context]}
+          label={dictionary.correct_answer[this.context]}
           value={this.props.correctAnswer}
           htmlAutoFocus={true}
           required={true}
@@ -231,8 +236,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_question`}
           name={"question"}
           onChange={this.props.onChange}
-          placeholder="question"
-          label={`Question`}
+          placeholder={dictionary.question[this.context]}
+          label={dictionary.question[this.context]}
           value={this.props.question}
           htmlAutoFocus={true}
           required={true}
@@ -242,7 +247,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_options`}
           type={"text"}
           value={this.state.optionsInput}
-          label={"Options"}
+          label={dictionary.options[this.context]}
           name={"optionsInput"}
           onKeyUp={this.handleKeyUp}
         />
@@ -285,7 +290,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       <div className={styles.Wrapper}>
         <br />
         <label htmlFor={`${id}_correctAnswer`} className={styles.dates}>
-          Correct Answer
+          {dictionary.correct_answer[this.context]}
         </label>
         <Select
           id={`${id}_correctAnswer`}
@@ -318,7 +323,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       <div className={styles.Wrapper}>
         <br />
         <label htmlFor={`${id}_post`} className={styles.dates}>
-          Post To Comment
+          {dictionary.post_to_com[this.context]}
         </label>
         <Select
           id={`${id}_post`}

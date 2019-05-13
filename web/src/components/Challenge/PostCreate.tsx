@@ -6,7 +6,8 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "./Challenge.module.css";
 
-import Input from "../Input/Input";
+// - Import utils
+import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
   confId: number;
@@ -26,6 +27,8 @@ export type State = {
 };
 
 class PostCreate extends Component<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -98,7 +101,7 @@ class PostCreate extends Component<Props, State> {
             {this.props.title}
           </div>
           <div className={styles.challenge_end}>
-            Ending at: {this.props.dateend}
+            {dictionary.ending_at[this.context]} {this.props.dateend}
           </div>
         </div>
         <div className="card-body">
@@ -115,7 +118,7 @@ class PostCreate extends Component<Props, State> {
             onClick={this.handleSolveChallenge}
             disabled={this.getButtonRequiredClass()}
           >
-            Solve Challenge
+            {dictionary.solve_challenge[this.context]}
           </button>
         </div>
       </div>
@@ -125,13 +128,12 @@ class PostCreate extends Component<Props, State> {
   public parsePrize() {
     let prize = "";
 
-    if (
-      this.props.prize.includes("points") ||
-      this.props.prize.includes("Points")
-    ) {
-      prize = `Win ${this.props.pointsPrize} points !`;
+    if (this.props.prize === "points") {
+      prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
+        dictionary.points[this.context]
+      } !`;
     } else {
-      prize = `Win ${this.props.prize} !`;
+      prize = `${dictionary.win[this.context]} ${this.props.prize} !`;
     }
 
     return (

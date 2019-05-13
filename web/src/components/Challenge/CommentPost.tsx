@@ -6,7 +6,8 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "./Challenge.module.css";
 
-import Input from "../Input/Input";
+// - Import utils
+import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
   confId: number;
@@ -28,6 +29,8 @@ export type State = {
 };
 
 class CommentPost extends Component<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -115,7 +118,7 @@ class CommentPost extends Component<Props, State> {
             {this.props.title}
           </div>
           <div className={styles.challenge_end}>
-            Ending at: {this.props.dateend}
+            {dictionary.ending_at[this.context]} {this.props.dateend}
           </div>
         </div>
         <div className="card-body">
@@ -132,7 +135,7 @@ class CommentPost extends Component<Props, State> {
             onClick={this.handleSolveChallenge}
             disabled={this.getButtonRequiredClass()}
           >
-            Solve Challenge
+            {dictionary.solve_challenge[this.context]}
           </button>
         </div>
       </div>
@@ -143,9 +146,11 @@ class CommentPost extends Component<Props, State> {
     let prize = "";
 
     if (this.props.prize === "points") {
-      prize = `Win ${this.props.pointsPrize} points !`;
+      prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
+        dictionary.points[this.context]
+      } !`;
     } else {
-      prize = `Win ${this.props.prize} !`;
+      prize = `${dictionary.win[this.context]} ${this.props.prize} !`;
     }
 
     return (
@@ -172,7 +177,7 @@ class CommentPost extends Component<Props, State> {
         {title}
         <p className="card-text">
           {" "}
-          Comment On Post with title: "{this.state.titlePost}".
+          {dictionary.comment_on_post[this.context]} "{this.state.titlePost}".
         </p>
       </div>
     );

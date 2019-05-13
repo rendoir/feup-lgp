@@ -9,6 +9,9 @@ import styles from "./Challenge.module.css";
 import Radio from "../Radio/Radio";
 import RadioGroup from "../Radio/RadioGroup";
 
+// - Import utils
+import { dictionary, LanguageContext } from "../../utils/language";
+
 export interface IProps {
   confId: number;
   id: number;
@@ -30,6 +33,8 @@ export interface IState {
 }
 
 class QuestionOptions extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
 
   constructor(props: IProps) {
@@ -122,7 +127,7 @@ class QuestionOptions extends Component<IProps, IState> {
             {this.props.title}
           </div>
           <div className={styles.challenge_end}>
-            Ending at: {this.props.dateend}
+            {dictionary.ending_at[this.context]} {this.props.dateend}
           </div>
         </div>
         <div className="card-body">
@@ -139,7 +144,7 @@ class QuestionOptions extends Component<IProps, IState> {
             onClick={this.handleSolveChallenge}
             disabled={this.getButtonRequiredClass()}
           >
-            Solve Challenge
+            {dictionary.solve_challenge[this.context]}
           </button>
         </div>
       </div>
@@ -150,9 +155,11 @@ class QuestionOptions extends Component<IProps, IState> {
     let prize = "";
 
     if (this.props.prize === "points") {
-      prize = `Win ${this.props.pointsPrize} points !`;
+      prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
+        dictionary.points[this.context]
+      } !`;
     } else {
-      prize = `Win ${this.props.prize} !`;
+      prize = `${dictionary.win[this.context]} ${this.props.prize} !`;
     }
 
     return (

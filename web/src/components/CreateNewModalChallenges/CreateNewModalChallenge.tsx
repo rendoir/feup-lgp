@@ -1,6 +1,7 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
 import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import IconButton from "../IconButton/IconButton";
@@ -26,6 +27,8 @@ class CreateNewModalChallenge extends PureComponent<
   Props,
   CreateNewModalState
 > {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     id: "create_new_challenge_modal",
     isMaxGroupSizeVisible: false,
@@ -99,7 +102,11 @@ class CreateNewModalChallenge extends PureComponent<
       return null;
     }
 
-    return <div className={styles.error}>An error occurred</div>;
+    return (
+      <div className={styles.error}>
+        {dictionary.error_occurred[this.context]}
+      </div>
+    );
   }
 
   private handleOptionChange = (opt: string) => {
@@ -132,7 +139,7 @@ class CreateNewModalChallenge extends PureComponent<
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          New Challenge
+          {dictionary.new_challenge[this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -146,6 +153,7 @@ class CreateNewModalChallenge extends PureComponent<
             type={type}
             maxGroupSize={maxGroupSize}
             onChange={this.handleChange}
+            context={this.context}
           />
         </ModalBody>
         <ModalFooter className={styles.footer}>
@@ -158,7 +166,7 @@ class CreateNewModalChallenge extends PureComponent<
             rounded={false}
             onClick={this.handleNextStepClick}
           >
-            Next
+            {dictionary.next[this.context]}
           </Button>
         </ModalFooter>
       </div>
@@ -168,13 +176,13 @@ class CreateNewModalChallenge extends PureComponent<
   private titleModal(type: string) {
     switch (type) {
       case "post":
-        return "Create a Post";
+        return dictionary.post_create[this.context];
       case "question":
-        return "Simple Question";
+        return dictionary.simple_question[this.context];
       case "options":
-        return "Multiple Choice Question";
+        return dictionary.mult_choice_question[this.context];
       case "comment":
-        return "Comment on a Post";
+        return dictionary.comment_post[this.context];
       default:
         return null;
     }
@@ -193,7 +201,7 @@ class CreateNewModalChallenge extends PureComponent<
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          New "{this.titleModal(request.type)}" Challenge
+          {dictionary.new_f[this.context]} {this.titleModal(request.type)}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -232,7 +240,7 @@ class CreateNewModalChallenge extends PureComponent<
             rounded={false}
             onClick={this.handleSubmit}
           >
-            Finish
+            {dictionary.finish[this.context]}
           </Button>
         </ModalFooter>
       </div>

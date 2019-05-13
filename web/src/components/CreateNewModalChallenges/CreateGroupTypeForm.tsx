@@ -1,10 +1,12 @@
 import React, { ChangeEvent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Radio from "../Radio/Radio";
 import RadioGroup from "../Radio/RadioGroup";
 import styles from "./CreateNewModal.module.css";
 
 type Props = {
   id: string;
+  context: any;
   maxGroupSize: number;
   type: "question" | "options" | "post" | "comment";
   onChange: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
@@ -19,36 +21,35 @@ function CreateGroupTypeForm(props: Props) {
           htmlAutoFocus={true}
           id={`${props.id}_type_quest`}
         >
-          "Simple Question" Challenge
+          {dictionary.simple_question[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          "Simple Question" Challenges serve to invite conference participants
-          to answer a question to win something.
+          {dictionary.simple_question[props.context]}{" "}
+          {dictionary.simple_question_desc[props.context]}
         </div>
         <br />
         <Radio value={"options"} id={`${props.id}_type_opt`}>
-          "Multiple Choice Question" Challenge
+          "{dictionary.mult_choice_question[props.context]}"
         </Radio>
         <div className={styles.typeHint}>
-          "Multiple Choice Question" Challenges serve to invite conference
-          participants to answer a question with multiple choice options, to win
-          something.
+          {dictionary.mult_choice_question[props.context]}{" "}
+          {dictionary.mult_choice_question_desc[props.context]}
         </div>
         <br />
         <Radio value={"post"} id={`${props.id}_type_mult`}>
-          "Create a Post" Challenge
+          {dictionary.post_create[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          "Create a Post" Challenges serve to invite conference participants to
-          write posts on conference.
+          {dictionary.post_create[props.context]}{" "}
+          {dictionary.post_create_desc[props.context]}
         </div>
         <br />
         <Radio value={"comment"} id={`${props.id}_type_post`}>
-          "Comment on a Post" Challenge
+          {dictionary.comment_post[props.context]}
         </Radio>
         <div className={styles.typeHint}>
-          "Comment on a Post" Challenges serve to invite conference participants
-          to write comments on specific posts on conference.
+          {dictionary.comment_post[props.context]}{" "}
+          {dictionary.comment_post_desc[props.context]}
         </div>
         <br />
       </RadioGroup>

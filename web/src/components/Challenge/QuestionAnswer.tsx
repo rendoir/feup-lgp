@@ -8,6 +8,9 @@ import styles from "./Challenge.module.css";
 
 import Input from "../Input/Input";
 
+// - Import utils
+import { dictionary, LanguageContext } from "../../utils/language";
+
 export type Props = {
   confId: number;
   id: number;
@@ -28,6 +31,8 @@ export type State = {
 };
 
 class QuestionAnswer extends Component<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {};
 
   constructor(props: Props) {
@@ -107,7 +112,7 @@ class QuestionAnswer extends Component<Props, State> {
             {this.props.title}
           </div>
           <div className={styles.challenge_end}>
-            Ending at: {this.props.dateend}
+            {dictionary.ending_at[this.context]} {this.props.dateend}
           </div>
         </div>
         <div className="card-body">
@@ -124,7 +129,7 @@ class QuestionAnswer extends Component<Props, State> {
             onClick={this.handleSolveChallenge}
             disabled={this.getButtonRequiredClass()}
           >
-            Solve Challenge
+            {dictionary.solve_challenge[this.context]}
           </button>
         </div>
       </div>
@@ -135,9 +140,11 @@ class QuestionAnswer extends Component<Props, State> {
     let prize = "";
 
     if (this.props.prize === "points") {
-      prize = `Win ${this.props.pointsPrize} points !`;
+      prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
+        dictionary.points[this.context]
+      } !`;
     } else {
-      prize = `Win ${this.props.prize} !`;
+      prize = `${dictionary.win[this.context]} ${this.props.prize} !`;
     }
 
     return (
@@ -156,7 +163,7 @@ class QuestionAnswer extends Component<Props, State> {
           id="0"
           className={this.getInputRequiredStyle()}
           onChange={value => this.setState({ value })}
-          placeholder="Write here your answer"
+          placeholder={dictionary.write_answer[this.context]}
           value={this.state.value}
           disabled={this.getButtonRequiredClass()}
         />
