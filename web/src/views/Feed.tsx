@@ -93,20 +93,40 @@ class Feed extends React.Component<Props, State> {
       "Conference 46848",
       "Big Conference name to test css properly, omg this name is not over yet"
     ];
+
     const conferences = hardCodedConferences.map(title => (
       <a key={title} className="conference-link d-block my-2">
         {title}
       </a>
     ));
 
+    const hardCodedNews = [
+      "Too much dietary fat in the brain may impact mental health",
+      "Fibromyalgia: Is insulin resistance 'the missing link?'",
+      "Eat walnuts to lower blood pressure, new study suggests",
+      "Depression: Exercise may reduce symptoms but not in women"
+    ];
+
+    const news = hardCodedNews.map(title => (
+      <a key={title} className="conference-link d-block my-2">
+        {title}
+      </a>
+    ));
+
     return (
-      <div id="Feed" className="container my-5">
+      <div id="Feed" className="container mt-5">
         <div className="row">
-          <div className="left col-lg-3 mr-5">
+          <div className="left col-2 column-in-center">
             <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-8">{this.getPosts()}</div>
+          <div className="middle col-lg-7 column-in-center">
+            {this.getPosts()}
+          </div>
+          <div className="right col-2 column-in-center">
+            <h5>{dictionary.news[this.context]}</h5>
+            {news}
+          </div>
         </div>
       </div>
     );

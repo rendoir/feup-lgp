@@ -274,7 +274,8 @@ export let dictionary: Dictionary = {
   },
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
-  empty: { PT: "", EN: "" }
+  empty: { PT: "", EN: "" },
+  news: { PT: "Notícias", EN: "News" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
