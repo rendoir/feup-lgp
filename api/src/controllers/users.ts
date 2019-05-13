@@ -15,10 +15,10 @@ export function register(req, res) {
         const hashedPassword = hash.digest('hex');
 
         query({
-            text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university, permissions)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
-                req.body.work, req.body.work_field, req.body.home_town, req.body.university, 'user'],
+                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
         }).catch((error) => {
             console.log('\n\nERROR:', error);
