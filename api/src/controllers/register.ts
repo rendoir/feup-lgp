@@ -21,11 +21,11 @@ export async function register(req, res) {
                 req.body.work, req.body.work_field, req.body.home_town, req.body.university, 'user'],
         }).then((result2) => {
             console.log("User created!");
-            res.status(200).send();
         }).catch((error) => {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while registering a new user' });
         });
+        res.status(200).send();
 
     }).catch((error) => {
         console.log('\n\nERROR:', error);
