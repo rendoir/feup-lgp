@@ -205,7 +205,7 @@ conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/archive', controller.archiveConference);
+conferenceRouter.post('/:id/archive', controller.archiveConference);
 
 /**
  * @api {post} /api/conference/:id/unarchive Unarchive a conference
@@ -220,4 +220,4 @@ conferenceRouter.get('/:id/archive', controller.archiveConference);
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/unarchive', controller.unarchiveConference);
+conferenceRouter.delete('/:id/archive', controller.unarchiveConference);
