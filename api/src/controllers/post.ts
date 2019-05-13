@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-
+import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
@@ -80,7 +80,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+            text: `SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
@@ -119,15 +119,6 @@ export async function getPost(req, res) {
             values: [postId, userId],
         });
 
-        const likers = await query({
-            text: `SELECT a.id, a.first_name, a.last_name
-                        FROM likes_a_post l
-                        INNER JOIN users a
-                        ON l.author = a.id
-                        WHERE l.post = $1`,
-            values: [postId],
-        });
-
         const tags = await query({
              text: `SELECT t.name
                         FROM tags t
@@ -150,7 +141,6 @@ export async function getPost(req, res) {
             post,
             comments: comments.rows,
             files: files.rows,
-            likers: likers.rows,
             tags: tags.rows,
         };
         res.send(result);
@@ -233,10 +223,6 @@ export function unsubscribePost(req, res) {
 }
 
 export function rate(req, res) {
-    console.log('pls?');
-    console.log('evaluator: ', req.body.evaluator);
-    console.log('rate: ', req.body.rate);
-    console.log('post: ', req.params.id);
     query({
         text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
         values: [req.body.evaluator, req.body.rate, req.params.id],
@@ -257,26 +243,24 @@ export function rate(req, res) {
     });
 }
 
-export function addALikeToPost(req, res) {
+export function updateRate(req, res) {
     query({
-        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
-        values: [req.params.id, req.body.author],
+        text: 'UPDATE posts_rates SET rate=$2 WHERE evaluator=$1 AND post=$3',
+        values: [req.body.evaluator, req.body.rate, req.params.id],
     }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while liking a post' });
-    });
-}
 
-export function deleteALikeToPost(req, res) {
-    query({
-        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
-    }).then((result) => {
-        res.status(200).send();
+        query({
+            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            values: [req.body.newPostRating, req.params.id],
+        }).then((result2) => {
+            res.status(200).send();
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the rating of the post' });
+        });
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
+        res.status(400).send({ message: 'An error ocurred while rating an post' });
     });
 }
 
@@ -456,14 +440,14 @@ export async function editFiles(req, res) {
             await query({
                 text: `DELETE FROM files
                        WHERE post = $1 AND name = $2`,
-                values: [req.body.id, file.name],
+                values: [req.params.id, file.name],
             });
             // Delete file from filesystem
-            fs.unlinkSync('uploads/' + req.body.id + '/' + file.name);
+            fs.unlinkSync('uploads/' + req.params.id + '/' + file.name);
         }
     }
     // Add new files
-    saveFiles(req, res, req.body.id);
+    saveFiles(req, res, req.params.id);
 }
 
 export function deleteFolderRecursive(path) {
@@ -478,4 +462,46 @@ export function deleteFolderRecursive(path) {
       });
       fs.rmdirSync(path);
     }
+}
+
+export function inviteUser(req, res) {
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
+        values: [req.body.invited_user, req.params.id],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function inviteSubscribers(req, res) {
+    const cookies = new Cookies(req.headers.cookie);
+    query({
+        text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                ON CONFLICT ON CONSTRAINT unique_invite
+                DO NOTHING`,
+        values: [req.params.id, cookies.get('user_id')],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+    });
+}
+
+export function updateRelevancy(req, res) {
+    query({
+        text: `UPDATE posts
+                SET relevancy = $2
+                WHERE id = $1`,
+        values: [req.params.id, req.body.relevancy],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while updating relevancy' });
+    });
 }

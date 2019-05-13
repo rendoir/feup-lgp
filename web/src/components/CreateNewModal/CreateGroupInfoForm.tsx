@@ -6,6 +6,7 @@ import React, {
   PureComponent
 } from "react";
 import { fileToBase64 } from "../../utils/fileToBase64";
+import { dictionary, LanguageContext } from "../../utils/language";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
 import Select from "../Select/Select";
@@ -46,6 +47,8 @@ export type State = {
 };
 
 class CreateGroupInfoForm extends PureComponent<Props, State> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     about: "",
     aboutMaxLength: 3000,
@@ -89,8 +92,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_title`}
             name={"title"}
             onChange={this.props.onChange}
-            placeholder={`${type} title`}
-            label={`Title`}
+            placeholder={dictionary.title[this.context]}
+            label={dictionary.title[this.context]}
             value={title}
             htmlAutoFocus={true}
             required={true}
@@ -100,8 +103,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_about`}
             name={"about"}
             onChange={this.props.onChange}
-            placeholder={`Write a short description of this ${type}`}
-            label={`Description`}
+            placeholder={dictionary.description_placeholder[this.context]}
+            label={dictionary.description[this.context]}
             type={"textarea"}
             rows={5}
             value={about || ""}
@@ -192,15 +195,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     const { id, isPublicGroupEnabled } = this.props;
     const options = [
       {
-        title: "Public",
+        title: dictionary.visibility_public[this.context],
         value: "public"
       },
       {
-        title: "Followers",
+        title: dictionary.visibility_followers[this.context],
         value: "followers"
       },
       {
-        title: "Private",
+        title: dictionary.visibility_private[this.context],
         value: "private"
       }
     ];
@@ -215,7 +218,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_privacy`}
           name={"privacy"}
           value={this.props.privacy}
-          label={"Privacy"}
+          label={dictionary.visibility[this.context]}
           options={options}
           onChange={this.props.onChange}
         />
@@ -233,19 +236,19 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_conference_local`}
           value={local}
           name={"local"}
-          placeholder={"Conference local"}
-          label={"Local"}
+          placeholder={dictionary.conference_local[this.context]}
+          label={dictionary.location[this.context]}
         />
         <div id={`${id}_conference_dates`}>
           <label htmlFor={`${id}_conference_dates`} className={styles.dates}>
-            Dates
+            {dictionary.dates[this.context]}
           </label>
           <InputNext
             onChange={this.props.onChange}
             id={`${id}_conference_date_start`}
             value={this.props.dateStart}
             name={"dateStart"}
-            label={"Start"}
+            label={dictionary.date_start[this.context]}
             type={"datetime-local"}
           />
           <InputNext
@@ -253,7 +256,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_conference_date_end`}
             value={this.props.dateEnd}
             name={"dateEnd"}
-            label={"End"}
+            label={dictionary.date_end[this.context]}
             type={"datetime-local"}
           />
         </div>
@@ -262,12 +265,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             htmlFor={`${id}_conference_livestream`}
             className={styles.dates}
           >
-            Livestream
+            {dictionary.livestream[this.context]}
           </label>
           <Switcher
             id={`${id}_switcher`}
             name={"switcher"}
-            label={"LIVESTREAM"}
+            label={dictionary.livestream[this.context]}
             onChange={this.handleLivestreamToggle}
             value={this.props.switcher === "true"}
             className={styles.switcher}
@@ -277,7 +280,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             id={`${id}_liveStream`}
             value={this.props.livestream}
             name={"livestream"}
-            label={"Livestream URL"}
+            label={dictionary.livestream_url[this.context]}
             type={"url"}
             placeholder={"https://www.youtube.com/embed/<id>"}
             disabled={!(this.props.switcher === "true")}
@@ -297,7 +300,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_post_tags`}
           type={"text"}
           value={this.state.tagsInput}
-          label={"Tags"}
+          label={dictionary.tags[this.context]}
           name={"tagsInput"}
           list={"possible_tags"}
           onKeyUp={this.handleKeyUp}
@@ -323,7 +326,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           }
           id={`${id}_post_files`}
           type={"file"}
-          label={"Files"}
+          label={dictionary.files[this.context]}
           multiple={true}
           name={"files"}
         />

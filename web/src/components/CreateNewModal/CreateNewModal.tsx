@@ -1,6 +1,7 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
 import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
+import { dictionary, LanguageContext } from "../../utils/language";
 import Button from "../Button/Button";
 import HotKeys from "../HotKeys/HotKeys";
 import IconButton from "../IconButton/IconButton";
@@ -24,6 +25,8 @@ type CreateNewModalState = {
 };
 
 class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
+  public static contextType = LanguageContext;
+
   public static defaultProps = {
     id: "create_new_modal",
     isMaxGroupSizeVisible: false,
@@ -173,7 +176,11 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       return null;
     }
 
-    return <div className={styles.error}>An error occurred</div>;
+    return (
+      <div className={styles.error}>
+        {dictionary.error_occurred[this.context]}
+      </div>
+    );
   }
 
   private renderTypeStep() {
@@ -187,7 +194,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          New {type}
+          {dictionary.new_f[this.context]} {dictionary[type][this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -201,6 +208,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             type={type}
             maxGroupSize={maxGroupSize}
             onChange={this.handleChange}
+            context={this.context}
           />
         </ModalBody>
         <ModalFooter className={styles.footer}>
@@ -213,7 +221,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             rounded={false}
             onClick={this.handleNextStepClick}
           >
-            Next
+            {dictionary.next[this.context]}
           </Button>
         </ModalFooter>
       </div>
@@ -233,7 +241,8 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          New {request.type}
+          {dictionary.new_f[this.context]}{" "}
+          {dictionary[request.type][this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -274,7 +283,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             rounded={false}
             onClick={this.handleSubmit}
           >
-            Finish
+            {dictionary.finish[this.context]}
           </Button>
         </ModalFooter>
       </div>
@@ -296,7 +305,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
               className={styles.back}
               id={`${this.props.id}_back_button`}
             />
-            Edit Avatar
+            {dictionary.edit_avatar[this.context]}
             <ModalClose
               pending={this.props.pending}
               onClick={this.props.onClose}
@@ -343,7 +352,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          New Conference Post
+          {dictionary.new_conference_post[this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -378,7 +387,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             rounded={false}
             onClick={this.handleSubmit}
           >
-            Finish
+            {dictionary.finish[this.context]}
           </Button>
         </ModalFooter>
       </div>

@@ -10,7 +10,7 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
     const loggedInUser = 1;
     const queryKeywords = keywords.join(' & ');
     return query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+        text: `SELECT p.id, first_name, last_name, p.title, p.content,
             p.visibility, p.date_created, p.date_updated, users.id AS user_id
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
@@ -21,7 +21,8 @@ function postQuery(keywords: string[], tags: string[], offset: number, initialDa
                                         WHERE pt.post = p.id))
                     AND p.date_created >= (SELECT TO_TIMESTAMP($4)) AND p.date_created <= (SELECT TO_TIMESTAMP($5))
                     AND (p.visibility = 'public'
-                        OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
+                        OR (p.visibility = 'followers' AND (p.author IN (SELECT followed FROM follows WHERE follower = $1)
+                                                            OR p.author = $1))
                         OR (p.visibility = 'private' AND p.author = $1))
                 ORDER BY date_created DESC
                 LIMIT 10
@@ -34,7 +35,7 @@ function authorQuery(keywords: string[], tags: string[], offset: number, initial
     const loggedInUser = 1;
     const queryKeywords = keywords.join('|');
     return query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes, p.visibility, p.date_created, p.date_updated
+        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
