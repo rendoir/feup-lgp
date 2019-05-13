@@ -76,7 +76,7 @@ class RegisterLanding extends React.Component<{}, State> {
         work_field: this.state.work_field
       };
 
-      const apiUrl = getApiURL(`/users/register`);
+      const apiUrl = getApiURL(`/users/`);
       return axios
         .post(apiUrl, body)
         .then(() => {

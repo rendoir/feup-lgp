@@ -26,7 +26,7 @@ import * as controller from '../controllers/users';
  *      message: 'The given email does not have permission to register, please contact the administration'
  *     }
  */
-usersRouter.post('/register', controller.register);
+usersRouter.post('/', controller.register);
 
 /**
  * @api {get} /api/users/{id} Get user profile info
