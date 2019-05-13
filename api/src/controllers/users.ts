@@ -205,9 +205,6 @@ export async function getProfilePosts(req, res) {
 							          OR $1=$2))`,
             values: [userId, userloggedId],
         });
-        const commentsToSend = [];
-        const tagsToSend = [];
-        const filesToSend = [];
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -238,15 +235,12 @@ export async function getProfilePosts(req, res) {
                             p.id = $1`,
                 values: [post.id],
             });
-            commentsToSend.push(comment.rows);
-            tagsToSend.push(tagsPost.rows);
-            filesToSend.push(files.rows);
+            post.comments = comment.rows;
+            post.tags = tagsPost.rows;
+            post.files = files.rows;
         }
         res.send({
             posts: result.rows,
-            comments: commentsToSend,
-            tags: tagsToSend,
-            files: filesToSend,
             size: totalSize.rows[0].count,
         });
     } catch (error) {
