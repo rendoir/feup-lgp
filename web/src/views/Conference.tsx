@@ -792,7 +792,10 @@ class Conference extends React.Component<IProps, IState> {
       );
     } else {
       challenges.push(
-        <div key={"no_challenges"}> No challenges yet. Try later! </div>
+        <div key={"no_challenges"}>
+          {" "}
+          {dictionary.no_challenges[this.context]}{" "}
+        </div>
       );
     }
 
@@ -801,7 +804,8 @@ class Conference extends React.Component<IProps, IState> {
         <div key={"challenges_ins_div_" + this.id} className="p-3">
           <div key={"challenges_ins_ins_div_" + this.id} className="p-0 m-0">
             <h4>
-              Challenges <i className="fas fa-puzzle-piece" />
+              {dictionary.challenge_conference[this.context]}{" "}
+              <i className="fas fa-puzzle-piece" />
             </h4>
             <br />
             {challenges}

@@ -274,6 +274,11 @@ export let dictionary: Dictionary = {
   },
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  challenge_conference: { PT: "Desafios", EN: "Challenges" },
+  no_challenges: {
+    PT: "Ainda não há desafios. Tenta mais tarde!",
+    EN: "No challenges yet. Try later!"
+  },
   empty: { PT: "", EN: "" }
 };
 
