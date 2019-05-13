@@ -5,6 +5,7 @@ import * as React from "react";
 import Avatar from "../components/Avatar/Avatar";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
@@ -353,7 +354,9 @@ class Conference extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {this.getPosts()}
+              <InfiniteScroll
+                requestUrl={getApiURL(`/conference/${this.id}`)}
+              />
             </div>
           </div>
         </div>
@@ -529,34 +532,6 @@ class Conference extends React.Component<IProps, IState> {
     } else {
       this.apiSetUnarchived();
     }
-  }
-
-  private getPosts() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
-
-    const postsDiv: any[] = [];
-
-    for (const post of this.state.posts) {
-      postsDiv.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          text={post.content}
-          user_id={post.user_id}
-          comments={post.comments || []}
-          tags={post.tags}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-          files={post.files}
-        />
-      );
-    }
-
-    return postsDiv;
   }
 
   private getDetails() {

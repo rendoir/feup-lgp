@@ -260,7 +260,9 @@ export function setSecureCookiesExample(req, res) {
 
 export async function getConference(req, res) {
   const id = req.params.id;
-  const user = 1;
+  const limit = req.query.perPage;
+  const offset = req.query.offset;
+  const userId = 1;
   try {
     /**
      * conference must be owned by user
@@ -281,7 +283,7 @@ export async function getConference(req, res) {
                     )
                 )
             `,
-      values: [id, user],
+      values: [id, userId],
     });
     if (conference === null) {
       res.status(400).send(
@@ -296,16 +298,20 @@ export async function getConference(req, res) {
                         INNER JOIN users ON (users.id = p.author)
 					WHERE p.conference = $1
                     ORDER BY p.date_created DESC
-                    LIMIT 10`,
-      values: [id],
+                    LIMIT $2
+                    OFFSET $3`,
+      values: [id, limit, offset],
     });
     if (postsResult == null) {
       res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
       return;
     }
-    const commentsToSend = [];
-    const tagsToSend = [];
-    const filesToSend = [];
+    const totalSize = await query({
+      text: `SELECT COUNT(id)
+              FROM posts
+              WHERE conference = $1`,
+      values: [id],
+    });
     for (const post of postsResult.rows) {
       const comment = await query({
         text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -336,16 +342,14 @@ export async function getConference(req, res) {
                             p.id = $1`,
         values: [post.id],
       });
-      commentsToSend.push(comment.rows);
-      tagsToSend.push(tagsPost.rows);
-      filesToSend.push(files.rows);
+      post.comments = comment.rows;
+      post.tags = tagsPost.rows;
+      post.files = files.rows;
     }
     const result = {
       conference: conference.rows[0],
       posts: postsResult.rows,
-      comments: commentsToSend,
-      tags: tagsToSend,
-      files: filesToSend,
+      size: totalSize.rows[0].count,
     };
     res.send(result);
   } catch (error) {
