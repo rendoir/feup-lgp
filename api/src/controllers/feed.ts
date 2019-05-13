@@ -19,7 +19,7 @@ export async function getFeed(req, res) {
                             AND p.conference IS null
                         ORDER BY date_created DESC
                         LIMIT 80
-                        OFFSET $2)
+                        OFFSET $3)
                     UNION
                     (SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
@@ -32,7 +32,7 @@ export async function getFeed(req, res) {
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                         ORDER BY date_created DESC
                         LIMIT 20
-                        OFFSET $2)
+                        OFFSET $3)
                     ORDER BY date_created DESC
                     LIMIT $2
                     OFFSET $3`,

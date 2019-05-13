@@ -32,7 +32,7 @@ function defaultUrl() {
 
 class InfiniteScroll extends Component<Props, State> {
   public static defaultProps = {
-    itemsPerPage: 10,
+    itemsPerPage: 20,
     requestUrl: defaultUrl(),
     type: "posts"
   };
@@ -133,7 +133,6 @@ class InfiniteScroll extends Component<Props, State> {
       axios
         .get(this.props.requestUrl, { params })
         .then(results => {
-          console.log(results);
           const incoming = results.data;
 
           incoming.posts.map((post: PostProps, idx: number) => {
