@@ -44,7 +44,7 @@ class Landing extends React.Component {
           </h2>
         </div>
         <div className="col-9 col-sm-8 col-md-6 col-lg-4 mt-5">
-          <Tabs defaultActiveKey="login" id="uncontrolled-tab-example">
+          <Tabs defaultActiveKey="login" id="landing-tabs">
             <Tab eventKey="login" title={dictionary.login[this.context]}>
               <LoginForm />
             </Tab>

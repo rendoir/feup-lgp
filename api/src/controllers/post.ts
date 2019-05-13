@@ -9,13 +9,14 @@ export async function createPost(req, res) {
         return;
     }
 
+    const userId = req.user.id;
+
     try {
-        console.log('Created post on conference: ' + req.body.conference);
-        if ( req.body.conference > 0) {
+        if (req.body.conference > 0) {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
-                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.conference],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
@@ -24,7 +25,7 @@ export async function createPost(req, res) {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
-                values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
+                values: [userId, req.body.title, req.body.text, req.body.visibility],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);

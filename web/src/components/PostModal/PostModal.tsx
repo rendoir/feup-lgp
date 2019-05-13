@@ -112,7 +112,6 @@ class PostModal extends Component<IProps, IState> {
       formData.append("tags[" + i + "]", tag)
     );
 
-    formData.append("author", "1");
     formData.append("text", this.state.text);
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
