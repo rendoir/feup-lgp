@@ -37,7 +37,6 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
-    registerRouter,
     searchRouter,
     tagsRouter,
     usersRouter,
@@ -79,7 +78,6 @@ app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.use('/conference', conferenceRouter);
 app.use('/search', searchRouter);
-app.use('/register', registerRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });

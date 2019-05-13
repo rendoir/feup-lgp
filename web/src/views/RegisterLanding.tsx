@@ -56,7 +56,6 @@ class RegisterLanding extends React.Component<{}, State> {
     };
 
     this.handlePress = this.handlePress.bind(this);
-    this.checkEmail = this.checkEmail.bind(this);
   }
 
   public handlePress(e) {
@@ -77,7 +76,7 @@ class RegisterLanding extends React.Component<{}, State> {
         work_field: this.state.work_field
       };
 
-      const apiUrl = getApiURL(`/register/`);
+      const apiUrl = getApiURL(`/users/register`);
       return axios
         .post(apiUrl, body)
         .then(() => {
@@ -94,23 +93,6 @@ class RegisterLanding extends React.Component<{}, State> {
       console.log("Fill the necessary inputs!");
       e.preventDefault();
     }
-  }
-
-  public checkEmail() {
-    const apiUrl = getApiURL(`/register/check-email`);
-    const body = {
-      email: this.state.email
-    };
-    return axios
-      .post(apiUrl, body)
-      .then(res => {
-        const eExists = res.data;
-        console.log("Email already exists! ", eExists);
-        this.setState({ emailExists: eExists });
-      })
-      .catch(() => {
-        console.log("Register system failed");
-      });
   }
 
   public validate(type, value) {
