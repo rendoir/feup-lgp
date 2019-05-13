@@ -119,15 +119,6 @@ export async function getPost(req, res) {
             values: [postId, userId],
         });
 
-        const likers = await query({
-            text: `SELECT a.id, a.first_name, a.last_name
-                        FROM likes_a_post l
-                        INNER JOIN users a
-                        ON l.author = a.id
-                        WHERE l.post = $1`,
-            values: [postId],
-        });
-
         const tags = await query({
              text: `SELECT t.name
                         FROM tags t
@@ -150,7 +141,6 @@ export async function getPost(req, res) {
             post,
             comments: comments.rows,
             files: files.rows,
-            likers: likers.rows,
             tags: tags.rows,
         };
         res.send(result);
