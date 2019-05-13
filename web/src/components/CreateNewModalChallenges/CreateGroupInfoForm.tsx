@@ -156,7 +156,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               value={prizePoints}
               placeholder={dictionary.points_desc[this.context]}
               name={"prizePoints"}
-              label={dictionary.pontos[this.context]}
+              label={dictionary.points[this.context]}
               type={"text"}
               required={true}
             />

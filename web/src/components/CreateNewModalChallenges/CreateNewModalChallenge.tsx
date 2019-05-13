@@ -201,7 +201,7 @@ class CreateNewModalChallenge extends PureComponent<
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          {dictionary.new_f[this.context]} {this.titleModal(request.type)}
+          {dictionary.new_mp[this.context]} {this.titleModal(request.type)}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}

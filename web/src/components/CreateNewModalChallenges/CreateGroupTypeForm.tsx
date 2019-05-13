@@ -29,7 +29,7 @@ function CreateGroupTypeForm(props: Props) {
         </div>
         <br />
         <Radio value={"options"} id={`${props.id}_type_opt`}>
-          "{dictionary.mult_choice_question[props.context]}"
+          {dictionary.mult_choice_question[props.context]}
         </Radio>
         <div className={styles.typeHint}>
           {dictionary.mult_choice_question[props.context]}{" "}

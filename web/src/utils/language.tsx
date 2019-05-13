@@ -384,6 +384,10 @@ export let dictionary: Dictionary = {
     PT: "Escreve aqui a tua resposta",
     EN: "Write here your answer"
   },
+  new_mp: {
+    PT: "Novos",
+    EN: "New"
+  },
   empty: { PT: "", EN: "" }
 };
 
