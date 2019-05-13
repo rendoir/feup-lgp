@@ -105,11 +105,15 @@ class Feed extends React.Component<Props, State> {
     ));
 
     const users = this.state.following.map(nome => (
-      <a key={nome.first_name} className="follow-link d-block my-2">
+      <a
+        key={nome.first_name}
+        className="d-block my-2"
+        href={"/user/" + nome.id}
+      >
         {nome.first_name} {nome.last_name}
       </a>
     ));
-
+    // href={"/user/" + this.props.user_id}
     return (
       <div id="Feed" className="container mt-5">
         <div className="row">

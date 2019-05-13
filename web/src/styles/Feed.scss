@@ -5,10 +5,7 @@
     color: $dark-accent-color;
     cursor: pointer;
   }
-  a.follow-link:hover {
-    color: $dark-accent-color;
-    cursor: pointer;
-  }
+  
   .left {
     @media screen and (max-width: 992px) {
       margin-right: 0 !important;
