@@ -9,6 +9,7 @@ type Props = {};
 type State = {
   posts: any[];
   fetchingInfo: boolean;
+  following: any[];
 };
 
 class Feed extends React.Component<Props, State> {
@@ -19,6 +20,7 @@ class Feed extends React.Component<Props, State> {
 
     this.state = {
       fetchingInfo: true,
+      following: [],
       posts: []
     };
   }
@@ -51,8 +53,10 @@ class Feed extends React.Component<Props, State> {
             (post.files = postsComing.files[idx])
           )
         );
-
+        this.setState({ following: res.data.follows });
+        console.log(this.state.following);
         this.setState({ fetchingInfo: false, posts: postsComing.posts });
+        console.log(res);
       })
       .catch(() => console.log("Failed to get feed"));
   }
@@ -100,16 +104,9 @@ class Feed extends React.Component<Props, State> {
       </a>
     ));
 
-    const hardCodedNews = [
-      "Too much dietary fat in the brain may impact mental health",
-      "Fibromyalgia: Is insulin resistance 'the missing link?'",
-      "Eat walnuts to lower blood pressure, new study suggests",
-      "Depression: Exercise may reduce symptoms but not in women"
-    ];
-
-    const news = hardCodedNews.map(title => (
-      <a key={title} className="conference-link d-block my-2">
-        {title}
+    const users = this.state.following.map(nome => (
+      <a key={nome.first_name} className="follow-link d-block my-2">
+        {nome.first_name} {nome.last_name}
       </a>
     ));
 
@@ -124,8 +121,8 @@ class Feed extends React.Component<Props, State> {
             {this.getPosts()}
           </div>
           <div className="right col-2 column-in-center">
-            <h5>{dictionary.news[this.context]}</h5>
-            {news}
+            <h5>{dictionary.followers[this.context]}</h5>
+            {users}
           </div>
         </div>
       </div>

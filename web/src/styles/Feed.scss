@@ -5,7 +5,10 @@
     color: $dark-accent-color;
     cursor: pointer;
   }
-
+  a.follow-link:hover {
+    color: $dark-accent-color;
+    cursor: pointer;
+  }
   .left {
     @media screen and (max-width: 992px) {
       margin-right: 0 !important;
@@ -14,7 +17,7 @@
   }
   .column-in-center{
     float: none;
-    margin: 0 auto;
+	margin: 0 auto;
 }
 .container {
 	max-width: 1920px;
