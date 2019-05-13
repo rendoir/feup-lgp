@@ -182,9 +182,6 @@ CREATE TABLE invites (
     CONSTRAINT unique_invite UNIQUE (invited_user, invite_subject_id, invite_type)
 );
 
-ALTER TABLE IF EXISTS ONLY likes_a_comment
-    ADD CONSTRAINT likes_a_comment_pkey PRIMARY KEY (comment, author);
-
 /* If user expresses joins a conference, we can consider him as notified */
 CREATE FUNCTION notified_on_attendance_intent() RETURNS trigger
     LANGUAGE plpgsql
