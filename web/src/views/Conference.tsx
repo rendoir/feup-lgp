@@ -273,6 +273,20 @@ class Conference extends React.Component<IProps, IState> {
     });
   }
 
+  public apiSetUnarchived() {
+    const conferenceURL = getApiURL(`/conference/${this.id}/unarchive`);
+    axios
+      .get(conferenceURL, {})
+      .then(res => {
+        console.log(res);
+      })
+      .catch(() => console.log("Failed to unarchive conference"));
+
+    this.setState({
+      archived: false
+    });
+  }
+
   public async apiGetUserCanJoin() {
     const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
     this.setState({ userCanJoin: canJoin });
@@ -514,7 +528,11 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private archiveConf() {
-    this.apiSetArchived();
+    if (this.state.archived === false) {
+      this.apiSetArchived();
+    } else {
+      this.apiSetUnarchived();
+    }
   }
 
   private getPosts() {
@@ -577,7 +595,9 @@ class Conference extends React.Component<IProps, IState> {
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_conference[this.context]
       : dictionary.hide_conference[this.context];
-
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_conference[this.context]
+      : dictionary.archive_conference[this.context];
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
@@ -601,14 +621,13 @@ class Conference extends React.Component<IProps, IState> {
           {dictionary.create_challenge_conference[this.context]}
         </button>
         <button
-          disabled={isArchived}
           type="button"
           onClick={() => {
             this.archiveConf();
           }}
         >
           <i className="fas fa-archive" />
-          {dictionary.archive_conference[this.context]}
+          {isArchivedBtn}
         </button>
         <button onClick={this.handleHideConference} disabled={isArchived}>
           <i className="fas fa-trash" />
