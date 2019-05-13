@@ -312,9 +312,6 @@ export async function getConference(req, res) {
               WHERE conference = $1`,
       values: [id],
     });
-    const commentsToSend = [];
-    const tagsToSend = [];
-    const filesToSend = [];
     for (const post of postsResult.rows) {
       const comment = await query({
         text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -345,16 +342,13 @@ export async function getConference(req, res) {
                             p.id = $1`,
         values: [post.id],
       });
-      commentsToSend.push(comment.rows);
-      tagsToSend.push(tagsPost.rows);
-      filesToSend.push(files.rows);
+      post.comments = comment.rows;
+      post.tags = tagsPost.rows;
+      post.files = files.rows;
     }
     const result = {
       conference: conference.rows[0],
       posts: postsResult.rows,
-      comments: commentsToSend,
-      tags: tagsToSend,
-      files: filesToSend,
       size: totalSize.rows[0].count,
     };
     res.send(result);
