@@ -121,7 +121,7 @@ class Conference extends React.Component<IProps, IState> {
         switcher: "false",
         tags: [],
         title: "",
-        type: "conference"
+        type: "talk"
       },
       step: "type",
       talks: [],
@@ -216,7 +216,7 @@ class Conference extends React.Component<IProps, IState> {
             <div className="conf_posts">
               <div className="p-3">{this.getTalks()}</div>
               <button className="create" onClick={this.createConfPost}>
-                {dictionary.create_post[this.context]}
+                {dictionary.create_new_talk[this.context]}
               </button>
               {this.state.postModalOpen ? (
                 <CreateNewModal
@@ -266,11 +266,11 @@ class Conference extends React.Component<IProps, IState> {
           title: request.title
         })
         .then(res => {
-          console.log(`conference with id = ${res.data.id} created`);
-          window.location.href = "/conference/" + res.data.id;
+          console.log(`talk with id = ${res.data.id} created`);
+          window.location.href = "/talk/" + res.data.id;
           this.resetState();
         })
-        .catch(error => console.log("Failed to create conference. " + error));
+        .catch(error => console.log("Failed to create talk. " + error));
     }
   };
   private resetState = () => {
@@ -293,7 +293,7 @@ class Conference extends React.Component<IProps, IState> {
         switcher: "false",
         tags: [],
         title: "",
-        type: "post"
+        type: "talk"
       },
       step: "type"
     });

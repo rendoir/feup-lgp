@@ -353,13 +353,6 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          <IconButton
-            glyph={faArrowLeft}
-            size={"small"}
-            iconSize={"lg"}
-            className={styles.back}
-            onClick={this.handlePrevStepClick}
-          />
           {dictionary.new_f[this.context]}{" "}
           {dictionary[request.type][this.context]}
           <ModalClose

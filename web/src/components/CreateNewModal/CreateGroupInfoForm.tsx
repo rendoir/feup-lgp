@@ -298,7 +298,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           id={`${id}_talk_local`}
           value={local}
           name={"local"}
-          placeholder={dictionary.talk_local[this.context]}
+          placeholder={dictionary.conference_local[this.context]}
           label={dictionary.location[this.context]}
         />
         <div id={`${id}_talk_dates`}>

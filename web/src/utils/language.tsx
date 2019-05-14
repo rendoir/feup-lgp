@@ -166,7 +166,8 @@ export let dictionary: Dictionary = {
   visibility_followers: { PT: "Seguidores", EN: "Followers" },
   visibility_private: { PT: "Privado", EN: "Private" },
   visibility: { PT: "Visibilidade", EN: "Visibility" },
-  talk_local: { PT: "Local da palestra", EN: "alk location" },
+  talk_local: { PT: "Local da palestra", EN: "Talk location" },
+  conference_local: { PT: "Local da conferência", EN: "Conference location" },
   location: { PT: "Localização", EN: "Location" },
   dates: { PT: "Datas", EN: "Dates" },
   date_start: { PT: "Início", EN: "Start" },
@@ -280,6 +281,7 @@ export let dictionary: Dictionary = {
     EN: "Insert images, videos and documents"
   },
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
+  create_new_talk: { PT: "Criar nova palestra", EN: "Create new talk" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
   empty: { PT: "", EN: "" }
 };
