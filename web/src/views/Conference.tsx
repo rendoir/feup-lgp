@@ -7,11 +7,14 @@ import Avatar from "../components/Avatar/Avatar";
 import ChallengeCarousel from "../components/ChallengeCarousel/ChallengeCarousel";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
+
+import { render } from "react-dom";
 import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
 
@@ -49,6 +52,7 @@ interface IProps {
 }
 
 interface IState {
+  archived: boolean;
   clickedChallenge: number | undefined;
   hasChat: boolean;
   step: Step;
@@ -117,8 +121,9 @@ class Conference extends React.Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.tags = [];
     this.state = {
+      archived: false,
       challenges: [],
-      clickedChallenge: undefined,
+      clickedChallenge: 0,
       date_end: "",
       date_start: "",
       description: "",
@@ -248,8 +253,9 @@ class Conference extends React.Component<IProps, IState> {
             isHidden: true
           });
         }
-
+        console.log(res.data.conference);
         this.setState({
+          archived: conference.archived,
           challenges: challengesConf,
           date_end: dateend,
           date_start: datestart,
@@ -299,6 +305,30 @@ class Conference extends React.Component<IProps, IState> {
       .catch(() => console.log("Failed to update privacy"));
   }
 
+  public apiSetArchived() {
+    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
+    axios
+      .post(conferenceURL)
+      .then()
+      .catch(() => console.log("Failed to archive conference"));
+
+    this.setState({
+      archived: true
+    });
+  }
+
+  public apiSetUnarchived() {
+    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
+    axios
+      .delete(conferenceURL)
+      .then()
+      .catch(() => console.log("Failed to unarchive conference"));
+
+    this.setState({
+      archived: false
+    });
+  }
+
   public async apiGetUserCanJoin() {
     const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
     this.setState({ userCanJoin: canJoin });
@@ -312,6 +342,7 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const isArchived = this.state.archived;
     if (this.state.isHidden && this.userId === this.state.owner_id) {
       return (
         <div id="Conference" className="my-5">
@@ -347,7 +378,11 @@ class Conference extends React.Component<IProps, IState> {
             </div>
             <div className="conf_posts">
               {this.getJoinButton()}
-              <button className="create" onClick={this.createConfPost}>
+              <button
+                className="create"
+                onClick={this.createConfPost}
+                disabled={isArchived}
+              >
                 {dictionary.create_post[this.context]}
               </button>
               {this.state.postModalOpen ? (
@@ -365,7 +400,9 @@ class Conference extends React.Component<IProps, IState> {
                 />
               ) : null}
               {this.getChallenges()}
-              {this.getPosts()}
+              <InfiniteScroll
+                requestUrl={getApiURL(`/conference/${this.id}`)}
+              />
             </div>
           </div>
         </div>
@@ -607,32 +644,12 @@ class Conference extends React.Component<IProps, IState> {
     );
   }
 
-  private getPosts() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
+  private archiveConf() {
+    if (this.state.archived === false) {
+      this.apiSetArchived();
+    } else {
+      this.apiSetUnarchived();
     }
-
-    const postsDiv: any[] = [];
-
-    for (const post of this.state.posts) {
-      postsDiv.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          text={post.content}
-          user_id={post.user_id}
-          comments={post.comments || []}
-          tags={post.tags}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-          files={post.files}
-        />
-      );
-    }
-
-    return postsDiv;
   }
 
   private getDetails() {
@@ -663,14 +680,18 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   private getAdminButtons() {
+    const isArchived = this.state.archived;
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_conference[this.context]
       : dictionary.hide_conference[this.context];
-
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_conference[this.context]
+      : dictionary.archive_conference[this.context];
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
         <button
+          disabled={isArchived}
           data-toggle="modal"
           data-target={`#invite_conference_modal_${this.id}`}
         >
@@ -708,11 +729,7 @@ class Conference extends React.Component<IProps, IState> {
           <i className="fas fa-pen" />
           Edit conference
         </button>
-        <button>
-          <i className="fas fa-archive" />
-          {dictionary.archive_conference[this.context]}
-        </button>
-        <button onClick={this.handleHideConference}>
+        <button onClick={this.handleHideConference} disabled={isArchived}>
           <i className="fas fa-trash" />
           {hideBtnText}
         </button>
@@ -727,6 +744,7 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private getJoinButton() {
+    const isArchived = this.state.archived;
     let buttonClass = this.state.userParticipation ? "leave" : "join";
     let buttonText = this.state.userParticipation
       ? dictionary.leave_conference[this.context]
@@ -745,7 +763,7 @@ class Conference extends React.Component<IProps, IState> {
             ? this.handleLeaveConference
             : this.handleJoinConference
         }
-        disabled={!this.state.userCanJoin}
+        disabled={!this.state.userCanJoin || isArchived}
       >
         {buttonText}
       </button>

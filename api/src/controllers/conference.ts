@@ -1,5 +1,5 @@
 import { query } from '../db/db';
-import {editFiles, saveTags} from './post';
+import { editFiles, saveTags } from './post';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
@@ -77,13 +77,13 @@ export async function inviteUser(req, res) {
   }
 
   query({
-      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
-      values: [req.body.invited_user, req.params.id],
+    text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'conference')`,
+    values: [req.body.invited_user, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
   });
 }
 
@@ -95,17 +95,17 @@ export async function inviteSubscribers(req, res) {
   }
 
   query({
-      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+    text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
                 SELECT uninvited_subscriber, $1, 'conference'
                 FROM retrieve_conference_uninvited_subscribers($1)
               ON CONFLICT ON CONSTRAINT unique_invite
               DO NOTHING`,
-      values: [req.params.id],
+    values: [req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
   });
 }
 
@@ -153,57 +153,57 @@ export async function getUninvitedUsersInfo(req, res) {
 export function addParticipantUser(req, res) {
   const userId = 1; // logged user
   query({
-      text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
-      values: [userId, req.params.id],
+    text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
+    values: [userId, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while adding participant to conference' });
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while adding participant to conference' });
   });
 }
 
 export function removeParticipantUser(req, res) {
   const userId = 1; // logged user
   query({
-      text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
-      values: [userId, req.params.id],
+    text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
+    values: [userId, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while removing participant from conference' });
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while removing participant from conference' });
   });
 }
 
 export async function checkUserParticipation(req, res) {
   const userId = 1; // logged user
   try {
-      const userParticipantQuery = await query({
-          text: `SELECT *
+    const userParticipantQuery = await query({
+      text: `SELECT *
                   FROM conference_participants
                   WHERE participant_user = $1 AND conference = $2`,
-          values: [userId, req.params.id],
-      });
-      res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
+      values: [userId, req.params.id],
+    });
+    res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
   } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in conference'));
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in conference'));
   }
 }
 
 export async function checkUserCanJoin(req, res) {
   const userId = 1; // logged user
   try {
-      const userCanJoinQuery = await query({
-          text: `SELECT * FROM user_can_join_conference($1, $2)`,
-          values: [req.params.id, userId],
-      });
-      const canJoin = userCanJoinQuery.rows[0].user_can_join_conference;
-      res.status(200).send({ canJoin });
+    const userCanJoinQuery = await query({
+      text: `SELECT * FROM user_can_join_conference($1, $2)`,
+      values: [req.params.id, userId],
+    });
+    const canJoin = userCanJoinQuery.rows[0].user_can_join_conference;
+    res.status(200).send({ canJoin });
   } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in conference'));
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in conference'));
   }
 }
 
@@ -211,56 +211,58 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
   const loggedUser = 3;
   try {
     const userOwnsConferenceQuery = await query({
-        text: `SELECT * FROM conferences WHERE id = $1 AND author = $2`,
-        values: [conferenceId, loggedUser],
+      text: `SELECT * FROM conferences WHERE id = $1 AND author = $2`,
+      values: [conferenceId, loggedUser],
     });
     return Boolean(userOwnsConferenceQuery.rows[0]);
   } catch (error) {
-      console.error(error);
-      return false;
+    console.error(error);
+    return false;
   }
 }
 
 export function setSecureCookiesExample(req, res) {
   console.log('SETTING COOKIES...');
   try {
-      // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
-      // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
-      // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
-      // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
+    // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
+    // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
+    // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
+    // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
 
-      // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
-      // "req.cookies" para aceder a cookies mais tarde noutros requests.
-      // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
-      /*for (var key in req.cookies) {
-        res.clearCookie(key, { path: '/' });
-      }
-      for (var key in req.signedCookies) {
-        res.clearCookie(key, { path: '/' });
-      }*/
+    // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
+    // "req.cookies" para aceder a cookies mais tarde noutros requests.
+    // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
+    /*for (var key in req.cookies) {
+      res.clearCookie(key, { path: '/' });
+    }
+    for (var key in req.signedCookies) {
+      res.clearCookie(key, { path: '/' });
+    }*/
 
-      // res.cookie('user_id', 3);
-      // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
+    // res.cookie('user_id', 3);
+    // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
 
-      // res.cookie('user_id', 1, {signed: true, httpOnly: true});
-      // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
-      // the one the server will access cannot be forged by hackers using XSS
-      /*res.cookie('openExample', 'openExampleValue');
-      res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
-      res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
-      res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
-      req.session.firstName = 'bomdia';
-      console.log(req.session.id);
-      res.status(200).send('Cookies set');
+    // res.cookie('user_id', 1, {signed: true, httpOnly: true});
+    // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
+    // the one the server will access cannot be forged by hackers using XSS
+    /*res.cookie('openExample', 'openExampleValue');
+    res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
+    res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
+    res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
+    req.session.firstName = 'bomdia';
+    console.log(req.session.id);
+    res.status(200).send('Cookies set');
   } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in conference'));
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in conference'));
   }
 }
 
 export async function getConference(req, res) {
   const id = req.params.id;
-  const user = 2;
+  const limit = req.query.perPage;
+  const offset = req.query.offset;
+  const userId = 1;
   try {
     /**
      * conference must be owned by user
@@ -270,7 +272,7 @@ export async function getConference(req, res) {
     const conference = await query({
       text: `
               SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy, c.archived
               FROM conferences c
               INNER JOIN users a ON c.author = a.id
               WHERE c.id = $1
@@ -281,7 +283,7 @@ export async function getConference(req, res) {
                     )
                 )
             `,
-      values: [id, user],
+      values: [id, userId],
     });
     if (conference === null) {
       res.status(400).send(
@@ -303,16 +305,20 @@ export async function getConference(req, res) {
                         INNER JOIN users ON (users.id = p.author)
 					WHERE p.conference = $1
                     ORDER BY p.date_created DESC
-                    LIMIT 10`,
-      values: [id],
+                    LIMIT $2
+                    OFFSET $3`,
+      values: [id, limit, offset],
     });
     if (postsResult == null) {
       res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
       return;
     }
-    const commentsToSend = [];
-    const tagsToSend = [];
-    const filesToSend = [];
+    const totalSize = await query({
+      text: `SELECT COUNT(id)
+              FROM posts
+              WHERE conference = $1`,
+      values: [id],
+    });
     for (const post of postsResult.rows) {
       const comment = await query({
         text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -343,17 +349,15 @@ export async function getConference(req, res) {
                             p.id = $1`,
         values: [post.id],
       });
-      commentsToSend.push(comment.rows);
-      tagsToSend.push(tagsPost.rows);
-      filesToSend.push(files.rows);
+      post.comments = comment.rows;
+      post.tags = tagsPost.rows;
+      post.files = files.rows;
     }
     const result = {
       conference: conference.rows[0],
       challenges: challengesResult.rows,
       posts: postsResult.rows,
-      comments: commentsToSend,
-      tags: tagsToSend,
-      files: filesToSend,
+      size: totalSize.rows[0].count,
     };
     res.send(result);
   } catch (error) {
@@ -417,4 +421,49 @@ export function getPostsAuthor(req, res) {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
   });
+}
+
+export async function archiveConference(req, res) {
+  const id = req.params.id;
+  try {
+    console.log('id asdasd ' + id);
+    const archivedConference = await query({
+      text: `UPDATE conferences
+                SET archived = TRUE
+                WHERE id = $1`,
+      values: [id],
+    });
+    if (archivedConference === null) {
+      res.status(400).send(
+        new Error('Error in the archieve process of conference'),
+      );
+      return;
+    }
+    res.send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error archieve conference'));
+  }
+}
+
+export async function unarchiveConference(req, res) {
+  const id = req.params.id;
+  try {
+    const archivedConference = await query({
+      text: `UPDATE conferences
+				  SET archived = FALSE
+				  WHERE id = $1`,
+      values: [id],
+    });
+    if (archivedConference === null) {
+      res.status(400).send(
+        new Error('Error in the archieve process of conference'),
+      );
+      return;
+    }
+    res.send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error archieve conference'));
+  }
 }

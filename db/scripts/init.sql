@@ -72,7 +72,8 @@ CREATE TABLE conferences (
     dateStart TEXT NOT NULL ,
     dateEnd TEXT,
     avatar TEXT ARRAY,
-    privacy visibility_enum NOT NULL DEFAULT 'public'
+    privacy visibility_enum NOT NULL DEFAULT 'public',
+	archived BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE conf_users (

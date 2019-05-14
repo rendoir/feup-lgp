@@ -3,7 +3,7 @@ import Avatar from "../Avatar/Avatar";
 
 import "./UserCard.scss";
 
-type Props = {
+export type Props = {
   id: number;
   first_name: string;
   last_name: string;

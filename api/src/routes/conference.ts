@@ -199,13 +199,23 @@ conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
  *
  * @apiParam {String}   post.id   Number of the post to get info
  *
+ */
+conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getCommentsOfPostAndAuthor);
+
+/**
+ * @api {post} /api/conference/:id/archive Archive a conference
+ * @apiName Archive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getCommentsOfPostAndAuthor);
+conferenceRouter.post('/:id/archive', controller.archiveConference);
 
 /**
  * @api {get} /api/post/:post_id/comments_author Get comments of a post
@@ -213,6 +223,15 @@ conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getComment
  * @apiGroup Post
  *
  * @apiParam {String}   post.id   Number of the post to get info
+ */
+conferenceRouter.get('/:id/posts_author', controller.getPostsAuthor);
+
+/**
+ * @api {post} /api/conference/:id/unarchive Unarchive a conference
+ * @apiName Unarchive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -220,4 +239,4 @@ conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getComment
  *      message: 'An error message here'
  *     }
  */
-conferenceRouter.get('/:id/posts_author', controller.getPostsAuthor);
+conferenceRouter.delete('/:id/archive', controller.unarchiveConference);
