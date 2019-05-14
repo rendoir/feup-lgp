@@ -552,10 +552,6 @@ class Talk extends React.Component<IProps, IState> {
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
         </button>
-        <button disabled={isArchived}>
-          <i className="fas fa-archive" />
-          {dictionary.archive_talk[this.context]}
-        </button>
         <button
           type="button"
           onClick={() => {
