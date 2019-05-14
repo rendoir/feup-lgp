@@ -5,19 +5,24 @@
     color: $dark-accent-color;
     cursor: pointer;
   }
+}
 
-  .left {
-    @media screen and (max-width: 992px) {
-      margin-right: 0 !important;
-      margin-bottom: 2.5em;
-    }
+#leftm, #rightm {
+	float: left;
+	padding-left: 1.5%;
+	padding-right: 1.5%;
+	width: 15%; 
   }
-  .column-in-center{
-    float: none;
-	margin: 0 auto;
-}
-.container {
-	max-width: 1920px;
-	width: 100%;
-}
-}
+  
+  #mainm {
+	float: right;
+	padding-left: 1.5%;
+	padding-right: 1.5%;
+	width: 70%; 
+  }
+  
+  @media screen and (max-width: 1000px) {
+	#leftm, #rightm, #mainm {
+	  width: 100%; 
+	}
+  }

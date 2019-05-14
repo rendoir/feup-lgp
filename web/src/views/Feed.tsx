@@ -124,19 +124,17 @@ class Feed extends React.Component<Props, State> {
     ));
 
     return (
-      <div id="Feed" className="container mt-5">
+      <div id="Feed" className="container mt-3">
         <div className="row">
-          <div className="left col-2 column-in-center">
+          <div id="leftm">
             <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
-          <div className="right col-2 column-in-center">
+          <div id="rightm">
             <h5>{dictionary.followers[this.context]}</h5>
             {users}
           </div>
-          <div className="middle col-lg-7 column-in-center">
-            {this.getPosts()}
-          </div>
+          <div id="mainm">{this.getPosts()}</div>
         </div>
       </div>
     );
