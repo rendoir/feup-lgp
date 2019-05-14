@@ -122,11 +122,28 @@ export let dictionary: Dictionary = {
   signup: { PT: "Registar", EN: "Sign up" },
   first_name: { PT: "Primeiro nome", EN: "First name" },
   last_name: { PT: "Último nome", EN: "Last name" },
-  profession_field: { PT: "Profissão / Área", EN: "Profession / Field" },
-  workplace_institution: {
-    PT: "Local de Trabalho / Instituição",
-    EN: "Workplace / Institution"
+  profession_field: {
+    PT: "Profissão / Área (Opcional)",
+    EN: "Profession / Field (Optional)"
   },
+  workplace_institution: {
+    PT: "Local de Trabalho / Instituição (Opcional)",
+    EN: "Workplace / Institution (Optional)"
+  },
+  hometown: { PT: "Localidade (Opcional)", EN: "Hometown (Optional)" },
+  university: { PT: "Universidade (Opcional)", EN: "University (Optional)" },
+  confirm_password: { PT: "Confirme a palavra passe", EN: "Confirm password" },
+  invalid_name: { PT: "Nome inválido", EN: "Invalid name" },
+  invalid_email: { PT: "Email inválido", EN: "Invalid email" },
+  invalid_password: {
+    PT: "A palavra passe deve conter pelo menos um número e 8 caracteres",
+    EN: "Password must have at least a number and be 8 characters of length"
+  },
+  invalid_confirm_password: {
+    PT: "As palavras passe não são iguais",
+    EN: "Passwords do not match"
+  },
+  register: { PT: "Registar", EN: "Register" },
   search_results: { PT: "Resultados de Pesquisa", EN: "Search Results" },
   posts_by_content: { PT: "Publicações por Conteúdo", EN: "Posts by Content" },
   search_by_author: { PT: "Publicações por Autor", EN: "Posts by Author" },

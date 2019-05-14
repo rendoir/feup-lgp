@@ -1,29 +1,31 @@
 import * as crypto from 'crypto';
 import {query} from '../db/db';
 
-export function registerUser(req, res) {
+export function register(req, res) {
     query({
-        text: 'SELECT * from users WHERE email=$1 AND pass IS NULL',
+        text: 'SELECT * from users WHERE email=$1',
         values: [req.body.email],
     }).then((result1) => {
-        if (result1.rowCount === 0) {
-            res.status(401).send({ message: 'The given email does not have permission to register, please contact an administrator' });
+        if (result1.rowCount !== 0) {
+            res.status(401).send({ message: 'This email already exists!' });
             return;
         }
-        const userId = result1.rows[0].id;
         const hash = crypto.createHash('sha256');
         hash.update(req.body.password);
         const hashedPassword = hash.digest('hex');
 
         query({
-            text: 'UPDATE users SET pass=$1 WHERE id=$2',
-            values: [hashedPassword, userId],
+            text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
+                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
-            res.status(200).json(result2.rows);
         }).catch((error) => {
             console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error occured while registering new user' });
+            res.status(400).send({ message: 'An error occured while registering a new user' });
         });
+        res.status(200).send();
+
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while checking register permissions' });
