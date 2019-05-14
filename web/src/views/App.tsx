@@ -14,11 +14,10 @@ import Backoffice from "./Backoffice";
 import Conference from "./Conference";
 import ErrorBoundary from "./ErrorBoundary";
 import Feed from "./Feed";
-import Login from "./Login";
+import Landing from "./Landing";
 import Notifications from "./Notifications";
 import PostView from "./PostView";
 import Profile from "./Profile";
-import RegisterLanding from "./RegisterLanding";
 import SearchResults from "./SearchResults";
 import Shop from "./Shop";
 
@@ -45,16 +44,15 @@ class App extends React.Component<{}, State> {
             <ErrorBoundary>
               <Header title={"gNet"} onLanguageChange={this.onLanguageChange} />
               <Switch>
-                <Route exact={true} path="/" component={Feed} />
                 <Route path="/user/:id" component={Profile} />
                 <Route path="/post/:id" component={PostView} />
                 <Route path="/admin" component={Backoffice} />
                 <Route path="/shop" component={Shop} />
-                <Route path="/login" component={Login} />
-                <Route path="/register" component={RegisterLanding} />
+                <Route path="/landing" component={Landing} />
                 <Route path="/search" component={SearchResults} />
                 <Route path="/conference/:id" component={Conference} />
                 <Route path="/notifications" component={Notifications} />
+                <Route component={Feed} /> {/* default */}
               </Switch>
             </ErrorBoundary>
           </Router>

@@ -10,8 +10,8 @@ import * as express_session from 'express-session';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
-// import { jwtMiddleware } from './_helpers/jwt';
 import * as socketIo from 'socket.io';
+import { jwtMiddleware } from './_helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -57,16 +57,13 @@ app.use(express.static('uploads'));
 
 // CORS
 app.use((req, res, next) => {
-    // res.header('Content-Type', 'application/json;charset=UTF-8'); pode ser necessario para cookies
-    // res.header('Access-Control-Allow-Credentials', 'true'); pode ser necessario para cookies
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
     next();
 });
 
-// Uncomment the following line when login is implemented.
-// app.use(jwtMiddleware());
+app.use(jwtMiddleware());
 
 // Define routes.
 app.use('/users', usersRouter);

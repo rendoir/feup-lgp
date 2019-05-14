@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import Cookies from 'universal-cookie';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
@@ -9,13 +8,14 @@ export async function createPost(req, res) {
         return;
     }
 
+    const userId = req.user.id;
+
     try {
-        console.log('Created post on conference: ' + req.body.conference);
-        if ( req.body.conference > 0) {
+        if (req.body.conference > 0) {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
-                values: [req.body.author, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.conference],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
@@ -24,7 +24,7 @@ export async function createPost(req, res) {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4) RETURNING id`,
-                values: [req.body.author, req.body.title, req.body.text, req.body.visibility],
+                values: [userId, req.body.title, req.body.text, req.body.visibility],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
@@ -36,6 +36,9 @@ export async function createPost(req, res) {
     }
 }
 
+/**
+ * Can only edit if user is author.
+ */
 export function editPost(req, res) {
     if (!req.body.title.trim() || !req.body.title.trim()) {
         console.log('\n\nERROR: Post title and body cannot be empty');
@@ -43,11 +46,12 @@ export function editPost(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
         text: `UPDATE posts
                 SET title = $2, content = $3, search_tokens = TO_TSVECTOR($2 || ' ' || $3), visibility = $4, date_updated = NOW()
-                WHERE id = $1`,
-        values: [req.params.id, req.body.title, req.body.text, req.body.visibility],
+                WHERE id = $1 AND author = $5`,
+        values: [req.params.id, req.body.title, req.body.text, req.body.visibility, userId],
     }).then((result) => {
         editFiles(req, res);
         saveTags(req, res, req.params.id);
@@ -58,9 +62,15 @@ export function editPost(req, res) {
     });
 }
 
+/**
+ * Can only delete if user is author or admin.
+ */
 export function deletePost(req, res) {
+    const userId = req.user.id;
     query({
-        text: 'DELETE FROM posts WHERE id = $1', values: [req.params.id],
+        text: `DELETE FROM posts
+                WHERE id = $1
+                    AND (author = $2 OR 'admin' = (SELECT permissions FROM users WHERE id = $2))`, values: [req.params.id, userId],
     }).then((result) => {
         deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
@@ -72,7 +82,7 @@ export function deletePost(req, res) {
 
 export async function getPost(req, res) {
     const postId = req.params.id;
-    const userId = 1; // logged in user
+    const userId = req.user.id;
     try {
         /**
          * Post must be owned by user
@@ -80,7 +90,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content,
+            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
@@ -151,7 +161,7 @@ export async function getPost(req, res) {
 }
 
 export async function getPostUserInteractions(req, res) {
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const postId = req.params.id;
     try {
         const totalRatingsQuery = await query({
@@ -199,9 +209,10 @@ export async function getPostUserInteractions(req, res) {
 }
 
 export function subscribePost(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
-        values: [req.body.userId, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -211,9 +222,10 @@ export function subscribePost(req, res) {
 }
 
 export function unsubscribePost(req, res) {
+    const userId = req.user.id;
     query({
         text: 'DELETE FROM posts_subscriptions WHERE subscriber = $1 AND post = $2',
-        values: [req.body.userId, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -223,13 +235,14 @@ export function unsubscribePost(req, res) {
 }
 
 export function rate(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO posts_rates (evaluator, rate, post) VALUES ($1, $2, $3)',
-        values: [req.body.evaluator, req.body.rate, req.params.id],
+        values: [userId, req.body.rate, req.params.id],
     }).then((result) => {
 
         query({
-            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            text: 'UPDATE posts SET rate = $1 WHERE id = $2',
             values: [req.body.newPostRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
@@ -244,13 +257,13 @@ export function rate(req, res) {
 }
 
 export function updateRate(req, res) {
+    const userId = req.user.id;
     query({
-        text: 'UPDATE posts_rates SET rate=$2 WHERE evaluator=$1 AND post=$3',
-        values: [req.body.evaluator, req.body.rate, req.params.id],
+        text: 'UPDATE posts_rates SET rate = $2 WHERE evaluator = $1 AND post = $3',
+        values: [userId, req.body.rate, req.params.id],
     }).then((result) => {
-
         query({
-            text: 'UPDATE posts SET rate=$1 WHERE id=$2',
+            text: 'UPDATE posts SET rate = $1 WHERE id = $2',
             values: [req.body.newPostRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
@@ -264,6 +277,29 @@ export function updateRate(req, res) {
     });
 }
 
+export function addALikeToPost(req, res) {
+    query({
+        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
+        values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while liking a post' });
+    });
+}
+
+export function deleteALikeToPost(req, res) {
+    query({
+        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
+    });
+}
+
 export async function reportPost(req, res) {
     if (!req.body.reason.trim()) {
         console.log('\n\nERROR: Report reason cannot be empty');
@@ -271,9 +307,10 @@ export async function reportPost(req, res) {
         return;
     }
 
+    const userId = req.user.id;
     query({
         text: `INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES ($1, $2, 'post', $3)`,
-        values: [req.body.reporter, req.params.id, req.body.reason],
+        values: [userId, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
     }).catch((error) => {
@@ -283,13 +320,14 @@ export async function reportPost(req, res) {
 }
 
 export async function checkPostUserReport(req, res) {
+    const userId = req.user.id;
     try {
         const reportQuery = await query({
             text: `SELECT *
                     FROM content_reports
                     WHERE
                         reporter = $1 AND content_id = $2 AND content_type = 'post'`,
-            values: [req.body.reporter, req.params.id],
+            values: [userId, req.params.id],
         });
 
         const result = { report: Boolean(reportQuery.rows[0]) };
@@ -329,8 +367,9 @@ export function saveFiles(req, res, id) {
                     // Add file to database
                     query({
                         text: `INSERT INTO files (name, mimeType, size, post)
-                                VALUES ($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT unique_post_file
-                                DO UPDATE SET mimeType = $2, size = $3 WHERE files.post = $4 AND files.name = $1;`,
+                                VALUES ($1, $2, $3, $4)
+                                ON CONFLICT ON CONSTRAINT unique_post_file
+                                    DO UPDATE SET mimeType = $2, size = $3 WHERE files.post = $4 AND files.name = $1`,
                         values: [filename, filetype, filesize, id],
                     }).then(() => {
                         return;
@@ -359,14 +398,21 @@ export async function saveTags(req, res, id) {
         return;
     }
 
-    const allTags = await query({
-        text: `SELECT id, name FROM tags`,
-    });
-
-    const tagsOfPost = await query({
-        text: `SELECT t.id, t.name FROM tags t INNER JOIN posts_tags pt ON pt.tag = t.id WHERE pt.post = $1`,
-        values: [id],
-    });
+    let allTags;
+    let tagsOfPost;
+    try {
+        allTags = await query({
+            text: `SELECT id, name FROM tags`,
+        });
+        tagsOfPost = await query({
+            text: `SELECT t.id, t.name FROM tags t INNER JOIN posts_tags pt ON pt.tag = t.id WHERE pt.post = $1`,
+            values: [id],
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
+        return;
+    }
 
     if (tagsToAdd === []) {
         return;
@@ -380,7 +426,7 @@ export async function saveTags(req, res, id) {
 
     for (const tag of tagsToDelete) {
         query({
-            text: 'DELETE FROM posts_tags WHERE post=$1 AND tag=$2',
+            text: 'DELETE FROM posts_tags WHERE post = $1 AND tag = $2',
             values: [id, tag.id],
         }).then(() => {
             return;
@@ -477,13 +523,13 @@ export function inviteUser(req, res) {
 }
 
 export function inviteSubscribers(req, res) {
-    const cookies = new Cookies(req.headers.cookie);
+    const userId = req.user.id;
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
                 SELECT follower, $1, 'post' FROM follows WHERE followed = $2
                 ON CONFLICT ON CONSTRAINT unique_invite
                 DO NOTHING`,
-        values: [req.params.id, cookies.get('user_id')],
+        values: [req.params.id, userId],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

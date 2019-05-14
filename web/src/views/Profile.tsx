@@ -1,12 +1,12 @@
-import axios from "axios";
 import * as React from "react";
-import Cookies from "universal-cookie";
 import Avatar from "../components/Avatar/Avatar";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
-import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -30,18 +30,14 @@ type State = {
   fetchingInfo: boolean;
 };
 
-const cookies = new Cookies();
-
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
-  public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
-    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
-    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id;
 
     this.state = {
       fetchingInfo: true,
@@ -62,7 +58,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   public componentDidMount() {
-    this.apiGetFeedUser();
+    this.apiGetUser();
     this.apiGetUserUserInteractions();
   }
 
@@ -78,6 +74,12 @@ class Profile extends React.Component<IProps, State> {
       ? dictionary.unsubscribe_action[this.context]
       : dictionary.subscribe_action[this.context];
 
+    let profileUrl = `${location.protocol}//${location.hostname}`;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}/posts`;
+    } else {
+      profileUrl += "/api/users/" + this.id + "/posts";
+    }
     return (
       <div className="Profile">
         <main id="profile" className="container">
@@ -142,7 +144,9 @@ class Profile extends React.Component<IProps, State> {
               </ul>
             </div>
             <div id="right-div">
-              <div className="col-lg-14">{this.getProfilePosts()}</div>
+              <div className={"col-lg-14"}>
+                <InfiniteScroll requestUrl={profileUrl} />
+              </div>
             </div>
           </div>
         </main>
@@ -165,14 +169,13 @@ class Profile extends React.Component<IProps, State> {
         incrementRate;
       let body = {};
       body = {
-        evaluator: this.observerId,
         newUserRating: userRating,
         rate: parseInt(rateTarget, 10)
       };
 
       console.log("User Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/users/${this.id}/rate`);
-      return axios
+      const apiUrl = `/users/${this.id}/rate`;
+      return axiosInstance
         .post(apiUrl, body)
         .then(() => {
           this.setState({
@@ -195,7 +198,7 @@ class Profile extends React.Component<IProps, State> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -203,11 +206,11 @@ class Profile extends React.Component<IProps, State> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  private apiSubscription(endpoint: string) {
-    apiSubscription("users", endpoint, this.observerId, this.id)
+  private apiSubscription(method: string) {
+    apiSubscription("users", method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -215,7 +218,7 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -223,7 +226,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.observerId, this.id)
+    apiGetUserInteractions("users", this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
@@ -278,34 +281,11 @@ class Profile extends React.Component<IProps, State> {
     }
   }
 
-  private apiGetFeedUser() {
-    let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
-    } else {
-      profileUrl += "/api/users/" + this.id;
-    }
-    axios
-      .get(profileUrl, {
-        headers: {}
-      })
+  private apiGetUser() {
+    axiosInstance
+      .get(`/users/${this.id}`)
       .then(res => {
-        const postsComing = res.data;
-        console.log(postsComing);
-
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-
-        this.setState({
-          fetchingInfo: false,
-          posts: postsComing.posts,
-          user: postsComing.user
-        });
+        this.setState({ user: res.data.user });
       })
       .catch(() => console.log("Failed to get posts"));
   }
@@ -379,7 +359,7 @@ class Profile extends React.Component<IProps, State> {
           key={post.id}
           id={post.id}
           author={post.first_name + " " + post.last_name}
-          text={post.content}
+          content={post.content}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}
@@ -395,4 +375,4 @@ class Profile extends React.Component<IProps, State> {
   }
 }
 
-export default Profile;
+export default withAuth(Profile);

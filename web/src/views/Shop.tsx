@@ -2,6 +2,7 @@ import * as React from "react";
 import Button from "../components/Button/Button";
 import "../styles/Shop.css";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 class Shop extends React.Component {
   public static contextType = LanguageContext;
@@ -517,4 +518,4 @@ class Shop extends React.Component {
   }
 }
 
-export default Shop;
+export default withAuth(Shop);

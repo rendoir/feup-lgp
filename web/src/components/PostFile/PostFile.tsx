@@ -1,11 +1,11 @@
 // - Import react components
-import axios from "axios";
 import React, { Component } from "react";
 
 // - Import styles
 import styles from "../Post/Post.module.css";
 
 // - Import app components
+import axiosInstance from "../../utils/axiosInstance";
 import Post from "../Post/Post";
 
 type MyFile = {
@@ -96,15 +96,11 @@ class PostFile extends Component<Props, State> {
   }
 
   public handleDownload() {
-    let downloadURL = `${location.protocol}//${location.hostname}`;
-    downloadURL +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    downloadURL +=
-      "/post/download/" + this.props.id + "/" + this.props.file.name;
+    const downloadURL = `/post/download/${this.props.id}/${
+      this.props.file.name
+    }`;
 
-    axios
+    axiosInstance
       .get(downloadURL, {
         responseType: "blob"
       })
