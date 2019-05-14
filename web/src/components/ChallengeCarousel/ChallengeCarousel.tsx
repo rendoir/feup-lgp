@@ -5,13 +5,11 @@ import React, { Component } from "react";
 import styles from "./ChallengeCarousel.module.css";
 
 // - Import app components
-import Conference from "../../views/Conference";
 import Challenge from "../Challenge/Challenge";
 
 export type Props = {
   id: number;
   challenges: any[];
-  parent: Conference;
   handleChallengeClick: (challenge: number | undefined) => any;
 };
 
@@ -50,7 +48,7 @@ class ChallengeCarousel extends Component<Props, State> {
           <div
             className="post_content_media"
             onClick={this.props.handleChallengeClick.bind(
-              this.props.parent,
+              this,
               this.props.challenges[i].id
             )}
           >

@@ -239,15 +239,6 @@ class Conference extends React.Component<IProps, IState> {
 
         const postsComing = res.data;
 
-        /* postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-        */
-
         const challengesConf = res.data.challenges;
 
         let isHidden = false;
@@ -795,7 +786,6 @@ class Conference extends React.Component<IProps, IState> {
           key={"challenges_" + this.id}
           id={this.id}
           challenges={this.state.challenges}
-          parent={this}
           handleChallengeClick={this.handleChallengeClick}
         />
       );

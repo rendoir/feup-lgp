@@ -197,7 +197,7 @@ class PostCreate extends Component<Props, State> {
         : "/api";
     getUrl += `/conference/${this.props.confId}/posts_author`;
 
-    axios
+    axiosInstance
       .get(getUrl, { params: { author: 1 } })
       .then(res => {
         const posts = res.data;
