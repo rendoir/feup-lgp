@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "../Avatar/Avatar";
 
+import { dictionary, LanguageContext } from "../../utils/language";
 import "./TalkCard.scss";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 };
 
 class TalkCard extends React.Component<Props> {
+  public static contextType = LanguageContext;
   constructor(props: Props) {
     super(props);
   }
@@ -33,7 +35,7 @@ class TalkCard extends React.Component<Props> {
               <li className="noDot ml-3 username">{this.props.title}</li>
               <li className="noDot ml-3 about">{this.props.about}</li>
               <li className="noDot ml-3 about">
-                {"Ending at " + this.props.dateend}
+                {dictionary.start_at[this.context] + " " + this.props.datestart}
               </li>
             </ul>
           </div>

@@ -15,6 +15,7 @@ type Dictionary = {
 
 /* tslint:disable:object-literal-sort-keys */
 export let dictionary: Dictionary = {
+  of: { PT: "de", EN: "of" },
   home: { PT: "Início", EN: "Home" },
   shop: { PT: "Loja", EN: "Shop" },
   search: { PT: "Procurar", EN: "Search" },
@@ -280,6 +281,21 @@ export let dictionary: Dictionary = {
     PT: "Insira imagens, videos e documentos",
     EN: "Insert images, videos and documents"
   },
+  start_at: { PT: "Começou em", EN: "Started at" },
+  day_split: { PT: "Acaba dia: ", EN: "Ends day: " },
+  month1: { PT: "Janeiro", EN: "January" },
+  month2: { PT: "Fevereiro", EN: "February" },
+  month3: { PT: "Março", EN: "March" },
+  month4: { PT: "Abril", EN: "April" },
+  month5: { PT: "Maio", EN: "May" },
+  month6: { PT: "Junho", EN: "June" },
+  month7: { PT: "Julho", EN: "July" },
+  month8: { PT: "Agosto", EN: "August" },
+  month9: { PT: "Setembro", EN: "September" },
+  month10: { PT: "Outubro", EN: "October" },
+  month11: { PT: "Novembro", EN: "November" },
+  month12: { PT: "Dezembro", EN: "December" },
+
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   create_new_talk: { PT: "Criar nova palestra", EN: "Create new talk" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },

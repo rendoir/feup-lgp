@@ -112,6 +112,7 @@ export async function getConference(req, res) {
             FROM talks t
                     INNER JOIN users ON (users.id = t.author)
             WHERE t.conference = $1
+            ORDER BY t.dateEnd
             LIMIT 10 `,
         values: [id],
       });

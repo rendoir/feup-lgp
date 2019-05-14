@@ -169,24 +169,85 @@ class Conference extends React.Component<IProps, IState> {
 
   public getTalks() {
     const buffer: any[] = [];
+    let lastEnd = "";
     this.state.talks.forEach(talk => {
       let datestart = talk.datestart.split("T");
       datestart = datestart[0] + " " + datestart[1];
       let dateend = talk.dateend.split("T");
       dateend = dateend[0] + " " + dateend[1];
+      if (lastEnd !== dateend) {
+        buffer.push(
+          <h6>
+            {dictionary.day_split[this.context]}
+            {this.cleanDate(dateend.split(" ")[0])}
+          </h6>
+        );
+      }
+      lastEnd = dateend;
       buffer.push(
         <TalkCard
           id={talk.id}
           title={talk.title}
           local={talk.local}
-          dateend={dateend}
-          datestart={datestart}
+          dateend={this.cleanDate(dateend.split(" ")[0])}
+          datestart={this.cleanDate(datestart.split(" ")[0])}
           about={talk.about}
           avatar={talk.avatar}
         />
       );
     });
     return buffer;
+  }
+
+  public cleanDate(date) {
+    date = date.split("-");
+    switch (date[1]) {
+      case "01":
+        date[1] = dictionary.month1[this.context];
+        break;
+      case "02":
+        date[1] = dictionary.month2[this.context];
+        break;
+      case "03":
+        date[1] = dictionary.month3[this.context];
+        break;
+      case "04":
+        date[1] = dictionary.month4[this.context];
+        break;
+      case "05":
+        date[1] = dictionary.month5[this.context];
+        break;
+      case "06":
+        date[1] = dictionary.month6[this.context];
+        break;
+      case "07":
+        date[1] = dictionary.month7[this.context];
+        break;
+      case "08":
+        date[1] = dictionary.month8[this.context];
+        break;
+      case "09":
+        date[1] = dictionary.month9[this.context];
+        break;
+      case "10":
+        date[1] = dictionary.month10[this.context];
+        break;
+      case "11":
+        date[1] = dictionary.month11[this.context];
+        break;
+      case "12":
+        date[1] = dictionary.month12[this.context];
+        break;
+    }
+    let cleanDate =
+      date[2] +
+      " " +
+      dictionary.of[this.context] +
+      " " +
+      date[1] +
+      ", " +
+      date[0];
+    return cleanDate;
   }
 
   public render() {
