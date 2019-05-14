@@ -160,7 +160,7 @@ class InviteModal extends Component<IProps, IState> {
       const inviteSuccess = await apiInviteUser(
         this.subjectId,
         user.id,
-        "conference"
+        this.subjectType
       );
 
       let afterInviteMessage =
@@ -203,7 +203,7 @@ class InviteModal extends Component<IProps, IState> {
         id="invite_user_input"
         className="mr-sm-2"
         type="search"
-        placeholder="Insert user's first and last name"
+        placeholder={dictionary.invite_discussion_placeholder[this.context]}
         aria-label="Search"
         value={this.state.inviteUserInput}
         onChange={this.handlerInviteUserInputChange}

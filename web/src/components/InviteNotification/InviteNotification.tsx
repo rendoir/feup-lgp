@@ -3,6 +3,7 @@ import React, { Component } from "react";
 // - Import utils
 import { apiUserJoinConference } from "../../utils/apiConference";
 import { apiInviteNotified } from "../../utils/apiInvite";
+import { apiSubscription } from "../../utils/apiSubscription";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
@@ -38,6 +39,13 @@ class InviteNotification extends Component<IProps, IState> {
     // Joining posts is yet to be implemented
     if (this.props.subjectType === "conference") {
       joinSuccess = await apiUserJoinConference(this.props.subjectId);
+    } else if (this.props.subjectType === "post") {
+      try {
+        await apiSubscription("post", "post", this.props.subjectId);
+      } catch (error) {
+        console.log("Failed to subscribe post through invite");
+        joinSuccess = false;
+      }
     }
 
     if (!joinSuccess) {
@@ -66,7 +74,11 @@ class InviteNotification extends Component<IProps, IState> {
             onClick={this.handleAcceptInvite}
             style={{ cursor: "pointer" }}
           >
-            <p className="tooltipText">{dictionary.accept[this.context]}</p>
+            <p className="tooltipText">
+              {this.props.subjectType === "conference"
+                ? dictionary.join[this.context]
+                : dictionary.subscribe_action[this.context]}
+            </p>
           </span>
           <span
             className="far fa-minus-square fa-2x"
