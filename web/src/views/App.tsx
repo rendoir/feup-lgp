@@ -45,6 +45,7 @@ class App extends React.Component<{}, State> {
               <Header title={"gNet"} onLanguageChange={this.onLanguageChange} />
               <Switch>
                 <Route path="/user/:id" component={Profile} />
+                {/*<Route path="/user/:id/edit" component={EditProfile} />*/}
                 <Route path="/post/:id" component={PostView} />
                 <Route path="/admin" component={Backoffice} />
                 <Route path="/shop" component={Shop} />

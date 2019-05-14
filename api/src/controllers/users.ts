@@ -291,3 +291,38 @@ export function inviteNotified(req, res) {
         res.status(400).send({ message: 'An error ocurred while setting invite as notified' });
     });
 }
+
+export function updateProfile(req, res) {
+    query({
+        text: 'SELECT * from users WHERE email=$1',
+        values: [req.body.email],
+    }).then((result1) => {
+        if (result1.rowCount === 0) {
+            res.status(401).send({ message: 'This account doen\'t exist!' });
+            return;
+        }
+        if (req.params.id !== result1.rows[0].id) {
+            res.status(401).send({ message: 'This account can\'t be edited by anyone but its owner!' });
+            return;
+        }
+        const hash = crypto.createHash('sha256');
+        hash.update(req.body.password);
+        const hashedPassword = hash.digest('hex');
+
+        query({
+            text: `UPDATE users SET pass = $2, first_name = $3, last_name = $4, work = $5, work_field = $6, home_town = $7, university = $8
+                        WHERE email = $1`,
+            values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
+                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
+        }).then((result2) => {
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the user profile' });
+        });
+        res.status(200).send();
+
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while checking updating the user profile permissions' });
+    });
+}
