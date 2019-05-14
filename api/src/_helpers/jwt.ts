@@ -9,7 +9,7 @@ export function jwtMiddleware() {
         path: [
             // public routes that don't require authentication
             '/login',
-            '/register',
+            '/users',
         ],
     });
 }
