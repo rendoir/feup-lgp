@@ -1,14 +1,10 @@
-import axios from "axios";
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-import Cookies from "universal-cookie";
-
-import createSequence from "../../utils/createSequence";
 
 import "./PostModal.css";
 
 // - Import utils
 import { apiReportComment, apiReportPost } from "../../utils/apiReport";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
@@ -22,14 +18,13 @@ interface IState {
   reportReason: string;
 }
 
-const cookies = new Cookies();
-
 class ReportModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   public htmlId: string;
-  public loggedUserId: number;
   public reportDescription: any = React.createRef();
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -37,7 +32,6 @@ class ReportModal extends Component<IProps, IState> {
     this.htmlId = props.postId
       ? `report_post_modal_${props.postId}`
       : `report_comment_modal_${props.commentId}`;
-    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = { reportReason: "" };
 
@@ -49,17 +43,9 @@ class ReportModal extends Component<IProps, IState> {
 
   public handleReportCreation() {
     if (this.props.postId) {
-      apiReportPost(
-        this.props.postId,
-        this.loggedUserId,
-        this.state.reportReason
-      );
+      apiReportPost(this.props.postId, this.state.reportReason);
     } else if (this.props.commentId) {
-      apiReportComment(
-        this.props.commentId,
-        this.loggedUserId,
-        this.state.reportReason
-      );
+      apiReportComment(this.props.commentId, this.state.reportReason);
     }
   }
 

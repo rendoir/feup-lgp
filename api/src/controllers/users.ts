@@ -77,10 +77,8 @@ export async function getUser(req, res) {
 }
 
 export async function getUserUserInteractions(req, res) {
-    const observerUser = req.body.observer;
+    const userId = req.user.id;
     const targetUser = req.params.id;
-    console.log('your user id: ', observerUser);
-    console.log('you want to rate this user: ', targetUser);
     try {
         const totalRatingsQuery = await query({
             text: `SELECT count(*)
@@ -99,14 +97,14 @@ export async function getUserUserInteractions(req, res) {
                     FROM users_rates
                     WHERE
                         evaluator = $1 AND target_user = $2`,
-            values: [observerUser, targetUser],
+            values: [userId, targetUser],
         });
         const subscriptionQuery = await query({
             text: `SELECT *
                     FROM follows
                     WHERE
                         follower = $1 AND followed = $2`,
-            values: [observerUser, targetUser],
+            values: [userId, targetUser],
         });
 
         // tslint:disable-next-line: no-shadowed-variable
@@ -128,9 +126,10 @@ export async function getUserUserInteractions(req, res) {
 }
 
 export function subscribeUser(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO follows (follower, followed) VALUES ($1, $2)',
-        values: [req.body.follower, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -140,9 +139,10 @@ export function subscribeUser(req, res) {
 }
 
 export function unsubscribeUser(req, res) {
+    const userId = req.user.id;
     query({
         text: 'DELETE FROM follows WHERE follower = $1 AND followed = $2',
-        values: [req.body.follower, req.params.id],
+        values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {
@@ -152,9 +152,10 @@ export function unsubscribeUser(req, res) {
 }
 
 export function rate(req, res) {
+    const userId = req.user.id;
     query({
         text: 'INSERT INTO users_rates (evaluator, rate, target_user) VALUES ($1, $2, $3)',
-        values: [req.body.evaluator, req.body.rate, req.params.id],
+        values: [userId, req.body.rate, req.params.id],
     }).then((result) => {
 
         query({
@@ -173,7 +174,8 @@ export function rate(req, res) {
 }
 
 export async function getProfilePosts(req, res) {
-    const userId = req.params.id; const userloggedId = 1; // logged in user
+    const userId = req.params.id;
+    const userloggedId = req.user.id;
     const limit = req.query.perPage;
     const offset = req.query.offset;
     try {
@@ -187,7 +189,7 @@ export async function getProfilePosts(req, res) {
 							OR (p.visibility= 'private' AND p.author = $2)
 							OR (p.visibility = 'followers'
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
-                                OR $1=$2))
+                                OR $1 = $2))
                     ORDER BY p.date_created DESC
                     LIMIT $3
                     OFFSET $4`,
@@ -252,7 +254,7 @@ export async function getProfilePosts(req, res) {
 }
 
 export async function getNotifications(req, res) {
-    const userId = 1;
+    const userId = req.user.id;
     try {
       const unseenInvitesQuery = await query({
         text: `SELECT DISTINCT invites.id, invite_subject_id,
@@ -276,7 +278,7 @@ export async function getNotifications(req, res) {
 }
 
 export function inviteNotified(req, res) {
-    const userId = 1;
+    const userId = req.user.id;
     query({
         text: `UPDATE invites SET user_notified = TRUE
                 WHERE id = $1 AND

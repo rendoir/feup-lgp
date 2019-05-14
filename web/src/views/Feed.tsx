@@ -1,9 +1,10 @@
-import axios from "axios";
 import * as React from "react";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 type Props = {};
 
@@ -29,17 +30,8 @@ class Feed extends React.Component<Props, State> {
   // }
 
   public apiGetFeed() {
-    let feedUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      feedUrl += `:${process.env.REACT_APP_API_PORT}/feed`;
-    } else {
-      feedUrl += "/api/feed";
-    }
-    axios
-      .get(feedUrl, {
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
+    axiosInstance
+      .get("/feed", {
         params: {}
       })
       .then(res => {
@@ -117,4 +109,4 @@ class Feed extends React.Component<Props, State> {
   }
 }
 
-export default Feed;
+export default withAuth(Feed);

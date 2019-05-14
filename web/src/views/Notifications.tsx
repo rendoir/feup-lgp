@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 import "../styles/Notifications.css";
 
@@ -7,13 +6,12 @@ import "../styles/Notifications.css";
 import InviteNotification from "../components/InviteNotification/InviteNotification";
 import { apiGetNotifications } from "../utils/apiInvite";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IState {
   fetchingNotifications: boolean;
   notifications: any[];
 }
-
-const cookies = new Cookies();
 
 class Notifications extends Component<{}, IState> {
   public static contextType = LanguageContext;
@@ -80,4 +78,4 @@ class Notifications extends Component<{}, IState> {
   }
 }
 
-export default Notifications;
+export default withAuth(Notifications);

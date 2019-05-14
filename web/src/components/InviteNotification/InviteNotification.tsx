@@ -41,13 +41,7 @@ class InviteNotification extends Component<IProps, IState> {
       joinSuccess = await apiUserJoinConference(this.props.subjectId);
     } else if (this.props.subjectType === "post") {
       try {
-        const loggedUserId = 1;
-        await apiSubscription(
-          "post",
-          "subscribe",
-          loggedUserId,
-          this.props.subjectId
-        );
+        await apiSubscription("post", "post", this.props.subjectId);
       } catch (error) {
         console.log("Failed to subscribe post through invite");
         joinSuccess = false;

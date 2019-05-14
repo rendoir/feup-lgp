@@ -1,7 +1,4 @@
-// - Import react components
-import axios from "axios";
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -38,7 +35,8 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
-import { getApiURL } from "../../utils/apiURL";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
+import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
@@ -80,20 +78,12 @@ interface IState {
   waitingSubscriptionRequest: boolean;
 }
 
-const cookies = new Cookies();
-
 class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
-
-  public static defaultProps = {};
-  public id: string;
-  public userId: number;
 
   constructor(props: Props) {
     super(props);
 
-    this.id = "post_" + this.props.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -287,16 +277,10 @@ class Post extends Component<Props, IState> {
   };
 
   public apiComments() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.state.postID}/comment/new`;
+    const postUrl = `/post/${this.state.postID}/comment`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
         post_id: this.state.postID
@@ -369,7 +353,7 @@ class Post extends Component<Props, IState> {
     this.setState({ userReport: false });
   }
 
-  public handlePostRate(e: any) {
+  public async handlePostRate(e: any) {
     const rateTarget = e.target.id;
 
     const incrementRate = Number(this.state.numberOfRatings) + 1;
@@ -381,30 +365,26 @@ class Post extends Component<Props, IState> {
         incrementRate
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
 
     console.log("Post Rating updated to: ", userRating);
-    const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-    return axios
-      .post(apiUrl, body)
-      .then(() => {
-        this.setState({
-          postRated: true,
-          userRate: parseInt(rateTarget, 10) * 20,
-          userRateTotal:
-            this.state.userRateTotal + parseInt(rateTarget, 10) * 20
-        });
-        console.log("RATE: ", this.state.userRate);
-      })
-      .catch(() => {
-        console.log("Rating system failed");
+    const apiUrl = `/post/${this.props.id}/rate`;
+    try {
+      await axiosInstance.post(apiUrl, body);
+      this.setState({
+        postRated: true,
+        userRate: parseInt(rateTarget, 10) * 20,
+        userRateTotal: this.state.userRateTotal + parseInt(rateTarget, 10) * 20
       });
+      console.log("RATE: ", this.state.userRate);
+    } catch (e) {
+      console.log("Rating system failed");
+    }
   }
 
-  public handlePostUpdateRate(e: any) {
+  public async handlePostUpdateRate(e: any) {
     const rateTarget = e.target.id;
 
     let formerRate = this.state.userRate;
@@ -418,7 +398,6 @@ class Post extends Component<Props, IState> {
         Number(this.state.numberOfRatings)
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
@@ -426,22 +405,18 @@ class Post extends Component<Props, IState> {
     console.log("NUmber of ratings:", this.state.numberOfRatings);
     console.log("Former rating: ", formerRate);
     console.log("Post Rating updated to: ", userRating);
-    const apiUrl = getApiURL(`/post/${this.props.id}/update_rate`);
-    return axios
-      .post(apiUrl, body)
-      .then(() => {
-        this.setState({
-          userRate: parseInt(rateTarget, 10) * 20,
-          userRateTotal:
-            this.state.userRateTotal +
-            parseInt(rateTarget, 10) * 20 -
-            formerRate
-        });
-        console.log("RATE UPDATED: ", this.state.userRate);
-      })
-      .catch(() => {
-        console.log("Updating rating system failed");
+    const apiUrl = `/post/${this.props.id}/rate`;
+    try {
+      await axiosInstance.put(apiUrl, body);
+      this.setState({
+        userRate: parseInt(rateTarget, 10) * 20,
+        userRateTotal:
+          this.state.userRateTotal + parseInt(rateTarget, 10) * 20 - formerRate
       });
+      console.log("RATE UPDATED: ", this.state.userRate);
+    } catch (e) {
+      console.log("Updating rating system failed");
+    }
   }
 
   public handlePostSubscription() {
@@ -452,7 +427,7 @@ class Post extends Component<Props, IState> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -460,11 +435,11 @@ class Post extends Component<Props, IState> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  public apiSubscription(endpoint: string) {
-    apiSubscription("post", endpoint, this.userId, this.props.id)
+  public apiSubscription(method: string) {
+    apiSubscription("post", method, this.props.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -472,7 +447,7 @@ class Post extends Component<Props, IState> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -480,7 +455,7 @@ class Post extends Component<Props, IState> {
   }
 
   public apiGetPostUserInteractions() {
-    apiGetUserInteractions("post", this.userId, this.props.id)
+    apiGetUserInteractions("post", this.props.id)
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
@@ -499,10 +474,7 @@ class Post extends Component<Props, IState> {
   }
 
   public async apiGetPostUserReport() {
-    const userReport: boolean = await apiCheckPostUserReport(
-      this.props.id,
-      this.userId
-    );
+    const userReport: boolean = await apiCheckPostUserReport(this.props.id);
     this.setState({ userReport });
   }
 

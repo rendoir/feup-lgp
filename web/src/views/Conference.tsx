@@ -1,5 +1,4 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { MouseEvent } from "react";
 import * as React from "react";
 import Avatar from "../components/Avatar/Avatar";
@@ -14,7 +13,6 @@ import styles from "../components/Post/Post.module.css";
 
 import { render } from "react-dom";
 import "../styles/Conference.css";
-import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -33,7 +31,10 @@ import {
   apiUserJoinConference,
   apiUserLeaveConference
 } from "../utils/apiConference";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -86,14 +87,15 @@ interface IState {
 class Conference extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public id: number;
-  public userId: number;
-  public tags: string[];
+  private id: number;
+  private userId: number;
+  private tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.userId = this.auth.getUserPayload().id;
     this.tags = [];
     this.state = {
       archived: false,
@@ -184,9 +186,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiGetConference() {
-    const conferenceURL = getApiURL(`/conference/${this.id}`);
-    axios
-      .get(conferenceURL, {})
+    axiosInstance
+      .get(`/conference/${this.id}`)
       .then(res => {
         const conference = res.data.conference;
         let datestart = conference.datestart.split("T");
@@ -196,14 +197,14 @@ class Conference extends React.Component<IProps, IState> {
 
         const postsComing = res.data;
 
-        postsComing.posts.map(
+        /* postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
         );
-
+*/
         if (conference.privacy === "closed") {
           this.setState({
             isHidden: true
@@ -242,14 +243,9 @@ class Conference extends React.Component<IProps, IState> {
       });
     }
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/conference/${this.props.match.params.id}/change_privacy`;
+    const postUrl = `/conference/${this.props.match.params.id}/change_privacy`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         id: this.props.match.params.id,
         privacy: privacyState
@@ -261,9 +257,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiSetArchived() {
-    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
-    axios
-      .post(conferenceURL)
+    axiosInstance
+      .post(`/conference/${this.id}/archive`)
       .then()
       .catch(() => console.log("Failed to archive conference"));
 
@@ -273,9 +268,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiSetUnarchived() {
-    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
-    axios
-      .delete(conferenceURL)
+    axiosInstance
+      .delete(`/conference/${this.id}/archive`)
       .then()
       .catch(() => console.log("Failed to unarchive conference"));
 
@@ -298,7 +292,7 @@ class Conference extends React.Component<IProps, IState> {
 
   public render() {
     const isArchived = this.state.archived;
-    if (this.state.isHidden && this.userId === this.state.owner_id) {
+    if (this.state.isHidden && this.userId !== this.state.owner_id) {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
@@ -354,9 +348,7 @@ class Conference extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              <InfiniteScroll
-                requestUrl={getApiURL(`/conference/${this.id}`)}
-              />
+              <InfiniteScroll requestUrl={`/conference/${this.id}`} />
             </div>
           </div>
         </div>
@@ -425,12 +417,6 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private handleSubmit = (request: Request) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-
     if (request.type === "post") {
       const formData = new FormData();
       request.files.images.forEach((file, idx) =>
@@ -444,15 +430,13 @@ class Conference extends React.Component<IProps, IState> {
       );
       request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
 
-      formData.append("author", "1");
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
       formData.append("conference", this.id + "");
 
-      url += "/post/create";
-      axios
-        .post(url, formData, {
+      axiosInstance
+        .post("/post", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -467,15 +451,8 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private getPossibleTags = (): void => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += `/tags`;
-
-    axios
-      .get(url)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         res.data.forEach(tag => {
           this.tags.push(tag.name);
@@ -650,4 +627,4 @@ class Conference extends React.Component<IProps, IState> {
   }
 }
 
-export default Conference;
+export default withAuth(Conference);

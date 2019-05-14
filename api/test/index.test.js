@@ -12,6 +12,13 @@ const futureDateStr = '"' + futureDate.toISOString() + '"';
 
 // let adminId = -1;
 
+const admin = {
+    email: 'admin@gmail.com',
+    jwt: null,
+    hashedPassword: 'd82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892',
+    password: 'adminadmin',
+};
+
 const publicPost = {
     author: -1,
     title: 'Test Title 1',
@@ -85,8 +92,9 @@ async function cleanDb() {
 async function insertAdminUser() {
     return db.query({
         text: `INSERT INTO users (email, pass, first_name, last_name, permissions)
-            VALUES ('admin@gmail.com','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Admin', 'Admina', 'admin')
+            VALUES ($1, $2, 'Admin', 'Admina', 'admin')
             RETURNING id`,
+        values: [admin.email, admin.hashedPassword],
     }).then((res) => res.rows[0].id);
 }
 
@@ -101,11 +109,30 @@ before(function(done) {
     });
 });
 
+describe('Admin login', () => {
+    it('Should be successful', (done) => {
+        request(app)
+            .post('/login')
+            .send({
+                email: admin.email,
+                password: admin.password,
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.token).to.be.string;
+                admin.jwt = res.body.token;
+                done();
+            })
+    })
+})
+
 describe('Responds with error 404', () => {
     it('Should return an unauthorized response state', (done) => {
         request(app)
             .get('/unknown')
-            // .set('authorization', 'Bearer ' + authToken)
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(404)
             .end((err, res) => {
                 expect(err).to.be.null;
@@ -120,7 +147,7 @@ describe('Root GET', () => {
     it('Should return a welcome message', (done) => {
         request(app)
             .get('/')
-            // .set('authorization', 'Bearer ' + authToken)
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
@@ -135,7 +162,8 @@ describe('Post', () => {
 
     it('Should submit a new public post', (done) => {
         request(app)
-            .post('/post/create')
+            .post('/post')
+            .set('authorization', 'Bearer ' + admin.jwt)
             .send(publicPost)
             .expect(200)
             .end((err, res) => {
@@ -149,6 +177,7 @@ describe('Post', () => {
     it('Should retrieve the submitted post', (done) => {
         request(app)
             .get(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
@@ -160,37 +189,37 @@ describe('Post', () => {
             });
     })
 
-    /**
-     * Cannot test post edition until login is implemented.
-     */
-    // it('Should edit the submitted post', (done) => {
-    //     request(app)
-    //         .put(`/post/${postId}`)
-    //         .send(editedPublicPost)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             expect(err).to.be.null;
-    //             done();
-    //         });
-    // })
+    it('Should edit the submitted post', (done) => {
+        request(app)
+            .put(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send(editedPublicPost)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
 
-    // it('Should retrieve the edited post', (done) => {
-    //     request(app)
-    //         .get(`/post/${postId}`)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             expect(err).to.be.null;
-    //             expect(res.body).to.have.property('post');
-    //             expect(equalPosts(editedPublicPost, res.body.post)).to.be.true;
-    //             expect(res.body).to.have.property('comments');
-    //             expect(res.body.comments).to.be.empty;
-    //             done();
-    //         });
-    // })
+    it('Should retrieve the edited post', (done) => {
+        request(app)
+            .get(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('post');
+                expect(equalPosts(editedPublicPost, res.body.post)).to.be.true;
+                expect(res.body).to.have.property('comments');
+                expect(res.body.comments).to.be.empty;
+                done();
+            });
+    })
 
     it('Should delete the submitted post', (done) => {
         request(app)
             .delete(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
@@ -201,6 +230,7 @@ describe('Post', () => {
     it('Should not find deleted post', (done) => {
         request(app)
             .get(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(400)
             .end((err, res) => {
                 expect(err).to.be.null;
