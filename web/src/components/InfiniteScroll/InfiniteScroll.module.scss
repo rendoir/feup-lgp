@@ -1,0 +1,15 @@
+@import "../../styles/variables";
+
+.error {
+  background-color: $color-danger;
+  opacity: 0.8;
+  color: $white;
+  padding: $default-padding;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}

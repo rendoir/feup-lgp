@@ -1,8 +1,4 @@
-// - Import react components
-import axios from "axios";
-import classNames from "classnames";
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 // - Import styles
 import styles from "./Post.module.css";
@@ -14,6 +10,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import PostFile from "../PostFile/PostFile";
 import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
+import InviteModal from "../PostModal/InviteModal";
 import PostModal from "../PostModal/PostModal";
 import ReportModal from "../PostModal/ReportModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
@@ -38,22 +35,23 @@ import {
   faUserFriends,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
-import { getApiURL } from "../../utils/apiURL";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
+import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
-interface IProps {
+export type Props = {
   id: number;
   title: string;
   date: string;
   author: string;
-  text: string | undefined;
+  content: string | undefined;
   visibility: string;
   comments: any[];
   files?: MyFile[];
   tags: any[];
   user_id: number;
-}
+};
 
 interface IState {
   activePage: number;
@@ -80,20 +78,12 @@ interface IState {
   waitingSubscriptionRequest: boolean;
 }
 
-const cookies = new Cookies();
-
-class Post extends Component<IProps, IState> {
+class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
 
-  public static defaultProps = {};
-  public id: string;
-  public userId: number;
-
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
 
-    this.id = "post_" + this.props.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.state = {
       activePage: 1,
       clickedImage: undefined,
@@ -177,7 +167,7 @@ class Post extends Component<IProps, IState> {
             <h4> {this.props.title} </h4>
           </div>
           <div className={styles.post_content_text}>
-            <p> {this.props.text} </p>
+            <p> {this.props.content} </p>
           </div>
           {this.getImages()}
           {this.getVideos()}
@@ -202,15 +192,17 @@ class Post extends Component<IProps, IState> {
             </fieldset>
           </div>
           {this.getUserInteractionButtons()}
-          {/* Post edition modal */}
-          <PostModal {...this.props} tags={this.state.tags} />
-          {/* Delete Post */}
-          <DeleteModal {...this.props} />
+          {/* Invite users to post */}
+          <InviteModal postId={this.props.id} />
           {/* Report Post */}
           <ReportModal
             postId={this.props.id}
             reportCancelHandler={this.handleReportCancel}
           />
+          {/* Post edition modal */}
+          <PostModal {...this.props} tags={this.state.tags} />
+          {/* Delete Post */}
+          <DeleteModal {...this.props} />
           {/* Comment section*/}
           <div className={`${styles.post_comment_section} w-100`}>
             {this.getCommentSection()}
@@ -285,16 +277,10 @@ class Post extends Component<IProps, IState> {
   };
 
   public apiComments() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.state.postID}/comment/new`;
+    const postUrl = `/post/${this.state.postID}/comment`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {},
         post_id: this.state.postID
@@ -367,7 +353,7 @@ class Post extends Component<IProps, IState> {
     this.setState({ userReport: false });
   }
 
-  public handlePostRate(e: any) {
+  public async handlePostRate(e: any) {
     const rateTarget = e.target.id;
 
     const incrementRate = Number(this.state.numberOfRatings) + 1;
@@ -379,30 +365,26 @@ class Post extends Component<IProps, IState> {
         incrementRate
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
 
     console.log("Post Rating updated to: ", userRating);
-    const apiUrl = getApiURL(`/post/${this.props.id}/rate`);
-    return axios
-      .post(apiUrl, body)
-      .then(() => {
-        this.setState({
-          postRated: true,
-          userRate: parseInt(rateTarget, 10) * 20,
-          userRateTotal:
-            this.state.userRateTotal + parseInt(rateTarget, 10) * 20
-        });
-        console.log("RATE: ", this.state.userRate);
-      })
-      .catch(() => {
-        console.log("Rating system failed");
+    const apiUrl = `/post/${this.props.id}/rate`;
+    try {
+      await axiosInstance.post(apiUrl, body);
+      this.setState({
+        postRated: true,
+        userRate: parseInt(rateTarget, 10) * 20,
+        userRateTotal: this.state.userRateTotal + parseInt(rateTarget, 10) * 20
       });
+      console.log("RATE: ", this.state.userRate);
+    } catch (e) {
+      console.log("Rating system failed");
+    }
   }
 
-  public handlePostUpdateRate(e: any) {
+  public async handlePostUpdateRate(e: any) {
     const rateTarget = e.target.id;
 
     let formerRate = this.state.userRate;
@@ -416,7 +398,6 @@ class Post extends Component<IProps, IState> {
         Number(this.state.numberOfRatings)
     );
     const body = {
-      evaluator: this.userId,
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
@@ -424,22 +405,18 @@ class Post extends Component<IProps, IState> {
     console.log("NUmber of ratings:", this.state.numberOfRatings);
     console.log("Former rating: ", formerRate);
     console.log("Post Rating updated to: ", userRating);
-    const apiUrl = getApiURL(`/post/${this.props.id}/update_rate`);
-    return axios
-      .post(apiUrl, body)
-      .then(() => {
-        this.setState({
-          userRate: parseInt(rateTarget, 10) * 20,
-          userRateTotal:
-            this.state.userRateTotal +
-            parseInt(rateTarget, 10) * 20 -
-            formerRate
-        });
-        console.log("RATE UPDATED: ", this.state.userRate);
-      })
-      .catch(() => {
-        console.log("Updating rating system failed");
+    const apiUrl = `/post/${this.props.id}/rate`;
+    try {
+      await axiosInstance.put(apiUrl, body);
+      this.setState({
+        userRate: parseInt(rateTarget, 10) * 20,
+        userRateTotal:
+          this.state.userRateTotal + parseInt(rateTarget, 10) * 20 - formerRate
       });
+      console.log("RATE UPDATED: ", this.state.userRate);
+    } catch (e) {
+      console.log("Updating rating system failed");
+    }
   }
 
   public handlePostSubscription() {
@@ -450,7 +427,7 @@ class Post extends Component<IProps, IState> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -458,11 +435,11 @@ class Post extends Component<IProps, IState> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  public apiSubscription(endpoint: string) {
-    apiSubscription("post", endpoint, this.userId, this.props.id)
+  public apiSubscription(method: string) {
+    apiSubscription("post", method, this.props.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -470,7 +447,7 @@ class Post extends Component<IProps, IState> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -478,7 +455,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public apiGetPostUserInteractions() {
-    apiGetUserInteractions("post", this.userId, this.props.id)
+    apiGetUserInteractions("post", this.props.id)
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
@@ -497,10 +474,7 @@ class Post extends Component<IProps, IState> {
   }
 
   public async apiGetPostUserReport() {
-    const userReport: boolean = await apiCheckPostUserReport(
-      this.props.id,
-      this.userId
-    );
+    const userReport: boolean = await apiCheckPostUserReport(this.props.id);
     this.setState({ userReport });
   }
 
@@ -701,9 +675,20 @@ class Post extends Component<IProps, IState> {
   }
 
   private getDropdownButtons() {
-    const reportButton = (
+    const inviteButton = (
       <button
         key={0}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#invite_post_modal_${this.props.id}`}
+      >
+        {dictionary.invite_discussion[this.context]}
+      </button>
+    );
+    const reportButton = (
+      <button
+        key={1}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
         data-toggle="modal"
@@ -718,7 +703,7 @@ class Post extends Component<IProps, IState> {
     );
     const editButton = (
       <button
-        key={1}
+        key={2}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -729,7 +714,7 @@ class Post extends Component<IProps, IState> {
     );
     const deleteButton = (
       <button
-        key={2}
+        key={3}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -738,7 +723,12 @@ class Post extends Component<IProps, IState> {
         {dictionary.delete_post[this.context]}
       </button>
     );
-    const dropdownButtons = [reportButton, editButton, deleteButton];
+    const dropdownButtons = [
+      inviteButton,
+      reportButton,
+      editButton,
+      deleteButton
+    ];
     return dropdownButtons;
   }
 

@@ -1,8 +1,10 @@
-import axios from "axios";
 import * as React from "react";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import "../styles/Feed.css";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 type Props = {};
 
@@ -23,22 +25,13 @@ class Feed extends React.Component<Props, State> {
     };
   }
 
-  public componentDidMount() {
-    this.apiGetFeed();
-  }
+  // public componentDidMount() {
+  //   this.apiGetFeed();
+  // }
 
   public apiGetFeed() {
-    let feedUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      feedUrl += `:${process.env.REACT_APP_API_PORT}/feed`;
-    } else {
-      feedUrl += "/api/feed";
-    }
-    axios
-      .get(feedUrl, {
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        },
+    axiosInstance
+      .get("/feed", {
         params: {}
       })
       .then(res => {
@@ -66,7 +59,7 @@ class Feed extends React.Component<Props, State> {
           key={post.id}
           id={post.id}
           author={post.first_name + " " + post.last_name}
-          text={post.content}
+          content={post.content}
           title={post.title}
           user_id={post.user_id}
           date={post.date_created.replace(/T.*/gi, "")}
@@ -82,9 +75,9 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
-      return null;
-    }
+    // if (this.state.fetchingInfo) {
+    //   return null;
+    // }
 
     const hardCodedTalks = [
       "Talk 1",
@@ -106,11 +99,14 @@ class Feed extends React.Component<Props, State> {
             <h5>{dictionary.talks[this.context]}</h5>
             {talks}
           </div>
-          <div className="middle col-lg-8">{this.getPosts()}</div>
+          <div className="middle col-lg-8">
+            <InfiniteScroll />
+            {/*{this.getPosts()}*/}
+          </div>
         </div>
       </div>
     );
   }
 }
 
-export default Feed;
+export default withAuth(Feed);

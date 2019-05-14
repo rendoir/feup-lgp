@@ -3,10 +3,14 @@ import {
   faPlus,
   faUserMd
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import React, { MouseEvent, PureComponent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { RouteComponentProps, withRouter } from "react-router";
+
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
+import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 import CreateNewModal from "../CreateNewModal/CreateNewModal";
 import { Request, Step } from "../CreateNewModal/types";
@@ -17,7 +21,6 @@ import styles from "./Header.module.css";
 
 type Props = {
   title: string;
-  searchBar: boolean;
   onSearchClick?: (text: string, event: MouseEvent) => any;
   onProfileClick?: (event: MouseEvent) => any;
   onLanguageChange: (lang: string) => any;
@@ -47,17 +50,12 @@ type State = {
   };
 };
 
-class Header extends PureComponent<Props, State> {
+class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   public static contextType = LanguageContext;
-
-  public static defaultProps = {
-    logoRedirectToHome: false,
-    searchBar: false
-  };
-
+  private auth = new AuthHelperMethods();
   private tags: string[];
 
-  constructor(props: Props) {
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -88,7 +86,9 @@ class Header extends PureComponent<Props, State> {
   }
 
   public componentDidMount(): void {
-    this.getPossibleTags();
+    if (this.auth.loggedIn()) {
+      this.getPossibleTags();
+    }
   }
 
   public render() {
@@ -103,10 +103,10 @@ class Header extends PureComponent<Props, State> {
         {this.renderBrand()}
         <Navbar.Toggle aria-controls={"navbar-nav"} />
         <Navbar.Collapse id={"navbar-nav"}>
-          {this.renderLinks()}
-          <SearchSimpleForm />
+          {this.auth.loggedIn() && this.renderLinks()}
+          {this.auth.loggedIn() && <SearchSimpleForm />}
           {this.renderLanguageSelector()}
-          {this.renderButtons()}
+          {this.auth.loggedIn() && this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
     );
@@ -166,10 +166,27 @@ class Header extends PureComponent<Props, State> {
           />
           {dictionary.new[this.context]}
         </Nav.Link>
-        <Nav.Link href={"/user/1"} className={styles.link}>
-          <Icon icon={faUserMd} size={"lg"} className={styles.icon} />
-          {dictionary.profile[this.context]}
-        </Nav.Link>
+        <NavDropdown
+          alignRight={true}
+          title={
+            <div style={{ display: "inline-block" }} className={styles.link}>
+              <Icon icon={faUserMd} size={"lg"} className={styles.icon} />{" "}
+              {dictionary.user_dropdown[this.context]}
+            </div>
+          }
+          id="header_user_dropdown"
+        >
+          <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
+            {dictionary.profile[this.context]}
+          </NavDropdown.Item>
+          <NavDropdown.Item href="#action/3.2">
+            {dictionary.edit_profile[this.context]}
+          </NavDropdown.Item>
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={this.onClickLogout}>
+            {dictionary.logout[this.context]}
+          </NavDropdown.Item>
+        </NavDropdown>
         {this.state.isOpen ? (
           <CreateNewModal
             pending={false}
@@ -188,18 +205,17 @@ class Header extends PureComponent<Props, State> {
     );
   }
 
+  private onClickLogout = (event: any) => {
+    this.auth.logout();
+    window.location.reload();
+  };
+
   private handleClick = (event: MouseEvent): void => {
     event.preventDefault();
     this.setState({ isOpen: true });
   };
 
   private handleSubmit = (request: Request) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-
     if (request.type === "post") {
       const formData = new FormData();
       request.files.images.forEach((file, idx) =>
@@ -213,14 +229,12 @@ class Header extends PureComponent<Props, State> {
       );
       request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
 
-      formData.append("author", "1");
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
 
-      url += "/post/create";
-      axios
-        .post(url, formData, {
+      axiosInstance
+        .post("/post", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -231,12 +245,10 @@ class Header extends PureComponent<Props, State> {
           this.resetState();
         })
         .catch(() => console.log("Failed to create post"));
-    } else if (request.type === "conference") {
-      url += "/conference/create";
-      axios
-        .post(url, {
+    } else {
+      axiosInstance
+        .post("/conference", {
           about: request.about,
-          author: 1,
           avatar: request.avatar,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,
@@ -254,15 +266,8 @@ class Header extends PureComponent<Props, State> {
   };
 
   private getPossibleTags = (): void => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += `/tags`;
-
-    axios
-      .get(url)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         res.data.forEach(tag => {
           this.tags.push(tag.name);
@@ -298,4 +303,4 @@ class Header extends PureComponent<Props, State> {
   };
 }
 
-export default Header;
+export default withRouter(Header);

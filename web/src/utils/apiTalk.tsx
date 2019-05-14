@@ -1,10 +1,9 @@
-import axios from "axios";
-import { getApiURL } from "./apiURL";
+import axiosInstance from "./axiosInstance";
 
 export async function apiUserJoinTalk(talkId: number): Promise<boolean> {
-  const apiURL = getApiURL(`/talk/${talkId}/add_participant`);
+  const apiURL = `/talk/${talkId}/add_participant`;
   try {
-    await axios.post(apiURL);
+    await axiosInstance.post(apiURL);
     return true;
   } catch (error) {
     console.log("Failed to join talk");
@@ -13,9 +12,9 @@ export async function apiUserJoinTalk(talkId: number): Promise<boolean> {
 }
 
 export async function apiUserLeaveTalk(talkId: number): Promise<boolean> {
-  const apiURL = getApiURL(`/talk/${talkId}/remove_participant`);
+  const apiURL = `/talk/${talkId}/remove_participant`;
   try {
-    await axios.delete(apiURL);
+    await axiosInstance.delete(apiURL);
     return true;
   } catch (error) {
     console.log("Failed to leave talk");
@@ -26,9 +25,9 @@ export async function apiUserLeaveTalk(talkId: number): Promise<boolean> {
 export async function apiCheckUserTalkParticipation(
   talkId: number
 ): Promise<boolean> {
-  const apiURL = getApiURL(`/talk/${talkId}/check_participation`);
+  const apiURL = `/talk/${talkId}/check_participation`;
   try {
-    const res = await axios.get(apiURL);
+    const res = await axiosInstance.get(apiURL);
     return res.data.participant;
   } catch (error) {
     console.log("Failed to check participation");
@@ -39,9 +38,9 @@ export async function apiCheckUserTalkParticipation(
 export async function apiCheckUserCanJoinTalk(
   talkId: number
 ): Promise<boolean> {
-  const apiURL = getApiURL(`/talk/${talkId}/check_user_access`);
+  const apiURL = `/talk/${talkId}/check_user_access`;
   try {
-    const res = await axios.get(apiURL);
+    const res = await axiosInstance.get(apiURL);
     return res.data.canJoin;
   } catch (error) {
     console.log("Failed to check participation");

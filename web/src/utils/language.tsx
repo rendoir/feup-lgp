@@ -20,8 +20,11 @@ export let dictionary: Dictionary = {
   shop: { PT: "Loja", EN: "Shop" },
   search: { PT: "Procurar", EN: "Search" },
   new: { PT: "Novo", EN: "New" },
+  user_dropdown: { PT: "Utilizador", EN: "User" },
   profile: { PT: "Perfil", EN: "Profile" },
   talks: { PT: "Palestras", EN: "Talks" },
+  edit_profile: { PT: "Editar perfil", EN: "Edit profile" },
+  logout: { PT: "Terminar sessão", EN: "Logout" },
   conferences: { PT: "Conferências", EN: "Conferences" },
   like_action: { PT: "Gostar", EN: "Like" },
   dislike_action: { PT: "Não gostar", EN: "Dislike" },
@@ -76,6 +79,10 @@ export let dictionary: Dictionary = {
   hide_talk: { PT: "Esconder palestra", EN: "Hide talk" },
   report_talk: { PT: "Reportar palestra", EN: "Report talk" },
   archive_talk: { PT: "Arquivar palestra", EN: "Archive talk" },
+  unarchive_talk: {
+    PT: "Desarquivar conferência",
+    EN: "Unarchive conference"
+  },
   start_livestream_talk: {
     PT: "Começar transmissão em direto",
     EN: "Start livestream"
@@ -90,15 +97,16 @@ export let dictionary: Dictionary = {
   },
   login: { PT: "Entrar", EN: "Login" },
   username: { PT: "Nome de utilizador", EN: "Username" },
+  email: { PT: "E-mail", EN: "E-mail" },
   password: { PT: "Palavra passe", EN: "Password" },
   notifications: { PT: "Notificações", EN: "Notifications" },
   no_notifications: {
-    PT: "Erro ao adquirir notificações",
-    EN: "Error retrieving notifications."
-  },
-  error_notifications: {
     PT: "Não tem notificações",
     EN: "You have no notifications."
+  },
+  error_notifications: {
+    PT: "Erro ao adquirir notificações",
+    EN: "Error retrieving notifications."
   },
   search_type: { PT: "Tipo de busca", EN: "Search type" },
   all_users: { PT: "Todos os utilizadores", EN: "All users" },
@@ -120,11 +128,28 @@ export let dictionary: Dictionary = {
   signup: { PT: "Registar", EN: "Sign up" },
   first_name: { PT: "Primeiro nome", EN: "First name" },
   last_name: { PT: "Último nome", EN: "Last name" },
-  profession_field: { PT: "Profissão / Área", EN: "Profession / Field" },
-  workplace_institution: {
-    PT: "Local de Trabalho / Instituição",
-    EN: "Workplace / Institution"
+  profession_field: {
+    PT: "Profissão / Área (Opcional)",
+    EN: "Profession / Field (Optional)"
   },
+  workplace_institution: {
+    PT: "Local de Trabalho / Instituição (Opcional)",
+    EN: "Workplace / Institution (Optional)"
+  },
+  hometown: { PT: "Localidade (Opcional)", EN: "Hometown (Optional)" },
+  university: { PT: "Universidade (Opcional)", EN: "University (Optional)" },
+  confirm_password: { PT: "Confirme a palavra passe", EN: "Confirm password" },
+  invalid_name: { PT: "Nome inválido", EN: "Invalid name" },
+  invalid_email: { PT: "Email inválido", EN: "Invalid email" },
+  invalid_password: {
+    PT: "A palavra passe deve conter pelo menos um número e 8 caracteres",
+    EN: "Password must have at least a number and be 8 characters of length"
+  },
+  invalid_confirm_password: {
+    PT: "As palavras passe não são iguais",
+    EN: "Passwords do not match"
+  },
+  register: { PT: "Registar", EN: "Register" },
   search_results: { PT: "Resultados de Pesquisa", EN: "Search Results" },
   posts_by_content: { PT: "Publicações por Conteúdo", EN: "Posts by Content" },
   search_by_author: { PT: "Publicações por Autor", EN: "Posts by Author" },
@@ -299,6 +324,15 @@ export let dictionary: Dictionary = {
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   create_new_talk: { PT: "Criar nova palestra", EN: "Create new talk" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  join: { PT: "Aderir", EN: "Join" },
+  invite_discussion: {
+    PT: "Convidar para a discussão",
+    EN: "Invite users to discussion"
+  },
+  invite_discussion_placeholder: {
+    PT: "Insira o primeiro e último nome do utilizador",
+    EN: "Insert user's first and last name"
+  },
   empty: { PT: "", EN: "" }
 };
 

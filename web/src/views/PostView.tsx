@@ -1,7 +1,8 @@
-import axios from "axios";
 import * as React from "react";
 
 import Post from "../components/Post/Post";
+import axiosInstance from "../utils/axiosInstance";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -46,14 +47,8 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public apiGetPost(id: number) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${id}`;
-    axios
-      .get(postUrl, {
+    axiosInstance
+      .get(`/post/${id}`, {
         headers: {
           /*'Authorization': "Bearer " + getToken()*/
         }
@@ -98,7 +93,7 @@ class PostView extends React.Component<IProps, IState> {
               this.state.post.first_name + " " + this.state.post.last_name
             }
             date={this.date()}
-            text={this.state.post.content}
+            content={this.state.post.content}
             user_id={this.state.post.user_id}
             comments={this.state.comments}
             files={this.state.files}
@@ -111,4 +106,4 @@ class PostView extends React.Component<IProps, IState> {
   }
 }
 
-export default PostView;
+export default withAuth(PostView);

@@ -1,5 +1,5 @@
 import { query } from '../db/db';
-import {editFiles, saveTags} from './post';
+import { editFiles, saveTags } from './post';
 
 export function createTalk(req, res) {
   if (!req.body.title.trim()) {
@@ -16,6 +16,7 @@ export function createTalk(req, res) {
       message: 'An error occurred while crating a new talk. ' +
         'The field about cannot be empty',
     });
+    return;
   }
   if (!req.body.local.trim()) {
     console.log('\n\nError: talk local cannot be empty');
@@ -23,6 +24,7 @@ export function createTalk(req, res) {
       message: 'An error occurred while crating a new talk. ' +
         'The field local cannot be empty',
     });
+    return;
   }
   if (!req.body.dateStart.trim()) {
     console.log('\n\nError: talk starting date cannot be empty');
@@ -30,6 +32,7 @@ export function createTalk(req, res) {
       message: 'An error occurred while crating a new talk. ' +
         'The field date start cannot be empty',
     });
+    return;
   }
   if (req.body.dateEnd.trim()) {
     if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
@@ -40,14 +43,17 @@ export function createTalk(req, res) {
         message: 'An error occurred while crating a new talk. ' +
           'The field date end cannot be a date previous to date start',
       });
+      return;
     }
   }
+
+  const userId = req.user.id;
 
   query({
     text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
     values: [
-      req.body.author,
+      userId,
       req.body.title,
       req.body.about,
       req.body.livestream,
@@ -81,7 +87,7 @@ export async function inviteUser(req, res) {
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'talk')`,
       values: [req.body.invited_user, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while inviting user to talk' });
@@ -101,9 +107,9 @@ export async function inviteSubscribers(req, res) {
                 FROM retrieve_talk_uninvited_subscribers($1)
               ON CONFLICT ON CONSTRAINT unique_invite
               DO NOTHING`,
-      values: [req.params.id],
+    values: [req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while inviting subscribers to talk' });
@@ -136,7 +142,7 @@ export async function getUninvitedUsersInfo(req, res) {
     return;
   }
 
-  const userId = 3;
+  const userId = req.user.id;
   try {
     const uninvitedUsersQuery = await query({
       text: `SELECT id, first_name, last_name, home_town, university, work, work_field
@@ -152,12 +158,12 @@ export async function getUninvitedUsersInfo(req, res) {
 }
 
 export function addParticipantUser(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   query({
       text: `INSERT INTO talk_participants (participant_user, talk) VALUES ($1, $2)`,
       values: [userId, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while adding participant to talk' });
@@ -165,12 +171,12 @@ export function addParticipantUser(req, res) {
 }
 
 export function removeParticipantUser(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   query({
       text: `DELETE FROM talk_participants WHERE participant_user = $1 AND talk = $2`,
       values: [userId, req.params.id],
   }).then((result) => {
-      res.status(200).send();
+    res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while removing participant from talk' });
@@ -178,7 +184,7 @@ export function removeParticipantUser(req, res) {
 }
 
 export async function checkUserParticipation(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   try {
       const userParticipantQuery = await query({
           text: `SELECT *
@@ -194,7 +200,7 @@ export async function checkUserParticipation(req, res) {
 }
 
 export async function checkUserCanJoin(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   try {
       const userCanJoinQuery = await query({
           text: `SELECT * FROM user_can_join_talk($1, $2)`,
@@ -217,51 +223,16 @@ async function loggedUserOwnstalk(talkId): Promise<boolean> {
     });
     return Boolean(userOwnstalkQuery.rows[0]);
   } catch (error) {
-      console.error(error);
-      return false;
-  }
-}
-
-export function setSecureCookiesExample(req, res) {
-  console.log('SETTING COOKIES...');
-  try {
-      // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
-      // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
-      // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
-      // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
-
-      // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
-      // "req.cookies" para aceder a cookies mais tarde noutros requests.
-      // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
-      /*for (var key in req.cookies) {
-        res.clearCookie(key, { path: '/' });
-      }
-      for (var key in req.signedCookies) {
-        res.clearCookie(key, { path: '/' });
-      }*/
-
-      // res.cookie('user_id', 3);
-      // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
-
-      // res.cookie('user_id', 1, {signed: true, httpOnly: true});
-      // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
-      // the one the server will access cannot be forged by hackers using XSS
-      /*res.cookie('openExample', 'openExampleValue');
-      res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
-      res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
-      res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
-      req.session.firstName = 'bomdia';
-      console.log(req.session.id);
-      res.status(200).send('Cookies set');
-  } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in talk'));
+    console.error(error);
+    return false;
   }
 }
 
 export async function gettalk(req, res) {
   const id = req.params.id;
-  const user = 2;
+  const limit = req.query.perPage;
+  const offset = req.query.offset;
+  const userId = req.user.id;
   try {
     /**
      * talk must be owned by user
@@ -271,7 +242,7 @@ export async function gettalk(req, res) {
     const talk = await query({
       text: `
               SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy, c.archived
               FROM talks c
               INNER JOIN users a ON c.author = a.id
               WHERE c.id = $1
@@ -282,7 +253,7 @@ export async function gettalk(req, res) {
                     )
                 )
             `,
-      values: [id, user],
+      values: [id, userId],
     });
     if (talk === null) {
       res.status(400).send(
@@ -297,16 +268,20 @@ export async function gettalk(req, res) {
                         INNER JOIN users ON (users.id = p.author)
 					WHERE p.talk = $1
                     ORDER BY p.date_created DESC
-                    LIMIT 10`,
-      values: [id],
+                    LIMIT $2
+                    OFFSET $3`,
+      values: [id, limit, offset],
     });
     if (postsResult == null) {
       res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
       return;
     }
-    const commentsToSend = [];
-    const tagsToSend = [];
-    const filesToSend = [];
+    const totalSize = await query({
+      text: `SELECT COUNT(id)
+              FROM posts
+              WHERE talk = $1`,
+      values: [id],
+    });
     for (const post of postsResult.rows) {
       const comment = await query({
         text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -337,16 +312,14 @@ export async function gettalk(req, res) {
                             p.id = $1`,
         values: [post.id],
       });
-      commentsToSend.push(comment.rows);
-      tagsToSend.push(tagsPost.rows);
-      filesToSend.push(files.rows);
+      post.comments = comment.rows;
+      post.tags = tagsPost.rows;
+      post.files = files.rows;
     }
     const result = {
       talk: talk.rows[0],
       posts: postsResult.rows,
-      comments: commentsToSend,
-      tags: tagsToSend,
-      files: filesToSend,
+      size: totalSize.rows[0].count,
     };
     res.send(result);
   } catch (error) {
@@ -355,16 +328,67 @@ export async function gettalk(req, res) {
   }
 }
 
+// Can only change privacy if user is author.
 export function changePrivacy(req, res) {
+  const userId = req.user.id;
   query({
     text: `UPDATE talks
                 SET privacy = $2
-                WHERE id = $1`,
-    values: [req.body.id, req.body.privacy],
+                WHERE id = $1 AND author = $3`,
+    values: [req.body.id, req.body.privacy, userId],
   }).then((result) => {
     res.status(200).send();
   }).catch((error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while changing the privacy of a talk' });
   });
+}
+
+// Can only archive if user is author.
+export async function archiveTalk(req, res) {
+  const id = req.params.id;
+  const userId = req.user.id;
+  try {
+    console.log('id asdasd ' + id);
+    const archivedConference = await query({
+      text: `UPDATE talks
+              SET archived = TRUE
+              WHERE id = $1 AND author = $2`,
+      values: [id, userId],
+    });
+    if (archivedConference === null) {
+      res.status(400).send(
+        new Error('Error in the archieve process of talk'),
+      );
+      return;
+    }
+    res.send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error archieve talk'));
+  }
+}
+
+// Can only unarchive if user is author.
+export async function unarchiveTalk(req, res) {
+  const id = req.params.id;
+  const userId = req.user.id;
+  try {
+    const archivedConference = await query({
+      text: `UPDATE talks
+            SET archived = FALSE
+            WHERE id = $1 AND author = $2`,
+      values: [id, userId],
+    });
+    if (archivedConference === null) {
+      res.status(400).send(
+        new Error('Error in the archieve process of talk'),
+      );
+      return;
+    }
+    res.send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error archieve talk'));
+  }
 }

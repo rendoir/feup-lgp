@@ -1,15 +1,6 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { MouseEvent } from "react";
 import * as React from "react";
-import Avatar from "../components/Avatar/Avatar";
-import Chat from "../components/Chat/Chat";
-import Icon from "../components/Icon/Icon";
-import Livestream from "../components/Livestream/Livestream";
-import Post from "../components/Post/Post";
-import InviteModal from "../components/PostModal/InviteModal";
-
-import styles from "../components/Post/Post.module.css";
 import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
 
@@ -25,12 +16,8 @@ import { Request, Step } from "../components/CreateNewModal/types";
 
 // - Import utils
 import TalkCard from "../components/TalkCard/TalkCard";
-import {
-  apiCheckUserCanJoinTalk,
-  apiCheckUserTalkParticipation,
-  apiUserJoinTalk,
-  apiUserLeaveTalk
-} from "../utils/apiTalk";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
@@ -86,6 +73,7 @@ class Conference extends React.Component<IProps, IState> {
   public id: number;
   public userId: number;
   public tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -135,9 +123,8 @@ class Conference extends React.Component<IProps, IState> {
     this.getConference();
   }
   public getConference() {
-    const conferenceURL = getApiURL(`/conference/${this.id}`);
-    axios
-      .get(conferenceURL, {})
+    axiosInstance
+      .get(`/conference/${this.id}`)
       .then(res => {
         const conference = res.data.conference;
         let datestart = conference.datestart.split("T");
@@ -313,8 +300,8 @@ class Conference extends React.Component<IProps, IState> {
         : "/api";
 
     if (request.type === "talk") {
-      url += "/talk/create";
-      axios
+      url += "/talk";
+      axiosInstance
         .post(url, {
           about: request.about,
           author: 1,

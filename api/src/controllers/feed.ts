@@ -4,7 +4,8 @@ import { query } from '../db/db';
 
 export async function getFeed(req, res) {
     const offset = req.query.offset;
-    const userId = 1;
+    const limit = req.query.perPage;
+    const userId = req.user.id;
     try {
         const result = await query({
             text: `(SELECT p.id, first_name, last_name, p.title, p.content,
@@ -18,7 +19,7 @@ export async function getFeed(req, res) {
                             AND p.talk IS null
                         ORDER BY date_created DESC
                         LIMIT 80
-                        OFFSET $2)
+                        OFFSET $3)
                     UNION
                     (SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
@@ -31,15 +32,25 @@ export async function getFeed(req, res) {
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                         ORDER BY date_created DESC
                         LIMIT 20
-                        OFFSET $2)
+                        OFFSET $3)
                     ORDER BY date_created DESC
-                    LIMIT 20
-                    OFFSET $2`,
-            values: [userId, offset],
+                    LIMIT $2
+                    OFFSET $3`,
+            values: [userId, limit, offset],
         });
-        const commentsToSend = [];
-        const tagsToSend = [];
-        const filesToSend = [];
+        const totalSize = await query({
+          text: `SELECT COUNT(id)
+                    FROM posts
+                    WHERE (
+                      author = $1
+                      OR (
+                        author IN (SELECT followed FROM follows WHERE follower = $1)
+                        AND visibility IN ('public','followers')
+                      )
+                    )
+                    AND talk IS null`,
+          values: [userId],
+        });
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -70,15 +81,13 @@ export async function getFeed(req, res) {
                             p.id = $1`,
                 values: [post.id],
             });
-            commentsToSend.push(comment.rows);
-            tagsToSend.push(tagsPost.rows);
-            filesToSend.push(files.rows);
+            post.comments = comment.rows;
+            post.tags = tagsPost.rows;
+            post.files = files.rows;
         }
         res.send({
             posts: result.rows,
-            comments: commentsToSend,
-            tags: tagsToSend,
-            files: filesToSend,
+            size: totalSize.rows[0].count,
         });
     } catch (error) {
         console.error(error);

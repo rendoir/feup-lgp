@@ -23,7 +23,7 @@ export const talkRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-talkRouter.post('/create', controller.createTalk);
+talkRouter.post('/', controller.createTalk);
 
 /**
  * @api {post} /api/talk/:id/invite Invite user to talk
@@ -157,11 +157,6 @@ talkRouter.get('/:id/check_participation', controller.checkUserParticipation);
 talkRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
 
 /**
- * This is just an example on how to set cookies in a secure way, so that they dont get forged or accessed by XSS
- */
-talkRouter.post('/set_cookies', controller.setSecureCookiesExample);
-
-/**
  * @api {get} /api/talk/:id Get a talk
  * @apiName Get-A-talk
  * @apiGroup Post
@@ -191,3 +186,33 @@ talkRouter.get('/:id', controller.gettalk);
  *     }
  */
 talkRouter.post('/:id/change_privacy', controller.changePrivacy);
+
+/**
+ * @api {post} /api/conference/:id/archive Archive a conference
+ * @apiName Archive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+talkRouter.post('/:id/archive', controller.archiveTalk);
+
+/**
+ * @api {post} /api/conference/:id/unarchive Unarchive a conference
+ * @apiName Unarchive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+talkRouter.delete('/:id/archive', controller.unarchiveTalk);

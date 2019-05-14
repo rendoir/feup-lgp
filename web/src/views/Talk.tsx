@@ -1,10 +1,10 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { MouseEvent } from "react";
 import * as React from "react";
 import Avatar from "../components/Avatar/Avatar";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
+import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Livestream from "../components/Livestream/Livestream";
 import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
@@ -30,6 +30,8 @@ import {
   apiUserJoinTalk,
   apiUserLeaveTalk
 } from "../utils/apiTalk";
+import AuthHelperMethods from "../utils/AuthHelperMethods";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 
 interface IProps {
@@ -41,6 +43,7 @@ interface IProps {
 }
 
 interface IState {
+  archived: boolean;
   hasChat: boolean;
   step: Step;
   hasLiveStream: boolean;
@@ -85,6 +88,7 @@ class Talk extends React.Component<IProps, IState> {
   public id: number;
   public userId: number;
   public tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -92,6 +96,7 @@ class Talk extends React.Component<IProps, IState> {
     this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.tags = [];
     this.state = {
+      archived: false,
       date_end: "",
       date_start: "",
       description: "",
@@ -179,9 +184,8 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   public apiGetTalk() {
-    const talkURL = getApiURL(`/talk/${this.id}`);
-    axios
-      .get(talkURL, {})
+    axiosInstance
+      .get(`/talk/${this.id}`)
       .then(res => {
         const talk = res.data.talk;
         let datestart = talk.datestart.split("T");
@@ -191,14 +195,6 @@ class Talk extends React.Component<IProps, IState> {
 
         const postsComing = res.data;
 
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-
         if (talk.privacy === "closed") {
           this.setState({
             isHidden: true
@@ -206,6 +202,7 @@ class Talk extends React.Component<IProps, IState> {
         }
 
         this.setState({
+          archived: talk.archived,
           date_end: dateend,
           date_start: datestart,
           description: talk.about,
@@ -236,14 +233,9 @@ class Talk extends React.Component<IProps, IState> {
       });
     }
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/talk/${this.props.match.params.id}/change_privacy`;
+    const postUrl = `/talk/${this.props.match.params.id}/change_privacy`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         id: this.props.match.params.id,
         privacy: privacyState
@@ -252,6 +244,28 @@ class Talk extends React.Component<IProps, IState> {
         console.log("Talk hidden...");
       })
       .catch(() => console.log("Failed to update privacy"));
+  }
+
+  public apiSetArchived() {
+    axiosInstance
+      .post(`/talk/${this.id}/archive`)
+      .then()
+      .catch(() => console.log("Failed to archive talk"));
+
+    this.setState({
+      archived: true
+    });
+  }
+
+  public apiSetUnarchived() {
+    axiosInstance
+      .delete(`/talk/${this.id}/archive`)
+      .then()
+      .catch(() => console.log("Failed to unarchive talk"));
+
+    this.setState({
+      archived: false
+    });
   }
 
   public async apiGetUserCanJoin() {
@@ -265,6 +279,7 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const isArchived = this.state.archived;
     if (this.state.isHidden && this.userId === this.state.owner_id) {
       return (
         <div id="Talk" className="my-5">
@@ -300,7 +315,11 @@ class Talk extends React.Component<IProps, IState> {
             </div>
             <div className="conf_posts">
               {this.getJoinButton()}
-              <button className="create" onClick={this.createConfPost}>
+              <button
+                className="create"
+                onClick={this.createConfPost}
+                disabled={isArchived}
+              >
                 {dictionary.create_post[this.context]}
               </button>
               {this.state.postModalOpen ? (
@@ -317,7 +336,7 @@ class Talk extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {this.getPosts()}
+              <InfiniteScroll requestUrl={`/talk/${this.id}`} />
             </div>
           </div>
         </div>
@@ -386,12 +405,6 @@ class Talk extends React.Component<IProps, IState> {
   };
 
   private handleSubmit = (request: Request) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-
     if (request.type === "post") {
       const formData = new FormData();
       request.files.images.forEach((file, idx) =>
@@ -405,15 +418,13 @@ class Talk extends React.Component<IProps, IState> {
       );
       request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
 
-      formData.append("author", "1");
       formData.append("text", request.about);
       formData.append("title", request.title);
       formData.append("visibility", request.privacy);
       formData.append("talk", this.id + "");
 
-      url += "/post/create";
-      axios
-        .post(url, formData, {
+      axiosInstance
+        .post("/post", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -428,15 +439,8 @@ class Talk extends React.Component<IProps, IState> {
   };
 
   private getPossibleTags = (): void => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += `/tags`;
-
-    axios
-      .get(url)
+    axiosInstance
+      .get("/tags")
       .then(res => {
         res.data.forEach(tag => {
           this.tags.push(tag.name);
@@ -487,32 +491,12 @@ class Talk extends React.Component<IProps, IState> {
     );
   }
 
-  private getPosts() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
+  private archiveTalk() {
+    if (this.state.archived === false) {
+      this.apiSetArchived();
+    } else {
+      this.apiSetUnarchived();
     }
-
-    const postsDiv: any[] = [];
-
-    for (const post of this.state.posts) {
-      postsDiv.push(
-        <Post
-          key={post.id}
-          id={post.id}
-          author={post.first_name + " " + post.last_name}
-          text={post.content}
-          user_id={post.user_id}
-          comments={post.comments || []}
-          tags={post.tags}
-          title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
-          visibility={post.visibility}
-          files={post.files}
-        />
-      );
-    }
-
-    return postsDiv;
   }
 
   private getDetails() {
@@ -543,14 +527,18 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private getAdminButtons() {
+    const isArchived = this.state.archived;
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_talk[this.context]
       : dictionary.hide_talk[this.context];
-
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_talk[this.context]
+      : dictionary.archive_talk[this.context];
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
         <button
+          disabled={isArchived}
           data-toggle="modal"
           data-target={`#invite_talk_modal_${this.id}`}
         >
@@ -559,15 +547,25 @@ class Talk extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal talkId={this.id} />
-        <button>
+
+        <button disabled={isArchived}>
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
         </button>
-        <button>
+        <button disabled={isArchived}>
           <i className="fas fa-archive" />
           {dictionary.archive_talk[this.context]}
         </button>
-        <button onClick={this.handleHideTalk}>
+        <button
+          type="button"
+          onClick={() => {
+            this.archiveTalk();
+          }}
+        >
+          <i className="fas fa-archive" />
+          {isArchivedBtn}
+        </button>
+        <button onClick={this.handleHideTalk} disabled={isArchived}>
           <i className="fas fa-trash" />
           {hideBtnText}
         </button>
