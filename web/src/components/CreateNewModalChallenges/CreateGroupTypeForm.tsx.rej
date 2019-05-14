@@ -1,4 +1,0 @@
-diff a/web/src/components/CreateNewModalChallenges/CreateGroupTypeForm.tsx b/web/src/components/CreateNewModalChallenges/CreateGroupTypeForm.tsx	(rejected hunks)
-@@ -31 +32 @@ function CreateGroupTypeForm(props: Props) {
--        "{dictionary.mult_choice_question[props.context]}" 
-+          "{dictionary.mult_choice_question[props.context]}"

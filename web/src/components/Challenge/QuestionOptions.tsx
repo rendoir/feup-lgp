@@ -173,6 +173,8 @@ class QuestionOptions extends Component<IProps, IState> {
     );
   }
 
+  public handleChange = value => this.setState({ value });
+
   public parseContent() {
     const answers: any[] = [];
 
@@ -204,7 +206,7 @@ class QuestionOptions extends Component<IProps, IState> {
         <ul className="answers">
           <RadioGroup
             key={"Challenge_" + this.props.id}
-            onChange={value => this.setState({ value })}
+            onChange={this.handleChange}
             value={this.state.value}
             disabled={this.getButtonRequiredClass()}
           >

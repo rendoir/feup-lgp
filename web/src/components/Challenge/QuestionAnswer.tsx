@@ -158,6 +158,8 @@ class QuestionAnswer extends Component<Props, State> {
     );
   }
 
+  public handleChange = value => this.setState({ value });
+
   public parseContent() {
     return (
       <div>
@@ -165,7 +167,7 @@ class QuestionAnswer extends Component<Props, State> {
         <Input
           id="0"
           className={this.getInputRequiredStyle()}
-          onChange={value => this.setState({ value })}
+          onChange={this.handleChange}
           placeholder={dictionary.write_answer[this.context]}
           value={this.state.value}
           disabled={this.getButtonRequiredClass()}

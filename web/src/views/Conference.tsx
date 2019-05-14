@@ -528,7 +528,7 @@ class Conference extends React.Component<IProps, IState> {
     formData.append("dateStart", request.dateStart);
     formData.append("prize", request.prize);
     formData.append("prizePoints", request.prizePoints);
-
+    console.log(request.prizePoints);
     formData.append("question", request.question);
 
     let correctAns = "";
@@ -798,7 +798,6 @@ class Conference extends React.Component<IProps, IState> {
 
   private handleChallengeClick(challenge: number | undefined) {
     if (challenge) {
-      document.body.style.overflow = "hidden";
       this.setState({
         clickedChallenge: challenge
       } as IState);

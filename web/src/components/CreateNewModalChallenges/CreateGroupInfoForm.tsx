@@ -154,11 +154,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_points`}
               value={prizePoints}
-              placeholder={dictionary.points_desc[this.context]}
+              // placeholder={dictionary.points_desc[this.context]}
               name={"prizePoints"}
               label={dictionary.points[this.context]}
               type={"text"}
-              required={true}
             />
           </div>
           <hr />
