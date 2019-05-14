@@ -39,10 +39,14 @@ export async function apiGetUninvitedSubscribersAmount(
   const apiURL = `/${inviteType}/${inviteSubjectId}/amount_uninvited_subscribers`;
 
   try {
-    const res = await axiosInstance.get(apiURL);
+    const res =
+      inviteType === "conference"
+        ? await axiosInstance.get(apiURL)
+        : await axiosInstance.post(apiURL);
+
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited subscribers amount");
     return -1;
   }
 }
@@ -54,10 +58,14 @@ export async function apiGetUninvitedUsersInfo(
   const apiURL = `/${inviteType}/${inviteSubjectId}/uninvited_users_info`;
 
   try {
-    const res = await axiosInstance.get(apiURL);
+    const res =
+      inviteType === "conference"
+        ? await axiosInstance.get(apiURL)
+        : await axiosInstance.post(apiURL);
+
     return res.data.uninvitedUsers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited users info");
     return null;
   }
 }

@@ -10,6 +10,7 @@ import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import PostFile from "../PostFile/PostFile";
 import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
 import DeleteModal from "../PostModal/DeleteModal";
+import InviteModal from "../PostModal/InviteModal";
 import PostModal from "../PostModal/PostModal";
 import ReportModal from "../PostModal/ReportModal";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
@@ -191,15 +192,17 @@ class Post extends Component<Props, IState> {
             </fieldset>
           </div>
           {this.getUserInteractionButtons()}
-          {/* Post edition modal */}
-          <PostModal {...this.props} tags={this.state.tags} />
-          {/* Delete Post */}
-          <DeleteModal {...this.props} />
+          {/* Invite users to post */}
+          <InviteModal postId={this.props.id} />
           {/* Report Post */}
           <ReportModal
             postId={this.props.id}
             reportCancelHandler={this.handleReportCancel}
           />
+          {/* Post edition modal */}
+          <PostModal {...this.props} tags={this.state.tags} />
+          {/* Delete Post */}
+          <DeleteModal {...this.props} />
           {/* Comment section*/}
           <div className={`${styles.post_comment_section} w-100`}>
             {this.getCommentSection()}
@@ -672,9 +675,20 @@ class Post extends Component<Props, IState> {
   }
 
   private getDropdownButtons() {
-    const reportButton = (
+    const inviteButton = (
       <button
         key={0}
+        className="dropdown-item"
+        type="button"
+        data-toggle="modal"
+        data-target={`#invite_post_modal_${this.props.id}`}
+      >
+        {dictionary.invite_discussion[this.context]}
+      </button>
+    );
+    const reportButton = (
+      <button
+        key={1}
         className={`dropdown-item ${styles.report_content}`}
         type="button"
         data-toggle="modal"
@@ -689,7 +703,7 @@ class Post extends Component<Props, IState> {
     );
     const editButton = (
       <button
-        key={1}
+        key={2}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -700,7 +714,7 @@ class Post extends Component<Props, IState> {
     );
     const deleteButton = (
       <button
-        key={2}
+        key={3}
         className="dropdown-item"
         type="button"
         data-toggle="modal"
@@ -709,7 +723,12 @@ class Post extends Component<Props, IState> {
         {dictionary.delete_post[this.context]}
       </button>
     );
-    const dropdownButtons = [reportButton, editButton, deleteButton];
+    const dropdownButtons = [
+      inviteButton,
+      reportButton,
+      editButton,
+      deleteButton
+    ];
     return dropdownButtons;
   }
 
