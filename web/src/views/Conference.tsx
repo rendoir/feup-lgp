@@ -292,7 +292,7 @@ class Conference extends React.Component<IProps, IState> {
 
   public render() {
     const isArchived = this.state.archived;
-    if (this.state.isHidden && this.userId === this.state.owner_id) {
+    if (this.state.isHidden && this.userId !== this.state.owner_id) {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
