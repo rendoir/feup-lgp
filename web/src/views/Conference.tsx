@@ -239,7 +239,7 @@ class Conference extends React.Component<IProps, IState> {
         date[1] = dictionary.month12[this.context];
         break;
     }
-    let cleanDate =
+    const cleanDate =
       date[2] +
       " " +
       dictionary.of[this.context] +
