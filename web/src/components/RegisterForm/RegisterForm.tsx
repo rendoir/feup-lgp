@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router";
+import { getApiURL } from "../../utils/apiURL";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 type State = {
@@ -182,7 +183,7 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
       };
 
       return axios
-        .post("/users", body)
+        .post(getApiURL("/users"), body)
         .then(() => {
           console.log("Registration completed, redirecting to feed!");
           this.setState({
