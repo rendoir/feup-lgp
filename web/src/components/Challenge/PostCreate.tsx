@@ -128,7 +128,10 @@ class PostCreate extends Component<Props, State> {
   public parsePrize() {
     let prize = "";
 
-    if (this.props.prize === "points") {
+    if (
+      this.props.prize.includes("points") ||
+      this.props.prize.includes("Points")
+    ) {
       prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
         dictionary.points[this.context]
       } !`;
