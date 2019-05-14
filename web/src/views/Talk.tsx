@@ -60,7 +60,7 @@ interface IState {
   privacy: string;
   postModalOpen: boolean;
   request: {
-    type: "post" | "talk";
+    type: "post" | "talk" | "conference";
     title: string;
     about: string;
     avatar?: File;

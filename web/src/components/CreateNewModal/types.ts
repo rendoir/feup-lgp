@@ -27,7 +27,7 @@ export type SelectorStateCreator<T> = {
 };
 
 export type Request = {
-  type: "post" | "talk";
+  type: "post" | "talk" | "conference";
   title: string;
   about: string;
   avatar?: File;

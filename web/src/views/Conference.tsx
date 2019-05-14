@@ -10,7 +10,7 @@ import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
-import "../styles/Talk.css";
+import "../styles/Conference.css";
 import { getApiURL } from "../utils/apiURL";
 
 import {
@@ -61,14 +61,20 @@ interface IState {
   privacy: string;
   postModalOpen: boolean;
   request: {
-    type: "post" | "conference" | "conference";
+    type: "post" | "talk" | "conference";
     title: string;
     about: string;
     avatar?: File;
     privacy: string;
     tags: string[];
+    files: {
+      docs: File[];
+      videos: File[];
+      images: File[];
+    };
     dateStart: string;
     dateEnd: string;
+    livestream: string;
     local: string;
     switcher: string;
   };
@@ -104,12 +110,18 @@ class Conference extends React.Component<IProps, IState> {
         avatar: undefined,
         dateEnd: "",
         dateStart: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: "",
         local: "",
         privacy: "public",
         switcher: "false",
         tags: [],
         title: "",
-        type: "post"
+        type: "conference"
       },
       step: "type",
       talks: [],
@@ -201,14 +213,91 @@ class Conference extends React.Component<IProps, IState> {
             <h5>{this.state.description}</h5>
           </div>
           <div className="container my-5">
-            <div className="conf_side">
+            <div className="conf_posts">
               <div className="p-3">{this.getTalks()}</div>
+              <button className="create" onClick={this.createConfPost}>
+                {dictionary.create_post[this.context]}
+              </button>
+              {this.state.postModalOpen ? (
+                <CreateNewModal
+                  pending={false}
+                  onSubmit={this.handleSubmit}
+                  onStepChange={step => this.setState({ step })}
+                  maxGroupSize={5}
+                  request={this.state.request}
+                  onRequestChange={request => this.setState({ request })}
+                  onClose={this.resetState}
+                  autoFocus={false}
+                  step={"talkConf"}
+                  tags={this.tags}
+                />
+              ) : null}
             </div>
           </div>
         </div>
       );
     }
   }
+
+  private createConfPost = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ postModalOpen: true });
+  };
+
+  private handleSubmit = (request: Request) => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+
+    if (request.type === "talk") {
+      url += "/talk/create";
+      axios
+        .post(url, {
+          about: request.about,
+          author: 1,
+          avatar: request.avatar,
+          conference: this.state.conference_id,
+          dateEnd: request.dateEnd,
+          dateStart: request.dateStart,
+          local: request.local,
+          privacy: request.privacy,
+          title: request.title
+        })
+        .then(res => {
+          console.log(`conference with id = ${res.data.id} created`);
+          window.location.href = "/conference/" + res.data.id;
+          this.resetState();
+        })
+        .catch(error => console.log("Failed to create conference. " + error));
+    }
+  };
+  private resetState = () => {
+    this.setState({
+      postModalOpen: false,
+      request: {
+        about: "",
+        avatar: undefined,
+        dateEnd: "",
+        dateStart: "",
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: "",
+        local: "",
+        privacy: "public",
+        shortname: "",
+        switcher: "false",
+        tags: [],
+        title: "",
+        type: "post"
+      },
+      step: "type"
+    });
+  };
 }
 
 export default Conference;

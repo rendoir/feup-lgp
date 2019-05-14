@@ -44,7 +44,7 @@ export function createTalk(req, res) {
   }
 
   query({
-    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy) ' +
+    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
     values: [
       req.body.author,
@@ -56,6 +56,7 @@ export function createTalk(req, res) {
       req.body.dateEnd,
       req.body.avatar,
       req.body.privacy,
+      req.body.conference,
     ],
   }).then((result) => {
     res.send({

@@ -28,7 +28,7 @@ type State = {
   isOpen: boolean;
   step: Step;
   request: {
-    type: "post" | "talk";
+    type: "post" | "talk" | "conference";
     title: string;
     about: string;
     avatar?: File;
@@ -231,8 +231,8 @@ class Header extends PureComponent<Props, State> {
           this.resetState();
         })
         .catch(() => console.log("Failed to create post"));
-    } else {
-      url += "/talk/create";
+    } else if (request.type === "conference") {
+      url += "/conference/create";
       axios
         .post(url, {
           about: request.about,
@@ -240,17 +240,16 @@ class Header extends PureComponent<Props, State> {
           avatar: request.avatar,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,
-          livestream: request.switcher === "true" ? request.livestream : null,
           local: request.local,
           privacy: request.privacy,
           title: request.title
         })
         .then(res => {
-          console.log(`talk with id = ${res.data.id} created`);
-          window.location.href = "/talk/" + res.data.id;
+          console.log(`conference with id = ${res.data.id} created`);
+          window.location.href = "/conference/" + res.data.id;
           this.resetState();
         })
-        .catch(error => console.log("Failed to create talk. " + error));
+        .catch(error => console.log("Failed to create conference. " + error));
     }
   };
 

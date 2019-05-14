@@ -1,6 +1,72 @@
 import { query } from '../db/db';
 import {editFiles, saveTags} from './post';
 
+export function createConference(req, res) {
+  if (!req.body.title.trim()) {
+    console.log('\n\nError: conference title cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while crating a new conference. ' +
+        'The field title cannot be empty',
+    });
+    return;
+  }
+  if (!req.body.about.trim()) {
+    console.log('\n\nError: conference body cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while crating a new conference. ' +
+        'The field about cannot be empty',
+    });
+  }
+  if (!req.body.local.trim()) {
+    console.log('\n\nError: conference local cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while crating a new conference. ' +
+        'The field local cannot be empty',
+    });
+  }
+  if (!req.body.dateStart.trim()) {
+    console.log('\n\nError: conference starting date cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while crating a new conference. ' +
+        'The field date start cannot be empty',
+    });
+  }
+  if (req.body.dateEnd.trim()) {
+    if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
+      console.log(
+        '\n\nError: conference ending date cannot be previous to starting date',
+      );
+      res.status(400).send({
+        message: 'An error occurred while crating a new conference. ' +
+          'The field date end cannot be a date previous to date start',
+      });
+    }
+  }
+  query({
+    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    values: [
+      req.body.author,
+      req.body.title,
+      req.body.about,
+      req.body.local,
+      req.body.dateStart,
+      req.body.dateEnd,
+      req.body.avatar,
+      req.body.privacy,
+    ],
+  }).then((result) => {
+    res.send({
+      id: result.rows[0].id,
+    });
+  }).catch((error) => {
+    console.log('\n\nERROR: ', error);
+    res.status(400).send({
+      message: 'An error occurred while crating a new conference. Error: ' + error.toString(),
+    });
+  });
+}
+
 export async function getConference(req, res) {
     const id = req.params.id;
     const user = 2;

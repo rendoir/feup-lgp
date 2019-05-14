@@ -8,3 +8,8 @@ export const conferenceRouter = Router();
  *
  */
 conferenceRouter.get('/:id', controller.getConference);
+
+/**
+ *
+ */
+conferenceRouter.post('/create', controller.createConference);

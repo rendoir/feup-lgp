@@ -353,7 +353,15 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          {dictionary.new_talk_post[this.context]}
+          <IconButton
+            glyph={faArrowLeft}
+            size={"small"}
+            iconSize={"lg"}
+            className={styles.back}
+            onClick={this.handlePrevStepClick}
+          />
+          {dictionary.new_f[this.context]}{" "}
+          {dictionary[request.type][this.context]}
           <ModalClose
             pending={this.props.pending}
             onClick={this.props.onClose}
@@ -368,8 +376,14 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             type={request.type}
             about={request.about}
             title={request.title}
+            local={request.local}
+            dateStart={request.dateStart}
+            dateEnd={request.dateEnd}
+            livestream={request.livestream}
+            switcher={request.switcher}
             privacy={request.privacy}
             tags={this.props.tags}
+            avatar={request.avatar}
             onChange={this.handleChange}
             onSubmit={this.handleNextStepClick}
             onAvatarRemove={this.handleAvatarRemove}

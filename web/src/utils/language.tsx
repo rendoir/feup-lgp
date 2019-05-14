@@ -21,6 +21,7 @@ export let dictionary: Dictionary = {
   new: { PT: "Novo", EN: "New" },
   profile: { PT: "Perfil", EN: "Profile" },
   talks: { PT: "Palestras", EN: "Talks" },
+  conferences: { PT: "Conferências", EN: "Conferences" },
   like_action: { PT: "Gostar", EN: "Like" },
   dislike_action: { PT: "Não gostar", EN: "Dislike" },
   comment_action: { PT: "Comentar", EN: "Comment" },
@@ -153,6 +154,7 @@ export let dictionary: Dictionary = {
     PT: "Insira aqui a sua mensagem...",
     EN: "Insert your message here..."
   },
+  conference: { PT: "conferência", EN: "conference" },
   talk: { PT: "palestra", EN: "talk" },
   post: { PT: "publicação", EN: "post" },
   description: { PT: "Descrição", EN: "Description" },
@@ -182,6 +184,11 @@ export let dictionary: Dictionary = {
   talk_description: {
     PT: "Palestras são sessões formais para a discussão de um tópico",
     EN: "Talks are formal meetings for discussion of a particular topic."
+  },
+  conference_cap: { PT: "Conferência", EN: "Conference" },
+  conference_description: {
+    PT: "Conferências são sessões formais para a discussão de um tópico",
+    EN: "Conferences are formal meetings for discussion of a particular topic."
   },
   new_f: { PT: "Nova", EN: "New" },
   error_occurred: { PT: "Ocorreu um erro", EN: "An error occurred" },

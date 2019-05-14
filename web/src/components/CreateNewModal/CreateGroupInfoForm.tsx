@@ -16,7 +16,7 @@ import styles from "./CreateNewModal.module.css";
 
 export type Props = {
   id: string;
-  type: "post" | "talk";
+  type: "post" | "talk" | "conference";
   title: string;
   about: string;
   avatar?: File;
@@ -85,7 +85,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={className}>
-        {type === "talk" ? this.renderAvatar() : null}
+        {type === "talk" || type === "conference" ? this.renderAvatar() : null}
         <form id={id} autoComplete={"off"} className={styles.form}>
           <InputNext
             className={styles.input}
@@ -114,6 +114,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           {this.renderPrivacy()}
           {type === "post" ? this.renderPostFields() : null}
           {type === "talk" ? this.rendertalkFields() : null}
+          {type === "conference" ? this.renderconferenceFields() : null}
         </form>
       </div>
     );
@@ -281,6 +282,44 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             type={"url"}
             placeholder={"https://www.youtube.com/embed/<id>"}
             disabled={!(this.props.switcher === "true")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  private renderconferenceFields() {
+    const { id, local } = this.props;
+
+    return (
+      <div className={styles.shortnameWrapper}>
+        <InputNext
+          onChange={this.props.onChange}
+          id={`${id}_talk_local`}
+          value={local}
+          name={"local"}
+          placeholder={dictionary.talk_local[this.context]}
+          label={dictionary.location[this.context]}
+        />
+        <div id={`${id}_talk_dates`}>
+          <label htmlFor={`${id}_talk_dates`} className={styles.dates}>
+            {dictionary.dates[this.context]}
+          </label>
+          <InputNext
+            onChange={this.props.onChange}
+            id={`${id}_talk_date_start`}
+            value={this.props.dateStart}
+            name={"dateStart"}
+            label={dictionary.date_start[this.context]}
+            type={"datetime-local"}
+          />
+          <InputNext
+            onChange={this.props.onChange}
+            id={`${id}_talk_date_end`}
+            value={this.props.dateEnd}
+            name={"dateEnd"}
+            label={dictionary.date_end[this.context]}
+            type={"datetime-local"}
           />
         </div>
       </div>
