@@ -1,11 +1,8 @@
 // - Import react components
-import axios from "axios";
-// import classNames from "classnames";
 
 import Avatar from "../Avatar/Avatar";
 
 import React, { Component } from "react";
-import Cookies from "universal-cookie";
 
 // - Import app components
 import ReportModal from "../PostModal/ReportModal";
@@ -19,6 +16,8 @@ import styles from "./../Post/Post.module.scss";
 
 // - Import utils
 import { apiCheckCommentUserReport } from "../../utils/apiReport";
+import AuthHelperMethods from "../../utils/AuthHelperMethods";
+import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
@@ -45,20 +44,18 @@ export type State = {
   userReport: boolean; // Tells if the logged user has reported this post
 };
 
-const cookies = new Cookies();
-
 class Comment extends Component<Props, State> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {};
   public id: string;
-  public loggedUserId: number;
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
 
     this.id = "comment_" + this.props.title;
-    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
     this.state = {
       commentID: 0,
@@ -340,16 +337,12 @@ class Comment extends Component<Props, State> {
   }
 
   public apiComments() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
+    const postUrl = `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
         comment: this.state.commentValue,
         headers: {}
       })
@@ -403,22 +396,14 @@ class Comment extends Component<Props, State> {
   }
 
   public async apiGetCommentUserReport(commentId: number) {
-    const userReport: boolean = await apiCheckCommentUserReport(
-      commentId,
-      this.loggedUserId
-    );
+    const userReport: boolean = await apiCheckCommentUserReport(commentId);
     this.setState({ userReport });
   }
 
   public apiGetCommentsOfComment(id: number) {
-    let getUrl = `${location.protocol}//${location.hostname}`;
-    getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    getUrl += `/post/${this.props.postID}/comment/${id}`;
+    const getUrl = `/post/${this.props.postID}/comment/${id}`;
 
-    axios
+    axiosInstance
       .get(getUrl)
       .then(res => {
         this.setState({
@@ -429,20 +414,12 @@ class Comment extends Component<Props, State> {
   }
 
   public apiAddLikeToComment() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.postID}/comment/${
+    const postUrl = `/post/${this.props.postID}/comment/${
       this.state.commentID
     }/like`;
 
-    axios
-      .post(postUrl, {
-        author: 2,
-        headers: {}
-      })
+    axiosInstance
+      .post(postUrl)
       .then(res => {
         console.log("Comment liked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
@@ -451,24 +428,12 @@ class Comment extends Component<Props, State> {
   }
 
   public apiDeleteLikeToComment() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.postID}/comment/${
+    const postUrl = `/post/${this.props.postID}/comment/${
       this.state.commentID
     }/like`;
 
-    axios
-      .delete(postUrl, {
-        data: {
-          author: 2
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
+    axiosInstance
+      .delete(postUrl)
       .then(res => {
         console.log("Comment disliked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
@@ -477,14 +442,9 @@ class Comment extends Component<Props, State> {
   }
 
   public apiGetWhoLikedComment(id: number) {
-    let getUrl = `${location.protocol}//${location.hostname}`;
-    getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    getUrl += `/post/${this.props.postID}/comment/${id}/likes`;
+    const getUrl = `/post/${this.props.postID}/comment/${id}/likes`;
 
-    axios
+    axiosInstance
       .get(getUrl)
       .then(res => {
         this.setState({
@@ -496,14 +456,11 @@ class Comment extends Component<Props, State> {
   }
 
   public apiEditComment() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
+    const postUrl = `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }`;
 
-    axios
+    axiosInstance
       .put(postUrl, {
         comment: this.state.commentText,
         id: this.state.commentID
@@ -523,19 +480,13 @@ class Comment extends Component<Props, State> {
   }
 
   public apiDeleteComment() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${this.props.postID}/comment/${this.state.commentID}`;
-    axios
+    const postUrl = `/post/${this.props.postID}/comment/${
+      this.state.commentID
+    }`;
+    axiosInstance
       .delete(postUrl, {
         data: {
           id: this.props.title
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
         }
       })
       .then(res => {

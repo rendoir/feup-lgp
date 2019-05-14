@@ -19,7 +19,10 @@ export let dictionary: Dictionary = {
   shop: { PT: "Loja", EN: "Shop" },
   search: { PT: "Procurar", EN: "Search" },
   new: { PT: "Novo", EN: "New" },
+  user_dropdown: { PT: "Utilizador", EN: "User" },
   profile: { PT: "Perfil", EN: "Profile" },
+  edit_profile: { PT: "Editar perfil", EN: "Edit profile" },
+  logout: { PT: "Terminar sessão", EN: "Logout" },
   conferences: { PT: "Conferências", EN: "Conferences" },
   like_action: { PT: "Gostar", EN: "Like" },
   dislike_action: { PT: "Não gostar", EN: "Dislike" },
@@ -92,6 +95,7 @@ export let dictionary: Dictionary = {
   },
   login: { PT: "Entrar", EN: "Login" },
   username: { PT: "Nome de utilizador", EN: "Username" },
+  email: { PT: "E-mail", EN: "E-mail" },
   password: { PT: "Palavra passe", EN: "Password" },
   notifications: { PT: "Notificações", EN: "Notifications" },
   no_notifications: {
