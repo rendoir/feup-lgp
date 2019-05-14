@@ -12,4 +12,4 @@ conferenceRouter.get('/:id', controller.getConference);
 /**
  *
  */
-conferenceRouter.post('/create', controller.createConference);
+conferenceRouter.post('/', controller.createConference);

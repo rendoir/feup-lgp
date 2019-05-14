@@ -42,11 +42,12 @@ export function createConference(req, res) {
       });
     }
   }
+  const userId = req.user.id;
   query({
     text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
     values: [
-      req.body.author,
+      userId,
       req.body.title,
       req.body.about,
       req.body.local,
