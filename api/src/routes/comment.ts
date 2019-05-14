@@ -5,13 +5,12 @@ import * as controller from '../controllers/comment';
 export const commentRouter = Router();
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @api {post} /api/post/:id/comment Create a new comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
+ * @apiParam {String}   post_id   Associated post's ID
+ * @apiParam {String}   comment   Text to write in the comment
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -19,15 +18,14 @@ export const commentRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-commentRouter.post('/new', controller.createComment);
+commentRouter.post('/', controller.createComment);
 
 /**
- * @api {post} /api/post/comment/:id/ Create a new comment on the post
+ * @api {post} /api/post/comment/:id/ Create a new 2nd level comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   post_id   Associated post's ID
  * @apiParam {String}   comment Text to write in the comment
  *
  * @apiErrorExample Error-Response:
@@ -60,8 +58,7 @@ commentRouter.get('/:id', controller.getCommentsOfComment);
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
+ * @apiParam {String}   post_id   Number of the post
  * @apiParam {String}   comment Text to write in the comment
  *
  * @apiErrorExample Error-Response:
@@ -154,7 +151,6 @@ commentRouter.put('/:id', controller.editComment);
  * @apiParam {number}   id   Id of the comment being reported
  * @apiParam {number}   post_id   Id of post owning the comment being reported
  * (post_id parameter is useless, it's only required due to the comment api route URL)
- * @apiParam {number}   reporter   Id of the user issuing the report
  * @apiParam {string}   reason   Reason of the report
  *
  * @apiErrorExample Error-Response:
@@ -181,4 +177,4 @@ commentRouter.post('/:id/report', controller.reportComment);
  *      message: 'An error message here'
  *     }
  */
-commentRouter.post('/:id/check_report', controller.checkCommentUserReport);
+commentRouter.get('/:id/report', controller.checkCommentUserReport);

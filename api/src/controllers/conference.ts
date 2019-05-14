@@ -16,6 +16,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field about cannot be empty',
     });
+    return;
   }
   if (!req.body.local.trim()) {
     console.log('\n\nError: Conference local cannot be empty');
@@ -23,6 +24,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field local cannot be empty',
     });
+    return;
   }
   if (!req.body.dateStart.trim()) {
     console.log('\n\nError: Conference starting date cannot be empty');
@@ -30,6 +32,7 @@ export function createConference(req, res) {
       message: 'An error occurred while crating a new conference. ' +
         'The field date start cannot be empty',
     });
+    return;
   }
   if (req.body.dateEnd.trim()) {
     if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
@@ -40,14 +43,17 @@ export function createConference(req, res) {
         message: 'An error occurred while crating a new conference. ' +
           'The field date end cannot be a date previous to date start',
       });
+      return;
     }
   }
+
+  const userId = req.user.id;
 
   query({
     text: 'INSERT INTO conferences (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy) ' +
       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
     values: [
-      req.body.author,
+      userId,
       req.body.title,
       req.body.about,
       req.body.livestream,
@@ -70,7 +76,7 @@ export function createConference(req, res) {
 }
 
 export async function inviteUser(req, res) {
-  if (!await loggedUserOwnsConference(req.params.id)) {
+  if (!await loggedUserOwnsConference(req.params.id, req)) {
     console.log('\n\nERROR: You cannot invite users to a conference if you are not the owner');
     res.status(400).send({ message: 'An error ocurred while inviting user: You are not the conference owner.' });
     return;
@@ -88,7 +94,7 @@ export async function inviteUser(req, res) {
 }
 
 export async function inviteSubscribers(req, res) {
-  if (!await loggedUserOwnsConference(req.params.id)) {
+  if (!await loggedUserOwnsConference(req.params.id, req)) {
     console.log('\n\nERROR: You cannot invite users to a conference if you are not the owner');
     res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the conference owner.' });
     return;
@@ -110,7 +116,7 @@ export async function inviteSubscribers(req, res) {
 }
 
 export async function amountSubscribersUninvited(req, res) {
-  if (!await loggedUserOwnsConference(req.params.id)) {
+  if (!await loggedUserOwnsConference(req.params.id, req)) {
     console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your conference');
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
@@ -129,13 +135,13 @@ export async function amountSubscribersUninvited(req, res) {
 }
 
 export async function getUninvitedUsersInfo(req, res) {
-  if (!await loggedUserOwnsConference(req.params.id)) {
+  if (!await loggedUserOwnsConference(req.params.id, req)) {
     console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to a conference that is not yours');
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the conference owner.' });
     return;
   }
 
-  const userId = 3;
+  const userId = req.user.id;
   try {
     const uninvitedUsersQuery = await query({
       text: `SELECT id, first_name, last_name, home_town, university, work, work_field
@@ -151,7 +157,7 @@ export async function getUninvitedUsersInfo(req, res) {
 }
 
 export function addParticipantUser(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   query({
     text: `INSERT INTO conference_participants (participant_user, conference) VALUES ($1, $2)`,
     values: [userId, req.params.id],
@@ -164,7 +170,7 @@ export function addParticipantUser(req, res) {
 }
 
 export function removeParticipantUser(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   query({
     text: `DELETE FROM conference_participants WHERE participant_user = $1 AND conference = $2`,
     values: [userId, req.params.id],
@@ -177,7 +183,7 @@ export function removeParticipantUser(req, res) {
 }
 
 export async function checkUserParticipation(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   try {
     const userParticipantQuery = await query({
       text: `SELECT *
@@ -193,7 +199,7 @@ export async function checkUserParticipation(req, res) {
 }
 
 export async function checkUserCanJoin(req, res) {
-  const userId = 1; // logged user
+  const userId = req.user.id; // logged user
   try {
     const userCanJoinQuery = await query({
       text: `SELECT * FROM user_can_join_conference($1, $2)`,
@@ -207,8 +213,8 @@ export async function checkUserCanJoin(req, res) {
   }
 }
 
-async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
-  const loggedUser = 3;
+async function loggedUserOwnsConference(conferenceId, req): Promise<boolean> {
+  const loggedUser = req.user.id;
   try {
     const userOwnsConferenceQuery = await query({
       text: `SELECT * FROM conferences WHERE id = $1 AND author = $2`,
@@ -221,48 +227,11 @@ async function loggedUserOwnsConference(conferenceId): Promise<boolean> {
   }
 }
 
-export function setSecureCookiesExample(req, res) {
-  console.log('SETTING COOKIES...');
-  try {
-    // DEPOIS DE HORAS A TENTAR POR ISTO A DAR, NAO CONSEGUI PORQUE Access-Control-Allow-Origin NAO PODE TER O VALOR '*'.
-    // MAS ESSE VALOR É NECESSÁRIO PARA FAZER REQUESTS COM withCredentials A TRUE, E PARA QUE SE CONSIGA USAR COOKIES,
-    // withCredentials tem de estar a true, UMA FORMA DE CONTORNAR ISTO É POR o endereço de onde o cliente esta a fazer os requests
-    // mas eles vêm sempre do mesmo endereço, OU CADA UTILIZADOR TEM O SEU PROPRIO IP?????
-
-    // Set signed cookie example: {signed: true, maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true}
-    // "req.cookies" para aceder a cookies mais tarde noutros requests.
-    // "req.signedCookies" para aceder a cookies que estao assinadas (protegidas)
-    /*for (var key in req.cookies) {
-      res.clearCookie(key, { path: '/' });
-    }
-    for (var key in req.signedCookies) {
-      res.clearCookie(key, { path: '/' });
-    }*/
-
-    // res.cookie('user_id', 3);
-    // the one accessed by the browser (not signed and httpOnly: false - means that both client and server can access it)
-
-    // res.cookie('user_id', 1, {signed: true, httpOnly: true});
-    // the one accessed by the server (signed and httpOnly: true - means only the server can access it)
-    // the one the server will access cannot be forged by hackers using XSS
-    /*res.cookie('openExample', 'openExampleValue');
-    res.cookie('signedOpenExample', 'signedOpenExampleValue', {signed: true});
-    res.cookie('serverExample', 'serverExampleValue', {httpOnly: true});
-    res.cookie('signedServerExample', 'signedServerExampleValue', {signed: true, httpOnly: true});*/
-    req.session.firstName = 'bomdia';
-    console.log(req.session.id);
-    res.status(200).send('Cookies set');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(new Error('Error retrieving user participation in conference'));
-  }
-}
-
 export async function getConference(req, res) {
   const id = req.params.id;
   const limit = req.query.perPage;
   const offset = req.query.offset;
-  const userId = 1;
+  const userId = req.user.id;
   try {
     /**
      * conference must be owned by user
@@ -366,12 +335,14 @@ export async function getConference(req, res) {
   }
 }
 
+// Can only change privacy if user is author.
 export function changePrivacy(req, res) {
+  const userId = req.user.id;
   query({
     text: `UPDATE conferences
                 SET privacy = $2
-                WHERE id = $1`,
-    values: [req.body.id, req.body.privacy],
+                WHERE id = $1 AND author = $3`,
+    values: [req.body.id, req.body.privacy, userId],
   }).then((result) => {
     res.status(200).send();
   }).catch((error) => {
@@ -423,15 +394,17 @@ export function getPostsAuthor(req, res) {
   });
 }
 
+// Can only archive if user is author.
 export async function archiveConference(req, res) {
   const id = req.params.id;
+  const userId = req.user.id;
   try {
     console.log('id asdasd ' + id);
     const archivedConference = await query({
       text: `UPDATE conferences
-                SET archived = TRUE
-                WHERE id = $1`,
-      values: [id],
+              SET archived = TRUE
+              WHERE id = $1 AND author = $2`,
+      values: [id, userId],
     });
     if (archivedConference === null) {
       res.status(400).send(
@@ -446,14 +419,16 @@ export async function archiveConference(req, res) {
   }
 }
 
+// Can only unarchive if user is author.
 export async function unarchiveConference(req, res) {
   const id = req.params.id;
+  const userId = req.user.id;
   try {
     const archivedConference = await query({
       text: `UPDATE conferences
-				  SET archived = FALSE
-				  WHERE id = $1`,
-      values: [id],
+            SET archived = FALSE
+            WHERE id = $1 AND author = $2`,
+      values: [id, userId],
     });
     if (archivedConference === null) {
       res.status(400).send(

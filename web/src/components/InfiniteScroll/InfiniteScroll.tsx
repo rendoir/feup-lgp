@@ -1,6 +1,6 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
-import axios from "axios";
 import React, { Component, Fragment } from "react";
+import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import Post, { Props as PostProps } from "../Post/Post";
 import UserCard, { Props as UserProps } from "../UserCard/UserCard";
@@ -130,7 +130,7 @@ class InfiniteScroll extends Component<Props, State> {
     }
 
     this.setState({ isLoading: true }, () => {
-      axios
+      axiosInstance
         .get(this.props.requestUrl, { params })
         .then(results => {
           const incoming = results.data;
@@ -180,7 +180,7 @@ class InfiniteScroll extends Component<Props, State> {
     }
 
     this.setState({ isLoading: true }, () => {
-      axios
+      axiosInstance
         .get(this.props.requestUrl, { params })
         .then(results => {
           const incoming = results.data;

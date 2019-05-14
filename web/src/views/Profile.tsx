@@ -1,13 +1,12 @@
-import axios from "axios";
 import * as React from "react";
-import Cookies from "universal-cookie";
 import Avatar from "../components/Avatar/Avatar";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
 import { apiSubscription } from "../utils/apiSubscription";
-import { getApiURL } from "../utils/apiURL";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -31,18 +30,14 @@ type State = {
   fetchingInfo: boolean;
 };
 
-const cookies = new Cookies();
-
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
-  public observerId: number; // Id of the user visiting the page
 
   constructor(props: any) {
     super(props);
-    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
-    this.observerId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id;
 
     this.state = {
       fetchingInfo: true,
@@ -174,14 +169,13 @@ class Profile extends React.Component<IProps, State> {
         incrementRate;
       let body = {};
       body = {
-        evaluator: this.observerId,
         newUserRating: userRating,
         rate: parseInt(rateTarget, 10)
       };
 
       console.log("User Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/users/${this.id}/rate`);
-      return axios
+      const apiUrl = `/users/${this.id}/rate`;
+      return axiosInstance
         .post(apiUrl, body)
         .then(() => {
           this.setState({
@@ -204,7 +198,7 @@ class Profile extends React.Component<IProps, State> {
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? "delete" : "post";
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -212,11 +206,11 @@ class Profile extends React.Component<IProps, State> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  private apiSubscription(endpoint: string) {
-    apiSubscription("users", endpoint, this.observerId, this.id)
+  private apiSubscription(method: string) {
+    apiSubscription("users", method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -224,7 +218,7 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === "delete",
           waitingSubscriptionRequest: false
         });
         console.log("Subscription system failed");
@@ -232,7 +226,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.observerId, this.id)
+    apiGetUserInteractions("users", this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
@@ -288,16 +282,8 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiGetUser() {
-    let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
-    } else {
-      profileUrl += "/api/users/" + this.id;
-    }
-    axios
-      .get(profileUrl, {
-        headers: {}
-      })
+    axiosInstance
+      .get(`/users/${this.id}`)
       .then(res => {
         this.setState({ user: res.data.user });
       })
@@ -389,4 +375,4 @@ class Profile extends React.Component<IProps, State> {
   }
 }
 
-export default Profile;
+export default withAuth(Profile);

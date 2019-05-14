@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 
 import "./PostModal.css";
@@ -10,7 +9,7 @@ import { checkPropTypes } from "prop-types";
 import ImagePreloader from "../ImagePreloader/ImagePreloader";
 import VideoPreloader from "../VideoPreloader/VideoPreloader";
 
-import { getApiURL } from "../../utils/apiURL";
+import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 const CREATE_MODE = "Create";
@@ -59,13 +58,8 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public apiDeletePost() {
-    const postUrl = getApiURL(`/post/${this.props.id}`);
-    axios
-      .delete(postUrl, {
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
+    axiosInstance
+      .delete(`/post/${this.props.id}`)
       .then(res => {
         console.log("Post deleted - reloading page");
         if (window.location.pathname === "/post/" + this.props.id) {

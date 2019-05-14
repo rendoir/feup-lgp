@@ -1,7 +1,18 @@
 @import 'variables';
 
+#register-landing{
+  margin-top: 0 !important;
+}
+
 #landing-info {
   display: block !important;
+}
+
+#emailErrorMessage, #passwordErrorMessage, #confirmPasswordErrorMessage,
+#firstNameErrorMessage, #lastNameErrorMessage{
+  color: red !important;
+  font-size: 13px !important;
+  display: none;
 }
 
 @media screen and (max-width: 992px) {

@@ -1,5 +1,4 @@
 import * as jwt from 'express-jwt';
-import { query } from '../db/db';
 
 /**
  *  @return {any} this
@@ -9,8 +8,8 @@ export function jwtMiddleware() {
     return jwt({secret, isRevoked}).unless({
         path: [
             // public routes that don't require authentication
-            '/users',
             '/login',
+            '/users',
         ],
     });
 }
