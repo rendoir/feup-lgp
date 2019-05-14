@@ -130,12 +130,12 @@ class Feed extends React.Component<Props, State> {
             <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-7 column-in-center">
-            {this.getPosts()}
-          </div>
           <div className="right col-2 column-in-center">
             <h5>{dictionary.followers[this.context]}</h5>
             {users}
+          </div>
+          <div className="middle col-lg-7 column-in-center">
+            {this.getPosts()}
           </div>
         </div>
       </div>
