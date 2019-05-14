@@ -27,9 +27,9 @@ type MyFile = {
 
 interface IProps {
   /* The following attributes are only required for post edition */
+  content?: string;
   id: number;
   title?: string;
-  text?: string;
   visibility?: string;
 
   files?: MyFile[];
@@ -38,7 +38,7 @@ interface IProps {
 
 interface IState {
   title: string;
-  text: string;
+  content: string;
 
   images: File[];
   videos: File[];
@@ -65,11 +65,11 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      content: props.content || "",
       docs: [],
       images: [],
       removedFiles: [],
       tags: [],
-      text: props.text || "",
       title: props.title || "",
       videos: [],
       visibility: props.visibility || "private"
@@ -90,7 +90,7 @@ class PostModal extends Component<IProps, IState> {
   public handlePostCancel() {
     // Reset field values
     this.setState({
-      text: this.props.text || "",
+      content: this.props.content || "",
       title: this.props.title || "",
       visibility: this.props.visibility || "private"
     });
@@ -112,7 +112,7 @@ class PostModal extends Component<IProps, IState> {
       formData.append("tags[" + i + "]", tag)
     );
 
-    formData.append("text", this.state.text);
+    formData.append("text", this.state.content);
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
 
@@ -149,7 +149,7 @@ class PostModal extends Component<IProps, IState> {
       formData.append("removed", JSON.stringify(this.state.removedFiles));
     }
     formData.append("author", "1");
-    formData.append("text", this.state.text);
+    formData.append("text", this.state.content);
     formData.append("title", this.state.title);
     formData.append("visibility", this.state.visibility);
 
@@ -168,7 +168,7 @@ class PostModal extends Component<IProps, IState> {
 
   public validPost() {
     return Boolean(
-      this.state.title && this.state.text && this.state.visibility
+      this.state.title && this.state.content && this.state.visibility
     );
   }
 
@@ -260,16 +260,16 @@ class PostModal extends Component<IProps, IState> {
         <div className="mb-3">
           <h5>{dictionary.body[this.context]}</h5>
           <textarea
-            name="text"
-            className={this.getInputRequiredClass(this.state.text)}
+            name="content"
+            className={this.getInputRequiredClass(this.state.content)}
             onChange={this.handleInputChange}
             placeholder={dictionary.insert_body[this.context]}
-            value={this.state.text}
+            value={this.state.content}
             required={true}
           />
           <div
             className="field_required_warning"
-            style={this.getInputRequiredStyle(this.state.text)}
+            style={this.getInputRequiredStyle(this.state.content)}
           >
             {dictionary.body_required[this.context]}
           </div>

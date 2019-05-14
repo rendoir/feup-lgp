@@ -257,9 +257,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiSetArchived() {
-    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
-    axios
-      .post(conferenceURL)
+    axiosInstance
+      .post(`/conference/${this.id}/archive`)
       .then()
       .catch(() => console.log("Failed to archive conference"));
 
@@ -269,9 +268,8 @@ class Conference extends React.Component<IProps, IState> {
   }
 
   public apiSetUnarchived() {
-    const conferenceURL = getApiURL(`/conference/${this.id}/archive`);
-    axios
-      .delete(conferenceURL)
+    axiosInstance
+      .delete(`/conference/${this.id}/archive`)
       .then()
       .catch(() => console.log("Failed to unarchive conference"));
 
@@ -350,9 +348,7 @@ class Conference extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              <InfiniteScroll
-                requestUrl={getApiURL(`/conference/${this.id}`)}
-              />
+              <InfiniteScroll requestUrl={`/conference/${this.id}`} />
             </div>
           </div>
         </div>

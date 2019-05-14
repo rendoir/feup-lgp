@@ -12,10 +12,7 @@ class Landing extends React.Component {
 
   public render() {
     return (
-      <div
-        className="row mt-5 d-flex justify-content-center"
-        id="register-landing"
-      >
+      <div className="row mt-5 d-flex justify-content-center" id="landing">
         <div className="col-sm-4 mt-5" id="landing-info">
           <h2>{dictionary.website_description[this.context]}</h2>
           <div className="row mt-5">
