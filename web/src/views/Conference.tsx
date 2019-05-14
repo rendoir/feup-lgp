@@ -197,14 +197,14 @@ class Conference extends React.Component<IProps, IState> {
 
         const postsComing = res.data;
 
-        postsComing.posts.map(
+        /* postsComing.posts.map(
           (post: any, idx: any) => (
             (post.comments = postsComing.comments[idx]),
             (post.tags = postsComing.tags[idx]),
             (post.files = postsComing.files[idx])
           )
         );
-
+*/
         if (conference.privacy === "closed") {
           this.setState({
             isHidden: true
