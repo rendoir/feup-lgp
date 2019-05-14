@@ -1,4 +1,3 @@
-// - Import react components
 import React, { Component } from "react";
 
 // - Import styles
@@ -40,18 +39,18 @@ import axiosInstance from "../../utils/axiosInstance";
 import Icon from "../Icon/Icon";
 import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
 
-interface IProps {
+export type Props = {
   id: number;
   title: string;
   date: string;
   author: string;
-  text: string | undefined;
+  content: string | undefined;
   visibility: string;
   comments: any[];
   files?: MyFile[];
   tags: any[];
   user_id: number;
-}
+};
 
 interface IState {
   activePage: number;
@@ -78,10 +77,10 @@ interface IState {
   waitingSubscriptionRequest: boolean;
 }
 
-class Post extends Component<IProps, IState> {
+class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -167,7 +166,7 @@ class Post extends Component<IProps, IState> {
             <h4> {this.props.title} </h4>
           </div>
           <div className={styles.post_content_text}>
-            <p> {this.props.text} </p>
+            <p> {this.props.content} </p>
           </div>
           {this.getImages()}
           {this.getVideos()}

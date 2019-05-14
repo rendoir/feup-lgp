@@ -1,29 +1,31 @@
 import * as crypto from 'crypto';
 import {query} from '../db/db';
 
-export function registerUser(req, res) {
+export function register(req, res) {
     query({
-        text: 'SELECT * from users WHERE email=$1 AND pass IS NULL',
+        text: 'SELECT * from users WHERE email=$1',
         values: [req.body.email],
     }).then((result1) => {
-        if (result1.rowCount === 0) {
-            res.status(401).send({ message: 'The given email does not have permission to register, please contact an administrator' });
+        if (result1.rowCount !== 0) {
+            res.status(401).send({ message: 'This email already exists!' });
             return;
         }
-        const userId = result1.rows[0].id;
         const hash = crypto.createHash('sha256');
         hash.update(req.body.password);
         const hashedPassword = hash.digest('hex');
 
         query({
-            text: 'UPDATE users SET pass=$1 WHERE id=$2',
-            values: [hashedPassword, userId],
+            text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
+                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
-            res.status(200).json(result2.rows);
         }).catch((error) => {
             console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error occured while registering new user' });
+            res.status(400).send({ message: 'An error occured while registering a new user' });
         });
+        res.status(200).send();
+
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while checking register permissions' });
@@ -54,6 +56,23 @@ export class UserToken {
 
     get properties() {
         return {email: this.email, id: this.id, permission: this.permission};
+    }
+}
+
+export async function getUser(req, res) {
+    const id = req.params.id;
+    try {
+        const user = await query({
+            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
+                    FROM users
+                    WHERE id = $1
+                    `,
+            values: [id],
+        });
+
+        res.send({ user: user.rows[0] });
+    } catch (e) {
+        console.log('Error getting user info. Error: ' + e.message);
     }
 }
 
@@ -156,7 +175,8 @@ export function rate(req, res) {
 
 export async function getProfilePosts(req, res) {
     const userId = req.params.id;
-    const userloggedId = req.user.id; // logged in user
+    const userloggedId = req.user.id;
+    const limit = req.query.perPage;
     const offset = req.query.offset;
     try {
         const result = await query({
@@ -169,19 +189,26 @@ export async function getProfilePosts(req, res) {
 							OR (p.visibility= 'private' AND p.author = $2)
 							OR (p.visibility = 'followers'
 								AND (p.author IN (SELECT followed FROM follows WHERE follower = $1))
-                                OR $1=$2))
+                                OR $1 = $2))
                     ORDER BY p.date_created DESC
-                    LIMIT 10
-                    OFFSET $3`,
-            values: [userId, userloggedId, offset],
+                    LIMIT $3
+                    OFFSET $4`,
+            values: [userId, userloggedId, limit, offset],
         });
         if (result == null) {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
         }
-        const commentsToSend = [];
-        const tagsToSend = [];
-        const filesToSend = [];
+        const totalSize = await query({
+            text: `SELECT COUNT(id)
+                    FROM posts
+                    WHERE author = $1 AND
+							          (visibility = 'public'
+							          OR (visibility= 'private' AND author = $2)
+							          OR (visibility = 'followers' AND (author IN (SELECT followed FROM follows WHERE follower = $1))
+							          OR $1=$2))`,
+            values: [userId, userloggedId],
+        });
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
@@ -212,24 +239,13 @@ export async function getProfilePosts(req, res) {
                             p.id = $1`,
                 values: [post.id],
             });
-            commentsToSend.push(comment.rows);
-            tagsToSend.push(tagsPost.rows);
-            filesToSend.push(files.rows);
+            post.comments = comment.rows;
+            post.tags = tagsPost.rows;
+            post.files = files.rows;
         }
-        const profileInfo = await query({
-            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
-                FROM users
-                WHERE id = $1
-             `,
-            values: [userId],
-        });
         res.send({
             posts: result.rows,
-            comments: commentsToSend,
-
-            tags: tagsToSend,
-            files: filesToSend,
-            user: profileInfo.rows[0],
+            size: totalSize.rows[0].count,
         });
     } catch (error) {
         console.error(error);

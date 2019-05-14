@@ -182,3 +182,33 @@ conferenceRouter.get('/:id', controller.getConference);
  *     }
  */
 conferenceRouter.post('/:id/change_privacy', controller.changePrivacy);
+
+/**
+ * @api {post} /api/conference/:id/archive Archive a conference
+ * @apiName Archive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.post('/:id/archive', controller.archiveConference);
+
+/**
+ * @api {post} /api/conference/:id/unarchive Unarchive a conference
+ * @apiName Unarchive-Conference
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id          ID of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.delete('/:id/archive', controller.unarchiveConference);
