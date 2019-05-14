@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 // - Import react components
 import React, { Component } from "react";
@@ -85,7 +85,7 @@ class QuestionOptions extends Component<IProps, IState> {
         : "/api";
     getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
 
-    axios
+    axiosInstance
       .get(getUrl, {
         params: {
           author: 1, // When loggin, this is the user logged in
@@ -253,7 +253,7 @@ class QuestionOptions extends Component<IProps, IState> {
         : "/api";
     postUrl += `/conference/${this.props.confId}/challenge/solve`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         challenge: this.props.id,

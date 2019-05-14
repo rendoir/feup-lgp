@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 // - Import react components
 import React, { Component } from "react";
@@ -71,7 +71,7 @@ class CommentPost extends Component<Props, State> {
         : "/api";
     getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
 
-    axios
+    axiosInstance
       .get(getUrl, {
         params: {
           author: 1, // When loggin, this is the user logged in
@@ -220,7 +220,7 @@ class CommentPost extends Component<Props, State> {
       this.state.postToComment
     }/comments_author`;
 
-    axios
+    axiosInstance
       .get(getUrl, { params: { author: 1 } })
       .then(res => {
         const comments = res.data;
@@ -243,7 +243,7 @@ class CommentPost extends Component<Props, State> {
         : "/api";
     postUrl += `/conference/${this.props.confId}/challenge/solve`;
 
-    axios
+    axiosInstance
       .post(postUrl, {
         author: 1, // When loggin, this is the user logged in
         challenge: this.props.id,
