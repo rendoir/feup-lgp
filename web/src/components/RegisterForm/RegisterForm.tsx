@@ -129,6 +129,7 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
             placeholder="E-mail"
             onChange={e => this.validate("email", e.target.value)}
           />
+          <p id="emailErrorMessage">{dictionary.invalid_email[this.context]}</p>
         </div>
         <div className="form-group mt-3">
           <input
