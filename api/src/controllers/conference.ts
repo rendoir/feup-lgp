@@ -377,7 +377,7 @@ export async function getCommentsOfPostAndAuthor(req, res) {
 
 export function getPostsAuthor(req, res) {
   query({
-    text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+    text: `SELECT p.id, first_name, last_name, p.title, p.content,
       p.visibility, p.date_created, p.date_updated, users.id AS user_id
       FROM posts p
       INNER JOIN users ON (users.id = p.author)
