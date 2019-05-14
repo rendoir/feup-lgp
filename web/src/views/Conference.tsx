@@ -123,7 +123,7 @@ class Conference extends React.Component<IProps, IState> {
     this.state = {
       archived: false,
       challenges: [],
-      clickedChallenge: 0,
+      clickedChallenge: undefined,
       date_end: "",
       date_start: "",
       description: "",
@@ -236,8 +236,6 @@ class Conference extends React.Component<IProps, IState> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
-        const challengesConf = res.data.challenges;
-
         const postsComing = res.data;
 
         postsComing.posts.map(
@@ -248,18 +246,20 @@ class Conference extends React.Component<IProps, IState> {
           )
         );
 
+        const challengesConf = res.data.challenges;
+
+        let isHidden = false;
         if (conference.privacy === "closed") {
-          this.setState({
-            isHidden: true
-          });
+          isHidden = true;
         }
-        console.log(res.data.conference);
+
         this.setState({
           archived: conference.archived,
           challenges: challengesConf,
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
+          isHidden,
           livestreamUrl: conference.livestream_url,
           owner_id: conference.user_id,
           owner_name: conference.first_name + conference.last_name,
@@ -700,11 +700,15 @@ class Conference extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal conferenceId={this.id} />
-        <button>
+        <button disabled={isArchived}>
           <i className="fas fa-video" />
           {dictionary.start_livestream_conference[this.context]}
         </button>
-        <button type="button" onClick={this.handleCreateChallenge}>
+        <button
+          type="button"
+          onClick={this.handleCreateChallenge}
+          disabled={isArchived}
+        >
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_conference[this.context]}
         </button>
@@ -725,9 +729,18 @@ class Conference extends React.Component<IProps, IState> {
             posts={this.state.posts}
           />
         ) : null}
-        <button>
+        <button disabled={isArchived}>
           <i className="fas fa-pen" />
           Edit conference
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            this.archiveConf();
+          }}
+        >
+          <i className="fas fa-archive" />
+          {isArchivedBtn}
         </button>
         <button onClick={this.handleHideConference} disabled={isArchived}>
           <i className="fas fa-trash" />

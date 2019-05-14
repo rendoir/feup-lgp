@@ -354,8 +354,8 @@ export async function getConference(req, res) {
       post.files = files.rows;
     }
     const result = {
-      conference: conference.rows[0],
       challenges: challengesResult.rows,
+      conference: conference.rows[0],
       posts: postsResult.rows,
       size: totalSize.rows[0].count,
     };

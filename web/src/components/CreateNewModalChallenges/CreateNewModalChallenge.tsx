@@ -69,7 +69,7 @@ class CreateNewModalChallenge extends PureComponent<
   };
 
   private handleChange = (value: string, { target }: ChangeEvent) => {
-    console.log((target as HTMLAbstractInputElement).name);
+    // console.log((target as HTMLAbstractInputElement).name);
     this.props.onRequestChange({
       ...this.props.request,
       [(target as HTMLAbstractInputElement).name]: value
