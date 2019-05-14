@@ -281,8 +281,8 @@ export let dictionary: Dictionary = {
     PT: "Insira imagens, videos e documentos",
     EN: "Insert images, videos and documents"
   },
-  start_at: { PT: "Começou em", EN: "Started at" },
-  day_split: { PT: "Acaba dia: ", EN: "Ends day: " },
+  start_at: { PT: "Começou a", EN: "Started at" },
+  day_split: { PT: "Acaba a: ", EN: "Ends at: " },
   month1: { PT: "Janeiro", EN: "January" },
   month2: { PT: "Fevereiro", EN: "February" },
   month3: { PT: "Março", EN: "March" },

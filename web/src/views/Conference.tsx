@@ -322,6 +322,7 @@ class Conference extends React.Component<IProps, IState> {
           conference: this.state.conference_id,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,
+          livestream: request.livestream,
           local: request.local,
           privacy: request.privacy,
           title: request.title
