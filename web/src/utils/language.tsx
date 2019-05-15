@@ -99,12 +99,12 @@ export let dictionary: Dictionary = {
   password: { PT: "Palavra passe", EN: "Password" },
   notifications: { PT: "Notificações", EN: "Notifications" },
   no_notifications: {
-    PT: "Erro ao adquirir notificações",
-    EN: "Error retrieving notifications."
-  },
-  error_notifications: {
     PT: "Não tem notificações",
     EN: "You have no notifications."
+  },
+  error_notifications: {
+    PT: "Erro ao adquirir notificações",
+    EN: "Error retrieving notifications."
   },
   search_type: { PT: "Tipo de busca", EN: "Search type" },
   all_users: { PT: "Todos os utilizadores", EN: "All users" },
@@ -299,6 +299,15 @@ export let dictionary: Dictionary = {
   },
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  join: { PT: "Aderir", EN: "Join" },
+  invite_discussion: {
+    PT: "Convidar para a discussão",
+    EN: "Invite users to discussion"
+  },
+  invite_discussion_placeholder: {
+    PT: "Insira o primeiro e último nome do utilizador",
+    EN: "Insert user's first and last name"
+  },
   empty: { PT: "", EN: "" }
 };
 
