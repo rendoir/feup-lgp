@@ -76,6 +76,87 @@ export function createTalk(req, res) {
   });
 }
 
+export function editTalk(req, res) {
+  const data = req.body;
+  const talk = req.talk.id;
+
+  if (!data.title.trim()) {
+    console.log('\n\nError: talk title cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field title cannot be empty',
+    });
+    return;
+  }
+  if (!data.about.trim()) {
+    console.log('\n\nError: talk about cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field about cannot be empty',
+    });
+    return;
+  }
+  if (!data.local.trim()) {
+    console.log('\n\nError: talk local cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field local cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateStart.trim()) {
+    console.log('\n\nError: talk starting date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field starting date cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateEnd.trim()) {
+    console.log('\n\nError: talk ending date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field ending date cannot be empty',
+    });
+    return;
+  }
+  if (!data.privacy.trim()) {
+    console.log('\n\nError: talk privacy cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field privacy cannot be empty',
+    });
+    return;
+  }
+
+  query({
+    text: 'UPDATE talks ' +
+      'SET (title, about, local, datestart, dateend, privacy) = ($2, $3, $4, $5, $6, $7) ' +
+      'WHERE id = $1 ' +
+      'RETURNING id',
+    values: [
+      talk,
+      data.title,
+      data.about,
+      data.local,
+      data.dateStart,
+      data.dateEnd,
+      data.privacy,
+    ],
+  })
+    .then((response) => {
+      response.send({
+        id: response.rows[0].id,
+      });
+    })
+    .catch((error) => {
+      console.log(`Error: ${error}`);
+      res.status(400).send({
+        message: `An error occurred while updating a talk. Error: ${error.toString()}`,
+      });
+    });
+}
+
 export async function inviteUser(req, res) {
   if (!await loggedUserOwnstalk(req.params.id)) {
     console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
