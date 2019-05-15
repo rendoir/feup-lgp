@@ -318,7 +318,7 @@ class Talk extends React.Component<IProps, IState> {
               <button
                 className="create"
                 onClick={this.createConfPost}
-                disabled={isArchived}
+                hidden={isArchived}
               >
                 {dictionary.create_post[this.context]}
               </button>
@@ -571,6 +571,7 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private getJoinButton() {
+    const isArchived = this.state.archived;
     let buttonClass = this.state.userParticipation ? "leave" : "join";
     let buttonText = this.state.userParticipation
       ? dictionary.leave_talk[this.context]
@@ -590,6 +591,7 @@ class Talk extends React.Component<IProps, IState> {
             : this.handleJoinTalk
         }
         disabled={!this.state.userCanJoin}
+        hidden={isArchived}
       >
         {buttonText}
       </button>
