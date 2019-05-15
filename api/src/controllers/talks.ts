@@ -63,7 +63,7 @@ export function createTalk(req, res) {
       req.body.dateStart,
       req.body.dateEnd,
       req.body.avatar,
-      req.body.privacy,
+      'closed',
       req.body.conference,
     ],
   }).then((result) => {

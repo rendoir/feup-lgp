@@ -72,10 +72,10 @@ export let dictionary: Dictionary = {
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
   closed_talk: {
-    PT: "Esta palestra foi encerrada!",
-    EN: "This talk has been closed!"
+    PT: "Esta palestra encontra-se fechada!",
+    EN: "This talk is closed!"
   },
-  reopen_talk: { PT: "Reabrir palestra", EN: "Reopen talk" },
+  reopen_talk: { PT: "Abrir palestra", EN: "Open talk" },
   hide_talk: { PT: "Esconder palestra", EN: "Hide talk" },
   report_talk: { PT: "Reportar palestra", EN: "Report talk" },
   archive_talk: { PT: "Arquivar palestra", EN: "Archive talk" },
