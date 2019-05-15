@@ -39,7 +39,7 @@ export async function getFeed(req, res) {
             values: [userId, limit, offset],
         });
         const totalSize = await query({
-          text: `SELECT COUNT(id)
+            text: `SELECT COUNT(id)
                     FROM posts
                     WHERE (
                       author = $1
@@ -49,7 +49,7 @@ export async function getFeed(req, res) {
                       )
                     )
                     AND conference IS null`,
-          values: [userId],
+            values: [userId],
         });
         for (const post of result.rows) {
             const comment = await query({
@@ -85,12 +85,53 @@ export async function getFeed(req, res) {
             post.tags = tagsPost.rows;
             post.files = files.rows;
         }
+        const following = await query({
+            text: `SELECT a.id, a.first_name, a.last_name, p.date_created
+                        FROM users a
+                        INNER JOIN follows f ON a.id=f.followed
+                        INNER JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1 AND p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                        ORDER BY p.date_created DESC
+                        LIMIT 15`,
+            values: [userId],
+        });
         res.send({
             posts: result.rows,
             size: totalSize.rows[0].count,
+            following: following.rows,
         });
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving feed'));
+    }
+}
+
+export async function getFeedStuff(req, res) {
+    const userId = req.user.id;
+    try {
+        const following = await query({
+            text: `SELECT a.id, a.first_name, a.last_name, p.date_created
+                        FROM users a
+                        INNER JOIN follows f ON a.id=f.followed
+                        INNER JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1 AND p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                        ORDER BY p.date_created DESC
+                        LIMIT 15`,
+            values: [userId],
+        });
+        const conferences = await query({
+            text: `SELECT c.id, c.title, c.dateStart
+                        FROM conferences c
+                        WHERE c.privacy = 'public'
+                        ORDER BY c.dateStart DESC
+                        LIMIT 15`,
+        });
+        res.send({
+            conferences: conferences.rows,
+            following: following.rows,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving feed '));
     }
 }

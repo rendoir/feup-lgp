@@ -9,8 +9,10 @@ import withAuth from "../utils/withAuth";
 type Props = {};
 
 type State = {
+  conferences: any[];
   posts: any[];
   fetchingInfo: boolean;
+  following: any[];
 };
 
 class Feed extends React.Component<Props, State> {
@@ -20,34 +22,30 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      conferences: [],
       fetchingInfo: true,
+      following: [],
       posts: []
     };
   }
 
-  // public componentDidMount() {
-  //   this.apiGetFeed();
-  // }
+  public componentDidMount() {
+    this.apiGetFeed();
+  }
 
   public apiGetFeed() {
     axiosInstance
-      .get("/feed", {
+      .get("/feed/get_stuff", {
         params: {}
       })
       .then(res => {
-        const postsComing = res.data;
-
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-
-        this.setState({ fetchingInfo: false, posts: postsComing.posts });
+        console.log("conf: ", res.data.conferences);
+        this.setState({
+          conferences: res.data.conferences,
+          following: res.data.following
+        });
       })
-      .catch(() => console.log("Failed to get feed"));
+      .catch(() => console.log("Failed to get feed stuff"));
   }
 
   public getPosts() {
@@ -86,20 +84,36 @@ class Feed extends React.Component<Props, State> {
       "Conference 46848",
       "Big Conference name to test css properly, omg this name is not over yet"
     ];
-    const conferences = hardCodedConferences.map(title => (
-      <a key={title} className="conference-link d-block my-2">
-        {title}
+    const conferences = this.state.conferences.map(conf => (
+      <a
+        key={conf.title}
+        className="d-block my-2"
+        href={"/conference/" + conf.id}
+      >
+        {conf.title} {conf.dateStart}
       </a>
     ));
-
+    const users = this.state.following.map(name => (
+      <a
+        key={name.first_name}
+        className="d-block my-2"
+        href={"/user/" + name.id}
+      >
+        {name.first_name} {name.last_name}
+      </a>
+    ));
     return (
       <div id="Feed" className="container my-5">
         <div className="row">
-          <div className="left col-lg-3 mr-5">
+          <div id="leftm">
             <h5>{dictionary.conferences[this.context]}</h5>
             {conferences}
           </div>
-          <div className="middle col-lg-8">
+          <div id="rightm">
+            <h5>{dictionary.followers[this.context]}</h5>
+            {users}
+          </div>
+          <div id="mainm">
             <InfiniteScroll />
             {/*{this.getPosts()}*/}
           </div>
