@@ -43,7 +43,6 @@ import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
-import { faHtml5 } from "@fortawesome/free-brands-svg-icons";
 
 interface IProps {
   match: {
