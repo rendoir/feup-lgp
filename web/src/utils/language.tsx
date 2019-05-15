@@ -452,6 +452,10 @@ export let dictionary: Dictionary = {
     EN: "Insert user's first and last name"
   },
   followers: { PT: "A seguir", EN: "Following" },
+  create_post_chal: {
+    PT: "Leia a descrição e crie uma publicação nesta palestra.",
+    EN: "Read the description and create a post in this talk."
+  },
   empty: { PT: "", EN: "" }
 };
 

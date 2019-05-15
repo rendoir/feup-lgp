@@ -161,7 +161,10 @@ class PostCreate extends Component<Props, State> {
 
     return (
       <div className={this.getInputRequiredStyle()}>
-        <h6 className="card-title"> {description} </h6>
+        <h6 className="card-title">
+          {dictionary.create_post_chal[this.context]} {this.props.dateend}
+        </h6>
+        <p className="card-body">{description}</p>
       </div>
     );
   }
