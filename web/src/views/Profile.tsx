@@ -1,4 +1,6 @@
 import * as React from "react";
+import { MouseEvent } from "react";
+
 import Avatar from "../components/Avatar/Avatar";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Post from "../components/Post/Post";
@@ -6,7 +8,20 @@ import { apiSubscription } from "../utils/apiSubscription";
 import { apiGetUserInteractions } from "../utils/apiUserInteractions";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+
+import AuthHelperMethods from "../utils/AuthHelperMethods";
 import withAuth from "../utils/withAuth";
+
+import { Button } from "../components";
+import {
+  ModalBody,
+  ModalClose,
+  ModalFooter,
+  ModalHeader,
+  ModalProvider
+} from "../components/Modal/index";
+import Modal from "../components/Modal/Modal";
+import EditProfileForm from "../components/RegisterForm/EditProfileForm";
 
 interface IProps {
   match: {
@@ -18,6 +33,7 @@ interface IProps {
 
 type State = {
   fetchingUserUserInteractions: boolean;
+  isOpen: boolean;
   userRate: number;
   userRateTotal: number;
   userRated: boolean;
@@ -34,6 +50,7 @@ class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -42,6 +59,7 @@ class Profile extends React.Component<IProps, State> {
     this.state = {
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
+      isOpen: false,
       numberOfRatings: 1,
       posts: [],
       user: {},
@@ -136,11 +154,37 @@ class Profile extends React.Component<IProps, State> {
           </div>
           <div id="bottom-div" className="w-100 mt-5">
             <div id="left-div" className="p-3">
+              {this.getEditButton()}
               <ul className="p-0 m-0">
                 {this.getProfileWork()}
                 {this.getProfileUniv()}
                 {this.getProfileTown()}
                 {this.getProfileEmail()}
+                {this.state.isOpen ? (
+                  <Modal onClose={() => this.setState({ isOpen: false })}>
+                    <ModalHeader withBorder={true}>
+                      Edit Profile
+                      <ModalClose
+                        onClick={() => this.setState({ isOpen: false })}
+                      />
+                    </ModalHeader>
+                    <ModalBody>
+                      <EditProfileForm />
+                    </ModalBody>
+                    <ModalFooter withBorder={true}>
+                      <Button
+                        wide={true}
+                        id={`${this.id}_edit_submit_button`}
+                        type={"submit"}
+                        theme={"success"}
+                        rounded={false}
+                        onClick={this.apiEditProfile}
+                      >
+                        {dictionary.finish[this.context]}
+                      </Button>
+                    </ModalFooter>
+                  </Modal>
+                ) : null}
               </ul>
             </div>
             <div id="right-div">
@@ -225,6 +269,37 @@ class Profile extends React.Component<IProps, State> {
       });
   }
 
+  private apiEditProfile() /*= (request: Request) => */ {
+    const formData = new FormData();
+    /*  request.files.images.forEach((file, idx) =>
+        formData.append("images[" + idx + "]", file)
+      );
+      request.files.videos.forEach((file, idx) =>
+        formData.append("videos[" + idx + "]", file)
+      );
+      request.files.docs.forEach((file, idx) =>
+        formData.append("docs[" + idx + "]", file)
+      );
+      request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
+
+      formData.append("text", request.about);
+      formData.append("title", request.title);
+      formData.append("visibility", request.privacy);
+      formData.append("conference", this.id + "");
+      */
+    axiosInstance
+      .post("/post", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(res => {
+        console.log("Post created - reloading page...");
+        window.location.reload();
+      })
+      .catch(() => console.log("Failed to create post"));
+  }
+
   private apiGetUserUserInteractions() {
     apiGetUserInteractions("users", this.id)
       .then(res => {
@@ -288,6 +363,21 @@ class Profile extends React.Component<IProps, State> {
         this.setState({ user: res.data.user });
       })
       .catch(() => console.log("Failed to get posts"));
+  }
+
+  private handleEditProfile = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private getEditButton() {
+    if (this.auth.getUserPayload().id === this.id) {
+      return (
+        <span className="edit-icon" onClick={this.handleEditProfile}>
+          <i className="fas fa-pencil-alt" />
+        </span>
+      );
+    }
   }
 
   private getProfileName() {

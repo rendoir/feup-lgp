@@ -1,5 +1,4 @@
-import axiosInstance from "../../utils/axiosInstance";
-
+import axios from "axios";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router";
 import { getApiURL } from "../../utils/apiURL";
@@ -30,7 +29,7 @@ type State = {
   work_field: string;
 };
 
-class RegisterForm extends React.Component<RouteComponentProps, State> {
+class EditProfileForm extends React.Component<RouteComponentProps, State> {
   public static contextType = LanguageContext;
 
   constructor(props) {
@@ -184,8 +183,8 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
         work_field: this.state.work_field
       };
 
-      return axiosInstance
-        .post(getApiURL(`/${1}/edit`), body)
+      return axios
+        .post(getApiURL("/users"), body)
         .then(() => {
           console.log("Registration completed, redirecting to feed!");
           this.setState({
@@ -286,4 +285,4 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
   }
 }
 
-export default withRouter(RegisterForm);
+export default withRouter(EditProfileForm);
