@@ -31,7 +31,12 @@
 	}
 
   @media screen and (max-width: 1000px) {
-	#leftm, #rightm, #mainm {
+	  #leftm, #rightm {
+		  margin-left: 20px;
+		  width: 40%;
+	  }
+
+	#mainm {
 	  width: 100%; 
 	}
   }
