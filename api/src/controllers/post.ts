@@ -11,11 +11,12 @@ export async function createPost(req, res) {
     const userId = req.user.id;
 
     try {
-        if (req.body.conference > 0) {
+        console.log('Created post on talk: ' + req.body.talk);
+        if ( req.body.talk > 0) {
             const post = (await query({
-                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, talk)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
-                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.talk],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
@@ -211,7 +212,9 @@ export async function getPostUserInteractions(req, res) {
 export function subscribePost(req, res) {
     const userId = req.user.id;
     query({
-        text: 'INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)',
+        text: `INSERT INTO posts_subscriptions (subscriber, post) VALUES ($1, $2)
+                ON CONFLICT ON CONSTRAINT pk_posts_subscriptions
+                DO NOTHING`,
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
@@ -487,7 +490,7 @@ export function deleteFolderRecursive(path) {
     }
 }
 
-export function inviteUser(req, res) {
+export async function inviteUser(req, res) {
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'post')`,
         values: [req.body.invited_user, req.params.id],
@@ -495,7 +498,7 @@ export function inviteUser(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+        res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
     });
 }
 
@@ -503,7 +506,8 @@ export function inviteSubscribers(req, res) {
     const userId = req.user.id;
     query({
         text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
-                SELECT follower, $1, 'post' FROM follows WHERE followed = $2
+                  SELECT uninvited_subscriber, $1, 'post'
+                  FROM retrieve_post_uninvited_subscribers($1, $2)
                 ON CONFLICT ON CONSTRAINT unique_invite
                 DO NOTHING`,
         values: [req.params.id, userId],
@@ -511,8 +515,38 @@ export function inviteSubscribers(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while subscribing post' });
+        res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
     });
+}
+
+export async function amountSubscribersUninvited(req, res) {
+    const userId = req.user.id;
+    try {
+        const amountUninvitedSubscribersQuery = await query({
+            text: `SELECT COUNT(*) FROM retrieve_post_uninvited_subscribers($1, $2)`,
+            values: [req.params.id, userId],
+        });
+        res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving uninvited subscribers count in post'));
+    }
+}
+
+export async function getUninvitedUsersInfo(req, res) {
+    const userId = req.user.id;
+    try {
+        const uninvitedUsersQuery = await query({
+            text: `SELECT id, first_name, last_name, home_town, university, work, work_field
+                    FROM users
+                    WHERE id NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users($1)) AND id <> $2`,
+            values: [req.params.id, userId],
+        });
+        res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving post uninvited users info'));
+    }
 }
 
 export function updateRelevancy(req, res) {

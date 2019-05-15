@@ -1,7 +1,7 @@
 @import "./variables";
 @import "./functions";
 
-#Conference {
+#Talk {
     $min_screen_width_chat: 1200px;
 
     width: 75%;
@@ -62,7 +62,32 @@
     }
 
     .conf_posts {
+        width: 60%;
+        margin-left: auto;
+        float: right;
+
+        .join_button {
+            color: #FFFFFF;
+            margin-bottom: 1.5em;
+            width: 100%;
+            padding: 1em 0;
+            font-size: 1.5em;
+            border-radius: 40px;
+        }
         
+        .join {
+            background-color: $color-primary;
+        }
+        .join:hover {
+            background-color: shade($color-primary, 15);
+        }
+
+        .leave, .cannot_join {
+            background-color: $color-danger;
+        }
+        .leave:hover {
+            background-color: shade($color-danger, 28);
+        }
 
 
         .create {
@@ -100,6 +125,12 @@
             font-size: 1.1em;
         }
 
+        .invite_subscribers {
+            background-color: $color-primary !important;
+            color: white !important;
+            border-radius: 15px !important;
+        }
+
         ul li, button {
             list-style-type: none;
             padding: 0.25rem 0.5rem;
@@ -114,14 +145,6 @@
             border: $light-border;
             margin-bottom: 2em;
         }
-    }
-
-    .challenges {
-        > div {
-            border: $light-border;
-            margin-bottom: 2em;
-        }
-
     }
 
     @media (max-width: $min_screen_width_chat) {

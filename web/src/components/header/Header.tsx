@@ -31,7 +31,7 @@ type State = {
   isOpen: boolean;
   step: Step;
   request: {
-    type: "post" | "conference";
+    type: "post" | "talk" | "conference";
     title: string;
     about: string;
     avatar?: File;
@@ -252,13 +252,12 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           avatar: request.avatar,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,
-          livestream: request.switcher === "true" ? request.livestream : null,
           local: request.local,
           privacy: request.privacy,
           title: request.title
         })
         .then(res => {
-          console.log(`Conference with id = ${res.data.id} created`);
+          console.log(`conference with id = ${res.data.id} created`);
           window.location.href = "/conference/" + res.data.id;
           this.resetState();
         })

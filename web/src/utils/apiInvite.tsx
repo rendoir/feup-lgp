@@ -3,7 +3,7 @@ import axiosInstance from "./axiosInstance";
 export async function apiInviteUser(
   inviteSubjectId: number,
   invitedUserId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<boolean> {
   const apiURL = `/${inviteType}/${inviteSubjectId}/invite`;
   const body = { invited_user: invitedUserId };
@@ -19,7 +19,7 @@ export async function apiInviteUser(
 
 export async function apiInviteSubscribers(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<boolean> {
   const apiURL = `/${inviteType}/${inviteSubjectId}/invite_subscribers`;
 
@@ -34,30 +34,38 @@ export async function apiInviteSubscribers(
 
 export async function apiGetUninvitedSubscribersAmount(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ): Promise<number> {
   const apiURL = `/${inviteType}/${inviteSubjectId}/amount_uninvited_subscribers`;
 
   try {
-    const res = await axiosInstance.get(apiURL);
+    const res =
+      inviteType === "talk"
+        ? await axiosInstance.get(apiURL)
+        : await axiosInstance.post(apiURL);
+
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited subscribers amount");
     return -1;
   }
 }
 
 export async function apiGetUninvitedUsersInfo(
   inviteSubjectId: number,
-  inviteType: string // 'post' or 'conference'
+  inviteType: string // 'post' or 'talk'
 ) {
   const apiURL = `/${inviteType}/${inviteSubjectId}/uninvited_users_info`;
 
   try {
-    const res = await axiosInstance.get(apiURL);
+    const res =
+      inviteType === "talk"
+        ? await axiosInstance.get(apiURL)
+        : await axiosInstance.post(apiURL);
+
     return res.data.uninvitedUsers;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log("Failed to fetch uninvited users info");
     return null;
   }
 }

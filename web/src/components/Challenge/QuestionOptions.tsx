@@ -13,7 +13,7 @@ import RadioGroup from "../Radio/RadioGroup";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 export interface IProps {
-  confId: number;
+  talkID: number;
   id: number;
   title: string;
   challengeType: string;
@@ -84,7 +84,7 @@ class QuestionOptions extends Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+    getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
       .get(getUrl, {
@@ -252,7 +252,7 @@ class QuestionOptions extends Component<IProps, IState> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+    postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
       .post(postUrl, {

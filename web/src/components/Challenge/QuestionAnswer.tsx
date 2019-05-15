@@ -12,7 +12,7 @@ import Input from "../Input/Input";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
-  confId: number;
+  talkID: number;
   id: number;
   title: string;
   challengeType: string;
@@ -75,7 +75,7 @@ class QuestionAnswer extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+    getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
       .get(getUrl, {
@@ -210,14 +210,14 @@ class QuestionAnswer extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+    postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
       .post(postUrl, {
         author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: this.state.value,
-        completion: this.state.isCorrect ? true : false,
+        completion,
         headers: {}
       })
       .then(res => {

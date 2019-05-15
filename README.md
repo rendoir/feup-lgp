@@ -3,7 +3,7 @@ gNet
 
 Description
 -----------
-gNet is a social network where enthusiasts of the medical area can share and acquire knowledge by participating in discussions and conferences in the platform.
+gNet is a social network where enthusiasts of the medical area can share and acquire knowledge by participating in discussions and talks in the platform.
 
 Development Instructions
 ------------

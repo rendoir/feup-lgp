@@ -61,7 +61,7 @@ export async function createChallenge(req, res) {
 
     query({
         text: `INSERT INTO challenges
-                (title, dateStart, dateEnd, prize, points_prize, challengeType, content, conference)
+                (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         values: [
             req.body.title,
@@ -71,7 +71,7 @@ export async function createChallenge(req, res) {
             points,
             type,
             content,
-            Number(req.body.conf_id),
+            Number(req.body.talk_id),
         ],
     }).then((result) => {
         res.status(200).send();

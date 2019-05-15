@@ -20,6 +20,7 @@ import PostView from "./PostView";
 import Profile from "./Profile";
 import SearchResults from "./SearchResults";
 import Shop from "./Shop";
+import Talk from "./Talk";
 
 type State = {
   language: string;
@@ -50,6 +51,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/shop" component={Shop} />
                 <Route path="/landing" component={Landing} />
                 <Route path="/search" component={SearchResults} />
+                <Route path="/talk/:id" component={Talk} />
                 <Route path="/conference/:id" component={Conference} />
                 <Route path="/notifications" component={Notifications} />
                 <Route component={Feed} /> {/* default */}

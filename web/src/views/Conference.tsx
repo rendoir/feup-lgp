@@ -1,20 +1,8 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { MouseEvent } from "react";
 import * as React from "react";
-
-import Avatar from "../components/Avatar/Avatar";
-import ChallengeCarousel from "../components/ChallengeCarousel/ChallengeCarousel";
-import Chat from "../components/Chat/Chat";
-import Icon from "../components/Icon/Icon";
-import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
-import Livestream from "../components/Livestream/Livestream";
-import Post from "../components/Post/Post";
-import InviteModal from "../components/PostModal/InviteModal";
-
-import styles from "../components/Post/Post.module.css";
-
-import { render } from "react-dom";
 import "../styles/Conference.css";
+import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -24,25 +12,13 @@ import {
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
-import CreateNewModalChallenge from "../components/CreateNewModalChallenges/CreateNewModalChallenge";
-
 import { Request, Step } from "../components/CreateNewModal/types";
-import {
-  RequestChallenge,
-  StepChallenge
-} from "../components/CreateNewModalChallenges/types";
 
 // - Import utils
-import {
-  apiCheckUserCanJoinConference,
-  apiCheckUserConferenceParticipation,
-  apiUserJoinConference,
-  apiUserLeaveConference
-} from "../utils/apiConference";
+import TalkCard from "../components/TalkCard/TalkCard";
 import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -53,17 +29,13 @@ interface IProps {
 }
 
 interface IState {
-  archived: boolean;
-  clickedChallenge: number | undefined;
   hasChat: boolean;
   step: Step;
-  stepChallenge: StepChallenge;
   hasLiveStream: boolean;
-  livestreamUrl: string;
-  posts: any[];
-  challenges: any[];
+  talks: any[];
   title: string;
   description: string;
+  conference_id: number;
   place: string;
   date_start: string;
   date_end: string;
@@ -71,76 +43,55 @@ interface IState {
   userParticipation: boolean;
   waitingUserJoinLeave: boolean;
   isHidden: boolean;
-  isChallengeModalOpen: boolean;
   owner_id: number;
   owner_name: string;
-  points: number;
   privacy: string;
   postModalOpen: boolean;
   request: {
-    type: "post" | "conference";
+    type: "post" | "talk" | "conference";
     title: string;
     about: string;
     avatar?: File;
     privacy: string;
+    tags: string[];
     files: {
       docs: File[];
       videos: File[];
       images: File[];
     };
-    tags: string[];
     dateStart: string;
     dateEnd: string;
-    local: string;
     livestream: string;
+    local: string;
     switcher: string;
-  };
-  requestChallenge: {
-    type: "post" | "options" | "question" | "comment";
-    title: string;
-    about: string;
-    dateStart: string;
-    dateEnd: string;
-    post: string;
-    question: string;
-    correctAnswer: string;
-    options: string[];
-    prize: string;
-    prizePoints: string;
   };
 }
 
 class Conference extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  private id: number;
-  private userId: number;
-  private tags: string[];
+  public id: number;
+  public userId: number;
+  public tags: string[];
   private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
-    this.userId = this.auth.getUserPayload().id;
+    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.tags = [];
     this.state = {
-      archived: false,
-      challenges: [],
-      clickedChallenge: undefined,
+      conference_id: 1,
       date_end: "",
       date_start: "",
       description: "",
       hasChat: true,
       hasLiveStream: true,
-      isChallengeModalOpen: false,
       isHidden: false,
-      livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
       owner_id: 1,
       owner_name: "",
       place: "",
-      points: 0,
       postModalOpen: false,
-      posts: [],
       privacy: "",
       request: {
         about: "",
@@ -158,90 +109,20 @@ class Conference extends React.Component<IProps, IState> {
         switcher: "false",
         tags: [],
         title: "",
-        type: "post"
-      },
-      requestChallenge: {
-        about: "",
-        correctAnswer: "",
-        dateEnd: "",
-        dateStart: "",
-        options: [],
-        post: "",
-        prize: "",
-        prizePoints: "",
-        question: "",
-        title: "",
-        type: "question"
+        type: "talk"
       },
       step: "type",
-      stepChallenge: "type",
+      talks: [],
       title: "",
       userCanJoin: false,
       userParticipation: false,
       waitingUserJoinLeave: false
     };
-
-    this.handleHideConference = this.handleHideConference.bind(this);
-    this.getHiddenInfo = this.getHiddenInfo.bind(this);
-    this.handleChallengeClick = this.handleChallengeClick.bind(this);
-    this.handleJoinConference = this.handleJoinConference.bind(this);
-    this.handleLeaveConference = this.handleLeaveConference.bind(this);
   }
-
   public componentDidMount() {
-    this.apiGetConference();
-    this.getPossibleTags();
-    this.apiGetUserCanJoin();
-    this.apiGetUserParticipation();
-    this.apiGetPointsOfUserConference();
+    this.getConference();
   }
-
-  public async handleJoinConference() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: true,
-      waitingUserJoinLeave: true
-    });
-
-    const joinSuccess = await apiUserJoinConference(this.id);
-    this.setState({
-      userParticipation: joinSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public async handleLeaveConference() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: false,
-      waitingUserJoinLeave: true
-    });
-
-    const leaveSuccess = await apiUserLeaveConference(this.id);
-    this.setState({
-      userParticipation: !leaveSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public apiGetPointsOfUserConference() {
-    axiosInstance
-      .get(`/conference/${this.id}/user/${this.userId}/points`)
-      .then(res => {
-        this.setState({ points: res.data.points });
-      })
-      .catch(() =>
-        console.log("Failed to get points of user in the conference")
-      );
-  }
-
-  public apiGetConference() {
+  public getConference() {
     axiosInstance
       .get(`/conference/${this.id}`)
       .then(res => {
@@ -251,113 +132,124 @@ class Conference extends React.Component<IProps, IState> {
         let dateend = conference.dateend.split("T");
         dateend = dateend[0] + " " + dateend[1];
 
-        const postsComing = res.data;
-
-        const challengesConf = res.data.challenges;
-
-        let isHidden = false;
-
         if (conference.privacy === "closed") {
-          isHidden = true;
+          this.setState({
+            isHidden: true
+          });
         }
 
         this.setState({
-          archived: conference.archived,
-          challenges: challengesConf,
+          conference_id: conference.id,
           date_end: dateend,
           date_start: datestart,
           description: conference.about,
-          isHidden,
-          livestreamUrl: conference.livestream_url,
           owner_id: conference.user_id,
           owner_name: conference.first_name + conference.last_name,
           place: conference.local,
-          posts: postsComing.posts,
-          privacy: conference.local,
+          privacy: conference.privacy,
+          talks: res.data.talks,
           title: conference.title
         });
       })
       .catch(() => console.log("Failed to get conference info"));
   }
 
-  public handleHideConference() {
-    let privacyState = "closed";
+  public getTalks() {
+    const buffer: any[] = [];
+    let lastEnd = "";
+    this.state.talks.forEach(talk => {
+      let datestart = talk.datestart.split("T");
+      datestart = datestart[0] + " " + datestart[1];
+      let dateend = talk.dateend.split("T");
+      dateend = dateend[0] + " " + dateend[1];
+      if (lastEnd !== dateend) {
+        buffer.push(
+          <h6>
+            {dictionary.day_split[this.context]}
+            {this.cleanDate(dateend.split(" ")[0])}
+          </h6>
+        );
+      }
+      lastEnd = dateend;
+      buffer.push(
+        <TalkCard
+          id={talk.id}
+          title={talk.title}
+          local={talk.local}
+          dateend={this.cleanDate(dateend.split(" ")[0])}
+          datestart={this.cleanDate(datestart.split(" ")[0])}
+          about={talk.about}
+          avatar={talk.avatar}
+        />
+      );
+    });
+    return buffer;
+  }
 
-    if (this.state.isHidden) {
-      privacyState = "public";
-      this.setState({
-        isHidden: false
-      });
-    } else {
-      privacyState = "closed";
-      this.setState({
-        isHidden: true
-      });
+  public cleanDate(date) {
+    date = date.split("-");
+    switch (date[1]) {
+      case "01":
+        date[1] = dictionary.month1[this.context];
+        break;
+      case "02":
+        date[1] = dictionary.month2[this.context];
+        break;
+      case "03":
+        date[1] = dictionary.month3[this.context];
+        break;
+      case "04":
+        date[1] = dictionary.month4[this.context];
+        break;
+      case "05":
+        date[1] = dictionary.month5[this.context];
+        break;
+      case "06":
+        date[1] = dictionary.month6[this.context];
+        break;
+      case "07":
+        date[1] = dictionary.month7[this.context];
+        break;
+      case "08":
+        date[1] = dictionary.month8[this.context];
+        break;
+      case "09":
+        date[1] = dictionary.month9[this.context];
+        break;
+      case "10":
+        date[1] = dictionary.month10[this.context];
+        break;
+      case "11":
+        date[1] = dictionary.month11[this.context];
+        break;
+      case "12":
+        date[1] = dictionary.month12[this.context];
+        break;
     }
-
-    const postUrl = `/conference/${this.props.match.params.id}/change_privacy`;
-
-    axiosInstance
-      .post(postUrl, {
-        id: this.props.match.params.id,
-        privacy: privacyState
-      })
-      .then(res => {
-        console.log("Conference hidden...");
-      })
-      .catch(() => console.log("Failed to update privacy"));
-  }
-
-  public apiSetArchived() {
-    axiosInstance
-      .post(`/conference/${this.id}/archive`)
-      .then()
-      .catch(() => console.log("Failed to archive conference"));
-
-    this.setState({
-      archived: true
-    });
-  }
-
-  public apiSetUnarchived() {
-    axiosInstance
-      .delete(`/conference/${this.id}/archive`)
-      .then()
-      .catch(() => console.log("Failed to unarchive conference"));
-
-    this.setState({
-      archived: false
-    });
-  }
-
-  public async apiGetUserCanJoin() {
-    const canJoin: boolean = await apiCheckUserCanJoinConference(this.id);
-    this.setState({ userCanJoin: canJoin });
-  }
-
-  public async apiGetUserParticipation() {
-    const participant: boolean = await apiCheckUserConferenceParticipation(
-      this.id
-    );
-    this.setState({ userParticipation: participant });
+    const cleanDate =
+      date[2] +
+      " " +
+      dictionary.of[this.context] +
+      " " +
+      date[1] +
+      ", " +
+      date[0];
+    return cleanDate;
   }
 
   public render() {
-    const isArchived = this.state.archived;
-    if (this.state.isHidden && this.userId !== this.state.owner_id) {
+    if (this.state.isHidden && this.userId === this.state.owner_id) {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
             <h4>
               {dictionary.title[this.context]}: {this.state.title}
             </h4>
-            <h5>{dictionary.closed_conference[this.context]}</h5>
+            <h5>Test Conference</h5>
           </div>
 
           <div className="container my-5">
-            <div className="conf_side">
-              <div className="p-3">{this.getDetails()}</div>
-            </div>
+            <div className="conf_side" />
           </div>
         </div>
       );
@@ -366,25 +258,13 @@ class Conference extends React.Component<IProps, IState> {
         <div id="Conference" className="my-5">
           <div className="container my-5">
             <h4>{this.state.title}</h4>
-            <p>{this.state.description}</p>
+            <h5>{this.state.description}</h5>
           </div>
-          {this.state.hasLiveStream &&
-            this.state.userParticipation &&
-            this.state.userCanJoin &&
-            this.renderStream()}
           <div className="container my-5">
-            <div className="conf_side">
-              <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
-            </div>
             <div className="conf_posts">
-              {this.getJoinButton()}
-              <button
-                className="create"
-                onClick={this.createConfPost}
-                disabled={isArchived}
-              >
-                {dictionary.create_post[this.context]}
+              <div className="p-3">{this.getTalks()}</div>
+              <button className="create" onClick={this.createConfPost}>
+                {dictionary.create_new_talk[this.context]}
               </button>
               {this.state.postModalOpen ? (
                 <CreateNewModal
@@ -396,72 +276,15 @@ class Conference extends React.Component<IProps, IState> {
                   onRequestChange={request => this.setState({ request })}
                   onClose={this.resetState}
                   autoFocus={false}
-                  step={"postConf"}
+                  step={"talkConf"}
                   tags={this.tags}
                 />
               ) : null}
-              {this.getChallenges()}
-              <InfiniteScroll requestUrl={`/conference/${this.id}`} />
             </div>
           </div>
         </div>
       );
     }
-  }
-
-  public getHiddenInfo() {
-    if (this.state.isHidden) {
-      return (
-        <div id="hidden_info">
-          <b>{dictionary.closed_conference[this.context]}</b>
-        </div>
-      );
-    }
-  }
-
-  public getDropdownButtons() {
-    const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_conference[this.context]
-      : dictionary.hide_conference[this.context];
-
-    const reportButton = (
-      <button
-        key={0}
-        className={`dropdown-item ${styles.report_content}`}
-        type="button"
-        data-toggle="modal"
-        // data-target={`#report_post_modal_${this.props.id}`}
-        // onClick={this.handleConferenceReport}
-        // disabled={this.state.userReport}
-      >
-        {dictionary.report_conference[this.context]}
-      </button>
-    );
-    const deleteButton = (
-      <button
-        key={1}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        onClick={this.handleHideConference}
-        // data-target={`#delete_conference_modal${this.props.id}`}
-      >
-        {hideBtnText}
-      </button>
-    );
-    const archiveButton = (
-      <button
-        key={2}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        // data-target={`#archive_conference_modal${this.props.id}`}
-      >
-        {dictionary.archive_conference[this.context]}
-      </button>
-    );
-    const dropdownButtons = [reportButton, deleteButton, archiveButton];
-    return dropdownButtons;
   }
 
   private createConfPost = (event: MouseEvent) => {
@@ -470,100 +293,35 @@ class Conference extends React.Component<IProps, IState> {
   };
 
   private handleSubmit = (request: Request) => {
-    if (request.type === "post") {
-      const formData = new FormData();
-      request.files.images.forEach((file, idx) =>
-        formData.append("images[" + idx + "]", file)
-      );
-      request.files.videos.forEach((file, idx) =>
-        formData.append("videos[" + idx + "]", file)
-      );
-      request.files.docs.forEach((file, idx) =>
-        formData.append("docs[" + idx + "]", file)
-      );
-      request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
-
-      formData.append("text", request.about);
-      formData.append("title", request.title);
-      formData.append("visibility", request.privacy);
-      formData.append("conference", this.id + "");
-
-      axiosInstance
-        .post("/post", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        .then(res => {
-          console.log("Post created - reloading page...");
-          window.location.reload();
-          this.resetState();
-        })
-        .catch(() => console.log("Failed to create post"));
-    }
-  };
-
-  private handleSubmitChallenge = (request: RequestChallenge) => {
     let url = `${location.protocol}//${location.hostname}`;
     url +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
 
-    const formData = new FormData();
-
-    formData.append("type", request.type);
-    formData.append("title", request.title);
-    formData.append("text", request.about);
-    formData.append("dateEnd", request.dateEnd);
-    formData.append("dateStart", request.dateStart);
-    formData.append("prize", request.prize);
-    formData.append("prizePoints", request.prizePoints);
-    formData.append("question", request.question);
-
-    let correctAns = "";
-
-    if (request.type === "options") {
-      correctAns = request.options[Number(request.correctAnswer)];
-    } else {
-      correctAns = request.correctAnswer;
+    if (request.type === "talk") {
+      url += "/talk";
+      axiosInstance
+        .post(url, {
+          about: request.about,
+          author: 1,
+          avatar: request.avatar,
+          conference: this.state.conference_id,
+          dateEnd: request.dateEnd,
+          dateStart: request.dateStart,
+          livestream: request.livestream,
+          local: request.local,
+          privacy: request.privacy,
+          title: request.title
+        })
+        .then(res => {
+          console.log(`talk with id = ${res.data.id} created`);
+          window.location.href = "/talk/" + res.data.id;
+          this.resetState();
+        })
+        .catch(error => console.log("Failed to create talk. " + error));
     }
-
-    formData.append("correctAnswer", correctAns);
-
-    request.options.forEach((opt, i) =>
-      formData.append("options[" + i + "]", opt)
-    );
-
-    formData.append("post", request.post);
-    formData.append("conf_id", String(this.id));
-
-    url += `/conference/${this.id}/challenge/create`;
-    axiosInstance
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      })
-      .then(res => {
-        console.log("Challenge created - reloading page...");
-        window.location.reload();
-        this.resetState();
-      })
-      .catch(() => console.log("Failed to create post"));
   };
-
-  private getPossibleTags = (): void => {
-    axiosInstance
-      .get("/tags")
-      .then(res => {
-        res.data.forEach(tag => {
-          this.tags.push(tag.name);
-        });
-      })
-      .catch(() => console.log("Failed to get tags"));
-  };
-
   private resetState = () => {
     this.setState({
       postModalOpen: false,
@@ -584,261 +342,11 @@ class Conference extends React.Component<IProps, IState> {
         switcher: "false",
         tags: [],
         title: "",
-        type: "post"
+        type: "talk"
       },
       step: "type"
     });
   };
-
-  private resetStateChallenge = () => {
-    this.setState({
-      isChallengeModalOpen: false,
-      requestChallenge: {
-        about: "",
-        correctAnswer: "",
-        dateEnd: "",
-        dateStart: "",
-        options: [],
-        post: "",
-        prize: "",
-        prizePoints: "",
-        question: "",
-        title: "",
-        type: "question"
-      },
-      stepChallenge: "type"
-    });
-  };
-
-  private renderStream() {
-    return (
-      <div className="conf_head w-100">
-        <div className="live_wrap">
-          <div className="live_container">
-            <Livestream src={this.state.livestreamUrl} />
-          </div>
-        </div>
-        <div className="chat_wrap">
-          <div className="chat_container">
-            <Chat />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  private archiveConf() {
-    if (this.state.archived === false) {
-      this.apiSetArchived();
-    } else {
-      this.apiSetUnarchived();
-    }
-  }
-
-  private getDetails() {
-    return (
-      <ul className="p-0 m-0">
-        <Avatar
-          title={this.state.owner_name}
-          placeholder="empty"
-          size={30}
-          image="https://picsum.photos/200/200?image=52"
-        />
-        <a className={styles.post_author} href={"/user/" + this.state.owner_id}>
-          {" "}
-          {this.state.owner_name}
-        </a>
-        <Icon icon={this.getVisibilityIcon(this.state.privacy)} size="lg" />
-        <li>
-          <i className="fas fa-map-marker-alt" /> {this.state.place}
-        </li>
-        <li>
-          <i className="fas fa-hourglass-start" /> {this.state.date_start}
-        </li>
-        <li>
-          <i className="fas fa-hourglass-end" /> {this.state.date_end}
-        </li>
-      </ul>
-    );
-  }
-
-  private getAdminButtons() {
-    const isArchived = this.state.archived;
-    const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_conference[this.context]
-      : dictionary.hide_conference[this.context];
-    const isArchivedBtn = this.state.archived
-      ? dictionary.unarchive_conference[this.context]
-      : dictionary.archive_conference[this.context];
-    return (
-      <div id="conf-admin-buttons" className="p-0 m-0">
-        <h6>{dictionary.administrator[this.context]}</h6>
-        <button
-          disabled={isArchived}
-          data-toggle="modal"
-          data-target={`#invite_conference_modal_${this.id}`}
-        >
-          <i className="fas fa-envelope" />
-          {dictionary.invite_users[this.context]}
-        </button>
-        {/* Invite Users */}
-        <InviteModal conferenceId={this.id} />
-        <button disabled={isArchived}>
-          <i className="fas fa-video" />
-          {dictionary.start_livestream_conference[this.context]}
-        </button>
-        <button
-          type="button"
-          onClick={this.handleCreateChallenge}
-          disabled={isArchived}
-        >
-          <i className="fas fa-puzzle-piece" />
-          {dictionary.create_challenge_conference[this.context]}
-        </button>
-        {/* Challenge Create Modal */}
-        {this.state.isChallengeModalOpen ? (
-          <CreateNewModalChallenge
-            pending={false}
-            onSubmit={this.handleSubmitChallenge}
-            onStepChange={step => this.setState({ stepChallenge: step })}
-            maxGroupSize={10}
-            request={this.state.requestChallenge}
-            onRequestChange={request =>
-              this.setState({ requestChallenge: request })
-            }
-            onClose={this.resetStateChallenge}
-            autoFocus={false}
-            step={this.state.stepChallenge}
-            posts={this.state.posts}
-          />
-        ) : null}
-        <button disabled={isArchived}>
-          <i className="fas fa-pen" />
-          Edit conference
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            this.archiveConf();
-          }}
-        >
-          <i className="fas fa-archive" />
-          {isArchivedBtn}
-        </button>
-        <button onClick={this.handleHideConference} disabled={isArchived}>
-          <i className="fas fa-trash" />
-          {hideBtnText}
-        </button>
-        {this.getHiddenInfo()}
-      </div>
-    );
-  }
-
-  private handleCreateChallenge = (event: MouseEvent): void => {
-    event.preventDefault();
-    this.setState({ isChallengeModalOpen: true });
-  };
-
-  private getJoinButton() {
-    const isArchived = this.state.archived;
-    let buttonClass = this.state.userParticipation ? "leave" : "join";
-    let buttonText = this.state.userParticipation
-      ? dictionary.leave_conference[this.context]
-      : dictionary.join_conference[this.context];
-
-    if (!this.state.userCanJoin) {
-      buttonClass = "cannot_join";
-      buttonText = dictionary.no_access_conference[this.context];
-    }
-    // TODO: METER EFEITOS AO CARREGAR
-    return (
-      <button
-        className={`join_button ${buttonClass}`}
-        onClick={
-          this.state.userParticipation
-            ? this.handleLeaveConference
-            : this.handleJoinConference
-        }
-        disabled={!this.state.userCanJoin || isArchived}
-      >
-        {buttonText}
-      </button>
-    );
-  }
-
-  private getVisibilityIcon(v: string): IconDefinition {
-    switch (v) {
-      case "public":
-        return faGlobeAfrica;
-      case "followers":
-        return faUserFriends;
-      case "private":
-        return faLock;
-      default:
-        return faQuestion;
-    }
-  }
-
-  private handleChallengeClick(challenge: number | undefined) {
-    if (challenge) {
-      this.setState({
-        clickedChallenge: challenge
-      } as IState);
-    }
-  }
-
-  private getChallenges() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
-
-    const challenges: any[] = [];
-    if (this.state.challenges.length > 0) {
-      challenges.push(
-        <ChallengeCarousel
-          key={"challenges_" + this.id}
-          id={this.id}
-          challenges={this.state.challenges}
-          userId={this.userId}
-          handleChallengeClick={this.handleChallengeClick}
-        />
-      );
-    } else {
-      challenges.push(
-        <div key={"no_challenges"}>
-          {" "}
-          {dictionary.no_challenges[this.context]}{" "}
-        </div>
-      );
-    }
-
-    return (
-      <div key={"challenges_points"}>
-        <div key={"points_div_" + this.id} className="challenges">
-          <div key={"points_ins_div_" + this.id} className="p-3">
-            <div key={"points_ins_ins_div_" + this.id} className="p-0 m-0">
-              <h5>
-                {dictionary.my_points[this.context]}{" "}
-                <small>{this.state.points}</small>
-              </h5>
-            </div>
-          </div>
-        </div>
-        <div key={"challenges_div_" + this.id} className="challenges">
-          <div key={"challenges_ins_div_" + this.id} className="p-3">
-            <div key={"challenges_ins_ins_div_" + this.id} className="p-0 m-0">
-              <h4>
-                {dictionary.challenge_conference[this.context]}{" "}
-                <i className="fas fa-puzzle-piece" />
-              </h4>
-              <br />
-              {challenges}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 }
 
-export default withAuth(Conference);
+export default Conference;

@@ -5,7 +5,7 @@ import * as controller from '../controllers/challenge';
 export const challengeRouter = Router();
 
 /**
- * @api {post} /api/conference/:id/challenge/create Create a new challenge on a conference
+ * @api {post} /api/talk/:id/challenge/create Create a new challenge on a conference
  * @apiName Create-A-Challenge-On-Conference
  * @apiGroup Post
  *
@@ -22,7 +22,7 @@ export const challengeRouter = Router();
 challengeRouter.post('/create', controller.createChallenge);
 
 /**
- * @api {post} /api/conference/:id/challenge/solve Solve a challenge on a conference
+ * @api {post} /api/talk/:id/challenge/solve Solve a challenge on a conference
  * @apiName Solve-A-Challenge-On-Conference
  * @apiGroup Post
  *
@@ -39,7 +39,7 @@ challengeRouter.post('/create', controller.createChallenge);
 challengeRouter.post('/solve', controller.solveChallenge);
 
 /**
- * @api {get} /api/conference/:id/challenge Create a new challenge on a conference
+ * @api {get} /api/talk/:id/challenge Create a new challenge on a conference
  * @apiName Create-A-Challenge-On-Conference
  * @apiGroup Post
  *

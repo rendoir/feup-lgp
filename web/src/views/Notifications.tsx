@@ -43,7 +43,11 @@ class Notifications extends Component<{}, IState> {
     } else if (!this.state.notifications) {
       return <div>{dictionary.error_notifications[this.context]}</div>;
     } else if (this.state.notifications.length === 0) {
-      return <div>{dictionary.no_notifications[this.context]}</div>;
+      return (
+        <div id="no-notifications">
+          {dictionary.no_notifications[this.context]}
+        </div>
+      );
     }
 
     const notificationList = this.state.notifications.map(notif => {

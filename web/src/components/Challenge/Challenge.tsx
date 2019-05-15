@@ -11,7 +11,7 @@ import QuestionOptions from "./QuestionOptions";
 import TextChallenge from "./TextChallenge";
 
 export type Props = {
-  confId: number;
+  talkID: number;
   id: number;
   title: string;
   challengeType: string;

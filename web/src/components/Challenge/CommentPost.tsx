@@ -10,7 +10,7 @@ import styles from "./Challenge.module.css";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
-  confId: number;
+  talkID: number;
   id: number;
   title: string;
   challengeType: string;
@@ -70,7 +70,7 @@ class CommentPost extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+    getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
       .get(getUrl, {
@@ -217,15 +217,16 @@ class CommentPost extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/post/${
+    getUrl += `/talk/${this.props.talkID}/post/${
       this.state.postToComment
     }/comments_author`;
 
     axiosInstance
       .get(getUrl, { params: { author: 1 } })
       .then(res => {
-        const comments = res.data;
-        comments === [] ? (commented = true) : (commented = false);
+        if (res.data.length > 0) {
+          commented = true;
+        }
         this.setState({ isComplete: commented });
       })
       .catch(() => {
@@ -242,7 +243,7 @@ class CommentPost extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+    postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
       .post(postUrl, {

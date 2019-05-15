@@ -10,7 +10,7 @@ import styles from "./Challenge.module.css";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 export type Props = {
-  confId: number;
+  talkID: number;
   id: number;
   title: string;
   challengeType: string;
@@ -63,7 +63,7 @@ class PostCreate extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/challenge/solvedState`;
+    getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
       .get(getUrl, {
@@ -183,8 +183,9 @@ class PostCreate extends Component<Props, State> {
   }
 
   public handleSolveChallenge() {
-    if (this.apiGetPostChallenge()) {
-      this.apiSolveChallenge();
+    const completed = this.apiGetPostChallenge();
+    if (completed) {
+      this.apiSolveChallenge(completed);
     }
   }
 
@@ -196,13 +197,14 @@ class PostCreate extends Component<Props, State> {
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/conference/${this.props.confId}/posts_author`;
+    getUrl += `/talk/${this.props.talkID}/posts_author`;
 
     axiosInstance
       .get(getUrl, { params: { author: 1 } })
       .then(res => {
-        const posts = res.data;
-        posts === [] ? (posted = true) : (posted = false);
+        if (res.data.length > 0) {
+          posted = true;
+        }
         this.setState({ isComplete: posted });
       })
       .catch(() => {
@@ -213,20 +215,20 @@ class PostCreate extends Component<Props, State> {
     return posted;
   }
 
-  public apiSolveChallenge() {
+  public apiSolveChallenge(completion: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    postUrl += `/conference/${this.props.confId}/challenge/solve`;
+    postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
       .post(postUrl, {
         author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: "",
-        completion: this.state.isComplete,
+        completion,
         headers: {}
       })
       .then(res => {
