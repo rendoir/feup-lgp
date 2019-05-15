@@ -47,6 +47,8 @@ export function createTalk(req, res) {
     }
   }
 
+  console.log("livestream: ", req.body.livestream);
+  const livestreamURL = "https://www.youtube.com/embed/" + req.body.livestream.substr(req.body.livestream.length - 11);
   const userId = req.user.id;
 
   query({
@@ -56,7 +58,7 @@ export function createTalk(req, res) {
       userId,
       req.body.title,
       req.body.about,
-      req.body.livestream,
+      livestreamURL,
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
