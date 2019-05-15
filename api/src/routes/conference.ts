@@ -209,7 +209,7 @@ conferenceRouter.get('/:id/post/:post_id/comments_author', controller.getComment
 conferenceRouter.post('/:id/archive', controller.archiveConference);
 
 /**
- * @api {get} /api/post/:post_id/comments_author Get comments of a post
+ * @api {get} /api/conference/:id/post/:post_id/comments_author Get comments of a post
  * @apiName Get-Comments-Post
  * @apiGroup Post
  *
@@ -231,3 +231,13 @@ conferenceRouter.get('/:id/posts_author', controller.getPostsAuthor);
  *     }
  */
 conferenceRouter.delete('/:id/archive', controller.unarchiveConference);
+
+/**
+ * @api {get} /api/conference/:id/user/:user_id/points Get points of a user in a conference
+ * @apiName Get-Points-User-Conf
+ * @apiGroup Get
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   user_id     ID of the user to get points
+ */
+conferenceRouter.get('/:id/user/:user_id/points', controller.getPointsUserConf);

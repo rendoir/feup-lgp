@@ -21,6 +21,7 @@ export type Props = {
   prize: string;
   pointsPrize: number;
   content: any[];
+  userId: number;
 };
 
 export type State = {
@@ -79,7 +80,7 @@ class QuestionAnswer extends Component<Props, State> {
     axiosInstance
       .get(getUrl, {
         params: {
-          author: 1, // When loggin, this is the user logged in
+          author: this.props.userId,
           challenge: this.props.id,
           headers: {}
         }
@@ -90,6 +91,7 @@ class QuestionAnswer extends Component<Props, State> {
 
         if (res.data.state.length > 0) {
           value = res.data.state[0].answer;
+          console.log(res.data.state[0].complete);
           isCorrect = res.data.state[0].complete;
         }
 
@@ -193,16 +195,16 @@ class QuestionAnswer extends Component<Props, State> {
   }
 
   public handleSolveChallenge() {
+    let isCorrect = false;
     if (this.state.value === this.state.correctAnswer) {
-      this.setState({ isCorrect: true });
-    } else {
-      this.setState({ isCorrect: false });
+      isCorrect = true;
     }
 
-    this.apiSolveChallenge();
+    this.setState({ isCorrect });
+    this.apiSolveChallenge(isCorrect);
   }
 
-  public apiSolveChallenge() {
+  public apiSolveChallenge(completion: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -212,7 +214,7 @@ class QuestionAnswer extends Component<Props, State> {
 
     axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
+        author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: this.state.value,
         completion: this.state.isCorrect ? true : false,

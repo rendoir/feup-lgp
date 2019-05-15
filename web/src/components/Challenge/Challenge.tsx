@@ -20,6 +20,7 @@ export type Props = {
   prize: string;
   pointsPrize: number;
   content: any[];
+  userId: number;
 };
 
 export type State = {};

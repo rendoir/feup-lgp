@@ -22,6 +22,7 @@ export interface IProps {
   prize: string;
   pointsPrize: number;
   content: any[];
+  userId: number;
 }
 
 export interface IState {
@@ -88,7 +89,7 @@ class QuestionOptions extends Component<IProps, IState> {
     axiosInstance
       .get(getUrl, {
         params: {
-          author: 1, // When loggin, this is the user logged in
+          author: this.props.userId,
           challenge: this.props.id,
           headers: {}
         }
@@ -236,16 +237,16 @@ class QuestionOptions extends Component<IProps, IState> {
   }
 
   public handleSolveChallenge() {
+    let isCorrect = false;
     if (this.state.value === this.state.correctAnswer) {
-      this.setState({ isCorrect: true });
-    } else {
-      this.setState({ isCorrect: false });
+      isCorrect = true;
     }
 
-    this.apiSolveChallenge();
+    this.setState({ isCorrect });
+    this.apiSolveChallenge(isCorrect);
   }
 
-  public apiSolveChallenge() {
+  public apiSolveChallenge(completion: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -255,10 +256,10 @@ class QuestionOptions extends Component<IProps, IState> {
 
     axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
+        author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: this.state.value,
-        completion: this.state.isCorrect ? true : false,
+        completion,
         headers: {}
       })
       .then(res => {

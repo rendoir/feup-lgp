@@ -74,6 +74,7 @@ interface IState {
   isChallengeModalOpen: boolean;
   owner_id: number;
   owner_name: string;
+  points: number;
   privacy: string;
   postModalOpen: boolean;
   request: {
@@ -137,6 +138,7 @@ class Conference extends React.Component<IProps, IState> {
       owner_id: 1,
       owner_name: "",
       place: "",
+      points: 0,
       postModalOpen: false,
       posts: [],
       privacy: "",
@@ -191,6 +193,7 @@ class Conference extends React.Component<IProps, IState> {
     this.getPossibleTags();
     this.apiGetUserCanJoin();
     this.apiGetUserParticipation();
+    this.apiGetPointsOfUserConference();
   }
 
   public async handleJoinConference() {
@@ -225,6 +228,18 @@ class Conference extends React.Component<IProps, IState> {
       userParticipation: !leaveSuccess,
       waitingUserJoinLeave: false
     });
+  }
+
+  public apiGetPointsOfUserConference() {
+    axiosInstance
+      .get(`/conference/${this.id}/user/${this.userId}/points`)
+      .then(res => {
+        console.log("Points: " + res.data.points);
+        this.setState({ points: res.data.points });
+      })
+      .catch(() =>
+        console.log("Failed to get points of user in the conference")
+      );
   }
 
   public apiGetConference() {
@@ -505,7 +520,6 @@ class Conference extends React.Component<IProps, IState> {
     formData.append("dateStart", request.dateStart);
     formData.append("prize", request.prize);
     formData.append("prizePoints", request.prizePoints);
-    console.log(request.prizePoints);
     formData.append("question", request.question);
 
     let correctAns = "";
@@ -786,6 +800,7 @@ class Conference extends React.Component<IProps, IState> {
           key={"challenges_" + this.id}
           id={this.id}
           challenges={this.state.challenges}
+          userId={this.userId}
           handleChallengeClick={this.handleChallengeClick}
         />
       );
@@ -799,15 +814,26 @@ class Conference extends React.Component<IProps, IState> {
     }
 
     return (
-      <div key={"challenges_div_" + this.id} className="challenges">
-        <div key={"challenges_ins_div_" + this.id} className="p-3">
-          <div key={"challenges_ins_ins_div_" + this.id} className="p-0 m-0">
-            <h4>
-              {dictionary.challenge_conference[this.context]}{" "}
-              <i className="fas fa-puzzle-piece" />
-            </h4>
-            <br />
-            {challenges}
+      <div key={"challenges_points"}>
+        <div key={"points_div_" + this.id} className="challenges">
+          <div key={"points_ins_div_" + this.id} className="p-3">
+            <div key={"points_ins_ins_div_" + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.my_points[this.context]} {this.state.points}
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div key={"challenges_div_" + this.id} className="challenges">
+          <div key={"challenges_ins_div_" + this.id} className="p-3">
+            <div key={"challenges_ins_ins_div_" + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.challenge_conference[this.context]}{" "}
+                <i className="fas fa-puzzle-piece" />
+              </h4>
+              <br />
+              {challenges}
+            </div>
           </div>
         </div>
       </div>

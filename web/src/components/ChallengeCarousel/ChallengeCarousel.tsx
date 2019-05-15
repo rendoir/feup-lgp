@@ -10,6 +10,7 @@ import Challenge from "../Challenge/Challenge";
 export type Props = {
   id: number;
   challenges: any[];
+  userId: number;
   handleChallengeClick: (challenge: number | undefined) => any;
 };
 
@@ -62,6 +63,7 @@ class ChallengeCarousel extends Component<Props, State> {
               prize={this.props.challenges[i].prize}
               pointsPrize={Number(this.props.challenges[i].points_prize)}
               content={this.props.challenges[i].content}
+              userId={this.props.userId}
             />
           </div>
         </div>

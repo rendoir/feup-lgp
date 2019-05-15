@@ -442,3 +442,15 @@ export async function unarchiveConference(req, res) {
     res.status(500).send(new Error('Error archieve conference'));
   }
 }
+
+export function getPointsUserConf(req, res) {
+  query({
+    text: `SELECT points FROM conference_participants WHERE conference = $1 AND participant_user = $2`,
+    values: [req.params.id, req.params.user_id],
+  }).then((result) => {
+    res.send(result.rows[0]);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}

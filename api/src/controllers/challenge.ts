@@ -24,7 +24,7 @@ export async function createChallenge(req, res) {
     let type = '';
     let points = 0;
 
-    if (isNaN(Number(req.body.prizePoints)) !== false) {
+    if (!isNaN(Number(req.body.prizePoints))) {
         points = Number(req.body.prizePoints);
     }
 

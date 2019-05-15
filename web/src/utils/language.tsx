@@ -365,6 +365,10 @@ export let dictionary: Dictionary = {
     EN:
       "Write a short description of the prize to give. If it is in points, write 'points'."
   },
+  my_points: {
+    PT: "Os Meus Pontos: ",
+    EN: "My Points: "
+  },
   points: {
     PT: "Pontos",
     EN: "Points"

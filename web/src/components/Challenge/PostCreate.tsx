@@ -19,6 +19,7 @@ export type Props = {
   prize: string;
   pointsPrize: number;
   content: any[];
+  userId: number;
 };
 
 export type State = {
@@ -67,7 +68,7 @@ class PostCreate extends Component<Props, State> {
     axiosInstance
       .get(getUrl, {
         params: {
-          author: 1, // When loggin, this is the user logged in
+          author: this.props.userId,
           challenge: this.props.id
         }
       })
@@ -222,10 +223,10 @@ class PostCreate extends Component<Props, State> {
 
     axiosInstance
       .post(postUrl, {
-        author: 1, // When loggin, this is the user logged in
+        author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: "",
-        completion: this.state.isComplete ? true : false,
+        completion: this.state.isComplete,
         headers: {}
       })
       .then(res => {
