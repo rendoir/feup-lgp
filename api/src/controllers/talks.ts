@@ -460,4 +460,3 @@ export function getPointsUserTalk(req, res) {
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
   });
 }
-

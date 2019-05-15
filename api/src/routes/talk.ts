@@ -226,7 +226,6 @@ talkRouter.delete('/:id/archive', controller.unarchiveTalk);
  */
 talkRouter.get('/:id/posts_author', controller.getPostsAuthor);
 
-
 /**
  * @api {get} /api/talk/:id/user/:user_id/points Get points of a user in a conference
  * @apiName Get-Points-User-Conf
