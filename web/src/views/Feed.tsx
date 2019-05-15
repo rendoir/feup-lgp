@@ -22,10 +22,10 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      talks: [],
       fetchingInfo: true,
       following: [],
-      posts: []
+      posts: [],
+      talks: []
     };
   }
 
@@ -41,8 +41,8 @@ class Feed extends React.Component<Props, State> {
       .then(res => {
         console.log("conf: ", res.data.conferences);
         this.setState({
-          talks: res.data.talks,
-          following: res.data.following
+          following: res.data.following,
+          talks: res.data.talks
         });
       })
       .catch(() => console.log("Failed to get feed stuff"));
