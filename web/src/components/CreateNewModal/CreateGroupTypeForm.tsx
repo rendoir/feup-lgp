@@ -8,7 +8,7 @@ type Props = {
   id: string;
   context: any;
   maxGroupSize: number;
-  type: "post" | "conference";
+  type: "post" | "talk" | "conference";
   onChange: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
 };
 

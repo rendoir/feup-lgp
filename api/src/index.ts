@@ -39,6 +39,7 @@ import {
     postRouter,
     searchRouter,
     tagsRouter,
+    talkRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
@@ -73,8 +74,9 @@ app.use('/post', postRouter);
 app.use('/admin', adminRouter);
 app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
-app.use('/conference', conferenceRouter);
+app.use('/talk', talkRouter);
 app.use('/search', searchRouter);
+app.use('/conference', conferenceRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });

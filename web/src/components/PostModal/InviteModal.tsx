@@ -14,7 +14,7 @@ import { dictionary, LanguageContext } from "../../utils/language";
 interface IProps {
   /* Only pass one of the parameters according to the content type */
   postId?: number;
-  conferenceId?: number;
+  talkId?: number;
 }
 
 interface IState {
@@ -37,8 +37,8 @@ class InviteModal extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.subjectId = this.props.postId || this.props.conferenceId || -1;
-    this.subjectType = this.props.postId ? "post" : "conference";
+    this.subjectId = this.props.postId || this.props.talkId || -1;
+    this.subjectType = this.props.postId ? "post" : "talk";
     this.htmlId = `invite_${this.subjectType}_modal_${this.subjectId}`;
 
     this.state = {

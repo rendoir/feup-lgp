@@ -85,7 +85,7 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
     return (
       <div className={styles.chat}>
         <div className={styles.chat_header}>
-          {dictionary.conference_chat[this.context]}
+          {dictionary.talk_chat[this.context]}
         </div>
 
         <div className={styles.chat_body}>

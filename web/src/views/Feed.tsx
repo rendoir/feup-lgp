@@ -9,7 +9,7 @@ import withAuth from "../utils/withAuth";
 type Props = {};
 
 type State = {
-  conferences: any[];
+  talks: any[];
   posts: any[];
   fetchingInfo: boolean;
   following: any[];
@@ -22,10 +22,10 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      conferences: [],
       fetchingInfo: true,
       following: [],
-      posts: []
+      posts: [],
+      talks: []
     };
   }
 
@@ -41,8 +41,8 @@ class Feed extends React.Component<Props, State> {
       .then(res => {
         console.log("conf: ", res.data.conferences);
         this.setState({
-          conferences: res.data.conferences,
-          following: res.data.following
+          following: res.data.following,
+          talks: res.data.talks
         });
       })
       .catch(() => console.log("Failed to get feed stuff"));
@@ -73,24 +73,9 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    // if (this.state.fetchingInfo) {
-    //   return null;
-    // }
-
-    const hardCodedConferences = [
-      "Conference 1",
-      "Conference 45465",
-      "Conference 45",
-      "Conference 46848",
-      "Big Conference name to test css properly, omg this name is not over yet"
-    ];
-    const conferences = this.state.conferences.map(conf => (
-      <a
-        key={conf.title}
-        className="d-block my-2"
-        href={"/conference/" + conf.id}
-      >
-        {conf.title} {conf.dateStart}
+    const talks = this.state.talks.map(talk => (
+      <a key={talk.title} className="d-block my-2" href={"/talk/" + talk.id}>
+        {talk.title} {talk.dateStart}
       </a>
     ));
     const users = this.state.following.map(name => (
@@ -106,8 +91,8 @@ class Feed extends React.Component<Props, State> {
       <div id="Feed" className="container my-5">
         <div className="row">
           <div id="leftm">
-            <h5>{dictionary.conferences[this.context]}</h5>
-            {conferences}
+            <h5>{dictionary.talks[this.context]}</h5>
+            {talks}
           </div>
           <div id="rightm">
             <h5>{dictionary.followers[this.context]}</h5>
