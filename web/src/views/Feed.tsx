@@ -39,7 +39,6 @@ class Feed extends React.Component<Props, State> {
         params: {}
       })
       .then(res => {
-        console.log("conf: ", res.data.conferences);
         this.setState({
           following: res.data.following,
           talks: res.data.talks
@@ -72,14 +71,10 @@ class Feed extends React.Component<Props, State> {
     return postsDiv;
   }
 
-  public render() {
-    const talks = this.state.talks.map(talk => (
-      <a key={talk.title} className="d-block my-2" href={"/talk/" + talk.id}>
-        {talk.title} {talk.dateStart}
-      </a>
-    ));
+  public renderUsers() {
     const users = this.state.following.map(name => (
       <a
+        id="following-list"
         key={name.first_name}
         className="d-block my-2"
         href={"/user/" + name.id}
@@ -87,6 +82,20 @@ class Feed extends React.Component<Props, State> {
         {name.first_name} {name.last_name}
       </a>
     ));
+    if (this.state.following.length !== 0) {
+      return <div>{users}</div>;
+    } else {
+      return <a id="no-follows">{dictionary.following[this.context]}</a>;
+    }
+  }
+
+  public render() {
+    const talks = this.state.talks.map(talk => (
+      <a key={talk.title} className="d-block my-2" href={"/talk/" + talk.id}>
+        {talk.title} {talk.dateStart}
+      </a>
+    ));
+
     return (
       <div id="Feed" className="container my-5">
         <div className="row">
@@ -96,7 +105,7 @@ class Feed extends React.Component<Props, State> {
           </div>
           <div id="rightm">
             <h5>{dictionary.followers[this.context]}</h5>
-            {users}
+            {this.renderUsers()}
           </div>
           <div id="mainm">
             <InfiniteScroll />

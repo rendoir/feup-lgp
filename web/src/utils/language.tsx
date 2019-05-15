@@ -159,7 +159,7 @@ export let dictionary: Dictionary = {
   shop_search_points: { PT: "Procurar produtos", EN: "Search products" },
   shop_exchange: { PT: "Trocar", EN: "Exchange" },
   tag_placeholder: {
-    PT: "Procure ou insira uma nova categoria e carregue Enter.",
+    PT: "Procure ou insira uma nova tag e clique Enter.",
     EN: "Search for or insert a new tag and click Enter."
   },
   report: { PT: "Denúncia", EN: "Report" },
@@ -334,7 +334,11 @@ export let dictionary: Dictionary = {
     EN: "Insert user's first and last name"
   },
   empty: { PT: "", EN: "" },
-  followers: { PT: "A seguir", EN: "Following" }
+  followers: { PT: "A seguir", EN: "Following" },
+  following: {
+    PT: "Você não segue ninguém ainda!",
+    EN: "You don't follow anyone yet!"
+  }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

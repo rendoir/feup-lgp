@@ -339,6 +339,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           label={dictionary.tags[this.context]}
           name={"tagsInput"}
           list={"possible_tags"}
+          placeholder={dictionary.tag_placeholder[this.context]}
           onKeyUp={this.handleKeyUp}
         />
         <datalist id={"possible_tags"}>
