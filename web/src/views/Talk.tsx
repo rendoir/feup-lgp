@@ -373,7 +373,7 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
-              {this.state.owner_id == this.userId ? (
+              {this.state.owner_id === this.userId ? (
                 <div className="p-3">{this.getAdminButtons()}</div>
               ) : null}
             </div>

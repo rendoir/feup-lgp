@@ -451,12 +451,16 @@ export let dictionary: Dictionary = {
     PT: "Insira o primeiro e último nome do utilizador",
     EN: "Insert user's first and last name"
   },
-  empty: { PT: "", EN: "" },
   followers: { PT: "A seguir", EN: "Following" },
   following: {
     PT: "Você não segue ninguém ainda!",
     EN: "You don't follow anyone yet!"
-  }
+  },
+  create_post_chal: {
+    PT: "Leia a descrição e crie uma publicação nesta palestra.",
+    EN: "Read the description and create a post in this talk."
+  },
+  empty: { PT: "", EN: "" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
