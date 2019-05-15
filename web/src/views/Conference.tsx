@@ -43,6 +43,7 @@ import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
+import { faHtml5 } from "@fortawesome/free-brands-svg-icons";
 
 interface IProps {
   match: {
@@ -234,7 +235,6 @@ class Conference extends React.Component<IProps, IState> {
     axiosInstance
       .get(`/conference/${this.id}/user/${this.userId}/points`)
       .then(res => {
-        console.log("Points: " + res.data.points);
         this.setState({ points: res.data.points });
       })
       .catch(() =>
@@ -818,9 +818,10 @@ class Conference extends React.Component<IProps, IState> {
         <div key={"points_div_" + this.id} className="challenges">
           <div key={"points_ins_div_" + this.id} className="p-3">
             <div key={"points_ins_ins_div_" + this.id} className="p-0 m-0">
-              <h4>
-                {dictionary.my_points[this.context]} {this.state.points}
-              </h4>
+              <h5>
+                {dictionary.my_points[this.context]}{" "}
+                <small>{this.state.points}</small>
+              </h5>
             </div>
           </div>
         </div>

@@ -448,7 +448,12 @@ export function getPointsUserConf(req, res) {
     text: `SELECT points FROM conference_participants WHERE conference = $1 AND participant_user = $2`,
     values: [req.params.id, req.params.user_id],
   }).then((result) => {
-    res.send(result.rows[0]);
+    console.log(result.rows);
+    const results = {points: 0};
+    if (result.rows !== []) {
+      results.points = result.rows[0].points;
+    }
+    res.send(results);
   }).catch((error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
