@@ -1,7 +1,9 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { MouseEvent } from "react";
 import * as React from "react";
+
 import Avatar from "../components/Avatar/Avatar";
+import ChallengeCarousel from "../components/ChallengeCarousel/ChallengeCarousel";
 import Chat from "../components/Chat/Chat";
 import Icon from "../components/Icon/Icon";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
@@ -10,8 +12,9 @@ import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
+
+import { render } from "react-dom";
 import "../styles/Talk.css";
-import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -21,7 +24,13 @@ import {
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
+import CreateNewModalChallenge from "../components/CreateNewModalChallenges/CreateNewModalChallenge";
+
 import { Request, Step } from "../components/CreateNewModal/types";
+import {
+  RequestChallenge,
+  StepChallenge
+} from "../components/CreateNewModalChallenges/types";
 
 // - Import utils
 import {
@@ -30,9 +39,11 @@ import {
   apiUserJoinTalk,
   apiUserLeaveTalk
 } from "../utils/apiTalk";
+
 import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -44,19 +55,24 @@ interface IProps {
 
 interface IState {
   archived: boolean;
+  challenges: any[];
+  clickedChallenge: number | undefined;
   hasChat: boolean;
   step: Step;
+  stepChallenge: StepChallenge;
   hasLiveStream: boolean;
   livestreamUrl: string;
   posts: any[];
   title: string;
   description: string;
   place: string;
+  points: number;
   date_start: string;
   date_end: string;
   userCanJoin: boolean;
   userParticipation: boolean;
   waitingUserJoinLeave: boolean;
+  isChallengeModalOpen: boolean;
   isHidden: boolean;
   owner_id: number;
   owner_name: string;
@@ -80,6 +96,19 @@ interface IState {
     livestream: string;
     switcher: string;
   };
+  requestChallenge: {
+    type: "post" | "options" | "question" | "comment";
+    title: string;
+    about: string;
+    dateStart: string;
+    dateEnd: string;
+    post: string;
+    question: string;
+    correctAnswer: string;
+    options: string[];
+    prize: string;
+    prizePoints: string;
+  };
 }
 
 class Talk extends React.Component<IProps, IState> {
@@ -93,22 +122,25 @@ class Talk extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
+    this.userId = this.auth.getUserPayload().id;
     this.tags = [];
     this.state = {
       archived: false,
+      challenges: [],
+      clickedChallenge: undefined,
       date_end: "",
       date_start: "",
       description: "",
       hasChat: true,
       hasLiveStream: true,
+      isChallengeModalOpen: false,
       isHidden: false,
       livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
       owner_id: 1,
       owner_name: "",
       place: "",
+      points: 0,
       postModalOpen: false,
-      // posts: []
       posts: [],
       privacy: "",
       request: {
@@ -129,7 +161,21 @@ class Talk extends React.Component<IProps, IState> {
         title: "",
         type: "post"
       },
+      requestChallenge: {
+        about: "",
+        correctAnswer: "",
+        dateEnd: "",
+        dateStart: "",
+        options: [],
+        post: "",
+        prize: "",
+        prizePoints: "",
+        question: "",
+        title: "",
+        type: "question"
+      },
       step: "type",
+      stepChallenge: "type",
       title: "",
       userCanJoin: false,
       userParticipation: false,
@@ -138,6 +184,7 @@ class Talk extends React.Component<IProps, IState> {
 
     this.handleHideTalk = this.handleHideTalk.bind(this);
     this.getHiddenInfo = this.getHiddenInfo.bind(this);
+    this.handleChallengeClick = this.handleChallengeClick.bind(this);
     this.handleJoinTalk = this.handleJoinTalk.bind(this);
     this.handleLeaveTalk = this.handleLeaveTalk.bind(this);
   }
@@ -147,6 +194,7 @@ class Talk extends React.Component<IProps, IState> {
     this.getPossibleTags();
     this.apiGetUserCanJoin();
     this.apiGetUserParticipation();
+    this.apiGetPointsOfUserTalk();
   }
 
   public async handleJoinTalk() {
@@ -183,6 +231,17 @@ class Talk extends React.Component<IProps, IState> {
     });
   }
 
+  public apiGetPointsOfUserTalk() {
+    axiosInstance
+      .get(`/talk/${this.id}/user/${this.userId}/points`)
+      .then(res => {
+        this.setState({ points: res.data.points });
+      })
+      .catch(() =>
+        console.log("Failed to get points of user in the conference")
+      );
+  }
+
   public apiGetTalk() {
     axiosInstance
       .get(`/talk/${this.id}`)
@@ -195,6 +254,8 @@ class Talk extends React.Component<IProps, IState> {
 
         const postsComing = res.data;
 
+        const challengesConf = res.data.challenges;
+
         if (talk.privacy === "closed") {
           this.setState({
             isHidden: true
@@ -203,6 +264,7 @@ class Talk extends React.Component<IProps, IState> {
 
         this.setState({
           archived: talk.archived,
+          challenges: challengesConf,
           date_end: dateend,
           date_start: datestart,
           description: talk.about,
@@ -311,7 +373,9 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
+              {this.state.owner_id == this.userId ? (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              ) : null}
             </div>
             <div className="conf_posts">
               {this.getJoinButton()}
@@ -336,6 +400,7 @@ class Talk extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
+              {this.getChallenges()}
               <InfiniteScroll requestUrl={`/talk/${this.id}`} />
             </div>
           </div>
@@ -438,6 +503,56 @@ class Talk extends React.Component<IProps, IState> {
     }
   };
 
+  private handleSubmitChallenge = (request: RequestChallenge) => {
+    let url = `${location.protocol}//${location.hostname}`;
+    url +=
+      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+        ? `:${process.env.REACT_APP_API_PORT}`
+        : "/api";
+
+    const formData = new FormData();
+
+    formData.append("type", request.type);
+    formData.append("title", request.title);
+    formData.append("text", request.about);
+    formData.append("dateEnd", request.dateEnd);
+    formData.append("dateStart", request.dateStart);
+    formData.append("prize", request.prize);
+    formData.append("prizePoints", request.prizePoints);
+    formData.append("question", request.question);
+
+    let correctAns = "";
+
+    if (request.type === "options") {
+      correctAns = request.options[Number(request.correctAnswer)];
+    } else {
+      correctAns = request.correctAnswer;
+    }
+
+    formData.append("correctAnswer", correctAns);
+
+    request.options.forEach((opt, i) =>
+      formData.append("options[" + i + "]", opt)
+    );
+
+    formData.append("post", request.post);
+    formData.append("talk_id", String(this.id));
+
+    url += `/talk/${this.id}/challenge/create`;
+    axiosInstance
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(res => {
+        console.log("Challenge created - reloading page...");
+        window.location.reload();
+        this.resetState();
+      })
+      .catch(() => console.log("Failed to create post"));
+  };
+
   private getPossibleTags = (): void => {
     axiosInstance
       .get("/tags")
@@ -474,6 +589,27 @@ class Talk extends React.Component<IProps, IState> {
       step: "type"
     });
   };
+
+  private resetStateChallenge = () => {
+    this.setState({
+      isChallengeModalOpen: false,
+      requestChallenge: {
+        about: "",
+        correctAnswer: "",
+        dateEnd: "",
+        dateStart: "",
+        options: [],
+        post: "",
+        prize: "",
+        prizePoints: "",
+        question: "",
+        title: "",
+        type: "question"
+      },
+      stepChallenge: "type"
+    });
+  };
+
   private renderStream() {
     return (
       <div className="conf_head w-100">
@@ -547,10 +683,34 @@ class Talk extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal talkId={this.id} />
-
-        <button disabled={isArchived}>
+        <button
+          type="button"
+          onClick={this.handleCreateChallenge}
+          disabled={isArchived}
+        >
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
+        </button>
+        {/* Challenge Create Modal */}
+        {this.state.isChallengeModalOpen ? (
+          <CreateNewModalChallenge
+            pending={false}
+            onSubmit={this.handleSubmitChallenge}
+            onStepChange={step => this.setState({ stepChallenge: step })}
+            maxGroupSize={10}
+            request={this.state.requestChallenge}
+            onRequestChange={request =>
+              this.setState({ requestChallenge: request })
+            }
+            onClose={this.resetStateChallenge}
+            autoFocus={false}
+            step={this.state.stepChallenge}
+            posts={this.state.posts}
+          />
+        ) : null}
+        <button disabled={isArchived}>
+          <i className="fas fa-pen" />
+          Edit conference
         </button>
         <button
           type="button"
@@ -569,6 +729,11 @@ class Talk extends React.Component<IProps, IState> {
       </div>
     );
   }
+
+  private handleCreateChallenge = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isChallengeModalOpen: true });
+  };
 
   private getJoinButton() {
     const isArchived = this.state.archived;
@@ -609,6 +774,67 @@ class Talk extends React.Component<IProps, IState> {
       default:
         return faQuestion;
     }
+  }
+
+  private handleChallengeClick(challenge: number | undefined) {
+    if (challenge) {
+      this.setState({
+        clickedChallenge: challenge
+      } as IState);
+    }
+  }
+
+  private getChallenges() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
+    const challenges: any[] = [];
+    if (this.state.challenges.length > 0) {
+      challenges.push(
+        <ChallengeCarousel
+          key={"challenges_" + this.id}
+          id={this.id}
+          challenges={this.state.challenges}
+          userId={this.userId}
+          handleChallengeClick={this.handleChallengeClick}
+        />
+      );
+    } else {
+      challenges.push(
+        <div key={"no_challenges"}>
+          {" "}
+          {dictionary.no_challenges[this.context]}{" "}
+        </div>
+      );
+    }
+
+    return (
+      <div key={"challenges_points"}>
+        <div key={"points_div_" + this.id} className="challenges">
+          <div key={"points_ins_div_" + this.id} className="p-3">
+            <div key={"points_ins_ins_div_" + this.id} className="p-0 m-0">
+              <h5>
+                {dictionary.my_points[this.context]}{" "}
+                <small>{this.state.points}</small>
+              </h5>
+            </div>
+          </div>
+        </div>
+        <div key={"challenges_div_" + this.id} className="challenges">
+          <div key={"challenges_ins_div_" + this.id} className="p-3">
+            <div key={"challenges_ins_ins_div_" + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.challenge_conference[this.context]}{" "}
+                <i className="fas fa-puzzle-piece" />
+              </h4>
+              <br />
+              {challenges}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 

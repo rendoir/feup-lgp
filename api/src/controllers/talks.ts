@@ -263,6 +263,13 @@ export async function gettalk(req, res) {
       );
       return;
     }
+    const challengesResult = await query ({
+      text: `SELECT id, title, dateStart, dateEnd, prize, points_prize, challengeType, content
+                    FROM challenges
+					          WHERE talk = $1
+                    ORDER BY dateStart DESC`,
+      values: [id],
+    });
     const postsResult = await query({
       text: `SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, users.id AS user_id
@@ -319,6 +326,7 @@ export async function gettalk(req, res) {
       post.files = files.rows;
     }
     const result = {
+      challenges: challengesResult.rows,
       talk: talk.rows[0],
       posts: postsResult.rows,
       size: totalSize.rows[0].count,
@@ -343,6 +351,49 @@ export function changePrivacy(req, res) {
   }).catch((error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while changing the privacy of a talk' });
+  });
+}
+
+export async function getCommentsOfPostAndAuthor(req, res) {
+  query({
+    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+              FROM posts p
+                  LEFT JOIN comments c ON p.id = c.post
+                  INNER JOIN users a ON c.author = a.id
+              WHERE
+                  p.id = $1
+                  AND (p.author = $2
+                      OR p.visibility = 'public'
+                      OR (p.visibility = 'followers'
+                          AND p.author IN (SELECT followed FROM follows WHERE follower = $2)
+                          )
+                      )
+              ORDER BY c.date_updated ASC`,
+    values: [req.params.post_id, req.query.author],
+  }).then((result) => {
+    res.send(result.rows);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export function getPostsAuthor(req, res) {
+  query({
+    text: `SELECT p.id, first_name, last_name, p.title, p.content,
+      p.visibility, p.date_created, p.date_updated, users.id AS user_id
+      FROM posts p
+      INNER JOIN users ON (users.id = p.author)
+      WHERE p.talk = $1
+      AND p.author = $2
+      ORDER BY p.date_created DESC
+      LIMIT 10`,
+    values: [req.params.id, req.query.author],
+  }).then((result) => {
+    res.send(result.rows);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
   });
 }
 
@@ -393,4 +444,21 @@ export async function unarchiveTalk(req, res) {
     console.log(error);
     res.status(500).send(new Error('Error archieve talk'));
   }
+}
+
+export function getPointsUserTalk(req, res) {
+  query({
+    text: `SELECT points FROM talk_participants WHERE talk = $1 AND participant_user = $2`,
+    values: [req.params.id, req.params.user_id],
+  }).then((result) => {
+    console.log(result.rows);
+    const results = {points: 0};
+    if (result.rows !== []) {
+      results.points = result.rows[0].points;
+    }
+    res.send(results);
+  }).catch((error) => {
+    console.log('\n\nERROR:', error);
+    res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
 }

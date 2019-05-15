@@ -1,0 +1,23 @@
+.card_footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.challenge_end {
+    color: royalblue;
+}
+ 
+.correct_answer input,  .correct_answer  p,  .correct_answer  h6 {
+    background-color: green;
+    color: white;
+}
+
+.wrong_answer input, .wrong_answer p,  .wrong_answer  h6 {
+    background-color: red;
+    color: white;
+}
+
+.normal input, .normal p, .normal  h6 {
+    background-color: white;
+    color: black;
+}
