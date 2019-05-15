@@ -207,7 +207,8 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   private onClickLogout = (event: any) => {
     this.auth.logout();
-    window.location.reload();
+
+    window.location.href = "/";
   };
 
   private handleClick = (event: MouseEvent): void => {
