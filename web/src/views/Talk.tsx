@@ -191,10 +191,10 @@ class Talk extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetTalk();
-    this.getPossibleTags();
-    this.apiGetUserCanJoin();
-    this.apiGetUserParticipation();
-    if (this.userId !== this.state.owner_id) {
+    if (this.userId === this.state.owner_id || !this.state.isHidden) {
+      this.getPossibleTags();
+      this.apiGetUserCanJoin();
+      this.apiGetUserParticipation();
       this.apiGetPointsOfUserTalk();
     }
   }
@@ -345,7 +345,6 @@ class Talk extends React.Component<IProps, IState> {
   public render() {
     const isArchived = this.state.archived;
     if (this.state.isHidden && this.userId !== this.state.owner_id) {
-      console.log("what");
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
@@ -375,12 +374,6 @@ class Talk extends React.Component<IProps, IState> {
             this.renderStream()}
           <div className="container my-5">
             <div className="conf_side">
-              <div className="p-3">{this.getDetails()}</div>
-              {this.state.owner_id === this.userId ? (
-                <div className="p-3">{this.getAdminButtons()}</div>
-              ) : null}
-            </div>
-            <div className="conf_posts">
               {this.getJoinButton()}
               <button
                 className="create"
@@ -389,6 +382,12 @@ class Talk extends React.Component<IProps, IState> {
               >
                 {dictionary.create_post[this.context]}
               </button>
+              <div className="p-3">{this.getDetails()}</div>
+              {this.state.owner_id === this.userId ? (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              ) : null}
+            </div>
+            <div className="conf_posts">
               {this.state.postModalOpen ? (
                 <CreateNewModal
                   pending={false}
