@@ -122,7 +122,7 @@ export function editTalk(req, res) {
 
   query({
     text: 'UPDATE talks ' +
-      'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
+      'SET (title, about, local, datestart, dateend, livestream_url) = ($2, $3, $4, $5, $6, $7) ' +
       'WHERE id = $1 ' +
       'RETURNING id',
     values: [
@@ -132,6 +132,7 @@ export function editTalk(req, res) {
       data.local,
       data.dateStart,
       data.dateEnd,
+      data.livestreamUrl,
     ],
   })
     .then((response) => {

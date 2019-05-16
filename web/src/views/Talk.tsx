@@ -21,6 +21,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
+import Switcher from "../components/Switcher/Switcher";
 
 // - Import utils
 import {
@@ -45,11 +46,13 @@ interface IProps {
 interface IState {
   editFormOpen: boolean;
   editFields: {
-    title: string;
     description: string;
     dateStart: string;
     dateEnd: string;
+    hasLiveStream: boolean;
+    livestreamUrl: string;
     place: string;
+    title: string;
   };
   archived: boolean;
   step: Step;
@@ -108,6 +111,8 @@ class Talk extends React.Component<IProps, IState> {
         dateEnd: "",
         dateStart: "",
         description: "",
+        hasLiveStream: false,
+        livestreamUrl: "",
         place: "",
         title: ""
       },
@@ -216,17 +221,18 @@ class Talk extends React.Component<IProps, IState> {
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
+            hasLiveStream: talk.livestream_url !== "",
+            livestreamUrl: talk.livestream_url,
             place: talk.local,
             title: talk.title
           },
+          hasLiveStream: talk.livestream_url !== "",
           livestreamUrl: talk.livestream_url,
           place: talk.local,
           posts: postsComing.posts,
           privacy: talk.privacy,
           title: talk.title
         });
-
-        console.log(this.state.editFields);
       })
       .catch(() => console.log("Failed to get talk info"));
   }
@@ -643,12 +649,15 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private editForm = () => {
+    const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
         editFields: {
           dateEnd: this.state.dateEnd,
           dateStart: this.state.dateStart,
           description: this.state.description,
+          hasLiveStream: this.state.hasLiveStream,
+          livestreamUrl: this.state.livestreamUrl,
           place: this.state.place,
           title: this.state.title
         },
@@ -680,37 +689,59 @@ class Talk extends React.Component<IProps, IState> {
             <InputNext
               onChange={(value, event) => handleChange(event.target.id, value)}
               id={"title"}
-              value={this.state.editFields.title}
+              value={editFields.title}
               label={dictionary.title[this.context]}
+              placeholder={dictionary.insert_title[this.context]}
             />
             <InputNext
               onChange={(value, event) => handleChange(event.target.id, value)}
               id={"description"}
-              value={this.state.editFields.description}
+              value={editFields.description}
               label={dictionary.description[this.context]}
               type={"textarea"}
               rows={5}
               maxLength={3000}
+              placeholder={dictionary.description_placeholder[this.context]}
             />
             <InputNext
               onChange={(value, event) => handleChange(event.target.id, value)}
               id={"place"}
-              value={this.state.editFields.place}
+              value={editFields.place}
               label={dictionary.talk_local[this.context]}
             />
             <InputNext
               onChange={(value, event) => handleChange(event.target.id, value)}
               id={"dateStart"}
-              value={this.state.editFields.dateStart}
+              value={editFields.dateStart}
               label={dictionary.date_start[this.context]}
               type={"datetime-local"}
             />
             <InputNext
               onChange={(value, event) => handleChange(event.target.id, value)}
               id={"dateEnd"}
-              value={this.state.editFields.dateEnd}
+              value={editFields.dateEnd}
               label={dictionary.date_end[this.context]}
               type={"datetime-local"}
+            />
+            <div className={"mb-3"}>
+              <label htmlFor={"hasLivrestream"}>Enable Livrestream</label>
+              <Switcher
+                id={"hasLiveStream"}
+                name={"livestreamSwitcher"}
+                onChange={(value, event) =>
+                  handleChange(event.target.id, value)
+                }
+                label={editFields.hasLiveStream ? "Enabled" : "Disabled"}
+                value={editFields.hasLiveStream}
+              />
+            </div>
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"livestreamUrl"}
+              value={editFields.livestreamUrl}
+              label={dictionary.livestream_url[this.context]}
+              type={"url"}
+              disabled={!editFields.hasLiveStream}
             />
           </Modal.Body>
           <Modal.Footer>
@@ -733,12 +764,19 @@ class Talk extends React.Component<IProps, IState> {
         about: editFields.description,
         dateEnd: editFields.dateEnd,
         dateStart: editFields.dateStart,
+        livestreamUrl: editFields.hasLiveStream ? editFields.livestreamUrl : "",
         local: editFields.place,
         title: editFields.title
       })
       .then(() => {
         this.setState({
-          ...editFields,
+          ...this.state,
+          editFields: {
+            ...editFields,
+            livestreamUrl: editFields.hasLiveStream
+              ? editFields.livestreamUrl
+              : ""
+          },
           editFormOpen: false
         });
       })
