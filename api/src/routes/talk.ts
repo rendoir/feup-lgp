@@ -26,6 +26,28 @@ export const talkRouter = Router();
 talkRouter.post('/', controller.createTalk);
 
 /**
+ * @api {put} /api/talk Update a talk
+ * @apiName Update-A-talk
+ * @apiGroup Talk
+ *
+ * @apiParam {Number}   id          Id of the talk
+ * @apiParam {String}   title       Title of the talk
+ * @apiParam {String}   about       Talk description
+ * @apiParam {String}   local       Local where the talk will take place
+ * @apiParam {string}   dateStart   Date when the talk starts
+ * @apiParam {string}   dateEnd     Date when the talk ends
+ * @apiParam {Object}   avatar      Talk image
+ * @apiParam {String}   privacy     Visibility of the post: public | followers | private
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+talkRouter.put('/:id', controller.editTalk);
+
+/**
  * @api {post} /api/talk/:id/invite Invite user to talk
  * @apiName Invite-To-talk
  * @apiGroup talk

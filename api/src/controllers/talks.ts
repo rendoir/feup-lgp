@@ -78,7 +78,7 @@ export function createTalk(req, res) {
 
 export function editTalk(req, res) {
   const data = req.body;
-  const talk = req.talk.id;
+  const talk = req.params.id;
 
   if (!data.title.trim()) {
     console.log('\n\nError: talk title cannot be empty');
@@ -131,7 +131,7 @@ export function editTalk(req, res) {
 
   query({
     text: 'UPDATE talks ' +
-      'SET (title, about, local, datestart, dateend, privacy) = ($2, $3, $4, $5, $6, $7) ' +
+      'SET (title, about, local, datestart, dateend, privacy, avatar) = ($2, $3, $4, $5, $6, $7, $8) ' +
       'WHERE id = $1 ' +
       'RETURNING id',
     values: [
@@ -142,6 +142,7 @@ export function editTalk(req, res) {
       data.dateStart,
       data.dateEnd,
       data.privacy,
+      data.avatar,
     ],
   })
     .then((response) => {
