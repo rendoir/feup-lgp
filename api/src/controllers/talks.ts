@@ -250,6 +250,7 @@ export async function gettalk(req, res) {
               WHERE c.id = $1
                 AND (c.author = $2
                     OR c.privacy = 'public'
+                    OR c.privacy = 'closed'
                     OR (c.privacy = 'followers'
                         AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )

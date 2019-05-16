@@ -136,7 +136,7 @@ class Talk extends React.Component<IProps, IState> {
       isChallengeModalOpen: false,
       isHidden: false,
       livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
-      owner_id: 1,
+      owner_id: 0,
       owner_name: "",
       place: "",
       points: 0,
@@ -194,7 +194,9 @@ class Talk extends React.Component<IProps, IState> {
     this.getPossibleTags();
     this.apiGetUserCanJoin();
     this.apiGetUserParticipation();
-    this.apiGetPointsOfUserTalk();
+    if (this.userId !== this.state.owner_id) {
+      this.apiGetPointsOfUserTalk();
+    }
   }
 
   public async handleJoinTalk() {
@@ -343,6 +345,7 @@ class Talk extends React.Component<IProps, IState> {
   public render() {
     const isArchived = this.state.archived;
     if (this.state.isHidden && this.userId !== this.state.owner_id) {
+      console.log("what");
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
