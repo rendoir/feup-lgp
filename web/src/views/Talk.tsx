@@ -1,17 +1,16 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
 import { MouseEvent } from "react";
 import * as React from "react";
-import Avatar from "../components/Avatar/Avatar";
+import Modal from "react-bootstrap/Modal";
+import { Avatar, Button, Icon, InputNext } from "../components";
+
 import Chat from "../components/Chat/Chat";
-import Icon from "../components/Icon/Icon";
 import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
 import Livestream from "../components/Livestream/Livestream";
-import Post from "../components/Post/Post";
 import InviteModal from "../components/PostModal/InviteModal";
 
 import styles from "../components/Post/Post.module.css";
 import "../styles/Talk.css";
-import { getApiURL } from "../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -30,9 +29,9 @@ import {
   apiUserJoinTalk,
   apiUserLeaveTalk
 } from "../utils/apiTalk";
-import AuthHelperMethods from "../utils/AuthHelperMethods";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
 interface IProps {
   match: {
@@ -40,11 +39,19 @@ interface IProps {
       id: number;
     };
   };
+  user: any;
 }
 
 interface IState {
+  editFormOpen: boolean;
+  editFields: {
+    title: string;
+    description: string;
+    dateStart: string;
+    dateEnd: string;
+    place: string;
+  };
   archived: boolean;
-  hasChat: boolean;
   step: Step;
   hasLiveStream: boolean;
   livestreamUrl: string;
@@ -52,14 +59,12 @@ interface IState {
   title: string;
   description: string;
   place: string;
-  date_start: string;
-  date_end: string;
+  dateStart: string;
+  dateEnd: string;
   userCanJoin: boolean;
   userParticipation: boolean;
   waitingUserJoinLeave: boolean;
   isHidden: boolean;
-  owner_id: number;
-  owner_name: string;
   privacy: string;
   postModalOpen: boolean;
   request: {
@@ -86,29 +91,32 @@ class Talk extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   public id: number;
-  public userId: number;
+  public ownerId: number | undefined;
+  public ownerName: string | undefined;
   public tags: string[];
-  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
     this.id = this.props.match.params.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
     this.tags = [];
     this.state = {
       archived: false,
-      date_end: "",
-      date_start: "",
+      dateEnd: "",
+      dateStart: "",
       description: "",
-      hasChat: true,
+      editFields: {
+        dateEnd: "",
+        dateStart: "",
+        description: "",
+        place: "",
+        title: ""
+      },
+      editFormOpen: false,
       hasLiveStream: true,
       isHidden: false,
       livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
-      owner_id: 1,
-      owner_name: "",
       place: "",
       postModalOpen: false,
-      // posts: []
       posts: [],
       privacy: "",
       request: {
@@ -188,11 +196,6 @@ class Talk extends React.Component<IProps, IState> {
       .get(`/talk/${this.id}`)
       .then(res => {
         const talk = res.data.talk;
-        let datestart = talk.datestart.split("T");
-        datestart = datestart[0] + " " + datestart[1];
-        let dateend = talk.dateend.split("T");
-        dateend = dateend[0] + " " + dateend[1];
-
         const postsComing = res.data;
 
         if (talk.privacy === "closed") {
@@ -201,19 +204,29 @@ class Talk extends React.Component<IProps, IState> {
           });
         }
 
+        this.ownerId = talk.user_id;
+        this.ownerName = `${talk.first_name} ${talk.last_name}`;
+
         this.setState({
           archived: talk.archived,
-          date_end: dateend,
-          date_start: datestart,
+          dateEnd: talk.dateend,
+          dateStart: talk.datestart,
           description: talk.about,
+          editFields: {
+            dateEnd: talk.dateend,
+            dateStart: talk.datestart,
+            description: talk.about,
+            place: talk.local,
+            title: talk.title
+          },
           livestreamUrl: talk.livestream_url,
-          owner_id: talk.user_id,
-          owner_name: talk.first_name + talk.last_name,
           place: talk.local,
           posts: postsComing.posts,
           privacy: talk.privacy,
           title: talk.title
         });
+
+        console.log(this.state.editFields);
       })
       .catch(() => console.log("Failed to get talk info"));
   }
@@ -240,7 +253,7 @@ class Talk extends React.Component<IProps, IState> {
         id: this.props.match.params.id,
         privacy: privacyState
       })
-      .then(res => {
+      .then(() => {
         console.log("Talk hidden...");
       })
       .catch(() => console.log("Failed to update privacy"));
@@ -280,7 +293,7 @@ class Talk extends React.Component<IProps, IState> {
 
   public render() {
     const isArchived = this.state.archived;
-    if (this.state.isHidden && this.userId === this.state.owner_id) {
+    if (this.state.isHidden && this.props.user.id === this.ownerId) {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
@@ -293,6 +306,7 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
+              <div className="p-3">{this.getAdminButtons()}</div>
             </div>
           </div>
         </div>
@@ -301,6 +315,9 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            {this.ownerId === this.props.user.id ? (
+              <div className={"float-right"}>{this.editForm()}</div>
+            ) : null}
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
@@ -311,7 +328,9 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
+              {this.ownerId === this.props.user.id ? (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              ) : null}
             </div>
             <div className="conf_posts">
               {this.getJoinButton()}
@@ -395,8 +414,7 @@ class Talk extends React.Component<IProps, IState> {
         {dictionary.archive_talk[this.context]}
       </button>
     );
-    const dropdownButtons = [reportButton, deleteButton, archiveButton];
-    return dropdownButtons;
+    return [reportButton, deleteButton, archiveButton];
   }
 
   private createConfPost = (event: MouseEvent) => {
@@ -429,7 +447,7 @@ class Talk extends React.Component<IProps, IState> {
             "Content-Type": "multipart/form-data"
           }
         })
-        .then(res => {
+        .then(() => {
           console.log("Post created - reloading page...");
           window.location.reload();
           this.resetState();
@@ -492,7 +510,7 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private archiveTalk() {
-    if (this.state.archived === false) {
+    if (!this.state.archived) {
       this.apiSetArchived();
     } else {
       this.apiSetUnarchived();
@@ -500,27 +518,44 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private getDetails() {
+    const dateOptions = {
+      day: "2-digit",
+      hour: "numeric",
+      minute: "numeric",
+      month: "long",
+      weekday: "long",
+      year: "numeric"
+    };
+    const dateStart = new Date(this.state.dateStart).toLocaleDateString(
+      dictionary.date_format[this.context],
+      dateOptions
+    );
+    const dateEnd = new Date(this.state.dateEnd).toLocaleDateString(
+      dictionary.date_format[this.context],
+      dateOptions
+    );
+
     return (
       <ul className="p-0 m-0">
         <Avatar
-          title={this.state.owner_name}
+          title={this.ownerName}
           placeholder="empty"
           size={30}
           image="https://picsum.photos/200/200?image=52"
         />
-        <a className={styles.post_author} href={"/user/" + this.state.owner_id}>
+        <a className={styles.post_author} href={"/user/" + this.ownerId}>
           {" "}
-          {this.state.owner_name}
+          {this.ownerName}
         </a>
         <Icon icon={this.getVisibilityIcon(this.state.privacy)} size="lg" />
         <li>
           <i className="fas fa-map-marker-alt" /> {this.state.place}
         </li>
         <li>
-          <i className="fas fa-hourglass-start" /> {this.state.date_start}
+          <i className="fas fa-hourglass-start" /> {dateStart}
         </li>
         <li>
-          <i className="fas fa-hourglass-end" /> {this.state.date_end}
+          <i className="fas fa-hourglass-end" /> {dateEnd}
         </li>
       </ul>
     );
@@ -545,9 +580,7 @@ class Talk extends React.Component<IProps, IState> {
           <i className="fas fa-envelope" />
           {dictionary.invite_users[this.context]}
         </button>
-        {/* Invite Users */}
         <InviteModal talkId={this.id} />
-
         <button disabled={isArchived}>
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
@@ -608,6 +641,111 @@ class Talk extends React.Component<IProps, IState> {
         return faQuestion;
     }
   }
+
+  private editForm = () => {
+    const handleHide = () =>
+      this.setState({
+        editFields: {
+          dateEnd: this.state.dateEnd,
+          dateStart: this.state.dateStart,
+          description: this.state.description,
+          place: this.state.place,
+          title: this.state.title
+        },
+        editFormOpen: false
+      });
+    const handleShow = event => {
+      event.preventDefault();
+      this.setState({ editFormOpen: true });
+    };
+    const handleChange = (name, value) =>
+      this.setState({
+        editFields: {
+          ...this.state.editFields,
+          [name]: value
+        }
+      });
+
+    return (
+      <>
+        <a href={"#"} onClick={handleShow}>
+          <Icon icon={faEdit} size={"2x"} />
+        </a>
+
+        <Modal show={this.state.editFormOpen} onHide={handleHide}>
+          <Modal.Header closeButton={true}>
+            <Modal.Title>{dictionary.edit_talk[this.context]}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"title"}
+              value={this.state.editFields.title}
+              label={dictionary.title[this.context]}
+            />
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"description"}
+              value={this.state.editFields.description}
+              label={dictionary.description[this.context]}
+              type={"textarea"}
+              rows={5}
+              maxLength={3000}
+            />
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"place"}
+              value={this.state.editFields.place}
+              label={dictionary.talk_local[this.context]}
+            />
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"dateStart"}
+              value={this.state.editFields.dateStart}
+              label={dictionary.date_start[this.context]}
+              type={"datetime-local"}
+            />
+            <InputNext
+              onChange={(value, event) => handleChange(event.target.id, value)}
+              id={"dateEnd"}
+              value={this.state.editFields.dateEnd}
+              label={dictionary.date_end[this.context]}
+              type={"datetime-local"}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.handleEditSubmission} theme={"success"}>
+              Save
+            </Button>
+            <Button onClick={handleHide} theme={"danger"}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  };
+
+  private handleEditSubmission = () => {
+    const editFields = this.state.editFields;
+    axiosInstance
+      .put(`/talk/${this.id}`, {
+        about: editFields.description,
+        dateEnd: editFields.dateEnd,
+        dateStart: editFields.dateStart,
+        local: editFields.place,
+        title: editFields.title
+      })
+      .then(() => {
+        this.setState({
+          ...editFields,
+          editFormOpen: false
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 }
 
-export default Talk;
+export default withAuth(Talk);

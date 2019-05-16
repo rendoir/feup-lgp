@@ -71,6 +71,7 @@ export let dictionary: Dictionary = {
   unknown_error: { PT: "Erro desconhecido", EN: "Something went wrong" },
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
+  edit_talk: { PT: "Editar palestra", EN: "Edit talk" },
   closed_talk: {
     PT: "Esta palestra foi encerrada!",
     EN: "This talk has been closed!"
@@ -198,6 +199,10 @@ export let dictionary: Dictionary = {
   dates: { PT: "Datas", EN: "Dates" },
   date_start: { PT: "Início", EN: "Start" },
   date_end: { PT: "Fim", EN: "End" },
+  date_format: {
+    PT: "pt-PT",
+    EN: "en-US"
+  },
   livestream: { PT: "Transmissão em direto", EN: "Livestream" },
   livestream_url: { PT: "URL da transmissão em direto", EN: "Livestream URL" },
   tags: { PT: "Categorias", EN: "Tags" },

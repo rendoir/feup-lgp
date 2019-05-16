@@ -1,22 +1,11 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { MouseEvent } from "react";
 import * as React from "react";
-import "../styles/Conference.css";
-import { getApiURL } from "../utils/apiURL";
+import { MouseEvent } from "react";
 
-import {
-  faGlobeAfrica,
-  faLock,
-  faQuestion,
-  faUserFriends,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
-
 // - Import utils
 import TalkCard from "../components/TalkCard/TalkCard";
-import AuthHelperMethods from "../utils/AuthHelperMethods";
+import "../styles/Conference.css";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 
@@ -73,7 +62,6 @@ class Conference extends React.Component<IProps, IState> {
   public id: number;
   public userId: number;
   public tags: string[];
-  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -158,8 +146,6 @@ class Conference extends React.Component<IProps, IState> {
     const buffer: any[] = [];
     let lastEnd = "";
     this.state.talks.forEach(talk => {
-      let datestart = talk.datestart.split("T");
-      datestart = datestart[0] + " " + datestart[1];
       let dateend = talk.dateend.split("T");
       dateend = dateend[0] + " " + dateend[1];
       if (lastEnd !== dateend) {
@@ -176,8 +162,8 @@ class Conference extends React.Component<IProps, IState> {
           id={talk.id}
           title={talk.title}
           local={talk.local}
-          dateend={this.cleanDate(dateend.split(" ")[0])}
-          datestart={this.cleanDate(datestart.split(" ")[0])}
+          dateend={talk.datestart}
+          datestart={talk.dateend}
           about={talk.about}
           avatar={talk.avatar}
         />
@@ -226,15 +212,15 @@ class Conference extends React.Component<IProps, IState> {
         date[1] = dictionary.month12[this.context];
         break;
     }
-    const cleanDate =
+    return (
       date[2] +
       " " +
       dictionary.of[this.context] +
       " " +
       date[1] +
       ", " +
-      date[0];
-    return cleanDate;
+      date[0]
+    );
   }
 
   public render() {

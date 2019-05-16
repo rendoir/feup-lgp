@@ -1,5 +1,4 @@
 import { query } from '../db/db';
-import { editFiles, saveTags } from './post';
 
 export function createTalk(req, res) {
   if (!req.body.title.trim()) {
@@ -120,18 +119,10 @@ export function editTalk(req, res) {
     });
     return;
   }
-  if (!data.privacy.trim()) {
-    console.log('\n\nError: talk privacy cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field privacy cannot be empty',
-    });
-    return;
-  }
 
   query({
     text: 'UPDATE talks ' +
-      'SET (title, about, local, datestart, dateend, privacy, avatar) = ($2, $3, $4, $5, $6, $7, $8) ' +
+      'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
       'WHERE id = $1 ' +
       'RETURNING id',
     values: [
@@ -141,12 +132,10 @@ export function editTalk(req, res) {
       data.local,
       data.dateStart,
       data.dateEnd,
-      data.privacy,
-      data.avatar,
     ],
   })
     .then((response) => {
-      response.send({
+      res.send({
         id: response.rows[0].id,
       });
     })
@@ -168,7 +157,7 @@ export async function inviteUser(req, res) {
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'talk')`,
       values: [req.body.invited_user, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -190,7 +179,7 @@ export async function inviteSubscribers(req, res) {
               ON CONFLICT ON CONSTRAINT unique_invite
               DO NOTHING`,
     values: [req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -244,7 +233,7 @@ export function addParticipantUser(req, res) {
   query({
       text: `INSERT INTO talk_participants (participant_user, talk) VALUES ($1, $2)`,
       values: [userId, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -257,7 +246,7 @@ export function removeParticipantUser(req, res) {
   query({
       text: `DELETE FROM talk_participants WHERE participant_user = $1 AND talk = $2`,
       values: [userId, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -418,7 +407,7 @@ export function changePrivacy(req, res) {
                 SET privacy = $2
                 WHERE id = $1 AND author = $3`,
     values: [req.body.id, req.body.privacy, userId],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
     console.log('\n\nERROR:', error);
