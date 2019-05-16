@@ -1,46 +1,65 @@
 import React, { Component } from "react";
 
+import "./AddAdminModal.css";
+
 import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
+import { getApiURL } from "../../utils/apiURL";
 
-interface IProps {}
+interface IProps {
+  onResponse: (success: boolean) => void;
+}
 
-interface IState {}
+interface IState {
+  admin_email: string;
+}
 
-class AddModeratorModal extends Component<IProps, IState> {
+class AddAdminModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   constructor(props: IProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      admin_email: ""
+    };
 
-    this.handleAddModerator = this.handleAddModerator.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleAddAdmin = this.handleAddAdmin.bind(this);
   }
 
-  public apiAddModerator() {
+  private apiAddAdmin() {
+    const body = {
+      email: this.state.admin_email
+    };
+
     axiosInstance
-      .post("/users/moderator/")
-      .then(res => {
-        console.log("Moderator added");
-      })
-      .catch(() => console.log("Failed to add moderator"));
+      .post(getApiURL("/admin"), body)
+      .then(res => this.props.onResponse(true))
+      .catch(() => this.props.onResponse(false));
   }
 
-  public handleAddModerator() {
-    this.apiAddModerator();
+  private handleAddAdmin() {
+    this.apiAddAdmin();
   }
 
-  public getActionButton() {
+  private handleInputChange(e: any) {
+    this.setState({
+      admin_email: e.target.value
+    });
+  }
+
+  private getActionButton() {
     return (
       <div>
         <button
           type="button"
+          role="submit"
           className="btn btn-primary"
           data-dismiss="modal"
-          onClick={this.handleAddModerator}
+          onClick={this.handleAddAdmin}
         >
-          {dictionary.yes[this.context]}
+          {dictionary.submit[this.context]}
         </button>
       </div>
     );
@@ -49,7 +68,7 @@ class AddModeratorModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id="add_moderator_modal"
+        id="add_admin_modal"
         className="modal fade"
         tabIndex={-1}
         role="dialog"
@@ -58,13 +77,13 @@ class AddModeratorModal extends Component<IProps, IState> {
         data-backdrop="false"
       >
         <div
-          className="modal-dialog modal-dialog-centered modal-xl"
+          className="modal-dialog modal-dialog-centered modal-lg"
           role="document"
         >
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                CENAS
+                {dictionary.add_admin[this.context]}
               </h5>
               <button
                 type="button"
@@ -76,7 +95,16 @@ class AddModeratorModal extends Component<IProps, IState> {
               </button>
             </div>
             <div className="modal-body">
-              <p>{dictionary.confirm_delete_post[this.context]}</p>
+              <h5>{dictionary.insert_admin_email[this.context]}</h5>
+              <input
+                name="admin_email"
+                type="email"
+                autoComplete="off"
+                className="post_field"
+                onChange={this.handleInputChange}
+                placeholder={dictionary.insert_admin_email[this.context]}
+                required={true}
+              />
             </div>
             <div className="modal-footer">
               <button
@@ -95,4 +123,4 @@ class AddModeratorModal extends Component<IProps, IState> {
   }
 }
 
-export default AddModeratorModal;
+export default AddAdminModal;
