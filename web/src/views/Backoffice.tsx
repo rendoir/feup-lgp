@@ -1,9 +1,9 @@
 import * as React from "react";
+import AddAdminModal from "../components/AddAdminModal/AddAdminModal";
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
-import AddAdminModal from "../components/AddAdminModal/AddAdminModal";
 
 type BackofficeState = {
   addAdminSuccess: boolean;
@@ -136,14 +136,16 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private getAlert() {
-    let alertMessage = this.state.addAdminSuccess
+    const alertMessage = this.state.addAdminSuccess
       ? dictionary.success_add_admin[this.context]
       : dictionary.error_add_admin[this.context];
-    let alertType = this.state.addAdminSuccess
+    const alertType = this.state.addAdminSuccess
       ? "alert-success"
       : "alert-danger";
 
-    if (!this.state.showAlert) return null;
+    if (!this.state.showAlert) {
+      return null;
+    }
 
     return (
       <div

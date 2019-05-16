@@ -2,9 +2,9 @@ import React, { Component } from "react";
 
 import "./AddAdminModal.css";
 
+import { getApiURL } from "../../utils/apiURL";
 import axiosInstance from "../../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../../utils/language";
-import { getApiURL } from "../../utils/apiURL";
 
 interface IProps {
   onResponse: (success: boolean) => void;
@@ -26,43 +26,6 @@ class AddAdminModal extends Component<IProps, IState> {
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddAdmin = this.handleAddAdmin.bind(this);
-  }
-
-  private apiAddAdmin() {
-    const body = {
-      email: this.state.admin_email
-    };
-
-    axiosInstance
-      .post(getApiURL("/admin"), body)
-      .then(res => this.props.onResponse(true))
-      .catch(() => this.props.onResponse(false));
-  }
-
-  private handleAddAdmin() {
-    this.apiAddAdmin();
-  }
-
-  private handleInputChange(e: any) {
-    this.setState({
-      admin_email: e.target.value
-    });
-  }
-
-  private getActionButton() {
-    return (
-      <div>
-        <button
-          type="button"
-          role="submit"
-          className="btn btn-primary"
-          data-dismiss="modal"
-          onClick={this.handleAddAdmin}
-        >
-          {dictionary.submit[this.context]}
-        </button>
-      </div>
-    );
   }
 
   public render() {
@@ -118,6 +81,43 @@ class AddAdminModal extends Component<IProps, IState> {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  private apiAddAdmin() {
+    const body = {
+      email: this.state.admin_email
+    };
+
+    axiosInstance
+      .post(getApiURL("/admin"), body)
+      .then(res => this.props.onResponse(true))
+      .catch(() => this.props.onResponse(false));
+  }
+
+  private handleAddAdmin() {
+    this.apiAddAdmin();
+  }
+
+  private handleInputChange(e: any) {
+    this.setState({
+      admin_email: e.target.value
+    });
+  }
+
+  private getActionButton() {
+    return (
+      <div>
+        <button
+          type="button"
+          role="submit"
+          className="btn btn-primary"
+          data-dismiss="modal"
+          onClick={this.handleAddAdmin}
+        >
+          {dictionary.submit[this.context]}
+        </button>
       </div>
     );
   }
