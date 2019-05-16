@@ -3,6 +3,7 @@ import { BackofficeNotification } from "../components/BackofficeNotification/Bac
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
+import AddModeratorModal from "../components/AddModeratorModal/AddModeratorModal";
 
 type BackofficeState = {
   usersAreaActive: boolean;
@@ -59,10 +60,19 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 {dictionary.notifications[this.context]}{" "}
                 <span className="badge badge-light">4</span>
               </a>
+              <a
+                id="add_moderator"
+                className="dropdown-item"
+                data-toggle="modal"
+                data-target="#add_moderator_modal"
+              >
+                {dictionary.add_moderator[this.context]}
+              </a>
             </div>
           </div>
           {this.state.usersAreaActive && this.getUsersArea()}
           {!this.state.usersAreaActive && this.getNotifications()}
+          {this.getAddModeratorModal()}
         </div>
       </div>
     );
@@ -106,6 +116,10 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
+  }
+
+  private getAddModeratorModal() {
+    return <AddModeratorModal />;
   }
 
   private getUsersArea() {
