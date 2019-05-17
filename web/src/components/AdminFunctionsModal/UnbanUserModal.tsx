@@ -14,16 +14,16 @@ interface IState {
   user_email: string;
 }
 
-class BanUserModal extends Component<IProps, IState> {
+class UnbanUserModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnBanUser(email: string, onResponse: any) {
+  public static OnUnbanUser(email: string, onResponse: any) {
     const body = {
       email
     };
 
     axiosInstance
-      .post(getApiURL("/admin/ban"), body)
+      .post(getApiURL("/admin/unban"), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -36,7 +36,7 @@ class BanUserModal extends Component<IProps, IState> {
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleBanUser = this.handleBanUser.bind(this);
+    this.handleUnbanUser = this.handleUnbanUser.bind(this);
   }
 
   public render() {
@@ -57,7 +57,7 @@ class BanUserModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {dictionary.ban_user[this.context]}
+                {dictionary.unban_user[this.context]}
               </h5>
               <button
                 type="button"
@@ -96,20 +96,19 @@ class BanUserModal extends Component<IProps, IState> {
     );
   }
 
-  public apiBanUser() {
+  public apiUnbanUser() {
     const body = {
       email: this.state.user_email
     };
 
-    console.log("1");
     axiosInstance
-      .post(getApiURL("/admin/ban"), body)
+      .post(getApiURL("/admin/unban"), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }
 
-  private handleBanUser() {
-    this.apiBanUser();
+  private handleUnbanUser() {
+    this.apiUnbanUser();
   }
 
   private handleInputChange(e: any) {
@@ -126,7 +125,7 @@ class BanUserModal extends Component<IProps, IState> {
           role="submit"
           className="btn btn-primary"
           data-dismiss="modal"
-          onClick={this.handleBanUser}
+          onClick={this.handleUnbanUser}
         >
           {dictionary.submit[this.context]}
         </button>
@@ -135,4 +134,4 @@ class BanUserModal extends Component<IProps, IState> {
   }
 }
 
-export default BanUserModal;
+export default UnbanUserModal;

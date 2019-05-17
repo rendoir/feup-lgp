@@ -79,7 +79,7 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
 adminRouter.get('/users', controller.getAllUsers);
 
 /**
- * @api {post} /api/admin Make user a admin
+ * @api {post} /api/admin Make user an admin
  * @apiName Add-admin
  * @apiGroup Admin
  *
@@ -92,12 +92,12 @@ adminRouter.get('/users', controller.getAllUsers);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'The email does not belong to a user'
+ *      message: 'The email does not belong to an user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
- *      message: 'You do not have permissions to add a admin'
+ *      message: 'You do not have permissions to add an admin'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 Internal Server Error
@@ -108,7 +108,7 @@ adminRouter.get('/users', controller.getAllUsers);
 adminRouter.post('/', controller.addAdmin);
 
 /**
- * @api {post} /api/admin/ban Ban a user
+ * @api {post} /api/admin/ban Ban an user
  * @apiName Ban-user
  * @apiGroup Admin
  *
@@ -121,7 +121,7 @@ adminRouter.post('/', controller.addAdmin);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'The email does not belong to a user'
+ *      message: 'The email does not belong to an user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
@@ -135,3 +135,32 @@ adminRouter.post('/', controller.addAdmin);
  *     }
  */
 adminRouter.post('/ban', controller.banUser);
+
+/**
+ * @api {post} /api/admin/unban Unban an user
+ * @apiName Unban-user
+ * @apiGroup Admin
+ *
+ * @apiParam {String} email Email of the user to be unbanned
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to unban a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while unbanning user'
+ *     }
+ */
+adminRouter.post('/unban', controller.unbanUser);

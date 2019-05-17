@@ -169,6 +169,7 @@ export let dictionary: Dictionary = {
   comment: { PT: "comentário", EN: "comment" },
   take_action: { PT: "Tomar ação", EN: "Take action" },
   ban_user: { PT: "Banir utilizador", EN: "Ban user" },
+  unban_user: { PT: "Desbanir utilizador", EN: "Unban user" },
   delete_content: { PT: "Apagar conteúdo", EN: "Delete content" },
   ignore: { PT: "Ignorar", EN: "Ignore" },
   banned: { PT: "banido", EN: "banned" },
@@ -477,7 +478,15 @@ export let dictionary: Dictionary = {
   },
   error_ban_user: {
     PT: "Não foi possível banir o utilizador",
-    EN: "Error turning banning user"
+    EN: "Error banning user"
+  },
+  success_unban_user: {
+    PT: "O utilizador foi desbanido!",
+    EN: "User is now unbanned"
+  },
+  error_unban_user: {
+    PT: "Não foi possível desbanir o utilizador",
+    EN: "Error unbanning user"
   },
   empty: { PT: "", EN: "" }
 };

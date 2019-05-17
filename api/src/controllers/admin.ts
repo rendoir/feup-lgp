@@ -90,3 +90,21 @@ export async function banUser(req, res) {
         });
     } else { res.status(401).send({ message: 'You do not have permissions to ban a user' }); }
 }
+
+export async function unbanUser(req, res) {
+    const isRequesterAdmin = await isAdmin(req.user.id);
+
+    if (isRequesterAdmin) {
+        query({
+            text: 'UPDATE users SET permissions = \'user\' WHERE email = $1',
+            values: [req.body.email],
+        }).then((result) => {
+            if (result.rowCount > 0) {
+                res.status(200).send();
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).send({ message: 'An error ocurred while unbanning a user' });
+        });
+    } else { res.status(401).send({ message: 'You do not have permissions to unban a user' }); }
+}
