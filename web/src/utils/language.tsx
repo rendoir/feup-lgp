@@ -456,6 +456,16 @@ export let dictionary: Dictionary = {
     PT: "Leia a descrição e crie uma publicação nesta palestra.",
     EN: "Read the description and create a post in this talk."
   },
+  add_admin: { PT: "Adicionar Administrador", EN: "Add Administrator" },
+  insert_admin_email: { PT: "Email do utilizador", EN: "User email" },
+  success_add_admin: {
+    PT: "O utilizador é agora administrador",
+    EN: "User is now an administrator"
+  },
+  error_add_admin: {
+    PT: "Não foi possível tornar o utilizador num administrador",
+    EN: "Error turning user into administrator"
+  },
   empty: { PT: "", EN: "" }
 };
 
