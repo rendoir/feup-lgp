@@ -22,7 +22,8 @@ import {
 } from "../components/Modal/index";
 import Modal from "../components/Modal/Modal";
 import ProfileModal from "../components/ProfileModal/ProfileModal";
-import { Step } from "../components/ProfileModal/types";
+import { Request, Step } from "../components/ProfileModal/types";
+import { isNull } from "util";
 
 interface IProps {
   match: {
@@ -217,7 +218,7 @@ class Profile extends React.Component<IProps, State> {
     this.setState({
       isOpen: false,
       request: {
-        confirm_password: "",
+        confirm_password: this.state.user.password,
         email: this.state.user.email,
         first_name: this.state.user.first_name,
         home_town: this.state.user.home_town,
@@ -225,8 +226,12 @@ class Profile extends React.Component<IProps, State> {
         loading: false,
         password: this.state.user.password,
         university: this.state.user.university,
-        work: this.state.user.work,
-        work_field: this.state.user.work_field
+        work: isNull(this.state.user.work_field)
+          ? ""
+          : this.state.user.work_field,
+        work_field: isNull(this.state.user.work_field)
+          ? ""
+          : this.state.user.work_field
       },
       step: "profile"
     });
@@ -303,22 +308,29 @@ class Profile extends React.Component<IProps, State> {
       });
   }
 
-  private apiEditProfile() /*= (request: Request) => */ {
+  private apiEditProfile = (request: Request) => {
     if (this.auth.getUserPayload().id !== this.id) {
       return;
     }
 
     const formData = new FormData();
 
-    /*
-    formData.append("text", request.about);
-    formData.append("title", request.title);
-    formData.append("visibility", request.privacy);
-    formData.append("conference", this.id + "");
-  */
+    formData.append("author", String(this.auth.getUserPayload().id));
+    formData.append("email", request.email);
+    formData.append("password", request.password);
+    formData.append("first_name", request.first_name);
+    formData.append("last_name", request.first_name);
+
+    if (request.work === null || request.work === "") {
+      formData.append("work", request.work);
+    }
+
+    formData.append("work_field", request.work_field);
+    formData.append("home_town", request.home_town);
+    formData.append("university", request.university);
 
     axiosInstance
-      .post("/post", formData, {
+      .post(`/users/${this.id}/edit`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -328,7 +340,7 @@ class Profile extends React.Component<IProps, State> {
         window.location.reload();
       })
       .catch(() => console.log("Failed to create post"));
-  }
+  };
 
   private apiGetUserUserInteractions() {
     apiGetUserInteractions("users", this.id)

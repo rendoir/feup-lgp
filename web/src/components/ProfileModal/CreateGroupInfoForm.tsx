@@ -9,9 +9,6 @@ import { fileToBase64 } from "../../utils/fileToBase64";
 import { dictionary, LanguageContext } from "../../utils/language";
 import AvatarSelector from "../AvatarSelector/AvatarSelector";
 import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
-import Select from "../Select/Select";
-import Switcher from "../Switcher/Switcher";
-import Tag from "../Tags/Tag";
 import styles from "./CreateNewModal.module.css";
 
 export type Props = {
@@ -144,7 +141,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               label={dictionary.workplace_institution[this.context]}
               value={this.props.work}
               htmlAutoFocus={true}
-              required={true}
             />
           </div>
           <div className="form-group mt-3">
@@ -157,7 +153,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               label={dictionary.profession_field[this.context]}
               value={this.props.work_field}
               htmlAutoFocus={true}
-              required={true}
             />
           </div>
           <div className="form-group mt-3">
