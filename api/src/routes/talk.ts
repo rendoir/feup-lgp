@@ -37,7 +37,7 @@ talkRouter.post('/', controller.createTalk);
  * @apiParam {string}   dateStart   Date when the talk starts
  * @apiParam {string}   dateEnd     Date when the talk ends
  * @apiParam {Object}   avatar      Talk image
- * @apiParam {String}   privacy     Visibility of the post: public | followers | private
+ * @apiParam {String}   privacy     Visibility of the talk: public | followers | private
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
