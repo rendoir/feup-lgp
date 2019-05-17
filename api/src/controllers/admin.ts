@@ -47,27 +47,27 @@ export function deleteUserFromWhiteList(req, res) {
 }
 
 async function isAdmin(id) {
-    let result = await query({
-        text: "SELECT id FROM users WHERE id = $1 AND permissions = 'admin'",
-        values: [id]
+    const result = await query({
+        text: 'SELECT id FROM users WHERE id = $1 AND permissions = \'admin\'',
+        values: [id],
     });
 
     return result.rowCount > 0;
 }
 export async function addAdmin(req, res) {
-    let is_admin = await isAdmin(req.user.id);
-    
-    if(is_admin) {
+    const isRequesterAdmin = await isAdmin(req.user.id);
+
+    if (isRequesterAdmin) {
         query({
-            text: "UPDATE users SET permissions = 'admin' WHERE email = $1",
+            text: 'UPDATE users SET permissions = \'admin\' WHERE email = $1',
             values: [req.body.email],
         }).then((result) => {
-            if(result.rowCount > 0)
+            if (result.rowCount > 0) {
                 res.status(200).send();
-            else res.status(400).send({ message: 'The email does not belong to a user' });
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
         }).catch((error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while adding admin' });
         });
-    } else res.status(401).send({ message: 'You do not have permissions to add an admin' });
+    } else { res.status(401).send({ message: 'You do not have permissions to add an admin' }); }
 }
