@@ -264,6 +264,11 @@ class Talk extends React.Component<IProps, IState> {
           });
         }
 
+        const reqChalCopy = this.state.requestChallenge;
+        if (postsComing.posts > 0) {
+          reqChalCopy.post = postsComing.posts[0].id;
+        }
+
         this.setState({
           archived: talk.archived,
           challenges: challengesConf,
@@ -272,10 +277,11 @@ class Talk extends React.Component<IProps, IState> {
           description: talk.about,
           livestreamUrl: talk.livestream_url,
           owner_id: talk.user_id,
-          owner_name: talk.first_name + talk.last_name,
+          owner_name: talk.first_name + " " + talk.last_name,
           place: talk.local,
           posts: postsComing.posts,
           privacy: talk.privacy,
+          requestChallenge: reqChalCopy,
           title: talk.title
         });
       })
@@ -601,7 +607,7 @@ class Talk extends React.Component<IProps, IState> {
         dateEnd: "",
         dateStart: "",
         options: [],
-        post: "",
+        post: this.state.posts[0].id,
         prize: "",
         prizePoints: "",
         question: "",

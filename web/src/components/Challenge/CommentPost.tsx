@@ -52,7 +52,6 @@ class CommentPost extends Component<Props, State> {
     let description = "";
     let postToComment = 0;
 
-    console.log(content);
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
       if (content[i].startsWith("Description: ")) {
@@ -206,14 +205,6 @@ class CommentPost extends Component<Props, State> {
   }
 
   public handleSolveChallenge() {
-    if (this.apiGetPostCommentChallenge()) {
-      this.apiSolveChallenge();
-    }
-  }
-
-  public apiGetPostCommentChallenge() {
-    let commented: boolean = false;
-
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -227,19 +218,16 @@ class CommentPost extends Component<Props, State> {
       .get(getUrl, { params: this.props.userId })
       .then(res => {
         if (res.data.length > 0) {
-          commented = true;
+          this.setState({ isComplete: true });
+          this.apiSolveChallenge(true);
         }
-        this.setState({ isComplete: commented });
       })
       .catch(() => {
         console.log("Failed to get comments of post refered on challenge");
-        commented = false;
       });
-
-    return commented;
   }
 
-  public apiSolveChallenge() {
+  public apiSolveChallenge(complete: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -252,7 +240,7 @@ class CommentPost extends Component<Props, State> {
         author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: "",
-        completion: this.state.isComplete,
+        completion: complete,
         headers: {}
       })
       .then(res => {

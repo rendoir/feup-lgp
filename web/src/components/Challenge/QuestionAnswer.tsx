@@ -91,7 +91,6 @@ class QuestionAnswer extends Component<Props, State> {
 
         if (res.data.state.length > 0) {
           value = res.data.state[0].answer;
-          console.log(res.data.state[0].complete);
           isCorrect = res.data.state[0].complete;
         }
 

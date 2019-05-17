@@ -409,7 +409,7 @@ export function getPointsUserTalk(req, res) {
     text: `SELECT points FROM talk_participants WHERE talk = $1 AND participant_user = $2`,
     values: [req.params.id, req.params.user_id],
   }).then((result) => {
-    console.log(result.rows);
+    console.log('Points ' + result.rows);
     const results = {points: 0};
     if (result.rows !== []) {
       results.points = result.rows[0].points;
@@ -431,7 +431,7 @@ export function getPostsAuthor(req, res) {
       AND p.author = $2
       ORDER BY p.date_created DESC
       LIMIT 10`,
-    values: [req.params.id, req.query.author],
+    values: [req.params.id, req.params.user_id],
   }).then((result) => {
     res.send(result.rows);
   }).catch((error) => {

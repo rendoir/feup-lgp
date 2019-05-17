@@ -186,39 +186,27 @@ class PostCreate extends Component<Props, State> {
   }
 
   public handleSolveChallenge() {
-    const completed = this.apiGetPostChallenge();
-    if (completed) {
-      this.apiSolveChallenge(completed);
-    }
-  }
-
-  public apiGetPostChallenge() {
-    let posted: boolean = false;
-
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
-    getUrl += `/talk/${this.props.talkID}/posts_author`;
+    getUrl += `/talk/${this.props.talkID}/user/${this.props.userId}/posts`;
 
     axiosInstance
-      .get(getUrl, { params: this.props.userId })
+      .get(getUrl)
       .then(res => {
         if (res.data.length > 0) {
-          posted = true;
+          this.setState({ isComplete: true });
+          this.apiSolveChallenge(true);
         }
-        this.setState({ isComplete: posted });
       })
       .catch(() => {
         console.log("Failed to get comments of post refered on challenge");
-        posted = false;
       });
-
-    return posted;
   }
 
-  public apiSolveChallenge(completion: boolean) {
+  public apiSolveChallenge(complete: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
@@ -231,7 +219,7 @@ class PostCreate extends Component<Props, State> {
         author: this.props.userId,
         challenge: this.props.id,
         challenge_answer: "",
-        completion,
+        completion: complete,
         headers: {}
       })
       .then(res => {
