@@ -74,7 +74,7 @@ class Feed extends React.Component<Props, State> {
 
   public render() {
     const talks = this.state.talks.map(talk => (
-      <a key={talk.title} className="d-block my-2" href={"/talk/" + talk.id}>
+      <a key={talk.id} className="d-block my-2" href={"/talk/" + talk.id}>
         {talk.title} {talk.dateStart}
       </a>
     ));

@@ -19,6 +19,15 @@ const admin = {
     password: 'adminadmin',
 };
 
+const users = [{
+    email: 'user1@lgp.com',
+    first_name: 'my',
+    last_name: 'user',
+    jwt: null,
+    hashedPassword: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+    password: 'umlemelhorquecertascoisas96',
+}];
+
 const publicPost = {
     author: -1,
     title: 'Test Title 1',
@@ -89,6 +98,20 @@ async function cleanDb() {
     }
 }
 
+async function insertUsers() {
+    let values = "";
+
+    users.forEach(user => {
+        values += `VALUES ('${user.email}', '${user.hashedPassword}', '${user.first_name}', '${user.last_name}'), `;
+    });
+    values = values.substring(0, values.length-2);
+
+    return db.query({
+        text: `INSERT INTO users (email, pass, first_name, last_name)
+               ${values}`
+    });
+}
+
 async function insertAdminUser() {
     return db.query({
         text: `INSERT INTO users (email, pass, first_name, last_name, permissions)
@@ -102,11 +125,13 @@ before(function(done) {
     this.timeout(0);
     loadEnvironment();
     cleanDb()
+    .then(insertUsers)
     .then(insertAdminUser)
     .then((adminId) => {
         assignAuthorsToPosts(adminId);
         return done();
-    });
+    })
+    .catch(err => console.log(err));
 });
 
 describe('Admin login', () => {
@@ -237,4 +262,45 @@ describe('Post', () => {
                 done();
             })
     })
+});
+
+describe('Add Admin', () => {
+    it('Should add the user as admin', (done) => {
+        request(app)
+            .post('/admin')
+            .send({
+                email: users[0].email,
+            })
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not add the user as admin (no permissions)', (done) => {
+        request(app)
+            .post('/admin')
+            .send({
+                email: "nopermissions@lgp.com",
+            })
+            .expect(401)
+            .end((err, res) => {
+                done();
+            });
+    });
+
+    it('Should not add the user as admin (no user found)', (done) => {
+        request(app)
+            .post('/admin')
+            .send({
+                email: "nouserfound@lgp.com",
+            })
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(400)
+            .end((err, res) => {
+                done();
+            });
+    });
 });

@@ -25,6 +25,8 @@ export class BackofficeUserCard extends React.Component<
 
   constructor(props: any) {
     super(props);
+
+    this.turnAdminHandler = this.turnAdminHandler.bind(this);
   }
 
   public render() {
@@ -78,7 +80,7 @@ export class BackofficeUserCard extends React.Component<
     const turnAdminButton = (
       <button
         className="btn btn-info btn-block"
-        onClick={this.props.turnAdminHandler}
+        onClick={this.turnAdminHandler}
       >
         {dictionary.turn_admin[this.context]}
       </button>
@@ -115,5 +117,11 @@ export class BackofficeUserCard extends React.Component<
         <div className="row">{userTypeButton}</div>
       </div>
     );
+  }
+
+  private turnAdminHandler() {
+    if (this.props.turnAdminHandler) {
+      this.props.turnAdminHandler(this.props.email);
+    }
   }
 }

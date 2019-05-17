@@ -25,6 +25,7 @@ type MyFile = {
 // - Import utils
 import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
+import { getApiURL } from "../../utils/apiURL";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 import { dictionary, LanguageContext } from "../../utils/language";
 
@@ -746,21 +747,32 @@ class Post extends Component<Props, IState> {
     return filesDiv;
   }
 
+  private updateFileSrc(file: MyFile) {
+    const url = getApiURL("/post/" + this.props.id + "/" + file.name);
+
+    return axiosInstance
+      .get(url, {
+        responseType: "arraybuffer"
+      })
+      .then(res => {
+        file.src =
+          "data:" +
+          file.mimetype +
+          ";base64, " +
+          new Buffer(res.data, "binary").toString("base64");
+        this.forceUpdate();
+      });
+  }
+
   private initFiles() {
     if (this.props.files) {
-      let src = `${location.protocol}//${location.hostname}`;
-      src +=
-        !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-          ? `:${process.env.REACT_APP_API_PORT}`
-          : "/api";
-      src += "/post/" + this.props.id + "/";
-
       Array.from(this.props.files).forEach(file => {
-        file.src = src + file.name;
         if (file.mimetype.startsWith("image")) {
           this.state.images.push(file);
+          this.updateFileSrc(file);
         } else if (file.mimetype.startsWith("video")) {
           this.state.videos.push(file);
+          this.updateFileSrc(file);
         } else {
           this.state.docs.push(file);
         }
