@@ -89,6 +89,7 @@ class InfiniteScroll extends Component<Props, State> {
                   comments={post.comments}
                   tags={post.tags}
                   user_id={post.user_id}
+                  files={post.files}
                 />
               </Fragment>
             ))

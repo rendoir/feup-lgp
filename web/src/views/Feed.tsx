@@ -72,6 +72,11 @@ class Feed extends React.Component<Props, State> {
   }
 
   public renderUsers() {
+    const talks = this.state.talks.map(talk => (
+      <a key={talk.id} className="d-block my-2" href={"/talk/" + talk.id}>
+        {talk.title} {talk.dateStart}
+      </a>
+    ));
     const users = this.state.following.map(name => (
       <a
         id="following-list"
