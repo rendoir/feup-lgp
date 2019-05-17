@@ -85,7 +85,7 @@ class AddAdminModal extends Component<IProps, IState> {
     );
   }
 
-  private apiAddAdmin() {
+  public apiAddAdmin() {
     const body = {
       email: this.state.admin_email
     };
@@ -94,6 +94,17 @@ class AddAdminModal extends Component<IProps, IState> {
       .post(getApiURL("/admin"), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
+  }
+
+  public static OnTurnAdmin(email: string, onResponse: any) {
+    const body = {
+      email: email
+    };
+
+    axiosInstance
+      .post(getApiURL("/admin"), body)
+      .then(res => onResponse(true))
+      .catch(() => onResponse(false));
   }
 
   private handleAddAdmin() {

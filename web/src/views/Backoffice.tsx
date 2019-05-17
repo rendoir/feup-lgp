@@ -104,8 +104,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     console.log("UN-BAN USER CARD");
   }
 
-  private handleUserCardTurnAdmin() {
-    console.log("TURN USER CARD");
+  private handleUserCardTurnAdmin(email: string) {
+    AddAdminModal.OnTurnAdmin(email, this.onAddAdminResponse);
   }
 
   private handleUserCardExpelAdmin() {
