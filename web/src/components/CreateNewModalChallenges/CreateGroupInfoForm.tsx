@@ -311,10 +311,17 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       return null;
     }
 
+    if (this.props.posts.length === 1) {
+      postValues.push({
+        title: "",
+        value: null
+      });
+    }
+
     this.props.posts.map(post =>
       postValues.push({
-        title: post.title || "",
-        value: post.id || ""
+        title: post.title,
+        value: String(post.id)
       })
     );
 

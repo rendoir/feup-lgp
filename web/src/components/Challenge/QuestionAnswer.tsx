@@ -6,7 +6,7 @@ import React, { Component } from "react";
 // - Import styles
 import styles from "./Challenge.module.css";
 
-import Input from "../Input/Input";
+import InputNext from "../InputNext/InputNext";
 
 // - Import utils
 import { dictionary, LanguageContext } from "../../utils/language";
@@ -166,12 +166,13 @@ class QuestionAnswer extends Component<Props, State> {
     return (
       <div>
         <h6 className="card-title">{this.state.question}</h6>
-        <Input
+        <InputNext
           id="0"
           className={this.getInputRequiredStyle()}
           onChange={this.handleChange}
           placeholder={dictionary.write_answer[this.context]}
           value={this.state.value}
+          required={true}
           disabled={this.getButtonRequiredClass()}
         />
       </div>
@@ -195,6 +196,13 @@ class QuestionAnswer extends Component<Props, State> {
   }
 
   public handleSolveChallenge() {
+    if (
+      this.state.value === "" ||
+      this.state.value === dictionary.write_answer[this.context]
+    ) {
+      return;
+    }
+
     let isCorrect = false;
     if (this.state.value === this.state.correctAnswer) {
       isCorrect = true;

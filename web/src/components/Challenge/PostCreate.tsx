@@ -203,7 +203,7 @@ class PostCreate extends Component<Props, State> {
     getUrl += `/talk/${this.props.talkID}/posts_author`;
 
     axiosInstance
-      .get(getUrl, { params: { author: 1 } })
+      .get(getUrl, { params: this.props.userId })
       .then(res => {
         if (res.data.length > 0) {
           posted = true;
