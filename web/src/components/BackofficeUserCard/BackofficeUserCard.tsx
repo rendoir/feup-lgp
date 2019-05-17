@@ -114,7 +114,7 @@ export class BackofficeUserCard extends React.Component<
     return (
       <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
         {this.props.userType !== BackofficeUserCard.BANNED_USER && (
-          <div className="row mb-3">{banButton}</div>
+          <div className="row mb-3">{unbanButton}</div>
         )}
         <div className="row">{userTypeButton}</div>
       </div>

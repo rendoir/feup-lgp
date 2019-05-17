@@ -462,7 +462,7 @@ export let dictionary: Dictionary = {
     PT: "Leia a descrição e crie uma publicação nesta palestra.",
     EN: "Read the description and create a post in this talk."
   },
-  add_admin: { PT: "Adicionar Administrador", EN: "Add Administrator" },
+  add_admin: { PT: "Adicionar Admin", EN: "Add Admin" },
   insert_admin_email: { PT: "Email do utilizador", EN: "User email" },
   success_add_admin: {
     PT: "O utilizador é agora administrador",

@@ -184,8 +184,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private onUnbanUserResponse(success: boolean) {
     this.setState({
-      unbanUserSuccess: success,
-      showUnbanUserAlert: true
+      showUnbanUserAlert: true,
+      unbanUserSuccess: success
     });
   }
 

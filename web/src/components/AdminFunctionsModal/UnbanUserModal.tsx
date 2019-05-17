@@ -42,7 +42,7 @@ class UnbanUserModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id="ban_user_modal"
+        id="unban_user_modal"
         className="modal fade"
         tabIndex={-1}
         role="dialog"
