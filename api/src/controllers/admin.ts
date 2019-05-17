@@ -43,5 +43,56 @@ export function deleteUserFromWhiteList(req, res) {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while deleting user' });
     });
+}
 
+export async function getReportNotifications(req, res) {
+    console.log("GETTING ADMIN NOTIFICATIONS...");
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications: You are not an admin.' });
+        return;
+    }
+
+    query({
+        text: 'SELECT * FROM retrieve_admin_notifications()',
+    }).then((result) => {
+        console.log("ADMIN NOTIFS: ", result.rows);
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
+    });
+}
+
+export async function amountReportNotifications(req, res) {
+    console.log("GETTING ADMIN NOTIFICATIONS AMOUNT...");
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
+        return;
+    }
+
+    try {
+        const amountReportNotificationsQuery = await query({
+            text: `SELECT COUNT(*) FROM retrieve_admin_notifications()`,
+        });
+        console.log("ADMIN NOTIFS AMOUNT: ", amountReportNotificationsQuery.rows[0].count);
+        res.status(200).send({ amountReportNotifications: amountReportNotificationsQuery.rows[0].count });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving report notifications count'));
+    }
+}
+
+async function isAdmin(userId): Promise<boolean> {
+    try {
+        const result = await query({
+            text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,
+            values: [userId],
+        });
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }

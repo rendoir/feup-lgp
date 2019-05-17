@@ -278,6 +278,28 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         follower NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users(_post_id));
 $$ LANGUAGE SQL;
 
+/* Utils functions fetching notifications (administration and user profile) */
+-- ADMIN REPORT NOTIFICATIONS (ALL ADMINS RECEIVE THE SAME NOTIFICATIONS)
+CREATE OR REPLACE FUNCTION retrieve_admin_notifications()
+RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum, reports_amount BIGINT) AS $$
+	SELECT content_id, 
+            (CASE WHEN content_type = 'post' THEN posts.title ELSE comments.comment END) as content_description, 
+            content_type, 
+            COUNT(DISTINCT content_reports.id) as reports_amount
+        FROM content_reports, posts, comments
+        WHERE admin_review = FALSE AND
+            (
+                (content_type = 'post' AND posts.id = content_id) OR
+                (content_type = 'comment' AND comments.id = content_id)
+            )
+        GROUP BY content_id, content_description, content_type
+        ORDER BY reports_amount desc;
+$$ LANGUAGE SQL;
+
+
+
+
+
 -- Unhashed password: 'adminadmin'
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('admin@gmail.com','d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892', 'Admin', 'Admina', 'Sou medico, ola', 'Rio de Janeiro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
 -- Following unhashed passwords: 'useruser'
@@ -360,6 +382,8 @@ UPDATE posts SET search_tokens = to_tsvector(title || ' ' || content);
 
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'post', 'Insulted my son');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'post', 'Chauvinist content');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (2, 3, 'post', 'Because yes');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (3, 3, 'post', 'Bery much disrespect');
 
 INSERT INTO comments (author, post, comment) VALUES (1, 1, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 2, 'This is a comment done by a mere user following the admin');
@@ -383,6 +407,7 @@ INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'comment', 'Insults my family');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (2, 2, 'comment', 'I dont like it');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'comment', 'Says hitler did nothing wrong');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 12, 'comment', 'Insults my dog');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 13, 'comment', 'Insults my mom');
