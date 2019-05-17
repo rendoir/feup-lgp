@@ -1,39 +1,38 @@
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
+import { number } from "prop-types";
 import * as React from "react";
 import { MouseEvent } from "react";
+import Modal from "react-bootstrap/Modal";
+import Button from "../components/Button/Button";
 
 import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
 import { Request, Step } from "../components/CreateNewModal/types";
+import Icon from "../components/Icon/Icon";
 // - Import utils
 import TalkCard from "../components/TalkCard/TalkCard";
 import "../styles/Conference.css";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
+import withAuth from "../utils/withAuth";
 
-interface IProps {
+type Props = {
+  user: any;
   match: {
     params: {
       id: number;
     };
   };
-}
+};
 
 interface IState {
-  hasChat: boolean;
   step: Step;
-  hasLiveStream: boolean;
   talks: any[];
   title: string;
   description: string;
-  conference_id: number;
   place: string;
-  date_start: string;
-  date_end: string;
-  userCanJoin: boolean;
-  userParticipation: boolean;
-  waitingUserJoinLeave: boolean;
+  dateStart: string;
+  dateEnd: string;
   isHidden: boolean;
-  owner_id: number;
-  owner_name: string;
   privacy: string;
   postModalOpen: boolean;
   request: {
@@ -54,30 +53,58 @@ interface IState {
     local: string;
     switcher: string;
   };
+  editFormOpen: boolean;
+  editFields: {
+    title: string;
+    description: string;
+    place: string;
+    dateStart: string;
+    dateEnd: string;
+  };
 }
 
-class Conference extends React.Component<IProps, IState> {
+class Conference extends React.Component<Props, IState> {
   public static contextType = LanguageContext;
 
-  public id: number;
-  public userId: number;
-  public tags: string[];
+  private id: number;
+  private ownerId: number | undefined;
+  private ownerName: string | undefined;
+  private readonly conferenceDateOptions: object;
+  private readonly talkDateOptions: object;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
+
+    this.conferenceDateOptions = {
+      day: "2-digit",
+      hour: "numeric",
+      minutes: "numeric",
+      month: "long",
+      weekday: "long",
+      year: "numeric"
+    };
+    this.talkDateOptions = {
+      day: "2-digit",
+      month: "long",
+      weekday: "long",
+      year: "numeric"
+    };
+
     this.id = this.props.match.params.id;
-    this.userId = 1; // cookies.get("user_id"); - change when login fetches user id properly
-    this.tags = [];
+
     this.state = {
-      conference_id: 1,
-      date_end: "",
-      date_start: "",
+      dateEnd: "",
+      dateStart: "",
       description: "",
-      hasChat: true,
-      hasLiveStream: true,
+      editFields: {
+        dateEnd: "",
+        dateStart: "",
+        description: "",
+        place: "",
+        title: ""
+      },
+      editFormOpen: false,
       isHidden: false,
-      owner_id: 1,
-      owner_name: "",
       place: "",
       postModalOpen: false,
       privacy: "",
@@ -101,38 +128,36 @@ class Conference extends React.Component<IProps, IState> {
       },
       step: "type",
       talks: [],
-      title: "",
-      userCanJoin: false,
-      userParticipation: false,
-      waitingUserJoinLeave: false
+      title: ""
     };
   }
-  public componentDidMount() {
+
+  public componentWillMount() {
     this.getConference();
   }
+
   public getConference() {
     axiosInstance
       .get(`/conference/${this.id}`)
       .then(res => {
         const conference = res.data.conference;
-        let datestart = conference.datestart.split("T");
-        datestart = datestart[0] + " " + datestart[1];
-        let dateend = conference.dateend.split("T");
-        dateend = dateend[0] + " " + dateend[1];
+        const dateStart = new Date(conference.datestart).toLocaleDateString(
+          dictionary.date_format[this.context],
+          this.conferenceDateOptions
+        );
+        const dateEnd = new Date(conference.dateend).toLocaleDateString(
+          dictionary.date_format[this.context],
+          this.conferenceDateOptions
+        );
 
-        if (conference.privacy === "closed") {
-          this.setState({
-            isHidden: true
-          });
-        }
+        this.ownerId = conference.user_id;
+        this.ownerName = `${conference.first_name} ${conference.last_name}`;
 
         this.setState({
-          conference_id: conference.id,
-          date_end: dateend,
-          date_start: datestart,
+          dateEnd,
+          dateStart,
           description: conference.about,
-          owner_id: conference.user_id,
-          owner_name: conference.first_name + conference.last_name,
+          isHidden: conference.privacy === "closed",
           place: conference.local,
           privacy: conference.privacy,
           talks: res.data.talks,
@@ -146,17 +171,17 @@ class Conference extends React.Component<IProps, IState> {
     const buffer: any[] = [];
     let lastEnd = "";
     this.state.talks.forEach(talk => {
-      let dateend = talk.dateend.split("T");
-      dateend = dateend[0] + " " + dateend[1];
-      if (lastEnd !== dateend) {
+      const dateEnd = new Date(talk.dateend).toLocaleDateString(
+        dictionary.date_format[this.context],
+        this.talkDateOptions
+      );
+
+      if (lastEnd !== dateEnd) {
         buffer.push(
-          <h6>
-            {dictionary.day_split[this.context]}
-            {this.cleanDate(dateend.split(" ")[0])}
-          </h6>
+          <h6>{`${dictionary.day_split[this.context]} ${dateEnd}`}</h6>
         );
       }
-      lastEnd = dateend;
+      lastEnd = dateEnd;
       buffer.push(
         <TalkCard
           id={talk.id}
@@ -169,69 +194,24 @@ class Conference extends React.Component<IProps, IState> {
         />
       );
     });
+
+    console.log(buffer);
     return buffer;
   }
 
-  public cleanDate(date) {
-    date = date.split("-");
-    switch (date[1]) {
-      case "01":
-        date[1] = dictionary.month1[this.context];
-        break;
-      case "02":
-        date[1] = dictionary.month2[this.context];
-        break;
-      case "03":
-        date[1] = dictionary.month3[this.context];
-        break;
-      case "04":
-        date[1] = dictionary.month4[this.context];
-        break;
-      case "05":
-        date[1] = dictionary.month5[this.context];
-        break;
-      case "06":
-        date[1] = dictionary.month6[this.context];
-        break;
-      case "07":
-        date[1] = dictionary.month7[this.context];
-        break;
-      case "08":
-        date[1] = dictionary.month8[this.context];
-        break;
-      case "09":
-        date[1] = dictionary.month9[this.context];
-        break;
-      case "10":
-        date[1] = dictionary.month10[this.context];
-        break;
-      case "11":
-        date[1] = dictionary.month11[this.context];
-        break;
-      case "12":
-        date[1] = dictionary.month12[this.context];
-        break;
-    }
-    return (
-      date[2] +
-      " " +
-      dictionary.of[this.context] +
-      " " +
-      date[1] +
-      ", " +
-      date[0]
-    );
-  }
-
   public render() {
-    if (this.state.isHidden && this.userId === this.state.owner_id) {
+    if (this.state.isHidden && this.props.user.id === this.ownerId) {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
-            <h4>
-              {dictionary.title[this.context]}: {this.state.title}
-            </h4>
-            <h5>Test Conference</h5>
+            <div>
+              <h4>
+                {dictionary.title[this.context]}: {this.state.title}
+              </h4>
+            </div>
+            <div>
+              <h5>Test Conference</h5>
+            </div>
           </div>
 
           <div className="container my-5">
@@ -243,6 +223,9 @@ class Conference extends React.Component<IProps, IState> {
       return (
         <div id="Conference" className="my-5">
           <div className="container my-5">
+            {this.ownerId === this.props.user.id ? (
+              <div className={"float-right"}>{this.editForm()}</div>
+            ) : null}
             <h4>{this.state.title}</h4>
             <h5>{this.state.description}</h5>
           </div>
@@ -263,7 +246,6 @@ class Conference extends React.Component<IProps, IState> {
                   onClose={this.resetState}
                   autoFocus={false}
                   step={"talkConf"}
-                  tags={this.tags}
                 />
               ) : null}
             </div>
@@ -287,12 +269,15 @@ class Conference extends React.Component<IProps, IState> {
 
     if (request.type === "talk") {
       url += "/talk";
+
+      console.log(request);
+
       axiosInstance
         .post(url, {
           about: request.about,
-          author: 1,
+          author: this.props.user.id,
           avatar: request.avatar,
-          conference: this.state.conference_id,
+          conference: this.id,
           dateEnd: request.dateEnd,
           dateStart: request.dateStart,
           livestream: request.livestream,
@@ -308,6 +293,57 @@ class Conference extends React.Component<IProps, IState> {
         .catch(error => console.log("Failed to create talk. " + error));
     }
   };
+
+  private editForm = () => {
+    const editFields = this.state.editFields;
+    const handleHide = () =>
+      this.setState({
+        editFields: {
+          dateEnd: this.state.dateEnd,
+          dateStart: this.state.dateStart,
+          description: this.state.description,
+          place: this.state.place,
+          title: this.state.title
+        },
+        editFormOpen: false
+      });
+    const handleShow = event => {
+      event.preventDefault();
+      this.setState({ editFormOpen: true });
+    };
+    const handleChange = (name, value) =>
+      this.setState({
+        editFields: {
+          ...editFields,
+          [name]: value
+        }
+      });
+
+    return (
+      <>
+        <a href={"#"} onClick={handleShow}>
+          <Icon icon={faEdit} size={"2x"} />
+        </a>
+
+        <Modal show={this.state.editFormOpen} onHide={handleHide}>
+          <Modal.Header closeButton={true}>
+            <Modal.Title>
+              {dictionary.edit_conference[this.context]}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Edit fields here!</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleHide} theme={"danger"}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  };
+
   private resetState = () => {
     this.setState({
       postModalOpen: false,
@@ -335,4 +371,4 @@ class Conference extends React.Component<IProps, IState> {
   };
 }
 
-export default Conference;
+export default withAuth(Conference);

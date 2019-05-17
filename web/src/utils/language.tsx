@@ -72,6 +72,7 @@ export let dictionary: Dictionary = {
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
   edit_talk: { PT: "Editar palestra", EN: "Edit talk" },
+  edit_conference: { PT: "Editar conferencia", EN: "Edit conference" },
   closed_talk: {
     PT: "Esta palestra foi encerrada!",
     EN: "This talk has been closed!"
@@ -312,7 +313,7 @@ export let dictionary: Dictionary = {
     EN: "Insert images, videos and documents"
   },
   start_at: { PT: "Começou a", EN: "Started at" },
-  day_split: { PT: "Acaba a: ", EN: "Ends at: " },
+  day_split: { PT: "Acaba a", EN: "Ends at" },
   month1: { PT: "Janeiro", EN: "January" },
   month2: { PT: "Fevereiro", EN: "February" },
   month3: { PT: "Março", EN: "March" },
