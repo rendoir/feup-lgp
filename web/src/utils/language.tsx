@@ -88,6 +88,7 @@ export let dictionary: Dictionary = {
     EN: "Start livestream"
   },
   create_challenge_talk: { PT: "Criar desafio", EN: "Create challenge" },
+  edit_conference: { PT: "Editar conferência", EN: "Edit conference" },
   invite_users: { PT: "Convidar utilizadores", EN: "Invite users" },
   leave_talk: { PT: "Sair da palestra", EN: "Leave talk" },
   join_talk: { PT: "Entrar na palestra", EN: "Join talk" },

@@ -712,7 +712,7 @@ class Talk extends React.Component<IProps, IState> {
         ) : null}
         <button disabled={isArchived}>
           <i className="fas fa-pen" />
-          Edit conference
+          {dictionary.edit_conference[this.context]}
         </button>
         <button
           type="button"
