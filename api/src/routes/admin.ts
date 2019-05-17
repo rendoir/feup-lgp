@@ -106,3 +106,33 @@ adminRouter.get('/users', controller.getAllUsers);
  *     }
  */
 adminRouter.post('/', controller.addAdmin);
+
+
+/**
+ * @api {post} /api/admin/ban Ban a user
+ * @apiName Ban-user
+ * @apiGroup Admin
+ *
+ * @apiParam {String} email Email of the user to be banned
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to ban a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while banning user'
+ *     }
+ */
+adminRouter.post('/ban', controller.banUser);

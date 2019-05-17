@@ -471,6 +471,14 @@ export let dictionary: Dictionary = {
     PT: "Não foi possível tornar o utilizador num administrador",
     EN: "Error turning user into administrator"
   },
+  success_ban_user: {
+    PT: "O utilizador foi banido!",
+    EN: "User is now banned"
+  },
+  error_ban_user: {
+    PT: "Não foi possível banir o utilizador",
+    EN: "Error turning banning user"
+  },
   empty: { PT: "", EN: "" }
 };
 

@@ -1,6 +1,7 @@
 CREATE TYPE permission_level_enum AS ENUM (
     'admin',
-    'user'
+    'user',
+    'banned'
 );
 
 CREATE TYPE talk_permission_level_enum AS ENUM (

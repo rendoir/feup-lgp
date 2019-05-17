@@ -27,6 +27,7 @@ export class BackofficeUserCard extends React.Component<
     super(props);
 
     this.turnAdminHandler = this.turnAdminHandler.bind(this);
+    this.banUserHandler = this.banUserHandler.bind(this);
   }
 
   public render() {
@@ -64,7 +65,7 @@ export class BackofficeUserCard extends React.Component<
     const banButton = (
       <button
         className="btn btn-danger btn-block"
-        onClick={this.props.banHandler}
+        onClick={this.banUserHandler}
       >
         {dictionary.ban_action[this.context]}
       </button>
@@ -122,6 +123,12 @@ export class BackofficeUserCard extends React.Component<
   private turnAdminHandler() {
     if (this.props.turnAdminHandler) {
       this.props.turnAdminHandler(this.props.email);
+    }
+  }
+
+  private banUserHandler() {
+    if (this.props.banHandler) {
+      this.props.banHandler(this.props.email);
     }
   }
 }
