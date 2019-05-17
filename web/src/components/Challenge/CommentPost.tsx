@@ -52,6 +52,7 @@ class CommentPost extends Component<Props, State> {
     let description = "";
     let postToComment = 0;
 
+    console.log(content);
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
       if (content[i].startsWith("Description: ")) {
@@ -89,6 +90,7 @@ class CommentPost extends Component<Props, State> {
           isComplete = res.data.state[0].complete;
         }
 
+        console.log(res.data);
         if (res.data.title !== undefined) {
           titlePost = res.data.title;
         }
@@ -222,7 +224,7 @@ class CommentPost extends Component<Props, State> {
     }/comments_author`;
 
     axiosInstance
-      .get(getUrl, { params: { author: 1 } })
+      .get(getUrl, { params: this.props.userId })
       .then(res => {
         if (res.data.length > 0) {
           commented = true;
