@@ -25,9 +25,9 @@ type MyFile = {
 // - Import utils
 import { apiCheckPostUserReport } from "../../utils/apiReport";
 import { apiSubscription } from "../../utils/apiSubscription";
+import { getApiURL } from "../../utils/apiURL";
 import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
 import { dictionary, LanguageContext } from "../../utils/language";
-import { getApiURL } from "../../utils/apiURL";
 
 import {
   faGlobeAfrica,
@@ -748,7 +748,7 @@ class Post extends Component<Props, IState> {
   }
 
   private updateFileSrc(file: MyFile) {
-    let url = getApiURL("/post/" + this.props.id + "/" + file.name);
+    const url = getApiURL("/post/" + this.props.id + "/" + file.name);
 
     return axiosInstance
       .get(url, {
