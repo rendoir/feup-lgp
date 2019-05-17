@@ -771,6 +771,7 @@ class Talk extends React.Component<IProps, IState> {
       .then(() => {
         this.setState({
           ...this.state,
+          ...editFields,
           editFields: {
             ...editFields,
             livestreamUrl: editFields.hasLiveStream
