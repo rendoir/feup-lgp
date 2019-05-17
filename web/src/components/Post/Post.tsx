@@ -126,9 +126,6 @@ class Post extends Component<Props, IState> {
       return null;
     }
 
-    console.log(this.state.images);
-    console.log(this.state.videos);
-
     return (
       <div>
         <div>{this.renderOverlay()}</div>
