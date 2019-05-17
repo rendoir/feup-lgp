@@ -375,17 +375,11 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               {this.getJoinButton()}
-              <button
-                className="create"
-                onClick={this.createConfPost}
-                hidden={isArchived}
-              >
-                {dictionary.create_post[this.context]}
-              </button>
               <div className="p-3">{this.getDetails()}</div>
               {this.state.owner_id === this.userId ? (
                 <div className="p-3">{this.getAdminButtons()}</div>
               ) : null}
+              {this.getChallenges()}
             </div>
             <div className="conf_posts">
               {this.state.postModalOpen ? (
@@ -402,7 +396,13 @@ class Talk extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {this.getChallenges()}
+              <button
+                className="create"
+                onClick={this.createConfPost}
+                hidden={isArchived}
+              >
+                {dictionary.create_post[this.context]}
+              </button>
               <InfiniteScroll requestUrl={`/talk/${this.id}`} />
             </div>
           </div>
