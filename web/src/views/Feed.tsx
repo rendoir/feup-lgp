@@ -100,7 +100,6 @@ class Feed extends React.Component<Props, State> {
           </div>
           <div id="mainm">
             <InfiniteScroll />
-            {/*{this.getPosts()}*/}
           </div>
         </div>
       </div>

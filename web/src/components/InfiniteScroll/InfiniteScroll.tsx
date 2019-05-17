@@ -32,7 +32,7 @@ function defaultUrl() {
 
 class InfiniteScroll extends Component<Props, State> {
   public static defaultProps = {
-    itemsPerPage: 20,
+    itemsPerPage: 5,
     requestUrl: defaultUrl(),
     type: "posts"
   };
@@ -134,6 +134,7 @@ class InfiniteScroll extends Component<Props, State> {
         .get(this.props.requestUrl, { params })
         .then(results => {
           const incoming = results.data;
+          console.log(incoming);
 
           incoming.posts.map((post: PostProps, idx: number) => {
             post.author =
