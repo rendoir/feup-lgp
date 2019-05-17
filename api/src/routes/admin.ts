@@ -107,7 +107,6 @@ adminRouter.get('/users', controller.getAllUsers);
  */
 adminRouter.post('/', controller.addAdmin);
 
-
 /**
  * @api {post} /api/admin/ban Ban a user
  * @apiName Ban-user

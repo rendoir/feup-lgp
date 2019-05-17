@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import "./AddAdminModal.css";
+import "./AdminFunctionsModal.css";
 
 import { getApiURL } from "../../utils/apiURL";
 import axiosInstance from "../../utils/axiosInstance";
@@ -101,8 +101,9 @@ class BanUserModal extends Component<IProps, IState> {
       email: this.state.user_email
     };
 
+    console.log("1");
     axiosInstance
-      .post(getApiURL("/admin"), body)
+      .post(getApiURL("/admin/ban"), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

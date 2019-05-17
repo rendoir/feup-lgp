@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import "./AddAdminModal.css";
+import "./AdminFunctionsModal.css";
 
 import { getApiURL } from "../../utils/apiURL";
 import axiosInstance from "../../utils/axiosInstance";

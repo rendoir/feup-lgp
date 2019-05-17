@@ -157,7 +157,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private onBanUserResponse(success: boolean) {
     this.setState({
-      addAdminSuccess: success,
+      banUserSuccess: success,
       showBanUserAlert: true
     });
   }

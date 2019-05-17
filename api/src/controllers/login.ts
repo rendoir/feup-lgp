@@ -18,9 +18,8 @@ export async function login(req, res, next) {
             err.name = 'UnauthorizedError';
             next(err);
             return;
-        }
-        else if(user.permissions === 'banned'){
-            console.log("You are banned");
+        } else if (user.permissions === 'banned') {
+            console.log('You are banned');
             const err = new Error('You are banned from this site');
             err.name = 'BanError';
             next(err);
