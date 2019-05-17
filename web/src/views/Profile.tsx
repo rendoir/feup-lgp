@@ -21,7 +21,8 @@ import {
   ModalProvider
 } from "../components/Modal/index";
 import Modal from "../components/Modal/Modal";
-import EditProfileForm from "../components/RegisterForm/EditProfileForm";
+import ProfileModal from "../components/ProfileModal/ProfileModal";
+import { Step } from "../components/ProfileModal/types";
 
 interface IProps {
   match: {
@@ -44,6 +45,19 @@ type State = {
   posts: any[];
   user: any;
   fetchingInfo: boolean;
+  request: {
+    email: string;
+    first_name: string;
+    home_town: string;
+    last_name: string;
+    loading: boolean;
+    password: string;
+    confirm_password: string;
+    university: string;
+    work: string;
+    work_field: string;
+  };
+  step: Step;
 };
 
 class Profile extends React.Component<IProps, State> {
@@ -62,6 +76,19 @@ class Profile extends React.Component<IProps, State> {
       isOpen: false,
       numberOfRatings: 1,
       posts: [],
+      request: {
+        confirm_password: "",
+        email: "",
+        first_name: "",
+        home_town: "",
+        last_name: "",
+        loading: false,
+        password: "",
+        university: "",
+        work: "",
+        work_field: ""
+      },
+      step: "profile",
       user: {},
       userRate: 50,
       userRateTotal: 50,
@@ -161,29 +188,17 @@ class Profile extends React.Component<IProps, State> {
                 {this.getProfileTown()}
                 {this.getProfileEmail()}
                 {this.state.isOpen ? (
-                  <Modal onClose={() => this.setState({ isOpen: false })}>
-                    <ModalHeader withBorder={true}>
-                      Edit Profile
-                      <ModalClose
-                        onClick={() => this.setState({ isOpen: false })}
-                      />
-                    </ModalHeader>
-                    <ModalBody>
-                      <EditProfileForm />
-                    </ModalBody>
-                    <ModalFooter withBorder={true}>
-                      <Button
-                        wide={true}
-                        id={`${this.id}_edit_submit_button`}
-                        type={"submit"}
-                        theme={"success"}
-                        rounded={false}
-                        onClick={this.apiEditProfile}
-                      >
-                        {dictionary.finish[this.context]}
-                      </Button>
-                    </ModalFooter>
-                  </Modal>
+                  <ProfileModal
+                    pending={false}
+                    onSubmit={this.apiEditProfile}
+                    onStepChange={step => this.setState({ step })}
+                    maxGroupSize={5}
+                    request={this.state.request}
+                    onRequestChange={request => this.setState({ request })}
+                    onClose={this.resetState}
+                    autoFocus={false}
+                    step={"profile"}
+                  />
                 ) : null}
               </ul>
             </div>
@@ -197,6 +212,25 @@ class Profile extends React.Component<IProps, State> {
       </div>
     );
   }
+
+  private resetState = () => {
+    this.setState({
+      isOpen: false,
+      request: {
+        confirm_password: "",
+        email: this.state.user.email,
+        first_name: this.state.user.first_name,
+        home_town: this.state.user.home_town,
+        last_name: this.state.user.last_name,
+        loading: false,
+        password: this.state.user.password,
+        university: this.state.user.university,
+        work: this.state.user.work,
+        work_field: this.state.user.work_field
+      },
+      step: "profile"
+    });
+  };
 
   private handleUserRate(e: any) {
     if (this.state.userRated) {
@@ -270,23 +304,19 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiEditProfile() /*= (request: Request) => */ {
-    const formData = new FormData();
-    /*  request.files.images.forEach((file, idx) =>
-        formData.append("images[" + idx + "]", file)
-      );
-      request.files.videos.forEach((file, idx) =>
-        formData.append("videos[" + idx + "]", file)
-      );
-      request.files.docs.forEach((file, idx) =>
-        formData.append("docs[" + idx + "]", file)
-      );
-      request.tags.forEach((tag, i) => formData.append("tags[" + i + "]", tag));
+    if (this.auth.getUserPayload().id !== this.id) {
+      return;
+    }
 
-      formData.append("text", request.about);
-      formData.append("title", request.title);
-      formData.append("visibility", request.privacy);
-      formData.append("conference", this.id + "");
-      */
+    const formData = new FormData();
+
+    /*
+    formData.append("text", request.about);
+    formData.append("title", request.title);
+    formData.append("visibility", request.privacy);
+    formData.append("conference", this.id + "");
+  */
+
     axiosInstance
       .post("/post", formData, {
         headers: {
@@ -360,7 +390,21 @@ class Profile extends React.Component<IProps, State> {
     axiosInstance
       .get(`/users/${this.id}`)
       .then(res => {
-        this.setState({ user: res.data.user });
+        this.setState({
+          request: {
+            confirm_password: res.data.user.password,
+            email: res.data.user.email,
+            first_name: res.data.user.first_name,
+            home_town: res.data.user.home_town,
+            last_name: res.data.user.last_name,
+            loading: false,
+            password: res.data.user.password,
+            university: res.data.user.university,
+            work: res.data.user.work,
+            work_field: res.data.user.work_field
+          },
+          user: res.data.user
+        });
       })
       .catch(() => console.log("Failed to get posts"));
   }
