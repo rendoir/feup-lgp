@@ -154,7 +154,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_points`}
               value={prizePoints}
-              // placeholder={dictionary.points_desc[this.context]}
               name={"prizePoints"}
               label={dictionary.points[this.context]}
               type={"text"}
@@ -309,13 +308,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     if (this.props.posts === undefined) {
       return null;
-    }
-
-    if (this.props.posts.length === 1) {
-      postValues.push({
-        title: "",
-        value: null
-      });
     }
 
     this.props.posts.map(post =>

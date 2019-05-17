@@ -52,7 +52,6 @@ class CommentPost extends Component<Props, State> {
     let description = "";
     let postToComment = 0;
 
-    console.log(content);
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
       if (content[i].startsWith("Description: ")) {
