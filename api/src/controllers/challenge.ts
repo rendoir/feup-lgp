@@ -82,6 +82,7 @@ export async function createChallenge(req, res) {
 }
 
 export function solveChallenge(req, res) {
+
     query({
         text: `INSERT INTO user_challenge
                 (challenged, challenge, answer, complete)
@@ -101,7 +102,6 @@ export function solveChallenge(req, res) {
 }
 
 export async function getSolvedStateForUser(req, res) {
-
     try {
         const postTitle = (await query({
             text: `SELECT title
