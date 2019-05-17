@@ -17,6 +17,17 @@ interface IState {
 class AddAdminModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
+  public static OnTurnAdmin(email: string, onResponse: any) {
+    const body = {
+      email
+    };
+
+    axiosInstance
+      .post(getApiURL("/admin"), body)
+      .then(res => onResponse(true))
+      .catch(() => onResponse(false));
+  }
+
   constructor(props: IProps) {
     super(props);
 
@@ -94,17 +105,6 @@ class AddAdminModal extends Component<IProps, IState> {
       .post(getApiURL("/admin"), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
-  }
-
-  public static OnTurnAdmin(email: string, onResponse: any) {
-    const body = {
-      email: email
-    };
-
-    axiosInstance
-      .post(getApiURL("/admin"), body)
-      .then(res => onResponse(true))
-      .catch(() => onResponse(false));
   }
 
   private handleAddAdmin() {

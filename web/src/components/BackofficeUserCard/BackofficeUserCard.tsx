@@ -120,7 +120,8 @@ export class BackofficeUserCard extends React.Component<
   }
 
   private turnAdminHandler() {
-    if (this.props.turnAdminHandler)
+    if (this.props.turnAdminHandler) {
       this.props.turnAdminHandler(this.props.email);
+    }
   }
 }
