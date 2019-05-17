@@ -263,7 +263,9 @@ class Talk extends React.Component<IProps, IState> {
         }
 
         const reqChalCopy = this.state.requestChallenge;
-        reqChalCopy.post = postsComing.posts[0].id;
+        if (postsComing.posts > 0) {
+          reqChalCopy.post = postsComing.posts[0].id;
+        }
 
         this.setState({
           archived: talk.archived,
@@ -273,7 +275,7 @@ class Talk extends React.Component<IProps, IState> {
           description: talk.about,
           livestreamUrl: talk.livestream_url,
           owner_id: talk.user_id,
-          owner_name: talk.first_name + talk.last_name,
+          owner_name: talk.first_name + " " + talk.last_name,
           place: talk.local,
           posts: postsComing.posts,
           privacy: talk.privacy,
