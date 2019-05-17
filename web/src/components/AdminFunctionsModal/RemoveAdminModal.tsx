@@ -57,7 +57,7 @@ class RemoveAdminModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {dictionary.remove_admin[this.context]}
+                {dictionary.expel_admin[this.context]}
               </h5>
               <button
                 type="button"

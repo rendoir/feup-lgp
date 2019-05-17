@@ -101,7 +101,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 data-toggle="modal"
                 data-target="#remove_admin_modal"
               >
-                {dictionary.remove_admin[this.context]}
+                {dictionary.expel_admin[this.context]}
               </a>
               <a
                 id="ban_user"

@@ -175,8 +175,8 @@ export let dictionary: Dictionary = {
   banned: { PT: "banido", EN: "banned" },
   ban_action: { PT: "Banir", EN: "Ban" },
   unban_action: { PT: "Desbanir", EN: "Unban" },
-  turn_admin: { PT: "Tornar admin", EN: "Turn admin" },
-  expel_admin: { PT: "Expulsar admin", EN: "Expel admin" },
+  turn_admin: { PT: "Tornar Admin", EN: "Turn Admin" },
+  expel_admin: { PT: "Expulsar Admin", EN: "Expel Admin" },
   talk_chat: { PT: "Chat da palestra", EN: "Talk Chat" },
   chat_message_placeholder: {
     PT: "Insira aqui a sua mensagem...",
