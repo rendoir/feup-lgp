@@ -472,6 +472,14 @@ export let dictionary: Dictionary = {
     PT: "Não foi possível tornar o utilizador num administrador",
     EN: "Error turning user into administrator"
   },
+  success_remove_admin: {
+    PT: "O utilizador já não é administrador",
+    EN: "User is no longer an administrator"
+  },
+  error_remove_admin: {
+    PT: "Não foi possível tornar o administrador num utilizador",
+    EN: "Error turning administrator back to user"
+  },
   success_ban_user: {
     PT: "O utilizador foi banido!",
     EN: "User is now banned"

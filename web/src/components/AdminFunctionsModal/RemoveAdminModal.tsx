@@ -11,13 +11,13 @@ interface IProps {
 }
 
 interface IState {
-  user_email: string;
+  admin_email: string;
 }
 
-class UnbanUserModal extends Component<IProps, IState> {
+class RemoveAdminModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnUnbanUser(email: string, onResponse: any) {
+  public static OnExpelAdmin(email: string, onResponse: any) {
     const body = {
       email
     };
@@ -32,17 +32,17 @@ class UnbanUserModal extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      user_email: ""
+      admin_email: ""
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleUnbanUser = this.handleUnbanUser.bind(this);
+    this.handleRemoveAdmin = this.handleRemoveAdmin.bind(this);
   }
 
   public render() {
     return (
       <div
-        id="unban_user_modal"
+        id="remove_admin_modal"
         className="modal fade"
         tabIndex={-1}
         role="dialog"
@@ -57,7 +57,7 @@ class UnbanUserModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {dictionary.unban_user[this.context]}
+                {dictionary.remove_admin[this.context]}
               </h5>
               <button
                 type="button"
@@ -96,9 +96,9 @@ class UnbanUserModal extends Component<IProps, IState> {
     );
   }
 
-  public apiUnbanUser() {
+  public apiRemoveAdmin() {
     const body = {
-      email: this.state.user_email
+      email: this.state.admin_email
     };
 
     axiosInstance
@@ -107,13 +107,13 @@ class UnbanUserModal extends Component<IProps, IState> {
       .catch(() => this.props.onResponse(false));
   }
 
-  private handleUnbanUser() {
-    this.apiUnbanUser();
+  private handleRemoveAdmin() {
+    this.apiRemoveAdmin();
   }
 
   private handleInputChange(e: any) {
     this.setState({
-      user_email: e.target.value
+      admin_email: e.target.value
     });
   }
 
@@ -125,7 +125,7 @@ class UnbanUserModal extends Component<IProps, IState> {
           role="submit"
           className="btn btn-primary"
           data-dismiss="modal"
-          onClick={this.handleUnbanUser}
+          onClick={this.handleRemoveAdmin}
         >
           {dictionary.submit[this.context]}
         </button>
@@ -134,4 +134,4 @@ class UnbanUserModal extends Component<IProps, IState> {
   }
 }
 
-export default UnbanUserModal;
+export default RemoveAdminModal;

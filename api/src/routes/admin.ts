@@ -137,11 +137,11 @@ adminRouter.post('/', controller.addAdmin);
 adminRouter.post('/ban', controller.banUser);
 
 /**
- * @api {post} /api/admin/unban Unban an user
- * @apiName Unban-user
+ * @api {post} /api/admin/user Change to user
+ * @apiName Change-user
  * @apiGroup Admin
  *
- * @apiParam {String} email Email of the user to be unbanned
+ * @apiParam {String} email Email of the user
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -155,12 +155,12 @@ adminRouter.post('/ban', controller.banUser);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
- *      message: 'You do not have permissions to unban a user'
+ *      message: 'You do not have permissions to change to an user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
- *      message: 'An error ocurred while unbanning user'
+ *      message: 'An error ocurred while changing to an user'
  *     }
  */
-adminRouter.post('/unban', controller.unbanUser);
+adminRouter.post('/user', controller.makeUser);
