@@ -119,7 +119,7 @@ class Talk extends React.Component<IProps, IState> {
       editFormOpen: false,
       hasLiveStream: true,
       isHidden: false,
-      livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
+      livestreamUrl: "",
       place: "",
       postModalOpen: false,
       posts: [],
