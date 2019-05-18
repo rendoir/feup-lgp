@@ -47,8 +47,10 @@ export function createTalk(req, res) {
     }
   }
 
-  console.log('livestream: ', req.body.livestream);
-  const livestreamURL = 'https://www.youtube.com/embed/' + req.body.livestream.substr(req.body.livestream.length - 11);
+  let livestreamURL = req.body.livestream;
+  if (livestreamURL.includes('youtube.com')) {
+    livestreamURL = 'https://www.youtube.com/embed/' + req.body.livestream.substr(req.body.livestream.length - 11);
+  }
   const userId = req.user.id;
 
   query({
@@ -360,7 +362,6 @@ export async function archiveTalk(req, res) {
   const id = req.params.id;
   const userId = req.user.id;
   try {
-    console.log('id asdasd ' + id);
     const archivedConference = await query({
       text: `UPDATE talks
               SET archived = TRUE
@@ -409,7 +410,6 @@ export function getPointsUserTalk(req, res) {
     text: `SELECT points FROM talk_participants WHERE talk = $1 AND participant_user = $2`,
     values: [req.params.id, req.params.user_id],
   }).then((result) => {
-    console.log('Points ' + result.rows);
     const results = {points: 0};
     if (result.rows !== []) {
       results.points = result.rows[0].points;
