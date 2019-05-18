@@ -330,6 +330,124 @@ export let dictionary: Dictionary = {
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
   create_new_talk: { PT: "Criar nova palestra", EN: "Create new talk" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  challenge_conference: { PT: "Desafios", EN: "Challenges" },
+  no_challenges: {
+    PT: "Ainda não há desafios. Tenta mais tarde!",
+    EN: "No challenges yet. Try later!"
+  },
+  simple_question: {
+    PT: "Desafios de Questão Simples",
+    EN: "Simple Question Challenges"
+  },
+  simple_question_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a responder a uma pergunta para ganhar algo.",
+    EN:
+      "serve to invite conference participants to answer a question to win something."
+  },
+  mult_choice_question: {
+    PT: "Desafios de Questão de Escolha Múltipla",
+    EN: "Multiple Choice Question Challenges"
+  },
+  mult_choice_question_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a responder a uma pergunta de escolha múltipla para ganhar algo.",
+    EN:
+      "serve to invite conference participants to answer a question with multiple choice options, to win something."
+  },
+  post_create: {
+    PT: "Desafios de Publicar na conferência",
+    EN: "Post on Conference Challenges"
+  },
+  post_create_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a criar publicações na conferência.",
+    EN: "serve to invite conference participants to write posts on conference."
+  },
+  comment_post: {
+    PT: "Desafios de Comentar uma Publicação",
+    EN: "Comment on a Post Challenges"
+  },
+  comment_post_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a escrever comentários em certas publicações na conferência.",
+    EN:
+      "serve to invite conference participants to write comments on specific posts on conference."
+  },
+  new_challenge: {
+    PT: "Novo Desafio",
+    EN: "New Challenge"
+  },
+  challenge_title: {
+    PT: "Título do Desafio",
+    EN: "Challenge title"
+  },
+  chal_description_placeholder: {
+    PT: "Escreva uma breve descrição do desafio.",
+    EN: "Write a brief description of the challenge."
+  },
+  prize: {
+    PT: "Prémio",
+    EN: "Prize"
+  },
+  prize_desc: {
+    PT:
+      "Escreva uma breve descrição do prémio. Se este for em pontos indique 'points'.",
+    EN:
+      "Write a short description of the prize to give. If it is in points, write 'points'."
+  },
+  my_points: {
+    PT: "Os Meus Pontos: ",
+    EN: "My Points: "
+  },
+  points: {
+    PT: "Pontos",
+    EN: "Points"
+  },
+  points_desc: {
+    PT: "Se o prémio não for em pontos, escreva '0'",
+    EN: "If prize is not points, write '0'"
+  },
+  question: {
+    PT: "Questão",
+    EN: "Question"
+  },
+  correct_answer: {
+    PT: "Resposta Correcta",
+    EN: "Correct Answer"
+  },
+  options: {
+    PT: "Opções",
+    EN: "Options"
+  },
+  post_to_com: {
+    PT: "Publicação a comentar",
+    EN: "Post to Comment"
+  },
+  ending_at: {
+    PT: "Acaba em:",
+    EN: "Ending at:"
+  },
+  solve_challenge: {
+    PT: "Resolver Desafio",
+    EN: "Solve Challenge"
+  },
+  win: {
+    PT: "Ganha",
+    EN: "Win"
+  },
+  comment_on_post: {
+    PT: "Comenta na publicação com o título:",
+    EN: "Comment On Post with title:"
+  },
+  write_answer: {
+    PT: "Escreve aqui a tua resposta",
+    EN: "Write here your answer"
+  },
+  new_mp: {
+    PT: "Novos",
+    EN: "New"
+  },
   join: { PT: "Aderir", EN: "Join" },
   invite_discussion: {
     PT: "Convidar para a discussão",
@@ -340,6 +458,10 @@ export let dictionary: Dictionary = {
     EN: "Insert user's first and last name"
   },
   followers: { PT: "A seguir", EN: "Following" },
+  create_post_chal: {
+    PT: "Leia a descrição e crie uma publicação nesta palestra.",
+    EN: "Read the description and create a post in this talk."
+  },
   add_admin: { PT: "Adicionar Administrador", EN: "Add Administrator" },
   insert_admin_email: { PT: "Email do utilizador", EN: "User email" },
   success_add_admin: {
