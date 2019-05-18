@@ -1,4 +1,5 @@
 @import './variables';
+@import './colors';
 
 #Feed {
   a.talk-link:hover {
@@ -20,9 +21,22 @@
 	padding-right: 1.5%;
 	width: 70%;
   }
-  
+
+  #following-list{
+	  color: $glintt;
+  }
+
+	#no-follows{
+		color: red;
+	}
+
   @media screen and (max-width: 1000px) {
-	#leftm, #rightm, #mainm {
+	  #leftm, #rightm {
+		  margin-left: 20px;
+		  width: 40%;
+	  }
+
+	#mainm {
 	  width: 100%; 
 	}
   }

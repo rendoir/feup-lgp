@@ -46,6 +46,8 @@ export function createTalk(req, res) {
     }
   }
 
+  console.log('livestream: ', req.body.livestream);
+  const livestreamURL = 'https://www.youtube.com/embed/' + req.body.livestream.substr(req.body.livestream.length - 11);
   const userId = req.user.id;
 
   query({
@@ -55,12 +57,12 @@ export function createTalk(req, res) {
       userId,
       req.body.title,
       req.body.about,
-      req.body.livestream,
+      livestreamURL,
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
       req.body.avatar,
-      req.body.privacy,
+      'closed',
       req.body.conference,
     ],
   }).then((result) => {
@@ -320,6 +322,7 @@ export async function gettalk(req, res) {
               WHERE c.id = $1
                 AND (c.author = $2
                     OR c.privacy = 'public'
+                    OR c.privacy = 'closed'
                     OR (c.privacy = 'followers'
                         AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )
