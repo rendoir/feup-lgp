@@ -164,7 +164,7 @@ usersRouter.get('/:id/notifications', controller.getNotifications);
  *      message: 'An error ocurred while gettting users'
  *     }
  */
-usersRouter.get('/amount_notifications', controller.amountNotifications);
+usersRouter.get('/:id/amount_notifications', controller.amountNotifications);
 
 /**
  * @api {put} /api/users/:id/invite_notified Mark an invite notification as seen by the invited user

@@ -8,6 +8,7 @@ import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
 
 type BackofficeState = {
+  fetchingNotifications: boolean;
   notifications: any[];
   usersAreaActive: boolean;
 };
@@ -21,8 +22,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      fetchingNotifications: true,
       notifications: [],
-      usersAreaActive: true
+      usersAreaActive: false
     };
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
@@ -79,7 +81,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private async apiGetNotifications() {
     const notifications = await apiGetReportNotificationsInfo();
-    this.setState({ notifications });
+    console.log(notifications);
+    this.setState({
+      fetchingNotifications: false,
+      notifications
+    });
   }
 
   private handleUsersArea() {
@@ -202,6 +208,18 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private getNotifications() {
+    if (this.state.fetchingNotifications) {
+      return null;
+    } else if (!this.state.notifications) {
+      return <div>{dictionary.error_notifications[this.context]}</div>;
+    } else if (this.state.notifications.length === 0) {
+      return (
+        <div id="no-notifications">
+          {dictionary.no_notifications[this.context]}
+        </div>
+      );
+    }
+
     return (
       <div
         id="backoffice_notifications_area"

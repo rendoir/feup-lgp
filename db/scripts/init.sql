@@ -295,18 +295,22 @@ RETURNS TABLE(id BIGINT, invite_subject_id BIGINT, title TEXT, invite_type invit
 $$ LANGUAGE SQL;
 -- ADMIN REPORT NOTIFICATIONS (ALL ADMINS RECEIVE THE SAME NOTIFICATIONS)
 CREATE OR REPLACE FUNCTION retrieve_admin_notifications()
-RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum, reports_amount BIGINT) AS $$
+RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum,
+                reported_user_id BIGINT, reported_user_first_name TEXT, reported_user_last_name TEXT, reports_amount BIGINT) AS $$
 	SELECT content_id, 
             (CASE WHEN content_type = 'post' THEN posts.title ELSE comments.comment END) as content_description, 
-            content_type, 
+            content_type,
+            users.id,
+            users.first_name,
+            users.last_name,
             COUNT(DISTINCT content_reports.id) as reports_amount
-        FROM content_reports, posts, comments
+        FROM content_reports, posts, comments, users
         WHERE admin_review = FALSE AND
             (
-                (content_type = 'post' AND posts.id = content_id) OR
-                (content_type = 'comment' AND comments.id = content_id)
+                (content_type = 'post' AND posts.id = content_id AND users.id = posts.author) OR
+                (content_type = 'comment' AND comments.id = content_id AND users.id = comments.author)
             )
-        GROUP BY content_id, content_description, content_type
+        GROUP BY content_id, content_description, content_type, users.id
         ORDER BY reports_amount desc;
 $$ LANGUAGE SQL;
 
