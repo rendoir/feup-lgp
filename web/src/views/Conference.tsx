@@ -1,16 +1,12 @@
-import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
-import { number } from "prop-types";
-import * as React from "react";
-import { MouseEvent } from "react";
+import { faEdit, faPlus } from "@fortawesome/free-solid-svg-icons";
+import React, { PureComponent } from "react";
+import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
-import Button from "../components/Button/Button";
+import { Avatar, Button, Icon, InputNext, Select } from "../components";
 
-import CreateNewModal from "../components/CreateNewModal/CreateNewModal";
-import { Request, Step } from "../components/CreateNewModal/types";
-import Icon from "../components/Icon/Icon";
+import styles from "../components/CreateNewModal/CreateNewModal.module.css";
+import Switcher from "../components/Switcher/Switcher";
 // - Import utils
-import TalkCard from "../components/TalkCard/TalkCard";
-import "../styles/Conference.css";
 import axiosInstance from "../utils/axiosInstance";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
@@ -24,8 +20,7 @@ type Props = {
   };
 };
 
-interface IState {
-  step: Step;
+type State = {
   talks: any[];
   title: string;
   description: string;
@@ -36,17 +31,9 @@ interface IState {
   privacy: string;
   postModalOpen: boolean;
   request: {
-    type: "post" | "talk" | "conference";
     title: string;
     about: string;
-    avatar?: File;
     privacy: string;
-    tags: string[];
-    files: {
-      docs: File[];
-      videos: File[];
-      images: File[];
-    };
     dateStart: string;
     dateEnd: string;
     livestream: string;
@@ -61,9 +48,9 @@ interface IState {
     dateStart: string;
     dateEnd: string;
   };
-}
+};
 
-class Conference extends React.Component<Props, IState> {
+class Conference extends PureComponent<Props, State> {
   public static contextType = LanguageContext;
 
   private id: number;
@@ -78,7 +65,7 @@ class Conference extends React.Component<Props, IState> {
     this.conferenceDateOptions = {
       day: "2-digit",
       hour: "numeric",
-      minutes: "numeric",
+      minute: "numeric",
       month: "long",
       weekday: "long",
       year: "numeric"
@@ -110,23 +97,14 @@ class Conference extends React.Component<Props, IState> {
       privacy: "",
       request: {
         about: "",
-        avatar: undefined,
         dateEnd: "",
         dateStart: "",
-        files: {
-          docs: [],
-          images: [],
-          videos: []
-        },
         livestream: "",
         local: "",
         privacy: "public",
         switcher: "false",
-        tags: [],
-        title: "",
-        type: "talk"
+        title: ""
       },
-      step: "type",
       talks: [],
       title: ""
     };
@@ -141,21 +119,12 @@ class Conference extends React.Component<Props, IState> {
       .get(`/conference/${this.id}`)
       .then(res => {
         const conference = res.data.conference;
-        const dateStart = new Date(conference.datestart).toLocaleDateString(
-          dictionary.date_format[this.context],
-          this.conferenceDateOptions
-        );
-        const dateEnd = new Date(conference.dateend).toLocaleDateString(
-          dictionary.date_format[this.context],
-          this.conferenceDateOptions
-        );
-
         this.ownerId = conference.user_id;
         this.ownerName = `${conference.first_name} ${conference.last_name}`;
 
         this.setState({
-          dateEnd,
-          dateStart,
+          dateEnd: conference.dateend,
+          dateStart: conference.datestart,
           description: conference.about,
           isHidden: conference.privacy === "closed",
           place: conference.local,
@@ -165,38 +134,6 @@ class Conference extends React.Component<Props, IState> {
         });
       })
       .catch(() => console.log("Failed to get conference info"));
-  }
-
-  public getTalks() {
-    const buffer: any[] = [];
-    let lastEnd = "";
-    this.state.talks.forEach(talk => {
-      const dateEnd = new Date(talk.dateend).toLocaleDateString(
-        dictionary.date_format[this.context],
-        this.talkDateOptions
-      );
-
-      if (lastEnd !== dateEnd) {
-        buffer.push(
-          <h6>{`${dictionary.day_split[this.context]} ${dateEnd}`}</h6>
-        );
-      }
-      lastEnd = dateEnd;
-      buffer.push(
-        <TalkCard
-          id={talk.id}
-          title={talk.title}
-          local={talk.local}
-          dateend={talk.datestart}
-          datestart={talk.dateend}
-          about={talk.about}
-          avatar={talk.avatar}
-        />
-      );
-    });
-
-    console.log(buffer);
-    return buffer;
   }
 
   public render() {
@@ -210,7 +147,7 @@ class Conference extends React.Component<Props, IState> {
               </h4>
             </div>
             <div>
-              <h5>Test Conference</h5>
+              <h5>{this.state.description}</h5>
             </div>
           </div>
 
@@ -221,77 +158,308 @@ class Conference extends React.Component<Props, IState> {
       );
     } else {
       return (
-        <div id="Conference" className="my-5">
-          <div className="container my-5">
-            {this.ownerId === this.props.user.id ? (
-              <div className={"float-right"}>{this.editForm()}</div>
-            ) : null}
-            <h4>{this.state.title}</h4>
-            <h5>{this.state.description}</h5>
-          </div>
-          <div className="container my-5">
-            <div className="conf_posts">
-              <div className="p-3">{this.getTalks()}</div>
-              <button className="create" onClick={this.createConfPost}>
-                {dictionary.create_new_talk[this.context]}
-              </button>
-              {this.state.postModalOpen ? (
-                <CreateNewModal
-                  pending={false}
-                  onSubmit={this.handleSubmit}
-                  onStepChange={step => this.setState({ step })}
-                  maxGroupSize={5}
-                  request={this.state.request}
-                  onRequestChange={request => this.setState({ request })}
-                  onClose={this.resetState}
-                  autoFocus={false}
-                  step={"talkConf"}
-                />
-              ) : null}
-            </div>
+        <div id="Conference" className="container-fluid w-75 my-5">
+          <div className={"d-flex flex-row flex-wrap"}>
+            <div className={"col-lg-4 mb-3"}>{this.renderInfoCard()}</div>
+            <div className={"col-lg-8"}>{this.renderTalks()}</div>
           </div>
         </div>
       );
     }
   }
 
-  private createConfPost = (event: MouseEvent) => {
-    event.preventDefault();
-    this.setState({ postModalOpen: true });
+  private renderInfoCard = () => {
+    const dateStart = new Date(this.state.dateStart).toLocaleDateString(
+      dictionary.date_format[this.context],
+      this.conferenceDateOptions
+    );
+    const dateEnd = new Date(this.state.dateEnd).toLocaleDateString(
+      dictionary.date_format[this.context],
+      this.conferenceDateOptions
+    );
+
+    return (
+      <Card border={"light"}>
+        <Card.Header>
+          <div
+            className={"d-flex justify-content-between align-items-center mb-1"}
+          >
+            <div className={"d-flex align-items-center"}>
+              <Avatar image={""} title={this.state.title} /> &nbsp;
+              <strong>{this.state.title}</strong>
+            </div>
+            {this.editForm()}
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <Card.Text>{this.state.description}</Card.Text>
+          <hr />
+          <div>
+            <strong>{dictionary.conference_local[this.context]}</strong>
+            <br />
+            {this.state.place}
+            <br />
+            <br />
+            <strong>{dictionary.date_start[this.context]}</strong>
+            <br />
+            {dateStart}
+            <br />
+            <br />
+            <strong>{dictionary.date_end[this.context]}</strong>
+            <br />
+            {dateEnd}
+          </div>
+        </Card.Body>
+      </Card>
+    );
   };
 
-  private handleSubmit = (request: Request) => {
+  private renderTalks = () => {
+    this.state.talks.sort((a, b) => (a.dateend > b.dateend ? a : b));
+
+    return (
+      <div>
+        <div
+          className={
+            "col-lg-12 d-flex justify-content-between align-items-center"
+          }
+        >
+          <h2>{dictionary.talks[this.context]}</h2>
+          {this.addTalkForm()}
+        </div>
+        <hr />
+        <div>
+          {this.state.talks.map(talk => {
+            const dateEnd = new Date(talk.dateend).toLocaleDateString(
+              dictionary.date_format[this.context],
+              this.conferenceDateOptions
+            );
+
+            return (
+              <a
+                key={talk.id}
+                href={`/talk/${talk.id}`}
+                style={{ textDecoration: "none" }}
+                className={"text-dark"}
+              >
+                <Card className={"mb-2"}>
+                  <Card.Header
+                    className={
+                      "d-flex justify-content-between align-items-center flex-wrap"
+                    }
+                  >
+                    <div>
+                      <Card.Title
+                        className={"d-flex align-items-center mb-1 mt-1"}
+                      >
+                        <Avatar
+                          image={talk.avatar}
+                          title={talk.title}
+                          className={"mr-1"}
+                        />
+                        {talk.title}
+                      </Card.Title>
+                    </div>
+                    <div className={"mb-1 mt-1"}>
+                      {dictionary.day_split[this.context]} {dateEnd}
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text>
+                      {talk.about.substring(0, 100)}
+                      {talk.about.length > 100 ? "..." : null}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  private addTalkForm = () => {
+    const handleShow = event => {
+      event.preventDefault();
+      this.setState({ postModalOpen: true });
+    };
+    const handleHide = () => this.resetState();
+    const handleChange = (name, value) =>
+      this.setState({
+        request: {
+          ...this.state.request,
+          [name]: value
+        }
+      });
+    const options = [
+      {
+        title: dictionary.visibility_public[this.context],
+        value: "public"
+      },
+      {
+        title: dictionary.visibility_followers[this.context],
+        value: "followers"
+      },
+      {
+        title: dictionary.visibility_private[this.context],
+        value: "private"
+      }
+    ];
+
+    return (
+      <>
+        <a href={"#"} onClick={handleShow} style={{ marginBottom: "0.5rem" }}>
+          <Icon icon={faPlus} size={"2x"} />
+        </a>
+
+        <Modal show={this.state.postModalOpen} onHide={handleHide}>
+          <Modal.Header closeButton={true}>
+            <Modal.Title>
+              {dictionary.create_new_talk[this.context]}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className={"d-flex flex-column"}>
+            <InputNext
+              onChange={(value, event) =>
+                handleChange(event.target.name, value)
+              }
+              id={`talk_title_field`}
+              name={"title"}
+              label={dictionary.title[this.context]}
+              placeholder={dictionary.insert_title[this.context]}
+              value={this.state.request.title}
+              required={true}
+            />
+            <InputNext
+              onChange={(value, event) =>
+                handleChange(event.target.name, value)
+              }
+              id={`talk_description_field`}
+              name={"about"}
+              label={dictionary.description[this.context]}
+              placeholder={dictionary.description_placeholder[this.context]}
+              value={this.state.request.about}
+              required={true}
+              type={"textarea"}
+              rows={5}
+              maxLength={3000}
+            />
+            <InputNext
+              onChange={(value, event) =>
+                handleChange(event.target.name, value)
+              }
+              id={`talk_local_field`}
+              name={"local"}
+              label={dictionary.location[this.context]}
+              placeholder={dictionary.talk_local[this.context]}
+              value={this.state.request.local}
+            />
+            <div className={styles.Wrapper}>
+              <Select
+                id={"talk_privacy_field"}
+                name={"privacy"}
+                value={this.state.request.privacy}
+                label={dictionary.visibility[this.context]}
+                options={options}
+                onChange={(value, event) =>
+                  handleChange(event.target.name, value)
+                }
+              />
+            </div>
+            <div id={`talk_dates_field`}>
+              <label htmlFor={`talk_dates_field`} className={styles.dates}>
+                {dictionary.dates[this.context]}
+              </label>
+              <InputNext
+                onChange={(value, event) =>
+                  handleChange(event.target.name, value)
+                }
+                id={`talk_date_start_field`}
+                name={"dateStart"}
+                label={dictionary.date_start[this.context]}
+                value={this.state.request.dateStart}
+                type={"datetime-local"}
+              />
+              <InputNext
+                onChange={(value, event) =>
+                  handleChange(event.target.name, value)
+                }
+                id={`talk_date_end_field`}
+                name={"dateEnd"}
+                label={dictionary.date_end[this.context]}
+                value={this.state.request.dateEnd}
+                type={"datetime-local"}
+              />
+            </div>
+            <div id={`talk_livestream_field`}>
+              <label htmlFor={`talk_livestream_field`} className={styles.dates}>
+                {dictionary.livestream[this.context]}
+              </label>
+              <Switcher
+                id={`talk_switcher`}
+                name={"switcher"}
+                label={dictionary.livestream[this.context]}
+                onChange={(value, event) =>
+                  handleChange(event.target.name, String(value))
+                }
+                value={this.state.request.switcher === "true"}
+                className={styles.switcher}
+              />
+              <InputNext
+                onChange={(value, event) =>
+                  handleChange(event.target.name, value)
+                }
+                id={`talk_livestream_url_field`}
+                value={this.state.request.livestream}
+                name={"livestream"}
+                label={dictionary.livestream_url[this.context]}
+                type={"url"}
+                placeholder={"https://www.youtube.com/embed/<id>"}
+                disabled={!(this.state.request.switcher === "true")}
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.handleSubmit} theme={"success"}>
+              Save
+            </Button>
+            <Button onClick={handleHide} theme={"danger"}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  };
+
+  private handleSubmit = () => {
+    const request = this.state.request;
+
     let url = `${location.protocol}//${location.hostname}`;
     url +=
       !process.env.NODE_ENV || process.env.NODE_ENV === "development"
         ? `:${process.env.REACT_APP_API_PORT}`
         : "/api";
+    url += "/talk";
 
-    if (request.type === "talk") {
-      url += "/talk";
-
-      console.log(request);
-
-      axiosInstance
-        .post(url, {
-          about: request.about,
-          author: this.props.user.id,
-          avatar: request.avatar,
-          conference: this.id,
-          dateEnd: request.dateEnd,
-          dateStart: request.dateStart,
-          livestream: request.livestream,
-          local: request.local,
-          privacy: request.privacy,
-          title: request.title
-        })
-        .then(res => {
-          console.log(`talk with id = ${res.data.id} created`);
-          window.location.href = "/talk/" + res.data.id;
-          this.resetState();
-        })
-        .catch(error => console.log("Failed to create talk. " + error));
-    }
+    axiosInstance
+      .post(url, {
+        about: request.about,
+        author: this.props.user.id,
+        conference: this.id,
+        dateEnd: request.dateEnd,
+        dateStart: request.dateStart,
+        livestream: request.livestream,
+        local: request.local,
+        privacy: request.privacy,
+        title: request.title
+      })
+      .then(res => {
+        window.location.href = "/talk/" + res.data.id;
+        this.resetState();
+      })
+      .catch(error => console.log("Failed to create talk. " + error));
   };
 
   private editForm = () => {
@@ -322,7 +490,7 @@ class Conference extends React.Component<Props, IState> {
     return (
       <>
         <a href={"#"} onClick={handleShow}>
-          <Icon icon={faEdit} size={"2x"} />
+          <Icon icon={faEdit} size={"lg"} />
         </a>
 
         <Modal show={this.state.editFormOpen} onHide={handleHide}>
@@ -349,24 +517,14 @@ class Conference extends React.Component<Props, IState> {
       postModalOpen: false,
       request: {
         about: "",
-        avatar: undefined,
         dateEnd: "",
         dateStart: "",
-        files: {
-          docs: [],
-          images: [],
-          videos: []
-        },
         livestream: "",
         local: "",
         privacy: "public",
-        shortname: "",
         switcher: "false",
-        tags: [],
-        title: "",
-        type: "talk"
-      },
-      step: "type"
+        title: ""
+      }
     });
   };
 }
