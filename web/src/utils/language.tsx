@@ -200,7 +200,10 @@ export let dictionary: Dictionary = {
   date_start: { PT: "Início", EN: "Start" },
   date_end: { PT: "Fim", EN: "End" },
   livestream: { PT: "Transmissão em direto", EN: "Livestream" },
-  livestream_url: { PT: "URL da transmissão em direto", EN: "Livestream URL" },
+  livestream_url: {
+    PT: "URL da transmissão em direto (Embed Link)",
+    EN: "Livestream URL (Embed Link)"
+  },
   tags: { PT: "Categorias", EN: "Tags" },
   files: { PT: "Ficheiros", EN: "Files" },
   post_cap: { PT: "Publicação", EN: "Post" },
