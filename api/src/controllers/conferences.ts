@@ -85,6 +85,7 @@ export function editConference(req, res) {
       message: 'An error occurred while updating the conference. ' +
         'The field about cannot be empty',
     });
+    return;
   }
   if (!data.local.trim()) {
     console.log('\n\nError: conference local cannot be empty');
@@ -92,6 +93,7 @@ export function editConference(req, res) {
       message: 'An error occurred while updating the conference. ' +
         'The field local cannot be empty',
     });
+    return;
   }
   if (!data.dateStart.trim()) {
     console.log('\n\nError: conference starting date cannot be empty');
@@ -99,6 +101,7 @@ export function editConference(req, res) {
       message: 'An error occurred while updating the conference. ' +
         'The field date start cannot be empty',
     });
+    return;
   }
   if (data.dateEnd.trim()) {
     if (Date.parse(data.dateEnd) < Date.parse(data.dateStart)) {
@@ -109,6 +112,7 @@ export function editConference(req, res) {
         message: 'An error occurred while updating the conference. ' +
           'The field date end cannot be a date previous to date start',
       });
+      return;
     }
   }
   query({

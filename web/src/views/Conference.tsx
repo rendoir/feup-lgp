@@ -48,6 +48,13 @@ type State = {
     dateStart: string;
     dateEnd: string;
   };
+  errors: {
+    title: boolean;
+    description: boolean;
+    place: boolean;
+    dateStart: boolean;
+    dateEnd: boolean;
+  };
 };
 
 class Conference extends PureComponent<Props, State> {
@@ -58,6 +65,13 @@ class Conference extends PureComponent<Props, State> {
   private ownerName: string | undefined;
   private readonly conferenceDateOptions: object;
   private readonly talkDateOptions: object;
+  private readonly errorMessages: {
+    title;
+    description;
+    local;
+    livestream;
+    dates;
+  };
 
   constructor(props: Props) {
     super(props);
@@ -76,6 +90,16 @@ class Conference extends PureComponent<Props, State> {
       weekday: "long",
       year: "numeric"
     };
+    this.errorMessages = {
+      dates: "Dates must follow the format YYYY-MM-DDThh:mm",
+      description:
+        "Description must contain at least one alphanumerical character, " +
+        "! , ? , - , ',' , . , @ , # , % ",
+      livestream: "Livestream must be an youtube URL",
+      local:
+        "Local must contain only 2 to 150 alphanumerical characters, ',' , . , -",
+      title: "title must contain only 2 to 150 alphanumerical characters"
+    };
 
     this.id = this.props.match.params.id;
 
@@ -91,6 +115,13 @@ class Conference extends PureComponent<Props, State> {
         title: ""
       },
       editFormOpen: false,
+      errors: {
+        dateEnd: false,
+        dateStart: false,
+        description: false,
+        place: false,
+        title: false
+      },
       isHidden: false,
       place: "",
       postModalOpen: false,
@@ -131,6 +162,7 @@ class Conference extends PureComponent<Props, State> {
             dateStart: conference.datestart,
             description: conference.about,
             place: conference.local,
+            talks: res.data.talks,
             title: conference.title
           },
           isHidden: conference.privacy === "closed",
@@ -486,13 +518,15 @@ class Conference extends PureComponent<Props, State> {
       event.preventDefault();
       this.setState({ editFormOpen: true });
     };
-    const handleChange = (value, event) =>
+    const handleChange = (value, event) => {
       this.setState({
         editFields: {
           ...editFields,
           [event.target.name]: value
         }
       });
+      this.validateField(event.target.name, value);
+    };
 
     return (
       <>
@@ -514,6 +548,8 @@ class Conference extends PureComponent<Props, State> {
               value={editFields.title}
               label={dictionary.title[this.context]}
               placeholder={dictionary.insert_title[this.context]}
+              status={this.state.errors.title ? "error" : "normal"}
+              hint={this.state.errors.title ? this.errorMessages.title : ""}
             />
             <InputNext
               onChange={handleChange}
@@ -525,6 +561,12 @@ class Conference extends PureComponent<Props, State> {
               type={"textarea"}
               rows={5}
               maxLength={3000}
+              status={this.state.errors.description ? "error" : "normal"}
+              hint={
+                this.state.errors.description
+                  ? this.errorMessages.description
+                  : ""
+              }
             />
             <InputNext
               onChange={handleChange}
@@ -533,6 +575,8 @@ class Conference extends PureComponent<Props, State> {
               value={editFields.place}
               label={dictionary.location[this.context]}
               placeholder={dictionary.conference_local[this.context]}
+              status={this.state.errors.place ? "error" : "normal"}
+              hint={this.state.errors.place ? this.errorMessages.local : ""}
             />
             <InputNext
               onChange={handleChange}
@@ -541,6 +585,8 @@ class Conference extends PureComponent<Props, State> {
               value={editFields.dateStart}
               label={dictionary.date_start[this.context]}
               type={"datetime-local"}
+              status={this.state.errors.dateStart ? "error" : "normal"}
+              hint={this.state.errors.dateStart ? this.errorMessages.dates : ""}
             />
             <InputNext
               onChange={handleChange}
@@ -549,6 +595,8 @@ class Conference extends PureComponent<Props, State> {
               value={editFields.dateEnd}
               label={dictionary.date_end[this.context]}
               type={"datetime-local"}
+              status={this.state.errors.dateEnd ? "error" : "normal"}
+              hint={this.state.errors.dateEnd ? this.errorMessages.dates : ""}
             />
           </Modal.Body>
           <Modal.Footer>
@@ -566,24 +614,109 @@ class Conference extends PureComponent<Props, State> {
 
   private handleEditSubmission = () => {
     const editFields = this.state.editFields;
-    axiosInstance
-      .put(`/conference/${this.id}`, {
-        about: editFields.description,
-        dateEnd: editFields.dateEnd,
-        dateStart: editFields.dateStart,
-        local: editFields.place,
-        title: editFields.title
-      })
-      .then(() => {
-        this.setState({
-          ...this.state,
-          ...editFields,
-          editFormOpen: false
+    const errors = this.state.errors;
+
+    if (Object.values(errors).includes(true)) {
+      return;
+    } else {
+      axiosInstance
+        .put(`/conference/${this.id}`, {
+          about: editFields.description,
+          dateEnd: editFields.dateEnd,
+          dateStart: editFields.dateStart,
+          local: editFields.place,
+          title: editFields.title
+        })
+        .then(() => {
+          this.setState({
+            ...this.state,
+            ...editFields,
+            editFormOpen: false
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
+  };
+
+  private validateField = (field, value) => {
+    if (field === "title") {
+      /* Alphanumerical characters with whitespaces and hyphen */
+      const re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
+      if (!re.test(value)) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            title: true
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            title: false
+          }
+        });
+      }
+    } else if (field === "description") {
+      /* Alphanumerical characters with whitespaces and some special characters */
+      const re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+      if (!re.test(value)) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            description: true
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            description: false
+          }
+        });
+      }
+    } else if (field === "place") {
+      /* Alphanumerical characters with whitespaces, comma, dot and hyphen */
+      const re = /^([\w\u00C0-\u017F]+[ \-,.\w\u00C0-\u017F]*){2,}$/;
+      if (!re.test(value)) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            place: true
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            place: false
+          }
+        });
+      }
+    } else if (field === "dateStart" || field === "dateEnd") {
+      /*
+       * YYYY-MM-DDThh:mm date format, where Y = year, M = month, D = day, h = hour, m = minute
+       * T is the separator and must be written as the capital letter T
+       */
+      const re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+      if (!re.test(value)) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            dateStart: true
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            dateStart: false
+          }
+        });
+      }
+    }
   };
 
   private resetState = () => {
