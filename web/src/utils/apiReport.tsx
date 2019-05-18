@@ -67,3 +67,23 @@ export async function apiGetReportNotificationsInfo() {
     return null;
   }
 }
+
+export async function apiGetReportReasons(
+  reportedContentId: number,
+  reportedContentType: string
+) {
+  const apiURL = `admin/report_reasons`;
+  const body = {
+    content_id: reportedContentId,
+    content_type: reportedContentType
+  };
+
+  try {
+    const res = await axiosInstance.post(apiURL, body);
+    console.log("REPORT REASONS: ", res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}

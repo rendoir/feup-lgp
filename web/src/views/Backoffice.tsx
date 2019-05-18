@@ -13,19 +13,18 @@ type BackofficeState = {
   usersAreaActive: boolean;
 };
 
-const PUBLICATION_NOTIFICATION = "publication";
-const COMMENT_NOTIFICATION = "comment";
-
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);
+
     this.state = {
       fetchingNotifications: true,
       notifications: [],
       usersAreaActive: false
     };
+
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
@@ -220,58 +219,31 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       );
     }
 
+    const notificationList = this.state.notifications.map(notif => {
+      console.log(notif);
+      return (
+        <BackofficeNotification
+          key={notif.content_id + notif.content_type}
+          contentId={notif.content_id}
+          content={notif.content_description}
+          contentType={notif.content_type}
+          reportedUserId={notif.reported_user_id}
+          reporterUserFirstName={notif.reported_user_first_name}
+          reporterUserLastName={notif.reported_user_last_name}
+          reportsAmount={notif.reports_amount}
+          banUserHandler={this.handleNotifUserBan}
+          deleteContentHandler={this.handleNotifContentDelete}
+          ignoreHandler={this.handleNotifIgnore}
+        />
+      );
+    });
+
     return (
       <div
         id="backoffice_notifications_area"
         className="col-12 col-md-9 mt-2 mt-md-0"
       >
-        {/* Notification list */}
-        {/* Comment report notification (one line) */}
-        <BackofficeNotification
-          id={1}
-          username="Alberta Fernandes"
-          notificationType={COMMENT_NOTIFICATION}
-          content="You are all useless"
-          contentId={1}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Comment report notification (Multiple lines) */}
-        <BackofficeNotification
-          id={2}
-          username="Alberta Fernandes"
-          notificationType={COMMENT_NOTIFICATION}
-          content="Very big comment that takes more than one line, look so many characters, surely it has more than one row"
-          contentId={2}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Publication report notification (one line) */}
-        <BackofficeNotification
-          id={3}
-          username="Alberta Fernandes"
-          notificationType={PUBLICATION_NOTIFICATION}
-          content="The benefits of anti-vaxx on newborns"
-          contentId={3}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Publication report notification (multiple line) */}
-        <BackofficeNotification
-          id={4}
-          username="Alberta Fernandes"
-          notificationType={PUBLICATION_NOTIFICATION}
-          content="Very big publication title that takes multiple lines, with
-          useless text just to get to the third row, look how useless these
-          characters that are being typed are, now we got there"
-          contentId={4}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
+        {notificationList}
       </div>
     );
   }

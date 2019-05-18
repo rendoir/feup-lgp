@@ -362,7 +362,7 @@ INSERT INTO conf_users (id, talk, conf_permissions) VALUES (3, 3, 'moderator');
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2018-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user 3', 'public', '2018-12-03');
-INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', '2018-12-02');
+INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Very big Admin post title, so big it gets multiple lines to be able to output it, omg still not enough, really need more characters please I beg you', 'This is a post done by the admin', '2018-12-02');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'followers', '2018-12-01');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', 'public', '2018-12-23');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'public', '2018-12-21');

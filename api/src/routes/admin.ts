@@ -103,3 +103,16 @@ adminRouter.get('/notifications', controller.getReportNotifications);
  *     }
  */
 adminRouter.get('/amount_notifications', controller.amountReportNotifications);
+
+/**
+ * @api {post} /api/admin/report_reasons Get reasons of a report
+ * @apiName Get-Report-Reasons
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.post('/report_reasons', controller.getReportReasons);

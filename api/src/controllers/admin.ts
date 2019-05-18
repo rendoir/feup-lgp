@@ -84,6 +84,33 @@ export async function amountReportNotifications(req, res) {
     }
 }
 
+export async function getReportReasons(req, res) {
+    console.log("GETTING REPORT REASONS...");
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report reasons if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report reasons: You are not an admin.' });
+        return;
+    }
+    console.log("REPORT CONTENT ID", req.body.content_id);
+    console.log("REPORT CONTENT TYPE", req.body.content_type);
+    query({
+        text: `SELECT description, date_reported,
+                reporter, users.first_name, users.last_name
+                    FROM content_reports, users
+                    WHERE admin_review = FALSE AND
+                    content_id = $1 AND content_type = $2 AND
+                    users.id = reporter
+                    ORDER BY date_reported DESC`,
+        values: [req.body.content_id, req.body.content_type],
+    }).then((result) => {
+        console.log("REPORT REASONS: ", result.rows);
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report reasons' });
+    });
+}
+
 async function isAdmin(userId): Promise<boolean> {
     try {
         const result = await query({

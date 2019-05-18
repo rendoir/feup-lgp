@@ -1,26 +1,49 @@
-import * as React from "react";
+import React, { Component } from "react";
 
+import { apiGetReportReasons } from "../../utils/apiReport";
 import { dictionary, LanguageContext } from "../../utils/language";
 
-type BackofficeNotificationProps = {
-  id: number;
-  username: string;
-  notificationType: string; // Comment or publication
-  content: string;
+interface IProps {
   contentId: number;
+  content: string;
+  contentType: string;
+  reportedUserId: number;
+  reporterUserFirstName: string;
+  reporterUserLastName: string;
+  reportsAmount: number;
   banUserHandler: any;
   deleteContentHandler: any;
   ignoreHandler: any;
-};
+}
 
-export class BackofficeNotification extends React.Component<
-  BackofficeNotificationProps,
-  {}
-> {
+interface IState {
+  fetchingReasons: boolean;
+  reportReasons: any;
+}
+
+export class BackofficeNotification extends Component<IProps, IState> {
   public static contextType = LanguageContext;
+  private contentURL;
+  private reportReasonsExpansionId = `reasons_${this.props.contentType}_${
+    this.props.contentId
+  }`;
 
   constructor(props: any) {
     super(props);
+
+    this.contentURL =
+      this.props.contentType === "comment"
+        ? "#"
+        : `/${this.props.contentType}/${this.props.contentId}`;
+
+    this.state = {
+      fetchingReasons: true,
+      reportReasons: []
+    };
+  }
+
+  public componentDidMount(): void {
+    this.apiGetReasons();
   }
 
   public render() {
@@ -29,7 +52,7 @@ export class BackofficeNotification extends React.Component<
         <div className="row d-flex justify-content-between mx-1">
           <div className="mt-2" style={{ textTransform: "capitalize" }}>
             <b>
-              {dictionary[this.props.notificationType][this.context]}{" "}
+              {dictionary[this.props.contentType][this.context]}{" "}
               {dictionary.report[this.context]}
             </b>
           </div>
@@ -44,46 +67,108 @@ export class BackofficeNotification extends React.Component<
         <div className="dropdown-divider p" />
 
         <p className="report_message">
-          <a href={`/user/${this.props.username}`}>{this.props.username}</a>{" "}
-          {dictionary[this.props.notificationType][this.context]}:{" "}
-          <a href="#">"{this.props.content}"</a>
+          {/* User profile link */}
+          <a href={`/user/${this.props.reportedUserId}`}>
+            {`${this.props.reporterUserFirstName} ${
+              this.props.reporterUserLastName
+            }`}
+          </a>{" "}
+          {dictionary[this.props.contentType][this.context]}:{" "}
+          {/* Reported content link */}
+          <a href={this.contentURL}>"{this.props.content}"</a>
         </p>
 
-        <div className="col-12 mb-3 mt-2 dropdown d-flex justify-content-end">
-          <button
-            className="btn bg-danger dropdown-toggle p-1 text-white"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            {dictionary.take_action[this.context]}
-          </button>
-          <div className="dropdown-menu">
+        <div className="row mb-3 d-flex justify-content-between border">
+          {/* Expand all report reasons */}
+          <div className="col mt-1">
             <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.banUserHandler}
+              className="see_all_reports"
+              data-toggle="collapse"
+              href={`#${this.reportReasonsExpansionId}`}
+              role="button"
+              aria-expanded="false"
+              aria-controls={this.reportReasonsExpansionId}
             >
-              {dictionary.ban_user[this.context]}
-            </a>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.deleteContentHandler}
-            >
-              {dictionary.delete_content[this.context]}
-            </a>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={this.props.ignoreHandler}
-            >
-              {dictionary.ignore[this.context]}
+              See all {this.props.reportsAmount} reports
             </a>
           </div>
+
+          {/* Report actions dropdown */}
+          <div className="col dropdown d-flex justify-content-end">
+            <button
+              className="btn bg-danger dropdown-toggle p-1 text-white"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {dictionary.take_action[this.context]}
+            </button>
+            <div className="dropdown-menu">
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={this.props.banUserHandler}
+              >
+                {dictionary.ban_user[this.context]}
+              </a>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={this.props.deleteContentHandler}
+              >
+                {dictionary.delete_content[this.context]}
+              </a>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={this.props.ignoreHandler}
+              >
+                {dictionary.ignore[this.context]}
+              </a>
+            </div>
+          </div>
+        </div>
+        {/* Report reasons */}
+        <div className="collapse" id={this.reportReasonsExpansionId}>
+          {this.getReportReasons()}
         </div>
       </div>
     );
+  }
+
+  private getReportReasons() {
+    if (this.state.fetchingReasons) {
+      return <div>Fetching</div>;
+    } else if (
+      !this.state.reportReasons ||
+      this.state.reportReasons.length === 0
+    ) {
+      return <div>{dictionary.error_notifications[this.context]}</div>;
+    }
+
+    const reasonList = this.state.reportReasons.map(reason => {
+      console.log(reason);
+      return (
+        <div className="card card-body" key={reason.reporter}>
+          <a href={`/user/${reason.reporter}`} className="card-link">
+            Card link
+          </a>
+        </div>
+      );
+    });
+
+    return <div>{reasonList}</div>;
+  }
+
+  private async apiGetReasons() {
+    const reportReasons = await apiGetReportReasons(
+      this.props.contentId,
+      this.props.contentType
+    );
+    this.setState({
+      fetchingReasons: false,
+      reportReasons
+    });
   }
 }
