@@ -69,7 +69,7 @@ export function createConference(req, res) {
 
 export function editConference(req, res) {
   const data = req.body;
-  const id = req.conference.id;
+  const id = req.params.id;
 
   if (!data.title.trim()) {
     console.log('\n\nError: conference title cannot be empty');
@@ -113,7 +113,7 @@ export function editConference(req, res) {
   }
   query({
     text: 'UPDATE conferences ' +
-          'SET (title, about, local, datestart, dateend, avatar) = ($2, $3, $4, $5, $6, $7) ' +
+          'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
           'WHERE id = $1 ' +
           'RETURNING id',
     values: [
@@ -123,7 +123,6 @@ export function editConference(req, res) {
       data.local,
       data.dateStart,
       data.dateEnd,
-      data.avatar,
     ],
   }).then((response) => {
     res.send({

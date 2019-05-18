@@ -126,6 +126,13 @@ class Conference extends PureComponent<Props, State> {
           dateEnd: conference.dateend,
           dateStart: conference.datestart,
           description: conference.about,
+          editFields: {
+            dateEnd: conference.dateend,
+            dateStart: conference.datestart,
+            description: conference.about,
+            place: conference.local,
+            title: conference.title
+          },
           isHidden: conference.privacy === "closed",
           place: conference.local,
           privacy: conference.privacy,
@@ -160,7 +167,7 @@ class Conference extends PureComponent<Props, State> {
       return (
         <div id="Conference" className="container-fluid w-75 my-5">
           <div className={"d-flex flex-row flex-wrap"}>
-            <div className={"col-lg-4 mb-3"}>{this.renderInfoCard()}</div>
+            <div className={"col-lg-4 mb-3"}>{this.renderConferenceCard()}</div>
             <div className={"col-lg-8"}>{this.renderTalks()}</div>
           </div>
         </div>
@@ -168,7 +175,7 @@ class Conference extends PureComponent<Props, State> {
     }
   }
 
-  private renderInfoCard = () => {
+  private renderConferenceCard = () => {
     const dateStart = new Date(this.state.dateStart).toLocaleDateString(
       dictionary.date_format[this.context],
       this.conferenceDateOptions
@@ -188,7 +195,7 @@ class Conference extends PureComponent<Props, State> {
               <Avatar image={""} title={this.state.title} /> &nbsp;
               <strong>{this.state.title}</strong>
             </div>
-            {this.editForm()}
+            {this.renderEditForm()}
           </div>
         </Card.Header>
         <Card.Body>
@@ -225,7 +232,7 @@ class Conference extends PureComponent<Props, State> {
           }
         >
           <h2>{dictionary.talks[this.context]}</h2>
-          {this.addTalkForm()}
+          {this.renderTalkForm()}
         </div>
         <hr />
         <div>
@@ -279,7 +286,7 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
-  private addTalkForm = () => {
+  private renderTalkForm = () => {
     const handleShow = event => {
       event.preventDefault();
       this.setState({ postModalOpen: true });
@@ -421,7 +428,7 @@ class Conference extends PureComponent<Props, State> {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.handleSubmit} theme={"success"}>
+            <Button onClick={this.handleTalkSubmission} theme={"success"}>
               Save
             </Button>
             <Button onClick={handleHide} theme={"danger"}>
@@ -433,7 +440,7 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
-  private handleSubmit = () => {
+  private handleTalkSubmission = () => {
     const request = this.state.request;
 
     let url = `${location.protocol}//${location.hostname}`;
@@ -462,7 +469,7 @@ class Conference extends PureComponent<Props, State> {
       .catch(error => console.log("Failed to create talk. " + error));
   };
 
-  private editForm = () => {
+  private renderEditForm = () => {
     const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
@@ -479,11 +486,11 @@ class Conference extends PureComponent<Props, State> {
       event.preventDefault();
       this.setState({ editFormOpen: true });
     };
-    const handleChange = (name, value) =>
+    const handleChange = (value, event) =>
       this.setState({
         editFields: {
           ...editFields,
-          [name]: value
+          [event.target.name]: value
         }
       });
 
@@ -500,9 +507,54 @@ class Conference extends PureComponent<Props, State> {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Edit fields here!</p>
+            <InputNext
+              onChange={handleChange}
+              id={"conference_edit_title_field"}
+              name={"title"}
+              value={editFields.title}
+              label={dictionary.title[this.context]}
+              placeholder={dictionary.insert_title[this.context]}
+            />
+            <InputNext
+              onChange={handleChange}
+              id={"conference_edit_description_field"}
+              name={"description"}
+              value={editFields.description}
+              label={dictionary.description[this.context]}
+              placeholder={dictionary.description_placeholder[this.context]}
+              type={"textarea"}
+              rows={5}
+              maxLength={3000}
+            />
+            <InputNext
+              onChange={handleChange}
+              id={"conference_edit_place_field"}
+              name={"place"}
+              value={editFields.place}
+              label={dictionary.location[this.context]}
+              placeholder={dictionary.conference_local[this.context]}
+            />
+            <InputNext
+              onChange={handleChange}
+              id={"conference_edit_date_start_field"}
+              name={"dateStart"}
+              value={editFields.dateStart}
+              label={dictionary.date_start[this.context]}
+              type={"datetime-local"}
+            />
+            <InputNext
+              onChange={handleChange}
+              id={"conference_edit_date_end_field"}
+              name={"dateEnd"}
+              value={editFields.dateEnd}
+              label={dictionary.date_end[this.context]}
+              type={"datetime-local"}
+            />
           </Modal.Body>
           <Modal.Footer>
+            <Button onClick={this.handleEditSubmission} theme={"success"}>
+              Save
+            </Button>
             <Button onClick={handleHide} theme={"danger"}>
               Cancel
             </Button>
@@ -510,6 +562,28 @@ class Conference extends PureComponent<Props, State> {
         </Modal>
       </>
     );
+  };
+
+  private handleEditSubmission = () => {
+    const editFields = this.state.editFields;
+    axiosInstance
+      .put(`/conference/${this.id}`, {
+        about: editFields.description,
+        dateEnd: editFields.dateEnd,
+        dateStart: editFields.dateStart,
+        local: editFields.place,
+        title: editFields.title
+      })
+      .then(() => {
+        this.setState({
+          ...this.state,
+          ...editFields,
+          editFormOpen: false
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   private resetState = () => {
