@@ -188,7 +188,7 @@ talkRouter.get('/:id', controller.gettalk);
 talkRouter.post('/:id/change_privacy', controller.changePrivacy);
 
 /**
- * @api {post} /api/conference/:id/archive Archive a conference
+ * @api {post} /api/talk/:id/archive Archive a conference
  * @apiName Archive-Conference
  * @apiGroup Post
  *
@@ -203,7 +203,7 @@ talkRouter.post('/:id/change_privacy', controller.changePrivacy);
 talkRouter.post('/:id/archive', controller.archiveTalk);
 
 /**
- * @api {post} /api/conference/:id/unarchive Unarchive a conference
+ * @api {post} /api/talk/:id/unarchive Unarchive a conference
  * @apiName Unarchive-Conference
  * @apiGroup Post
  *
@@ -216,3 +216,33 @@ talkRouter.post('/:id/archive', controller.archiveTalk);
  *     }
  */
 talkRouter.delete('/:id/archive', controller.unarchiveTalk);
+
+/**
+ * @api {get} /api/talk/:id/user/:user_id/posts Get posts of a user in a talk
+ * @apiName Get-Posts-User-Conf
+ * @apiGroup Get
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   user_id     ID of the user to get points
+ */
+talkRouter.get('/:id/user/:user_id/posts', controller.getPostsAuthor);
+
+/**
+ * @api {get} /api/talk/:id/post/:post_id/comments_author Get comments of a user in a post on the talk
+ * @apiName Get-Comments-Post
+ * @apiGroup Get
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   post_id     ID of the user to get points
+ */
+talkRouter.get('/:id/post/:post_id/comments_author', controller.getCommentsOfPostAndAuthor);
+
+/**
+ * @api {get} /api/talk/:id/user/:user_id/points Get points of a user in a post on the talk
+ * @apiName Get-Points-User
+ * @apiGroup Get
+ *
+ * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   user_id     ID of the user to get points
+ */
+talkRouter.get('/:id/user/:user_id/points', controller.getPointsUserTalk);
