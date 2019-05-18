@@ -1,4 +1,3 @@
-import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
 import { MouseEvent } from "react";
 import * as React from "react";
 import Modal from "react-bootstrap/Modal";
@@ -271,7 +270,7 @@ class Talk extends React.Component<IProps, IState> {
         this.ownerName = `${talk.first_name} ${talk.last_name}`;
 
         const reqChalCopy = this.state.requestChallenge;
-        if (postsComing.posts > 0) {
+        if (postsComing.posts.length > 0) {
           reqChalCopy.post = postsComing.posts[0].id;
         }
 
@@ -386,9 +385,6 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
-            {this.ownerId === this.props.user.id ? (
-              <div className={"float-right"}>{this.editForm()}</div>
-            ) : null}
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
@@ -624,7 +620,7 @@ class Talk extends React.Component<IProps, IState> {
         dateEnd: "",
         dateStart: "",
         options: [],
-        post: this.state.posts[0].id,
+        post: "",
         prize: "",
         prizePoints: "",
         question: "",
@@ -749,10 +745,7 @@ class Talk extends React.Component<IProps, IState> {
             posts={this.state.posts}
           />
         ) : null}
-        <button disabled={isArchived}>
-          <i className="fas fa-pen" />
-          Edit conference
-        </button>
+        {this.editForm()}
         <button
           type="button"
           onClick={() => {
@@ -905,9 +898,10 @@ class Talk extends React.Component<IProps, IState> {
 
     return (
       <>
-        <a href={"#"} onClick={handleShow}>
-          <Icon icon={faEdit} size={"2x"} />
-        </a>
+        <button disabled={this.state.archived} onClick={handleShow}>
+          <i className="fas fa-pen" />
+          {dictionary.edit_talk[this.context]}
+        </button>
 
         <Modal show={this.state.editFormOpen} onHide={handleHide}>
           <Modal.Header closeButton={true}>
