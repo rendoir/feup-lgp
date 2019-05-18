@@ -93,3 +93,16 @@ export async function apiGetNotifications() {
     return null;
   }
 }
+
+export async function apiGetNotificationsAmount() {
+  const apiURL = `/users/1/amount_notifications`;
+  console.log("FETCHING USER NOTIFS AMOUNT...");
+  try {
+    const res = await axiosInstance.get(apiURL);
+    console.log("QUANT USER NOTIFS: ", res.data.amountNotifications);
+    return res.data.amountNotifications;
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
+}

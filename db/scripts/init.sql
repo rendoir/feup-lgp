@@ -279,6 +279,20 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
 $$ LANGUAGE SQL;
 
 /* Utils functions fetching notifications (administration and user profile) */
+-- USER INVITE NOTIFICATIONS
+CREATE OR REPLACE FUNCTION retrieve_user_notifications(_user_id BIGINT)
+RETURNS TABLE(id BIGINT, invite_subject_id BIGINT, title TEXT, invite_type invite_type_enum, date_invited TIMESTAMP) AS $$
+	SELECT DISTINCT invites.id, invite_subject_id,
+    (CASE WHEN invite_type = 'talk' THEN talks.title ELSE posts.title END) as title, invite_type, date_invited
+        FROM invites, talks, posts
+        WHERE (
+                (invite_type = 'talk' AND talks.id = invite_subject_id) OR
+                (invite_type = 'post' AND posts.id = invite_subject_id)
+            ) AND
+            invited_user = _user_id AND
+            invites.user_notified = FALSE
+        ORDER BY date_invited DESC;
+$$ LANGUAGE SQL;
 -- ADMIN REPORT NOTIFICATIONS (ALL ADMINS RECEIVE THE SAME NOTIFICATIONS)
 CREATE OR REPLACE FUNCTION retrieve_admin_notifications()
 RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum, reports_amount BIGINT) AS $$

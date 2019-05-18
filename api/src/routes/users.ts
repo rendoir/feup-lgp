@@ -154,6 +154,19 @@ usersRouter.post('/:id/rate', controller.rate);
 usersRouter.get('/:id/notifications', controller.getNotifications);
 
 /**
+ * @api {get} /api/users/:id/amount_notifications Fetch logged user's received invites amount, which he hasn't seen yet
+ * @apiName Get-Amount-User-Notifications
+ * @apiGroup Users
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+usersRouter.get('/amount_notifications', controller.amountNotifications);
+
+/**
  * @api {put} /api/users/:id/invite_notified Mark an invite notification as seen by the invited user
  * @apiName Set-Invitation-As-Seen
  * @apiGroup Users

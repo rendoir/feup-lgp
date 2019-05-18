@@ -21,10 +21,8 @@ import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
 import Select from "../Select/Select";
 import styles from "./Header.module.css";
 
-import {
-  apiGetReportNotificationsAmount,
-  apiGetReportNotificationsInfo
-} from "../../utils/apiReport";
+import { apiGetNotificationsAmount } from "../../utils/apiInvite";
+import { apiGetReportNotificationsAmount } from "../../utils/apiReport";
 
 type Props = {
   title: string;
@@ -315,17 +313,14 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   };
 
   private async getUserNotificationAmount() {
-    const userNotifications = 10; // TODO: CHAMAR FUNCAO PARA OBTER NUMERO NOTIFS DE INVITES
+    console.log("getUserNotificationAmount");
+    const userNotifications = await apiGetNotificationsAmount();
     this.setState({ userNotifications });
   }
 
   private async getAdminNotificationAmount() {
-    console.log("getAdminNotificationAmount");
     if (this.auth.isAdmin()) {
-      console.log("vai buscar");
       const adminNotifications = await apiGetReportNotificationsAmount();
-      const asddsa = await apiGetReportNotificationsInfo();
-      console.log("report notifs: ", asddsa);
       this.setState({ adminNotifications });
     }
   }

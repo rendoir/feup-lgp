@@ -1,10 +1,14 @@
 import * as React from "react";
+
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
+
+import { apiGetReportNotificationsInfo } from "../utils/apiReport";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
 
 type BackofficeState = {
+  notifications: any[];
   usersAreaActive: boolean;
 };
 
@@ -17,6 +21,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      notifications: [],
       usersAreaActive: true
     };
     // Admin menu handlers
@@ -31,6 +36,10 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
     this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
+  }
+
+  public componentDidMount(): void {
+    this.apiGetNotifications();
   }
 
   public render() {
@@ -66,6 +75,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         </div>
       </div>
     );
+  }
+
+  private async apiGetNotifications() {
+    const notifications = await apiGetReportNotificationsInfo();
+    this.setState({ notifications });
   }
 
   private handleUsersArea() {
