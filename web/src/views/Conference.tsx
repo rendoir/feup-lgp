@@ -54,6 +54,7 @@ type State = {
     place: boolean;
     dateStart: boolean;
     dateEnd: boolean;
+    livestream: boolean;
   };
 };
 
@@ -119,6 +120,7 @@ class Conference extends PureComponent<Props, State> {
         dateEnd: false,
         dateStart: false,
         description: false,
+        livestream: false,
         place: false,
         title: false
       },
@@ -324,13 +326,15 @@ class Conference extends PureComponent<Props, State> {
       this.setState({ postModalOpen: true });
     };
     const handleHide = () => this.resetState();
-    const handleChange = (name, value) =>
+    const handleChange = (value, event) => {
       this.setState({
         request: {
           ...this.state.request,
-          [name]: value
+          [event.target.name]: value
         }
       });
+      this.validateField(event.target.name, value);
+    };
     const options = [
       {
         title: dictionary.visibility_public[this.context],
@@ -360,20 +364,18 @@ class Conference extends PureComponent<Props, State> {
           </Modal.Header>
           <Modal.Body className={"d-flex flex-column"}>
             <InputNext
-              onChange={(value, event) =>
-                handleChange(event.target.name, value)
-              }
+              onChange={handleChange}
               id={`talk_title_field`}
               name={"title"}
               label={dictionary.title[this.context]}
               placeholder={dictionary.insert_title[this.context]}
               value={this.state.request.title}
               required={true}
+              status={this.state.errors.title ? "error" : "normal"}
+              hint={this.state.errors.title ? this.errorMessages.title : ""}
             />
             <InputNext
-              onChange={(value, event) =>
-                handleChange(event.target.name, value)
-              }
+              onChange={handleChange}
               id={`talk_description_field`}
               name={"about"}
               label={dictionary.description[this.context]}
@@ -383,16 +385,22 @@ class Conference extends PureComponent<Props, State> {
               type={"textarea"}
               rows={5}
               maxLength={3000}
+              status={this.state.errors.description ? "error" : "normal"}
+              hint={
+                this.state.errors.description
+                  ? this.errorMessages.description
+                  : ""
+              }
             />
             <InputNext
-              onChange={(value, event) =>
-                handleChange(event.target.name, value)
-              }
+              onChange={handleChange}
               id={`talk_local_field`}
               name={"local"}
               label={dictionary.location[this.context]}
               placeholder={dictionary.talk_local[this.context]}
               value={this.state.request.local}
+              status={this.state.errors.place ? "error" : "normal"}
+              hint={this.state.errors.place ? this.errorMessages.local : ""}
             />
             <div className={styles.Wrapper}>
               <Select
@@ -401,9 +409,7 @@ class Conference extends PureComponent<Props, State> {
                 value={this.state.request.privacy}
                 label={dictionary.visibility[this.context]}
                 options={options}
-                onChange={(value, event) =>
-                  handleChange(event.target.name, value)
-                }
+                onChange={handleChange}
               />
             </div>
             <div id={`talk_dates_field`}>
@@ -411,24 +417,26 @@ class Conference extends PureComponent<Props, State> {
                 {dictionary.dates[this.context]}
               </label>
               <InputNext
-                onChange={(value, event) =>
-                  handleChange(event.target.name, value)
-                }
+                onChange={handleChange}
                 id={`talk_date_start_field`}
                 name={"dateStart"}
                 label={dictionary.date_start[this.context]}
                 value={this.state.request.dateStart}
                 type={"datetime-local"}
+                status={this.state.errors.dateStart ? "error" : "normal"}
+                hint={
+                  this.state.errors.dateStart ? this.errorMessages.dates : ""
+                }
               />
               <InputNext
-                onChange={(value, event) =>
-                  handleChange(event.target.name, value)
-                }
+                onChange={handleChange}
                 id={`talk_date_end_field`}
                 name={"dateEnd"}
                 label={dictionary.date_end[this.context]}
                 value={this.state.request.dateEnd}
                 type={"datetime-local"}
+                status={this.state.errors.dateEnd ? "error" : "normal"}
+                hint={this.state.errors.dateEnd ? this.errorMessages.dates : ""}
               />
             </div>
             <div id={`talk_livestream_field`}>
@@ -439,16 +447,12 @@ class Conference extends PureComponent<Props, State> {
                 id={`talk_switcher`}
                 name={"switcher"}
                 label={dictionary.livestream[this.context]}
-                onChange={(value, event) =>
-                  handleChange(event.target.name, String(value))
-                }
+                onChange={(value, event) => handleChange(String(value), event)}
                 value={this.state.request.switcher === "true"}
                 className={styles.switcher}
               />
               <InputNext
-                onChange={(value, event) =>
-                  handleChange(event.target.name, value)
-                }
+                onChange={handleChange}
                 id={`talk_livestream_url_field`}
                 value={this.state.request.livestream}
                 name={"livestream"}
@@ -456,6 +460,12 @@ class Conference extends PureComponent<Props, State> {
                 type={"url"}
                 placeholder={"https://www.youtube.com/embed/<id>"}
                 disabled={!(this.state.request.switcher === "true")}
+                status={this.state.errors.livestream ? "error" : "normal"}
+                hint={
+                  this.state.errors.livestream
+                    ? this.errorMessages.livestream
+                    : ""
+                }
               />
             </div>
           </Modal.Body>
@@ -474,31 +484,29 @@ class Conference extends PureComponent<Props, State> {
 
   private handleTalkSubmission = () => {
     const request = this.state.request;
+    const errors = this.state.errors;
 
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    url += "/talk";
+    if (Object.values(errors).includes(true)) {
+      return;
+    }
 
     axiosInstance
-      .post(url, {
-        about: request.about,
+      .post("/talk", {
+        about: request.about.trim(),
         author: this.props.user.id,
         conference: this.id,
-        dateEnd: request.dateEnd,
-        dateStart: request.dateStart,
-        livestream: request.livestream,
-        local: request.local,
-        privacy: request.privacy,
-        title: request.title
+        dateEnd: request.dateEnd.trim(),
+        dateStart: request.dateStart.trim(),
+        livestream: request.livestream.trim(),
+        local: request.local.trim(),
+        privacy: request.privacy.trim(),
+        title: request.title.trim()
       })
       .then(res => {
-        window.location.href = "/talk/" + res.data.id;
         this.resetState();
+        window.location.href = "/talk/" + res.data.id;
       })
-      .catch(error => console.log("Failed to create talk. " + error));
+      .catch(error => console.log(error));
   };
 
   private renderEditForm = () => {
@@ -506,11 +514,11 @@ class Conference extends PureComponent<Props, State> {
     const handleHide = () =>
       this.setState({
         editFields: {
-          dateEnd: this.state.dateEnd,
-          dateStart: this.state.dateStart,
-          description: this.state.description,
-          place: this.state.place,
-          title: this.state.title
+          dateEnd: this.state.dateEnd.trim(),
+          dateStart: this.state.dateStart.trim(),
+          description: this.state.description.trim(),
+          place: this.state.place.trim(),
+          title: this.state.title.trim()
         },
         editFormOpen: false
       });
@@ -621,16 +629,22 @@ class Conference extends PureComponent<Props, State> {
     } else {
       axiosInstance
         .put(`/conference/${this.id}`, {
-          about: editFields.description,
-          dateEnd: editFields.dateEnd,
-          dateStart: editFields.dateStart,
-          local: editFields.place,
-          title: editFields.title
+          about: editFields.description.trim(),
+          dateEnd: editFields.dateEnd.trim(),
+          dateStart: editFields.dateStart.trim(),
+          local: editFields.place.trim(),
+          title: editFields.title.trim()
         })
         .then(() => {
           this.setState({
             ...this.state,
-            ...editFields,
+            editFields: {
+              dateEnd: editFields.dateEnd.trim(),
+              dateStart: editFields.dateStart.trim(),
+              description: editFields.description.trim(),
+              place: editFields.place.trim(),
+              title: editFields.title.trim()
+            },
             editFormOpen: false
           });
         })
@@ -659,7 +673,7 @@ class Conference extends PureComponent<Props, State> {
           }
         });
       }
-    } else if (field === "description") {
+    } else if (field === "description" || field === "about") {
       /* Alphanumerical characters with whitespaces and some special characters */
       const re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
       if (!re.test(value)) {
@@ -677,7 +691,7 @@ class Conference extends PureComponent<Props, State> {
           }
         });
       }
-    } else if (field === "place") {
+    } else if (field === "place" || field === "local") {
       /* Alphanumerical characters with whitespaces, comma, dot and hyphen */
       const re = /^([\w\u00C0-\u017F]+[ \-,.\w\u00C0-\u017F]*){2,}$/;
       if (!re.test(value)) {
@@ -716,11 +730,36 @@ class Conference extends PureComponent<Props, State> {
           }
         });
       }
+    } else if (field === "livestream") {
+      const re = /^(https:\/\/)?(www.)?youtube.com\/embed\/[\w\-]+$/;
+      if (!re.test(value.trim())) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            livestream: true
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            livestream: false
+          }
+        });
+      }
     }
   };
 
   private resetState = () => {
     this.setState({
+      errors: {
+        dateEnd: false,
+        dateStart: false,
+        description: false,
+        livestream: false,
+        place: false,
+        title: false
+      },
       postModalOpen: false,
       request: {
         about: "",
