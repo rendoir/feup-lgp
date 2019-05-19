@@ -94,7 +94,7 @@ export async function getReportReasons(req, res) {
     console.log("REPORT CONTENT ID", req.body.content_id);
     console.log("REPORT CONTENT TYPE", req.body.content_type);
     query({
-        text: `SELECT description, date_reported,
+        text: `SELECT description, justify_hours(age(current_timestamp, date_reported)) as elapsed_time,
                 reporter, users.first_name, users.last_name
                     FROM content_reports, users
                     WHERE admin_review = FALSE AND

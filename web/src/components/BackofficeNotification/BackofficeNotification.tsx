@@ -78,7 +78,7 @@ export class BackofficeNotification extends Component<IProps, IState> {
           <a href={this.contentURL}>"{this.props.content}"</a>
         </p>
 
-        <div className="row mb-3 d-flex justify-content-between border">
+        <div className="row mb-3 d-flex justify-content-between">
           {/* Expand all report reasons */}
           <div className="col mt-1">
             <a
@@ -150,15 +150,36 @@ export class BackofficeNotification extends Component<IProps, IState> {
     const reasonList = this.state.reportReasons.map(reason => {
       console.log(reason);
       return (
-        <div className="card card-body" key={reason.reporter}>
-          <a href={`/user/${reason.reporter}`} className="card-link">
-            Card link
-          </a>
+        <div className="card card-body pt-0 pb-0 mb-2" key={reason.reporter}>
+          <p className="card-text">{reason.description}</p>
+          <small>
+            <a href={`/user/${reason.reporter}`} className="card-link">
+              {`${reason.first_name} ${reason.last_name} `}
+            </a>
+            {this.getElapsedTime(reason.elapsed_time)}
+          </small>
         </div>
       );
     });
 
     return <div>{reasonList}</div>;
+  }
+
+  private getElapsedTime(timeInterval) {
+    if (!timeInterval.minutes) {
+      return "now";
+    }
+
+    let elapsedTime = timeInterval.days ? timeInterval.days + " days" : "";
+    elapsedTime +=
+      timeInterval.hours && timeInterval.hours > 0
+        ? " " + timeInterval.hours + " hours"
+        : "";
+    elapsedTime +=
+      timeInterval.minutes && timeInterval.minutes > 0
+        ? " " + timeInterval.minutes + " minutes"
+        : "";
+    return elapsedTime + " ago";
   }
 
   private async apiGetReasons() {
