@@ -92,7 +92,7 @@ adminRouter.get('/users', controller.getAllUsers);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'The email does not belong to an user'
+ *      message: 'The email does not belong to a user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
@@ -108,7 +108,7 @@ adminRouter.get('/users', controller.getAllUsers);
 adminRouter.post('/', controller.addAdmin);
 
 /**
- * @api {post} /api/admin/ban Ban an user
+ * @api {post} /api/admin/ban Ban a user
  * @apiName Ban-user
  * @apiGroup Admin
  *
@@ -121,7 +121,7 @@ adminRouter.post('/', controller.addAdmin);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'The email does not belong to an user'
+ *      message: 'The email does not belong to a user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
@@ -155,12 +155,12 @@ adminRouter.post('/ban', controller.banUser);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
- *      message: 'You do not have permissions to change to an user'
+ *      message: 'You do not have permissions to change to a user'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
- *      message: 'An error ocurred while changing to an user'
+ *      message: 'An error ocurred while changing to a user'
  *     }
  */
 adminRouter.post('/user', controller.makeUser);
