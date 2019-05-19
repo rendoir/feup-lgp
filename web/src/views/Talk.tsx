@@ -63,6 +63,7 @@ interface IState {
   archived: boolean;
   challenges: any[];
   clickedChallenge: number | undefined;
+  conf_id: number;
   step: Step;
   stepChallenge: StepChallenge;
   hasLiveStream: boolean;
@@ -130,6 +131,7 @@ class Talk extends React.Component<IProps, IState> {
       archived: false,
       challenges: [],
       clickedChallenge: undefined,
+      conf_id: 0,
       dateEnd: '',
       dateStart: '',
       description: '',
@@ -279,6 +281,7 @@ class Talk extends React.Component<IProps, IState> {
         this.setState({
           archived: talk.archived,
           challenges: challengesConf,
+          conf_id: talk.conference,
           dateEnd: talk.dateend,
           dateStart: talk.datestart,
           description: talk.about,
@@ -369,6 +372,12 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={'/conference/' + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>
               {dictionary.title[this.context]}: {this.state.title}
             </h4>
@@ -387,6 +396,12 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={'/conference/' + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
@@ -485,6 +500,10 @@ class Talk extends React.Component<IProps, IState> {
       </button>
     );
     return [reportButton, deleteButton, archiveButton];
+  }
+
+  private returnToConf() {
+    window.location.href = '/conference/' + this.state.conf_id;
   }
 
   private createConfPost = (event: MouseEvent) => {
@@ -773,7 +792,6 @@ class Talk extends React.Component<IProps, IState> {
   };
 
   private getJoinButton() {
-    const isArchived = this.state.archived;
     let buttonClass = this.state.userParticipation ? 'leave' : 'join';
     let buttonText = this.state.userParticipation
       ? dictionary.leave_talk[this.context]
@@ -793,7 +811,6 @@ class Talk extends React.Component<IProps, IState> {
             : this.handleJoinTalk
         }
         disabled={!this.state.userCanJoin}
-        hidden={isArchived}
       >
         {buttonText}
       </button>

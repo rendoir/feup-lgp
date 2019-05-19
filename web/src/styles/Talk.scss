@@ -61,6 +61,19 @@
         display: block;
     }
 
+    .return_conf {
+        display: block;
+        float: right;
+        width: 40%;
+        background: none;
+        border: none;
+        height: 100%;
+    }
+
+    .return_conf a {
+        color: #000000;
+    }
+
     .join_button {
         width: 100%;
         color: #FFFFFF;

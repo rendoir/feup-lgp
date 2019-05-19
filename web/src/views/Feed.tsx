@@ -8,7 +8,7 @@ import withAuth from '../utils/withAuth';
 type Props = {};
 
 type State = {
-  talks: any[];
+  conferences: any[];
   posts: any[];
   fetchingInfo: boolean;
   following: any[];
@@ -21,10 +21,10 @@ class Feed extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      conferences: [],
       fetchingInfo: true,
       following: [],
-      posts: [],
-      talks: []
+      posts: []
     };
   }
 
@@ -39,8 +39,8 @@ class Feed extends React.Component<Props, State> {
       })
       .then(res => {
         this.setState({
-          following: res.data.following,
-          talks: res.data.talks
+          conferences: res.data.conferences,
+          following: res.data.following
         });
       })
       .catch(() => console.log('Failed to get feed stuff'));
@@ -65,9 +65,9 @@ class Feed extends React.Component<Props, State> {
   }
 
   public render() {
-    const talks = this.state.talks.map(talk => (
-      <a key={talk.id} className="d-block my-2" href={'/talk/' + talk.id}>
-        {talk.title} {talk.dateStart}
+    const conferences = this.state.conferences.map(conf => (
+      <a key={conf.id} className="d-block my-2" href={'/conference/' + conf.id}>
+        {conf.title} {conf.dateStart}
       </a>
     ));
 
@@ -75,8 +75,8 @@ class Feed extends React.Component<Props, State> {
       <div id="Feed" className="container my-5">
         <div className="row">
           <div id="leftm">
-            <h5>{dictionary.talks[this.context]}</h5>
-            {talks}
+            <h5>{dictionary.conferences[this.context]}</h5>
+            {conferences}
           </div>
           <div id="rightm">
             <h5>{dictionary.followers[this.context]}</h5>

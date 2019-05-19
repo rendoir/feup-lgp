@@ -317,16 +317,16 @@ export async function gettalk(req, res) {
      */
     const talk = await query({
       text: `
-              SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy, c.archived
-              FROM talks c
-              INNER JOIN users a ON c.author = a.id
-              WHERE c.id = $1
-                AND (c.author = $2
-                    OR c.privacy = 'public'
-                    OR c.privacy = 'closed'
-                    OR (c.privacy = 'followers'
-                        AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
+              SELECT t.id, a.id as user_id, a.first_name, a.last_name, t.title, t.conference,
+              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived
+              FROM talks t
+              INNER JOIN users a ON t.author = a.id
+              WHERE t.id = $1
+                AND (t.author = $2
+                    OR t.privacy = 'public'
+                    OR t.privacy = 'closed'
+                    OR (t.privacy = 'followers'
+                        AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )
                 )
             `,

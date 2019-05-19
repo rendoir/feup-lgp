@@ -125,16 +125,15 @@ export async function getFeedStuff(req, res) {
                         LIMIT 15`,
             values: [userId],
         });
-        const talks = await query({
-            text: `SELECT t.id, t.title, t.dateStart
-                        FROM talks t
-                        INNER JOIN conferences c ON c.id = t.conference
+        const conferences = await query({
+            text: `SELECT c.id, c.title, c.dateStart
+                        FROM conferences c
                         WHERE c.privacy = 'public'
-                        ORDER BY t.dateStart DESC
+                        ORDER BY c.dateStart DESC
                         LIMIT 15`,
         });
         res.send({
-            talks: talks.rows,
+            conferences: conferences.rows,
             following: following.rows,
         });
     } catch (error) {
