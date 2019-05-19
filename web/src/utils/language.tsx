@@ -176,6 +176,7 @@ export let dictionary: Dictionary = {
   comment: { PT: 'comentário', EN: 'comment' },
   take_action: { PT: 'Tomar ação', EN: 'Take action' },
   ban_user: { PT: 'Banir utilizador', EN: 'Ban user' },
+  unban_user: { PT: 'Desbanir utilizador', EN: 'Unban user' },
   delete_content: { PT: 'Apagar conteúdo', EN: 'Delete content' },
   ignore: { PT: 'Ignorar', EN: 'Ignore' },
   banned: { PT: 'banido', EN: 'banned' },
@@ -475,7 +476,7 @@ export let dictionary: Dictionary = {
     PT: 'Leia a descrição e crie uma publicação nesta palestra.',
     EN: 'Read the description and create a post in this talk.'
   },
-  add_admin: { PT: 'Adicionar Administrador', EN: 'Add Administrator' },
+  add_admin: { PT: 'Adicionar Admin', EN: 'Add Admin' },
   insert_admin_email: { PT: 'Email do utilizador', EN: 'User email' },
   success_add_admin: {
     PT: 'O utilizador é agora administrador',
@@ -489,6 +490,30 @@ export let dictionary: Dictionary = {
     PT: 'A palavra passe inserida não é a palavra passe correcta!',
     EN:
       'The current password inserted is different than the one existent for this user!'
+  },
+  success_remove_admin: {
+    PT: 'O utilizador já não é administrador',
+    EN: 'User is no longer an administrator'
+  },
+  error_remove_admin: {
+    PT: 'Não foi possível tornar o administrador num utilizador',
+    EN: 'Error turning administrator back to user'
+  },
+  success_ban_user: {
+    PT: 'O utilizador foi banido!',
+    EN: 'User is now banned'
+  },
+  error_ban_user: {
+    PT: 'Não foi possível banir o utilizador',
+    EN: 'Error banning user'
+  },
+  success_unban_user: {
+    PT: 'O utilizador foi desbanido!',
+    EN: 'User is now unbanned'
+  },
+  error_unban_user: {
+    PT: 'Não foi possível desbanir o utilizador',
+    EN: 'Error unbanning user'
   },
   empty: { PT: '', EN: '' }
 };

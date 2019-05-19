@@ -1,6 +1,7 @@
 CREATE TYPE permission_level_enum AS ENUM (
     'admin',
-    'user'
+    'user',
+    'banned'
 );
 
 CREATE TYPE talk_permission_level_enum AS ENUM (
@@ -397,10 +398,10 @@ INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user', 'public', '2018-12-23');
 
 /* POSTS IN talk */
-INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (2, 'User post', 'This post was created by an user and appears in a talk', 1, 'private', '2018-12-03');
-INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (3, 'User post', 'This post was created by an user and appears in a talk', 1, 'public', '2018-12-03');
+INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (2, 'User post', 'This post was created by a user and appears in a talk', 1, 'private', '2018-12-03');
+INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (3, 'User post', 'This post was created by a user and appears in a talk', 1, 'public', '2018-12-03');
 INSERT INTO posts (author, title, content, talk, date_created) VALUES (1, 'Admin post', 'This post was created by an admin and appears in a talk', 1, '2018-12-02');
-INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (2, 'User post', 'This post was created by an user and appears in a talk', 2, 'followers', '2018-12-01');
+INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (2, 'User post', 'This post was created by a user and appears in a talk', 2, 'followers', '2018-12-01');
 INSERT INTO posts (author, title, content, talk) VALUES (1, 'Admin post', 'This is a post done by the admin and appears in a talk', 2);
 INSERT INTO posts (author, title, content, talk) VALUES (2, 'User post', 'This is a post done by a mere user following the admin and appears in a talk', 1);
 

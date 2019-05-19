@@ -54,6 +54,7 @@ async function isAdmin(id) {
 
     return result.rowCount > 0;
 }
+
 export async function addAdmin(req, res) {
     const isRequesterAdmin = await isAdmin(req.user.id);
 
@@ -70,4 +71,40 @@ export async function addAdmin(req, res) {
             res.status(500).send({ message: 'An error ocurred while adding admin' });
         });
     } else { res.status(401).send({ message: 'You do not have permissions to add an admin' }); }
+}
+
+export async function banUser(req, res) {
+    const isRequesterAdmin = await isAdmin(req.user.id);
+
+    if (isRequesterAdmin) {
+        query({
+            text: 'UPDATE users SET permissions = \'banned\' WHERE email = $1',
+            values: [req.body.email],
+        }).then((result) => {
+            if (result.rowCount > 0) {
+                res.status(200).send();
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).send({ message: 'An error ocurred while banning a user' });
+        });
+    } else { res.status(401).send({ message: 'You do not have permissions to ban a user' }); }
+}
+
+export async function makeUser(req, res) {
+    const isRequesterAdmin = await isAdmin(req.user.id);
+
+    if (isRequesterAdmin) {
+        query({
+            text: 'UPDATE users SET permissions = \'user\' WHERE email = $1',
+            values: [req.body.email],
+        }).then((result) => {
+            if (result.rowCount > 0) {
+                res.status(200).send();
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).send({ message: 'An error ocurred while changing to a user' });
+        });
+    } else { res.status(401).send({ message: 'You do not have permissions to change to a user' }); }
 }
