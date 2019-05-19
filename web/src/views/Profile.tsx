@@ -138,7 +138,7 @@ class Profile extends React.Component<IProps, State> {
                     title="Admin Admino"
                     placeholder="empty"
                     size={250}
-                    image={this.state.user.avatar}
+                    image={this.state.user.avatar.src}
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
@@ -314,6 +314,8 @@ class Profile extends React.Component<IProps, State> {
 
     const formData = new FormData();
 
+    console.log("Avatar:" + request.avatar);
+
     formData.append("author", String(this.auth.getUserPayload().id));
 
     formData.append("email", request.email);
@@ -416,7 +418,7 @@ class Profile extends React.Component<IProps, State> {
       .then(res => {
         this.setState({
           request: {
-            avatar: undefined,
+            avatar: res.data.user.avatar,
             confirm_password: "",
             email: res.data.user.email,
             first_name: res.data.user.first_name,
@@ -432,7 +434,7 @@ class Profile extends React.Component<IProps, State> {
           user: res.data.user
         });
       })
-      .catch(() => console.log("Failed to get posts"));
+      .catch(() => console.log("Failed to get user"));
   }
 
   private handleEditProfile = (event: MouseEvent) => {
