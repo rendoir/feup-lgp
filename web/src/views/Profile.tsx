@@ -156,7 +156,6 @@ class Profile extends React.Component<IProps, State> {
 
   private handleUserRate(e: any) {
     if (this.state.userRated) {
-      console.log("You already rated this user");
     } else {
       const rateTarget = e.target.id;
 
@@ -173,7 +172,6 @@ class Profile extends React.Component<IProps, State> {
         rate: parseInt(rateTarget, 10)
       };
 
-      console.log("User Rating updated to: ", userRating);
       const apiUrl = `/users/${this.id}/rate`;
       return axiosInstance
         .post(apiUrl, body)

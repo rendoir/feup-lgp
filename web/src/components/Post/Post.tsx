@@ -370,7 +370,6 @@ class Post extends Component<Props, IState> {
       rate: parseInt(rateTarget, 10)
     };
 
-    console.log("Post Rating updated to: ", userRating);
     const apiUrl = `/post/${this.props.id}/rate`;
     try {
       await axiosInstance.post(apiUrl, body);
@@ -379,7 +378,6 @@ class Post extends Component<Props, IState> {
         userRate: parseInt(rateTarget, 10) * 20,
         userRateTotal: this.state.userRateTotal + parseInt(rateTarget, 10) * 20
       });
-      console.log("RATE: ", this.state.userRate);
     } catch (e) {
       console.log("Rating system failed");
     }
@@ -402,10 +400,6 @@ class Post extends Component<Props, IState> {
       newPostRating: userRating,
       rate: parseInt(rateTarget, 10)
     };
-    console.log("TOTAL:", this.state.userRateTotal);
-    console.log("NUmber of ratings:", this.state.numberOfRatings);
-    console.log("Former rating: ", formerRate);
-    console.log("Post Rating updated to: ", userRating);
     const apiUrl = `/post/${this.props.id}/rate`;
     try {
       await axiosInstance.put(apiUrl, body);
@@ -414,7 +408,6 @@ class Post extends Component<Props, IState> {
         userRateTotal:
           this.state.userRateTotal + parseInt(rateTarget, 10) * 20 - formerRate
       });
-      console.log("RATE UPDATED: ", this.state.userRate);
     } catch (e) {
       console.log("Updating rating system failed");
     }
