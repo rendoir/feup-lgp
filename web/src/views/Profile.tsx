@@ -138,7 +138,7 @@ class Profile extends React.Component<IProps, State> {
                     title="Admin Admino"
                     placeholder="empty"
                     size={250}
-                    image={this.state.user.avatar.src}
+                    image="http://cosmicgirlgames.com/images/games/morty.gif"
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
