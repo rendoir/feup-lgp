@@ -57,6 +57,7 @@ interface IState {
   archived: boolean;
   challenges: any[];
   clickedChallenge: number | undefined;
+  conf_id: number;
   hasChat: boolean;
   step: Step;
   stepChallenge: StepChallenge;
@@ -128,6 +129,7 @@ class Talk extends React.Component<IProps, IState> {
       archived: false,
       challenges: [],
       clickedChallenge: undefined,
+      conf_id: 0,
       date_end: "",
       date_start: "",
       description: "",
@@ -272,6 +274,7 @@ class Talk extends React.Component<IProps, IState> {
         this.setState({
           archived: talk.archived,
           challenges: challengesConf,
+          conf_id: talk.conference,
           date_end: dateend,
           date_start: datestart,
           description: talk.about,
