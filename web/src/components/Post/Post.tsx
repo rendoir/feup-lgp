@@ -1,19 +1,19 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./Post.module.css";
+import styles from './Post.module.css';
 
 // - Import app components
-import Avatar from "../Avatar/Avatar";
-import Comment from "../Comment/Comment";
-import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import PostFile from "../PostFile/PostFile";
-import PostImageCarousel from "../PostImageCarousel/PostImageCarousel";
-import DeleteModal from "../PostModal/DeleteModal";
-import InviteModal from "../PostModal/InviteModal";
-import PostModal from "../PostModal/PostModal";
-import ReportModal from "../PostModal/ReportModal";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
+import Avatar from '../Avatar/Avatar';
+import Comment from '../Comment/Comment';
+import ImagePreloader from '../ImagePreloader/ImagePreloader';
+import PostFile from '../PostFile/PostFile';
+import PostImageCarousel from '../PostImageCarousel/PostImageCarousel';
+import DeleteModal from '../PostModal/DeleteModal';
+import InviteModal from '../PostModal/InviteModal';
+import PostModal from '../PostModal/PostModal';
+import ReportModal from '../PostModal/ReportModal';
+import VideoPreloader from '../VideoPreloader/VideoPreloader';
 
 type MyFile = {
   name: string;
@@ -23,11 +23,11 @@ type MyFile = {
 };
 
 // - Import utils
-import { apiCheckPostUserReport } from "../../utils/apiReport";
-import { apiSubscription } from "../../utils/apiSubscription";
-import { getApiURL } from "../../utils/apiURL";
-import { apiGetUserInteractions } from "../../utils/apiUserInteractions";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { apiCheckPostUserReport } from '../../utils/apiReport';
+import { apiSubscription } from '../../utils/apiSubscription';
+import { getApiURL } from '../../utils/apiURL';
+import { apiGetUserInteractions } from '../../utils/apiUserInteractions';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 import {
   faGlobeAfrica,
@@ -35,11 +35,11 @@ import {
   faQuestion,
   faUserFriends,
   IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import AuthHelperMethods from "../../utils/AuthHelperMethods";
-import axiosInstance from "../../utils/axiosInstance";
-import Icon from "../Icon/Icon";
-import PostVideoCarousel from "../PostVideoCarousel/PostVideoCarousel";
+} from '@fortawesome/free-solid-svg-icons';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import axiosInstance from '../../utils/axiosInstance';
+import Icon from '../Icon/Icon';
+import PostVideoCarousel from '../PostVideoCarousel/PostVideoCarousel';
 
 export type Props = {
   id: number;
@@ -88,8 +88,8 @@ class Post extends Component<Props, IState> {
     this.state = {
       activePage: 1,
       clickedImage: undefined,
-      commentValue: "",
-      data: "",
+      commentValue: '',
+      data: '',
       docs: [],
       fetchingPostUserInteractions: true,
       images: [],
@@ -139,16 +139,16 @@ class Post extends Component<Props, IState> {
             />
             <a
               className={styles.post_author}
-              href={"/user/" + this.props.user_id}
+              href={'/user/' + this.props.user_id}
             >
-              {" "}
+              {' '}
               {this.props.author}
             </a>
             <Icon
               icon={this.getVisibilityIcon(this.props.visibility)}
               size="lg"
             />
-            <a className={styles.post_date} href={"/post/" + this.props.id}>
+            <a className={styles.post_date} href={'/post/' + this.props.id}>
               {this.props.date}
             </a>
             <div className={`${styles.post_options} btn-group`}>
@@ -176,7 +176,7 @@ class Post extends Component<Props, IState> {
           {this.getTags()}
           <div className={styles.post_stats}>
             <span>
-              {" "}
+              {' '}
               {this.props.comments.length} {dictionary.comments[this.context]}
             </span>
             <fieldset className="rate">
@@ -287,10 +287,10 @@ class Post extends Component<Props, IState> {
         post_id: this.state.postID
       })
       .then(res => {
-        console.log("Comment created - reloading page...");
+        console.log('Comment created - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 
   public handleStars() {
@@ -339,11 +339,11 @@ class Post extends Component<Props, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public handlePostReport() {
@@ -379,7 +379,7 @@ class Post extends Component<Props, IState> {
         userRateTotal: this.state.userRateTotal + parseInt(rateTarget, 10) * 20
       });
     } catch (e) {
-      console.log("Rating system failed");
+      console.log('Rating system failed');
     }
   }
 
@@ -409,19 +409,19 @@ class Post extends Component<Props, IState> {
           this.state.userRateTotal + parseInt(rateTarget, 10) * 20 - formerRate
       });
     } catch (e) {
-      console.log("Updating rating system failed");
+      console.log('Updating rating system failed');
     }
   }
 
   public handlePostSubscription() {
     if (this.state.waitingSubscriptionRequest) {
       console.log(
-        "Error trying subscription action! Waiting for response from last request"
+        'Error trying subscription action! Waiting for response from last request'
       );
       return;
     }
 
-    const method = this.state.userSubscription ? "delete" : "post";
+    const method = this.state.userSubscription ? 'delete' : 'post';
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -433,7 +433,7 @@ class Post extends Component<Props, IState> {
   }
 
   public apiSubscription(method: string) {
-    apiSubscription("post", method, this.props.id)
+    apiSubscription('post', method, this.props.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -441,15 +441,15 @@ class Post extends Component<Props, IState> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: method === "delete",
+          userSubscription: method === 'delete',
           waitingSubscriptionRequest: false
         });
-        console.log("Subscription system failed");
+        console.log('Subscription system failed');
       });
   }
 
   public apiGetPostUserInteractions() {
-    apiGetUserInteractions("post", this.props.id)
+    apiGetUserInteractions('post', this.props.id)
       .then(res => {
         this.setState({
           fetchingPostUserInteractions: false,
@@ -464,7 +464,7 @@ class Post extends Component<Props, IState> {
           });
         }
       })
-      .catch(() => console.log("Failed to get post-user interactions"));
+      .catch(() => console.log('Failed to get post-user interactions'));
   }
 
   public async apiGetPostUserReport() {
@@ -507,7 +507,7 @@ class Post extends Component<Props, IState> {
           key={idx}
           postID={comment.post}
           title={comment.id}
-          author={comment.first_name + " " + comment.last_name}
+          author={comment.first_name + ' ' + comment.last_name}
           text={comment.comment}
           secondLevel={false}
         />
@@ -521,8 +521,8 @@ class Post extends Component<Props, IState> {
 
   private getUserInteractionButtons() {
     const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
+      ? 'fas fa-bell-slash'
+      : 'fas fa-bell';
     const subscribeBtnText = this.state.userSubscription
       ? dictionary.unsubscribe_action[this.context]
       : dictionary.subscribe_action[this.context];
@@ -576,11 +576,11 @@ class Post extends Component<Props, IState> {
 
   private getVisibilityIcon(v: string): IconDefinition {
     switch (v) {
-      case "public":
+      case 'public':
         return faGlobeAfrica;
-      case "followers":
+      case 'followers':
         return faUserFriends;
-      case "private":
+      case 'private':
         return faLock;
       default:
         return faQuestion;
@@ -589,7 +589,7 @@ class Post extends Component<Props, IState> {
 
   private handleImageClick(src: string | undefined) {
     if (src) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
       this.setState({
         clickedImage: src
       } as IState);
@@ -597,7 +597,7 @@ class Post extends Component<Props, IState> {
   }
 
   private handleOverlayClick() {
-    document.body.style.overflow = "scroll";
+    document.body.style.overflow = 'scroll';
     this.setState({
       clickedImage: undefined
     } as IState);
@@ -622,7 +622,7 @@ class Post extends Component<Props, IState> {
       if (this.state.images.length >= 2) {
         return (
           <PostImageCarousel
-            key={"i_" + this.props.id}
+            key={'i_' + this.props.id}
             id={this.props.id}
             images={this.state.images}
             parent={this}
@@ -652,7 +652,7 @@ class Post extends Component<Props, IState> {
       if (this.state.videos.length >= 2) {
         return (
           <PostVideoCarousel
-            key={"v_" + this.props.id}
+            key={'v_' + this.props.id}
             id={this.props.id}
             videos={this.state.videos}
           />
@@ -660,7 +660,7 @@ class Post extends Component<Props, IState> {
       } else {
         const video = this.state.videos[0];
         return (
-          <div className={"overflow-hidden " + styles.post_content_media}>
+          <div className={'overflow-hidden ' + styles.post_content_media}>
             <video src={video.src} controls={true} />
           </div>
         );
@@ -741,18 +741,18 @@ class Post extends Component<Props, IState> {
   }
 
   private updateFileSrc(file: MyFile) {
-    const url = getApiURL("/post/" + this.props.id + "/" + file.name);
+    const url = getApiURL('/post/' + this.props.id + '/' + file.name);
 
     return axiosInstance
       .get(url, {
-        responseType: "arraybuffer"
+        responseType: 'arraybuffer'
       })
       .then(res => {
         file.src =
-          "data:" +
+          'data:' +
           file.mimetype +
-          ";base64, " +
-          new Buffer(res.data, "binary").toString("base64");
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
         this.forceUpdate();
       });
   }
@@ -760,10 +760,10 @@ class Post extends Component<Props, IState> {
   private initFiles() {
     if (this.props.files) {
       Array.from(this.props.files).forEach(file => {
-        if (file.mimetype.startsWith("image")) {
+        if (file.mimetype.startsWith('image')) {
           this.state.images.push(file);
           this.updateFileSrc(file);
-        } else if (file.mimetype.startsWith("video")) {
+        } else if (file.mimetype.startsWith('video')) {
           this.state.videos.push(file);
           this.updateFileSrc(file);
         } else {
@@ -778,17 +778,17 @@ class Post extends Component<Props, IState> {
 
     // sorting tags alphabetically
     this.props.tags.sort((a, b) =>
-      (a.name || "").toString().localeCompare((b.name || "").toString())
+      (a.name || '').toString().localeCompare((b.name || '').toString())
     );
 
     if (this.props.tags.length > 0) {
       for (const tag of this.props.tags) {
         tagsDiv.push(
           <span
-            key={"tags_" + tag.name + "post_" + this.props.id}
+            key={'tags_' + tag.name + 'post_' + this.props.id}
             className={`${styles.tags} d-inline badge`}
           >
-            <a key={"tags_" + tag.name + "post_" + this.props.id}>
+            <a key={'tags_' + tag.name + 'post_' + this.props.id}>
               #{tag.name}
             </a>
           </span>

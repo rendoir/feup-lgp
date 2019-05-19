@@ -1,22 +1,22 @@
-import classNames from "classnames";
+import classNames from 'classnames';
 import React, {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
   PureComponent
-} from "react";
-import { fileToBase64 } from "../../utils/fileToBase64";
-import { dictionary, LanguageContext } from "../../utils/language";
-import AvatarSelector from "../AvatarSelector/AvatarSelector";
-import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
-import Select from "../Select/Select";
-import Switcher from "../Switcher/Switcher";
-import Tag from "../Tags/Tag";
-import styles from "./CreateNewModal.module.css";
+} from 'react';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { dictionary, LanguageContext } from '../../utils/language';
+import AvatarSelector from '../AvatarSelector/AvatarSelector';
+import InputNext, { HTMLAbstractInputElement } from '../InputNext/InputNext';
+import Select from '../Select/Select';
+import Switcher from '../Switcher/Switcher';
+import Tag from '../Tags/Tag';
+import styles from './CreateNewModal.module.css';
 
 export type Props = {
   id: string;
-  type: "post" | "talk" | "conference";
+  type: 'post' | 'talk' | 'conference';
   title: string;
   about: string;
   avatar?: File;
@@ -50,15 +50,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {
-    about: "",
+    about: '',
     aboutMaxLength: 3000,
-    dateEnd: "",
-    dateStart: "",
-    livestream: "",
-    local: "",
-    privacy: "public",
-    switcher: "false",
-    title: "",
+    dateEnd: '',
+    dateStart: '',
+    livestream: '',
+    local: '',
+    privacy: 'public',
+    switcher: 'false',
+    title: '',
     vertical: false
   };
 
@@ -69,7 +69,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       avatar: undefined,
       files: [],
       tags: [],
-      tagsInput: ""
+      tagsInput: ''
     };
   }
 
@@ -85,12 +85,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={className}>
-        {type === "talk" || type === "conference" ? this.renderAvatar() : null}
-        <form id={id} autoComplete={"off"} className={styles.form}>
+        {type === 'talk' || type === 'conference' ? this.renderAvatar() : null}
+        <form id={id} autoComplete={'off'} className={styles.form}>
           <InputNext
             className={styles.input}
             id={`${id}_title`}
-            name={"title"}
+            name={'title'}
             onChange={this.props.onChange}
             placeholder={dictionary.title[this.context]}
             label={dictionary.title[this.context]}
@@ -101,20 +101,20 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           <InputNext
             className={styles.input}
             id={`${id}_about`}
-            name={"about"}
+            name={'about'}
             onChange={this.props.onChange}
             placeholder={dictionary.description_placeholder[this.context]}
             label={dictionary.description[this.context]}
-            type={"textarea"}
+            type={'textarea'}
             rows={5}
-            value={about || ""}
+            value={about || ''}
             maxLength={aboutMaxLength}
             required={true}
           />
           {this.renderPrivacy()}
-          {type === "post" ? this.renderPostFields() : null}
-          {type === "talk" ? this.rendertalkFields() : null}
-          {type === "conference" ? this.renderconferenceFields() : null}
+          {type === 'post' ? this.renderPostFields() : null}
+          {type === 'talk' ? this.rendertalkFields() : null}
+          {type === 'conference' ? this.renderconferenceFields() : null}
         </form>
       </div>
     );
@@ -155,12 +155,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   };
 
   private handleKeyUp = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       const tags = this.state.tags;
       if (!tags.includes(this.state.tagsInput)) {
         tags.push(this.state.tagsInput);
       }
-      this.setState({ tags, tagsInput: "" });
+      this.setState({ tags, tagsInput: '' });
       this.props.onTagChange(this.state.tagsInput);
     }
   };
@@ -182,7 +182,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       <div className={styles.avatarBlock}>
         <AvatarSelector
           title={title}
-          placeholder={"empty"}
+          placeholder={'empty'}
           avatar={avatar}
           size={140}
           onRemove={this.props.onAvatarRemove}
@@ -197,15 +197,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     const options = [
       {
         title: dictionary.visibility_public[this.context],
-        value: "public"
+        value: 'public'
       },
       {
         title: dictionary.visibility_followers[this.context],
-        value: "followers"
+        value: 'followers'
       },
       {
         title: dictionary.visibility_private[this.context],
-        value: "private"
+        value: 'private'
       }
     ];
 
@@ -217,7 +217,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       <div className={styles.Wrapper}>
         <Select
           id={`${id}_privacy`}
-          name={"privacy"}
+          name={'privacy'}
           value={this.props.privacy}
           label={dictionary.visibility[this.context]}
           options={options}
@@ -236,7 +236,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           onChange={this.props.onChange}
           id={`${id}_talk_local`}
           value={local}
-          name={"local"}
+          name={'local'}
           placeholder={dictionary.talk_local[this.context]}
           label={dictionary.location[this.context]}
         />
@@ -248,17 +248,17 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             onChange={this.props.onChange}
             id={`${id}_talk_date_start`}
             value={this.props.dateStart}
-            name={"dateStart"}
+            name={'dateStart'}
             label={dictionary.date_start[this.context]}
-            type={"datetime-local"}
+            type={'datetime-local'}
           />
           <InputNext
             onChange={this.props.onChange}
             id={`${id}_talk_date_end`}
             value={this.props.dateEnd}
-            name={"dateEnd"}
+            name={'dateEnd'}
             label={dictionary.date_end[this.context]}
-            type={"datetime-local"}
+            type={'datetime-local'}
           />
         </div>
         <div id={`${id}_talk_livestream`}>
@@ -267,21 +267,21 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           </label>
           <Switcher
             id={`${id}_switcher`}
-            name={"switcher"}
+            name={'switcher'}
             label={dictionary.livestream[this.context]}
             onChange={this.handleLivestreamToggle}
-            value={this.props.switcher === "true"}
+            value={this.props.switcher === 'true'}
             className={styles.switcher}
           />
           <InputNext
             onChange={this.handleChange}
             id={`${id}_liveStream`}
             value={this.props.livestream}
-            name={"livestream"}
+            name={'livestream'}
             label={dictionary.livestream_url[this.context]}
-            type={"url"}
-            placeholder={"Ex: https://www.youtube.com/embed/<id>"}
-            disabled={!(this.props.switcher === "true")}
+            type={'url'}
+            placeholder={'https://www.youtube.com/embed/<id>'}
+            disabled={!(this.props.switcher === 'true')}
           />
         </div>
       </div>
@@ -297,7 +297,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           onChange={this.props.onChange}
           id={`${id}_talk_local`}
           value={local}
-          name={"local"}
+          name={'local'}
           placeholder={dictionary.conference_local[this.context]}
           label={dictionary.location[this.context]}
         />
@@ -309,17 +309,17 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             onChange={this.props.onChange}
             id={`${id}_talk_date_start`}
             value={this.props.dateStart}
-            name={"dateStart"}
+            name={'dateStart'}
             label={dictionary.date_start[this.context]}
-            type={"datetime-local"}
+            type={'datetime-local'}
           />
           <InputNext
             onChange={this.props.onChange}
             id={`${id}_talk_date_end`}
             value={this.props.dateEnd}
-            name={"dateEnd"}
+            name={'dateEnd'}
             label={dictionary.date_end[this.context]}
-            type={"datetime-local"}
+            type={'datetime-local'}
           />
         </div>
       </div>
@@ -334,18 +334,18 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         <InputNext
           onChange={this.handleChange}
           id={`${id}_post_tags`}
-          type={"text"}
+          type={'text'}
           value={this.state.tagsInput}
           label={dictionary.tags[this.context]}
-          name={"tagsInput"}
-          list={"possible_tags"}
+          name={'tagsInput'}
+          list={'possible_tags'}
           placeholder={dictionary.tag_placeholder[this.context]}
           onKeyUp={this.handleKeyUp}
         />
-        <datalist id={"possible_tags"}>
+        <datalist id={'possible_tags'}>
           {this.props.tags
             ? this.props.tags.map((tag, key) => (
-                <option key={"tag_" + key} value={tag} />
+                <option key={'tag_' + key} value={tag} />
               ))
             : null}
         </datalist>
@@ -362,10 +362,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             this.props.onFileChange((e.target as HTMLInputElement).files)
           }
           id={`${id}_post_files`}
-          type={"file"}
+          type={'file'}
           label={dictionary.files[this.context]}
           multiple={true}
-          name={"files"}
+          name={'files'}
         />
       </div>
     );

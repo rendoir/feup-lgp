@@ -37,7 +37,7 @@ export type Props = {
   /** Select placeholder attribute */
   placeholder?: string;
   /** Select onChange event handler attribute */
-  onChange: (value: string, event: ChangeEvent) => any;
+  onChange: (value: string, event: ChangeEvent<HTMLSelectElement>) => any;
 };
 
 class Select extends Component<Props> {

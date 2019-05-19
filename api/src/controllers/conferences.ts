@@ -1,11 +1,10 @@
 import { query } from '../db/db';
-import {editFiles, saveTags} from './post';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
     console.log('\n\nError: conference title cannot be empty');
     res.status(400).send({
-      message: 'An error occurred while crating a new conference. ' +
+      message: 'An error occurred while creating a new conference. ' +
         'The field title cannot be empty',
     });
     return;
@@ -13,21 +12,21 @@ export function createConference(req, res) {
   if (!req.body.about.trim()) {
     console.log('\n\nError: conference body cannot be empty');
     res.status(400).send({
-      message: 'An error occurred while crating a new conference. ' +
+      message: 'An error occurred while creating a new conference. ' +
         'The field about cannot be empty',
     });
   }
   if (!req.body.local.trim()) {
     console.log('\n\nError: conference local cannot be empty');
     res.status(400).send({
-      message: 'An error occurred while crating a new conference. ' +
+      message: 'An error occurred while creating a new conference. ' +
         'The field local cannot be empty',
     });
   }
   if (!req.body.dateStart.trim()) {
     console.log('\n\nError: conference starting date cannot be empty');
     res.status(400).send({
-      message: 'An error occurred while crating a new conference. ' +
+      message: 'An error occurred while creating a new conference. ' +
         'The field date start cannot be empty',
     });
   }
@@ -37,7 +36,7 @@ export function createConference(req, res) {
         '\n\nError: conference ending date cannot be previous to starting date',
       );
       res.status(400).send({
-        message: 'An error occurred while crating a new conference. ' +
+        message: 'An error occurred while creating a new conference. ' +
           'The field date end cannot be a date previous to date start',
       });
     }
@@ -64,6 +63,79 @@ export function createConference(req, res) {
     console.log('\n\nERROR: ', error);
     res.status(400).send({
       message: 'An error occurred while crating a new conference. Error: ' + error.toString(),
+    });
+  });
+}
+
+export function editConference(req, res) {
+  const data = req.body;
+  const id = req.params.id;
+
+  if (!data.title.trim()) {
+    console.log('\n\nError: conference title cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while updating the conference. ' +
+        'The field title cannot be empty',
+    });
+    return;
+  }
+  if (!data.about.trim()) {
+    console.log('\n\nError: conference body cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while updating the conference. ' +
+        'The field about cannot be empty',
+    });
+    return;
+  }
+  if (!data.local.trim()) {
+    console.log('\n\nError: conference local cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while updating the conference. ' +
+        'The field local cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateStart.trim()) {
+    console.log('\n\nError: conference starting date cannot be empty');
+    res.status(400).send({
+      message: 'An error occurred while updating the conference. ' +
+        'The field date start cannot be empty',
+    });
+    return;
+  }
+  if (data.dateEnd.trim()) {
+    if (Date.parse(data.dateEnd) < Date.parse(data.dateStart)) {
+      console.log(
+        '\n\nError: conference ending date cannot be previous to starting date',
+      );
+      res.status(400).send({
+        message: 'An error occurred while updating the conference. ' +
+          'The field date end cannot be a date previous to date start',
+      });
+      return;
+    }
+  }
+  query({
+    text: 'UPDATE conferences ' +
+          'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
+          'WHERE id = $1 ' +
+          'RETURNING id',
+    values: [
+      id,
+      data.title,
+      data.about,
+      data.local,
+      data.dateStart,
+      data.dateEnd,
+    ],
+  }).then((response) => {
+    res.send({
+      id: response.rows[0].id,
+    });
+  }).catch((error) => {
+    console.log('ERROR: ', error);
+    res.status(400).send({
+      message: 'An error occurred while updating the conference. Error: ' + error.toString(),
     });
   });
 }

@@ -1,5 +1,4 @@
 import { query } from '../db/db';
-import { editFiles, saveTags } from './post';
 
 export function createTalk(req, res) {
   if (!req.body.title.trim()) {
@@ -80,6 +79,79 @@ export function createTalk(req, res) {
   });
 }
 
+export function editTalk(req, res) {
+  const data = req.body;
+  const talk = req.params.id;
+
+  if (!data.title.trim()) {
+    console.log('\n\nError: talk title cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field title cannot be empty',
+    });
+    return;
+  }
+  if (!data.about.trim()) {
+    console.log('\n\nError: talk about cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field about cannot be empty',
+    });
+    return;
+  }
+  if (!data.local.trim()) {
+    console.log('\n\nError: talk local cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field local cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateStart.trim()) {
+    console.log('\n\nError: talk starting date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field starting date cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateEnd.trim()) {
+    console.log('\n\nError: talk ending date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field ending date cannot be empty',
+    });
+    return;
+  }
+
+  query({
+    text: 'UPDATE talks ' +
+      'SET (title, about, local, datestart, dateend, livestream_url) = ($2, $3, $4, $5, $6, $7) ' +
+      'WHERE id = $1 ' +
+      'RETURNING id',
+    values: [
+      talk,
+      data.title,
+      data.about,
+      data.local,
+      data.dateStart,
+      data.dateEnd,
+      data.livestreamUrl,
+    ],
+  })
+    .then((response) => {
+      res.send({
+        id: response.rows[0].id,
+      });
+    })
+    .catch((error) => {
+      console.log(`Error: ${error}`);
+      res.status(400).send({
+        message: `An error occurred while updating a talk. Error: ${error.toString()}`,
+      });
+    });
+}
+
 export async function inviteUser(req, res) {
   if (!await loggedUserOwnstalk(req.params.id)) {
     console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
@@ -90,7 +162,7 @@ export async function inviteUser(req, res) {
   query({
       text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'talk')`,
       values: [req.body.invited_user, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -112,7 +184,7 @@ export async function inviteSubscribers(req, res) {
               ON CONFLICT ON CONSTRAINT unique_invite
               DO NOTHING`,
     values: [req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -166,7 +238,7 @@ export function addParticipantUser(req, res) {
   query({
       text: `INSERT INTO talk_participants (participant_user, talk) VALUES ($1, $2)`,
       values: [userId, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -179,7 +251,7 @@ export function removeParticipantUser(req, res) {
   query({
       text: `DELETE FROM talk_participants WHERE participant_user = $1 AND talk = $2`,
       values: [userId, req.params.id],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
       console.log('\n\nERROR:', error);
@@ -349,7 +421,7 @@ export function changePrivacy(req, res) {
                 SET privacy = $2
                 WHERE id = $1 AND author = $3`,
     values: [req.body.id, req.body.privacy, userId],
-  }).then((result) => {
+  }).then(() => {
     res.status(200).send();
   }).catch((error) => {
     console.log('\n\nERROR:', error);
