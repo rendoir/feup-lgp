@@ -185,6 +185,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
             first_name={request.first_name}
             home_town={request.home_town}
             last_name={request.last_name}
+            old_password={request.old_password}
             password={request.password}
             confirm_password={request.confirm_password}
             university={request.university}

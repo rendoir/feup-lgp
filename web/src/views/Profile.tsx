@@ -22,8 +22,10 @@ import {
 } from "../components/Modal/index";
 import Modal from "../components/Modal/Modal";
 import ProfileModal from "../components/ProfileModal/ProfileModal";
-import { Request, Step } from "../components/ProfileModal/types";
+
 import { isNull } from "util";
+
+import { Request, Step } from "../components/ProfileModal/types";
 
 interface IProps {
   match: {
@@ -47,11 +49,13 @@ type State = {
   user: any;
   fetchingInfo: boolean;
   request: {
+    avatar?: File;
     email: string;
     first_name: string;
     home_town: string;
     last_name: string;
     loading: boolean;
+    old_password: string;
     password: string;
     confirm_password: string;
     university: string;
@@ -78,12 +82,14 @@ class Profile extends React.Component<IProps, State> {
       numberOfRatings: 1,
       posts: [],
       request: {
+        avatar: undefined,
         confirm_password: "",
         email: "",
         first_name: "",
         home_town: "",
         last_name: "",
         loading: false,
+        old_password: "",
         password: "",
         university: "",
         work: "",
@@ -141,7 +147,7 @@ class Profile extends React.Component<IProps, State> {
                     title="Admin Admino"
                     placeholder="empty"
                     size={250}
-                    image="http://cosmicgirlgames.com/images/games/morty.gif"
+                    image={this.state.user.avatar}
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
@@ -218,13 +224,15 @@ class Profile extends React.Component<IProps, State> {
     this.setState({
       isOpen: false,
       request: {
-        confirm_password: this.state.user.password,
+        avatar: undefined,
+        confirm_password: "",
         email: this.state.user.email,
         first_name: this.state.user.first_name,
         home_town: this.state.user.home_town,
         last_name: this.state.user.last_name,
         loading: false,
-        password: this.state.user.password,
+        old_password: "",
+        password: "",
         university: this.state.user.university,
         work: isNull(this.state.user.work_field)
           ? ""
@@ -316,15 +324,25 @@ class Profile extends React.Component<IProps, State> {
     const formData = new FormData();
 
     formData.append("author", String(this.auth.getUserPayload().id));
-    formData.append("email", request.email);
-    formData.append("password", request.password);
-    formData.append("first_name", request.first_name);
-    formData.append("last_name", request.first_name);
 
-    if (request.work === null || request.work === "") {
-      formData.append("work", request.work);
+    formData.append("email", request.email);
+
+    if (
+      request.old_password !== "" &&
+      request.password === request.confirm_password
+    ) {
+      formData.append("old_password", request.old_password);
+      formData.append("password", request.password);
     }
 
+    if (request.avatar !== undefined) {
+      formData.append("avatar", request.avatar);
+    }
+
+    formData.append("first_name", request.first_name);
+    formData.append("last_name", request.last_name);
+
+    formData.append("work", request.work);
     formData.append("work_field", request.work_field);
     formData.append("home_town", request.home_town);
     formData.append("university", request.university);
@@ -336,10 +354,11 @@ class Profile extends React.Component<IProps, State> {
         }
       })
       .then(res => {
-        console.log("Post created - reloading page...");
+        console.log("Edited user info - reloading page...");
         window.location.reload();
+        this.resetState();
       })
-      .catch(() => console.log("Failed to create post"));
+      .catch(error => console.log("Failed to edit user info: ") + error);
   };
 
   private apiGetUserUserInteractions() {
@@ -404,13 +423,15 @@ class Profile extends React.Component<IProps, State> {
       .then(res => {
         this.setState({
           request: {
-            confirm_password: res.data.user.password,
+            avatar: undefined,
+            confirm_password: "",
             email: res.data.user.email,
             first_name: res.data.user.first_name,
             home_town: res.data.user.home_town,
             last_name: res.data.user.last_name,
             loading: false,
-            password: res.data.user.password,
+            old_password: "",
+            password: "",
             university: res.data.user.university,
             work: res.data.user.work,
             work_field: res.data.user.work_field

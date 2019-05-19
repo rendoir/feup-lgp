@@ -97,6 +97,8 @@ export let dictionary: Dictionary = {
   username: { PT: "Nome de utilizador", EN: "Username" },
   email: { PT: "E-mail", EN: "E-mail" },
   password: { PT: "Palavra passe", EN: "Password" },
+  new_password: { PT: "Nova palavra passe", EN: "New Password" },
+  old_password: { PT: "Palavra passe atual", EN: "Current Password" },
   notifications: { PT: "Notificações", EN: "Notifications" },
   no_notifications: {
     PT: "Não tem notificações",

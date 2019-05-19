@@ -56,7 +56,6 @@ class LoginForm extends React.Component<RouteComponentProps, State> {
 
   private handleAuthentication(e: any) {
     e.preventDefault();
-    console.log(this.state);
     this.auth
       .login(this.state.email, this.state.password)
       .then(res => {

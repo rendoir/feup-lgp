@@ -19,6 +19,7 @@ export type Props = {
   first_name: string;
   home_town: string;
   last_name: string;
+  old_password: string;
   password: string;
   university: string;
   work: string;
@@ -198,39 +199,59 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               {dictionary.invalid_email[this.context]}
             </p>
           </div>
-          <div className="form-group mt-3">
-            <InputNext
-              className={styles.input}
-              id={`${id}_password`}
-              name={"password"}
-              type="password"
-              onChange={e => this.validate(e, "password")}
-              placeholder={dictionary.password[this.context]}
-              label={dictionary.password[this.context]}
-              value={this.props.password}
-              htmlAutoFocus={true}
-              required={true}
-            />
-            <p id="passwordErrorMessage">
-              {dictionary.invalid_password[this.context]}
-            </p>
-          </div>
-          <div>
-            <InputNext
-              className={styles.input}
-              id={`${id}_confirm_password`}
-              name={"confirm_password"}
-              type="password"
-              onChange={e => this.validate(e, "confirm_password")}
-              placeholder={dictionary.confirm_password[this.context]}
-              label={dictionary.confirm_password[this.context]}
-              value={this.props.confirm_password}
-              htmlAutoFocus={true}
-              required={true}
-            />
-            <p id="confirmPasswordErrorMessage">
-              {dictionary.invalid_confirm_password[this.context]}
-            </p>
+          <div id={`${id}_passwords`} className={styles.Wrapper}>
+            <br />
+            <label htmlFor={`${id}_passwords`} className={styles.dates}>
+              {dictionary.password[this.context]}
+            </label>
+            <div className="form-group mt-3">
+              <InputNext
+                className={styles.input}
+                id={`${id}_password`}
+                name={"old_password"}
+                type="password"
+                onChange={e => this.validate(e, "old_password")}
+                placeholder={dictionary.old_password[this.context]}
+                label={dictionary.old_password[this.context]}
+                value={this.props.old_password}
+                htmlAutoFocus={true}
+                required={true}
+              />
+            </div>
+            <div className="form-group mt-3">
+              <InputNext
+                className={styles.input}
+                id={`${id}_password`}
+                name={"password"}
+                type="password"
+                onChange={e => this.validate(e, "password")}
+                placeholder={dictionary.new_password[this.context]}
+                label={dictionary.new_password[this.context]}
+                value={this.props.password}
+                htmlAutoFocus={true}
+                required={true}
+              />
+              <p id="passwordErrorMessage">
+                {dictionary.invalid_password[this.context]}
+              </p>
+            </div>
+            <div className="form-group mt-3">
+              <InputNext
+                className={styles.input}
+                id={`${id}_confirm_password`}
+                name={"confirm_password"}
+                type="password"
+                onChange={e => this.validate(e, "confirm_password")}
+                placeholder={dictionary.confirm_password[this.context]}
+                label={dictionary.confirm_password[this.context]}
+                value={this.props.confirm_password}
+                htmlAutoFocus={true}
+                required={true}
+              />
+              <p id="confirmPasswordErrorMessage">
+                {dictionary.invalid_confirm_password[this.context]}
+              </p>
+            </div>
           </div>
         </form>
       </div>
@@ -302,6 +323,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       }
       this.setState(() => ({ emailHadInteraction: true }));
       this.props.onChange(value, type);
+    } else if (type === "old_password") {
+      this.props.onChange(value, type);
     } else if (type === "password") {
       const passwordError = document.getElementById("passwordErrorMessage");
       if (String(value).length >= 8 && /\d/.test(value)) {
@@ -332,6 +355,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           confirmPasswordError.style.display = "block";
         }
       }
+      this.props.onChange(value, type);
     } else if (type === "first_name") {
       const firstNameError = document.getElementById("firstNameErrorMessage");
       if (value.toString().length > 1) {

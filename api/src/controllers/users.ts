@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import {query} from '../db/db';
+import { query } from '../db/db';
 
 export function register(req, res) {
     query({
@@ -18,7 +18,7 @@ export function register(req, res) {
             text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
-                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
+            req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
         }).catch((error) => {
             console.log('\n\nERROR:', error);
@@ -35,8 +35,8 @@ export function register(req, res) {
 export class UserToken {
     private _EMAIL: string;
     private _ID: number;
-    private _PERMISSION: 'user'|'admin';
-    constructor(email: string, id: number, permission: 'user'|'admin') {
+    private _PERMISSION: 'user' | 'admin';
+    constructor(email: string, id: number, permission: 'user' | 'admin') {
         this._EMAIL = email;
         this._PERMISSION = permission;
         this._ID = id;
@@ -55,7 +55,7 @@ export class UserToken {
     }
 
     get properties() {
-        return {email: this.email, id: this.id, permission: this.permission};
+        return { email: this.email, id: this.id, permission: this.permission };
     }
 }
 
@@ -69,7 +69,6 @@ export async function getUser(req, res) {
                     `,
             values: [id],
         });
-
         res.send({ user: user.rows[0] });
     } catch (e) {
         console.log('Error getting user info. Error: ' + e.message);
@@ -256,8 +255,8 @@ export async function getProfilePosts(req, res) {
 export async function getNotifications(req, res) {
     const userId = req.user.id;
     try {
-      const unseenInvitesQuery = await query({
-        text: `SELECT DISTINCT invites.id, invite_subject_id,
+        const unseenInvitesQuery = await query({
+            text: `SELECT DISTINCT invites.id, invite_subject_id,
                 (CASE WHEN invite_type = 'conference' THEN conferences.title ELSE posts.title END) as title, invite_type, date_invited
                 FROM invites, conferences, posts
                 WHERE (
@@ -267,13 +266,13 @@ export async function getNotifications(req, res) {
                     invited_user = $1 AND
                     invites.user_notified = FALSE
                 ORDER BY date_invited DESC`,
-        values: [userId],
-      });
+            values: [userId],
+        });
 
-      res.status(200).send({ notifications: unseenInvitesQuery.rows });
+        res.status(200).send({ notifications: unseenInvitesQuery.rows });
     } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user notifications'));
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving user notifications'));
     }
 }
 
@@ -292,28 +291,63 @@ export function inviteNotified(req, res) {
     });
 }
 
-export function updateProfile(req, res) {
+export async function updateProfile(req, res) {
 
-    if (req.params.id !== req.body.author) {
+    const id = req.params.id;
+
+    if (id !== req.body.author) {
         res.status(401).send({ message: 'This account can\'t be edited by anyone but its owner!' });
         return;
     }
-    const hash = crypto.createHash('sha256');
-    hash.update(req.body.password);
-    const hashedPassword = hash.digest('hex');
 
     query({
-        text: `UPDATE users SET pass = $2, first_name = $3, last_name = $4,
-                    work = $5, work_field = $6, home_town = $7, university = $8,
-                    avatar = $9, email = $10
+        text: 'SELECT pass from users WHERE id=$1',
+        values: [id],
+    }).then((result1) => {
+        if (req.params.old_password && req.params.old_password !== '') {
+
+            const hashOld = crypto.createHash('sha256');
+            hashOld.update(req.body.old_password);
+            const hashedOldPassword = hashOld.digest('hex');
+
+            if (result1.rows[0].pass !== hashedOldPassword) {
+                res.status(401).send({ message: 'The current password inserted is different than the one existent for this user!' });
+                return;
+            }
+            const hash = crypto.createHash('sha256');
+            hash.update(req.body.password);
+            const hashedPassword = hash.digest('hex');
+
+            query({
+                text: `UPDATE users SET pass = $2
+                        WHERE id = $1`,
+                values: [req.params.id, hashedPassword],
+            }).then((result) => {
+                res.status(200).send();
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
+            });
+        }
+
+        query({
+            text: `UPDATE users SET first_name = $2, last_name = $3,
+                    work = $4, work_field = $5, home_town = $6, university = $7,
+                    avatar = $8, email = $9
                     WHERE id = $1`,
-        values: [req.params.id, hashedPassword, req.body.first_name, req.body.last_name,
-                req.body.work, req.body.work_field, req.body.home_town,
-                req.body.university, req.body.avatar, req.body.email],
-    }).then((result2) => {
+            values: [req.params.id, req.body.first_name, req.body.last_name,
+            req.body.work, req.body.work_field, req.body.home_town,
+            req.body.university, req.body.avatar, req.body.email],
+        }).then((result) => {
+            res.status(200).send();
+            // tslint:disable-next-line: no-shadowed-variable
+        }).catch((error) => {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the user profile' });
+        });
+
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occured while updating the user profile' });
     });
-
 }

@@ -33,6 +33,7 @@ export type Request = {
   home_town: string;
   last_name: string;
   loading: boolean;
+  old_password: string;
   password: string;
   confirm_password: string;
   university: string;
