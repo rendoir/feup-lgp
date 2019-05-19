@@ -1,27 +1,32 @@
-import * as React from "react";
-import AddAdminModal from "../components/AdminFunctionsModal/AddAdminModal";
-import BanUserModal from "../components/AdminFunctionsModal/BanUserModal";
-import RemoveAdminModal from "../components/AdminFunctionsModal/RemoveAdminModal";
-import UnbanUserModal from "../components/AdminFunctionsModal/UnbanUserModal";
-import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
-import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
-import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
+import * as React from 'react';
+import axiosInstance from '../utils/axiosInstance';
+
+import AddAdminModal from '../components/AdminFunctionsModal/AddAdminModal';
+import BanUserModal from '../components/AdminFunctionsModal/BanUserModal';
+import RemoveAdminModal from '../components/AdminFunctionsModal/RemoveAdminModal';
+import UnbanUserModal from '../components/AdminFunctionsModal/UnbanUserModal';
+import { BackofficeNotification } from '../components/BackofficeNotification/BackofficeNotification';
+import { BackofficeUserCard } from '../components/BackofficeUserCard/BackofficeUserCard';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
 
 type BackofficeState = {
   addAdminSuccess: boolean;
   banUserSuccess: boolean;
   removeAdminSuccess: boolean;
+  search: string;
   showBanUserAlert: boolean;
   showExpelAdminAlert: boolean;
   showTurnAdminAlert: boolean;
   showUnbanUserAlert: boolean;
   unbanUserSuccess: boolean;
   usersAreaActive: boolean;
+  usersSearchResult: any[];
+  usersTypeSearch: string;
 };
 
-const PUBLICATION_NOTIFICATION = "publication";
-const COMMENT_NOTIFICATION = "comment";
+const PUBLICATION_NOTIFICATION = 'publication';
+const COMMENT_NOTIFICATION = 'comment';
 
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
@@ -32,12 +37,15 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       addAdminSuccess: false,
       banUserSuccess: false,
       removeAdminSuccess: false,
+      search: '',
       showBanUserAlert: false,
       showExpelAdminAlert: false,
       showTurnAdminAlert: false,
       showUnbanUserAlert: false,
       unbanUserSuccess: false,
-      usersAreaActive: true
+      usersAreaActive: true,
+      usersSearchResult: [],
+      usersTypeSearch: 'all'
     };
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
@@ -55,6 +63,17 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
     this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
     this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
+
+    // Search users button handlers
+    this.submitUserSearch = this.submitUserSearch.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSetAll = this.handleSetAll.bind(this);
+    this.handleSetAdmin = this.handleSetAdmin.bind(this);
+    this.handleSetUser = this.handleSetUser.bind(this);
+  }
+
+  public componentDidMount() {
+    this.apiSubmitSearch();
   }
 
   public render() {
@@ -84,7 +103,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 className="dropdown-item"
                 onClick={this.handleNotifArea}
               >
-                {dictionary.notifications[this.context]}{" "}
+                {dictionary.notifications[this.context]}{' '}
                 <span className="badge badge-light">4</span>
               </a>
               <a
@@ -161,15 +180,15 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private handleNotifUserBan() {
-    console.log("BAN NOTIFICATION");
+    console.log('BAN NOTIFICATION');
   }
 
   private handleNotifContentDelete() {
-    console.log("DELETE CONTENT NOTIFICATION");
+    console.log('DELETE CONTENT NOTIFICATION');
   }
 
   private handleNotifIgnore() {
-    console.log("IGNORE NOTIFICATION");
+    console.log('IGNORE NOTIFICATION');
   }
 
   private getAddAdminModal() {
@@ -221,8 +240,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       ? dictionary.success_add_admin[this.context]
       : dictionary.error_add_admin[this.context];
     const alertType = this.state.addAdminSuccess
-      ? "alert-success"
-      : "alert-danger";
+      ? 'alert-success'
+      : 'alert-danger';
 
     if (!this.state.showTurnAdminAlert) {
       return null;
@@ -252,8 +271,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       ? dictionary.success_remove_admin[this.context]
       : dictionary.error_remove_admin[this.context];
     const alertType = this.state.removeAdminSuccess
-      ? "alert-success"
-      : "alert-danger";
+      ? 'alert-success'
+      : 'alert-danger';
 
     if (!this.state.showExpelAdminAlert) {
       return null;
@@ -283,8 +302,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       ? dictionary.success_ban_user[this.context]
       : dictionary.error_ban_user[this.context];
     const alertType = this.state.banUserSuccess
-      ? "alert-success"
-      : "alert-danger";
+      ? 'alert-success'
+      : 'alert-danger';
 
     if (!this.state.showBanUserAlert) {
       return null;
@@ -314,8 +333,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       ? dictionary.success_unban_user[this.context]
       : dictionary.error_unban_user[this.context];
     const alertType = this.state.unbanUserSuccess
-      ? "alert-success"
-      : "alert-danger";
+      ? 'alert-success'
+      : 'alert-danger';
 
     if (!this.state.showUnbanUserAlert) {
       return null;
@@ -356,21 +375,39 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               {dictionary.search_type[this.context]}
             </button>
             <div className="dropdown-menu">
-              <a className="dropdown-item" href="#">
+              <a
+                className="dropdown-item"
+                type="buttton"
+                onClick={this.handleSetAll}
+              >
                 {dictionary.all_users[this.context]}
               </a>
-              <a className="dropdown-item" href="#">
+              <a
+                className="dropdown-item"
+                type="buttton"
+                onClick={this.handleSetAdmin}
+              >
                 {dictionary.administrators[this.context]}
               </a>
-              <a className="dropdown-item" href="#">
+              <a
+                className="dropdown-item"
+                type="buttton"
+                onClick={this.handleSetUser}
+              >
                 {dictionary.banned_users[this.context]}
               </a>
             </div>
           </div>
-          <form className="form-inline w-75 row col-sm-9 my-2 my-lg-0">
+          <form
+            className="form-inline w-75 row col-sm-9 my-2 my-lg-0"
+            onSubmit={this.submitUserSearch}
+          >
             <input
+              id="search-user-input"
               className="form-control mr-1"
               type="text"
+              name="search"
+              onChange={this.handleInputChange}
               placeholder={dictionary.search_user[this.context]}
             />
             <button
@@ -382,41 +419,66 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           </form>
         </div>
         {/* User list*/}
-        <div className="col">
-          {/* Alberta normal */}
+        {this.getUsersList()}
+      </div>
+    );
+  }
+
+  private handleSetAll(e) {
+    e.preventDefault();
+    this.setState({ usersTypeSearch: 'all' });
+  }
+
+  private handleSetAdmin(e) {
+    e.preventDefault();
+    this.setState({ usersTypeSearch: 'admin' });
+  }
+
+  private handleSetUser(e) {
+    e.preventDefault();
+    this.setState({ usersTypeSearch: 'user' });
+  }
+
+  private getUsersList() {
+    const users: any[] = [];
+
+    for (const user of this.state.usersSearchResult) {
+      if (
+        this.state.usersTypeSearch !== 'admin' &&
+        user.permissions === 'user'
+      ) {
+        users.push(
           <BackofficeUserCard
-            name="Alberta Ferndandes Normal"
+            key={'user_search_result_' + user.id}
+            name={user.first_name + ' ' + user.last_name}
             image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-            email="alberta.fcup55@fe.up.pt"
-            institution="Faculty of Medicine of University of Porto"
-            profession="Urology"
+            email={user.email}
+            institution={user.work}
+            profession={user.work_field}
             banHandler={this.handleUserCardBan}
             turnAdminHandler={this.handleUserCardTurnAdmin}
           />
-          {/* Alberta banned */}
+        );
+      } else if (
+        this.state.usersTypeSearch !== 'user' &&
+        user.permissions === 'admin'
+      ) {
+        users.push(
           <BackofficeUserCard
-            name="Alberta Ferndandes Banned"
+            key={'user_search_result_' + user.id}
+            name={user.first_name + ' ' + user.last_name}
             image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-            email="alberta.fcup55@fe.up.pt"
-            institution="Faculty of Medicine of University of Porto"
-            profession="Urology"
-            userType={BackofficeUserCard.BANNED_USER}
-            unbanHandler={this.handleUserCardUnban}
-          />
-          {/* Alberta admin */}
-          <BackofficeUserCard
-            name="Alberta Ferndandes Admin"
-            image="https://pbs.twimg.com/profile_images/938813312506064896/ciY68hiP_400x400.jpg"
-            email="alberta.fcup55@fe.up.pt"
-            institution="Faculty of Medicine of University of Porto"
-            profession="Urology"
-            userType={BackofficeUserCard.ADMIN_USER}
+            email={user.email}
+            institution={user.work}
+            profession={user.work_field}
             banHandler={this.handleUserCardBan}
-            expelAdminHandler={this.handleUserCardExpelAdmin}
+            turnAdminHandler={this.handleUserCardTurnAdmin}
           />
-        </div>
-      </div>
-    );
+        );
+      }
+    }
+
+    return <div className="col">{users}</div>;
   }
 
   private getNotifications() {
@@ -474,6 +536,41 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         />
       </div>
     );
+  }
+
+  private handleInputChange(event: any) {
+    const field = event.target.name;
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
+      : event.target.value; // Ignore input only containing white spaces
+
+    const partialState: any = {};
+    partialState[field] = value;
+    this.setState(partialState);
+  }
+
+  private submitUserSearch(event: any) {
+    event.preventDefault();
+    this.apiSubmitSearch();
+  }
+
+  private apiSubmitSearch() {
+    axiosInstance
+      .get('/search', {
+        params: {
+          df: [],
+          di: [],
+          k: '["' + this.state.search.split(' ') + '"]',
+          t: '3',
+          tags: []
+        }
+      })
+      .then(res => {
+        const r = res.data;
+        this.setState({
+          usersSearchResult: r.users
+        });
+      });
   }
 }
 

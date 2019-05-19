@@ -103,7 +103,7 @@ async function authorQuery(keywords: string[], tags: string[], limit: number, of
 async function userQuery(keywords: string[], limit: number, offset: number, initialDate: number, finalDate: number) {
     const queryKeywords = keywords.join('|');
     const users = await query({
-        text: `SELECT id, first_name, last_name, rate, date_created
+        text: `SELECT id, first_name, last_name, rate, date_created, work, work_field, email, permissions
                 FROM users
                 WHERE
                     (first_name ~* ($3)
