@@ -27,6 +27,9 @@ export class BackofficeUserCard extends React.Component<
     super(props);
 
     this.turnAdminHandler = this.turnAdminHandler.bind(this);
+    this.expelAdminHandler = this.expelAdminHandler.bind(this);
+    this.banUserHandler = this.banUserHandler.bind(this);
+    this.unbanUserHandler = this.unbanUserHandler.bind(this);
   }
 
   public render() {
@@ -64,7 +67,7 @@ export class BackofficeUserCard extends React.Component<
     const banButton = (
       <button
         className="btn btn-danger btn-block"
-        onClick={this.props.banHandler}
+        onClick={this.banUserHandler}
       >
         {dictionary.ban_action[this.context]}
       </button>
@@ -72,7 +75,7 @@ export class BackofficeUserCard extends React.Component<
     const unbanButton = (
       <button
         className="btn btn-primary btn-block"
-        onClick={this.props.unbanHandler}
+        onClick={this.unbanUserHandler}
       >
         {dictionary.unban_action[this.context]}
       </button>
@@ -88,7 +91,7 @@ export class BackofficeUserCard extends React.Component<
     const expelAdminButton = (
       <button
         className="btn btn-primary btn-block"
-        onClick={this.props.expelAdminHandler}
+        onClick={this.expelAdminHandler}
       >
         {dictionary.expel_admin[this.context]}
       </button>
@@ -112,7 +115,7 @@ export class BackofficeUserCard extends React.Component<
     return (
       <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
         {this.props.userType !== BackofficeUserCard.BANNED_USER && (
-          <div className="row mb-3">{banButton}</div>
+          <div className="row mb-3">{unbanButton}</div>
         )}
         <div className="row">{userTypeButton}</div>
       </div>
@@ -122,6 +125,24 @@ export class BackofficeUserCard extends React.Component<
   private turnAdminHandler() {
     if (this.props.turnAdminHandler) {
       this.props.turnAdminHandler(this.props.email);
+    }
+  }
+
+  private expelAdminHandler() {
+    if (this.props.expelAdminHandler) {
+      this.props.expelAdminHandler(this.props.email);
+    }
+  }
+
+  private banUserHandler() {
+    if (this.props.banHandler) {
+      this.props.banHandler(this.props.email);
+    }
+  }
+
+  private unbanUserHandler() {
+    if (this.props.unbanHandler) {
+      this.props.unbanHandler(this.props.email);
     }
   }
 }

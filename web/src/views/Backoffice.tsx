@@ -1,5 +1,8 @@
 import * as React from "react";
-import AddAdminModal from "../components/AddAdminModal/AddAdminModal";
+import AddAdminModal from "../components/AdminFunctionsModal/AddAdminModal";
+import BanUserModal from "../components/AdminFunctionsModal/BanUserModal";
+import RemoveAdminModal from "../components/AdminFunctionsModal/RemoveAdminModal";
+import UnbanUserModal from "../components/AdminFunctionsModal/UnbanUserModal";
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 import { dictionary, LanguageContext } from "../utils/language";
@@ -7,7 +10,13 @@ import withAuth from "../utils/withAuth";
 
 type BackofficeState = {
   addAdminSuccess: boolean;
-  showAlert: boolean;
+  banUserSuccess: boolean;
+  removeAdminSuccess: boolean;
+  showBanUserAlert: boolean;
+  showExpelAdminAlert: boolean;
+  showTurnAdminAlert: boolean;
+  showUnbanUserAlert: boolean;
+  unbanUserSuccess: boolean;
   usersAreaActive: boolean;
 };
 
@@ -21,13 +30,22 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     super(props);
     this.state = {
       addAdminSuccess: false,
-      showAlert: false,
+      banUserSuccess: false,
+      removeAdminSuccess: false,
+      showBanUserAlert: false,
+      showExpelAdminAlert: false,
+      showTurnAdminAlert: false,
+      showUnbanUserAlert: false,
+      unbanUserSuccess: false,
       usersAreaActive: true
     };
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
     this.onAddAdminResponse = this.onAddAdminResponse.bind(this);
+    this.onBanUserResponse = this.onBanUserResponse.bind(this);
+    this.onRemoveAdminResponse = this.onRemoveAdminResponse.bind(this);
+    this.onUnbanUserResponse = this.onUnbanUserResponse.bind(this);
     // User card button handlers
     this.handleUserCardBan = this.handleUserCardBan.bind(this);
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
@@ -42,7 +60,10 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   public render() {
     return (
       <div id="backoffice_container" className="container mt-3 ml-0">
-        {this.getAlert()}
+        {this.getTurnAdminAlert()}
+        {this.getBanUserAlert()}
+        {this.getExpelAdminAlert()}
+        {this.getUnbanUserAlert()}
         <div className="row">
           {/* Admin menu */}
           <div className="col-12 col-md-3">
@@ -74,11 +95,38 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               >
                 {dictionary.add_admin[this.context]}
               </a>
+              <a
+                id="remove_admin"
+                className="dropdown-item"
+                data-toggle="modal"
+                data-target="#remove_admin_modal"
+              >
+                {dictionary.expel_admin[this.context]}
+              </a>
+              <a
+                id="ban_user"
+                className="dropdown-item"
+                data-toggle="modal"
+                data-target="#ban_user_modal"
+              >
+                {dictionary.ban_user[this.context]}
+              </a>
+              <a
+                id="unban_user"
+                className="dropdown-item"
+                data-toggle="modal"
+                data-target="#unban_user_modal"
+              >
+                {dictionary.unban_user[this.context]}
+              </a>
             </div>
           </div>
           {this.state.usersAreaActive && this.getUsersArea()}
           {!this.state.usersAreaActive && this.getNotifications()}
           {this.getAddAdminModal()}
+          {this.getBanUserModal()}
+          {this.getRemoveAdminModal()}
+          {this.getUnbanUserModal()}
         </div>
       </div>
     );
@@ -96,20 +144,20 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     });
   }
 
-  private handleUserCardBan() {
-    console.log("BAN USER CARD");
+  private handleUserCardBan(email: string) {
+    BanUserModal.OnBanUser(email, this.onBanUserResponse);
   }
 
-  private handleUserCardUnban() {
-    console.log("UN-BAN USER CARD");
+  private handleUserCardUnban(email: string) {
+    UnbanUserModal.OnUnbanUser(email, this.onUnbanUserResponse);
   }
 
   private handleUserCardTurnAdmin(email: string) {
     AddAdminModal.OnTurnAdmin(email, this.onAddAdminResponse);
   }
 
-  private handleUserCardExpelAdmin() {
-    console.log("EXPEL USER CARD");
+  private handleUserCardExpelAdmin(email: string) {
+    RemoveAdminModal.OnExpelAdmin(email, this.onRemoveAdminResponse);
   }
 
   private handleNotifUserBan() {
@@ -128,14 +176,47 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     return <AddAdminModal onResponse={this.onAddAdminResponse} />;
   }
 
+  private getRemoveAdminModal() {
+    return <RemoveAdminModal onResponse={this.onRemoveAdminResponse} />;
+  }
+
+  private getBanUserModal() {
+    return <BanUserModal onResponse={this.onBanUserResponse} />;
+  }
+
+  private getUnbanUserModal() {
+    return <UnbanUserModal onResponse={this.onUnbanUserResponse} />;
+  }
+
   private onAddAdminResponse(success: boolean) {
     this.setState({
       addAdminSuccess: success,
-      showAlert: true
+      showTurnAdminAlert: true
     });
   }
 
-  private getAlert() {
+  private onRemoveAdminResponse(success: boolean) {
+    this.setState({
+      removeAdminSuccess: success,
+      showExpelAdminAlert: true
+    });
+  }
+
+  private onBanUserResponse(success: boolean) {
+    this.setState({
+      banUserSuccess: success,
+      showBanUserAlert: true
+    });
+  }
+
+  private onUnbanUserResponse(success: boolean) {
+    this.setState({
+      showUnbanUserAlert: true,
+      unbanUserSuccess: success
+    });
+  }
+
+  private getTurnAdminAlert() {
     const alertMessage = this.state.addAdminSuccess
       ? dictionary.success_add_admin[this.context]
       : dictionary.error_add_admin[this.context];
@@ -143,7 +224,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       ? "alert-success"
       : "alert-danger";
 
-    if (!this.state.showAlert) {
+    if (!this.state.showTurnAdminAlert) {
       return null;
     }
 
@@ -158,7 +239,100 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           className="close"
           data-dismiss="alert"
           aria-label="Close"
-          onClick={() => this.setState({ showAlert: false })}
+          onClick={() => this.setState({ showTurnAdminAlert: false })}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    );
+  }
+
+  private getExpelAdminAlert() {
+    const alertMessage = this.state.removeAdminSuccess
+      ? dictionary.success_remove_admin[this.context]
+      : dictionary.error_remove_admin[this.context];
+    const alertType = this.state.removeAdminSuccess
+      ? "alert-success"
+      : "alert-danger";
+
+    if (!this.state.showExpelAdminAlert) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`alert ${alertType} alert-dismissible fade show`}
+        role="alert"
+      >
+        {alertMessage}
+        <button
+          type="button"
+          className="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onClick={() => this.setState({ showExpelAdminAlert: false })}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    );
+  }
+
+  private getBanUserAlert() {
+    const alertMessage = this.state.banUserSuccess
+      ? dictionary.success_ban_user[this.context]
+      : dictionary.error_ban_user[this.context];
+    const alertType = this.state.banUserSuccess
+      ? "alert-success"
+      : "alert-danger";
+
+    if (!this.state.showBanUserAlert) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`alert ${alertType} alert-dismissible fade show`}
+        role="alert"
+      >
+        {alertMessage}
+        <button
+          type="button"
+          className="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onClick={() => this.setState({ showBanUserAlert: false })}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    );
+  }
+
+  private getUnbanUserAlert() {
+    const alertMessage = this.state.unbanUserSuccess
+      ? dictionary.success_unban_user[this.context]
+      : dictionary.error_unban_user[this.context];
+    const alertType = this.state.unbanUserSuccess
+      ? "alert-success"
+      : "alert-danger";
+
+    if (!this.state.showUnbanUserAlert) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`alert ${alertType} alert-dismissible fade show`}
+        role="alert"
+      >
+        {alertMessage}
+        <button
+          type="button"
+          className="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onClick={() => this.setState({ showUnbanUserAlert: false })}
         >
           <span aria-hidden="true">&times;</span>
         </button>

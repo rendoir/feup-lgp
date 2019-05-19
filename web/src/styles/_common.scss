@@ -67,7 +67,7 @@ body {
     }
 
     &-top {
-      color: blue;
+      color: #e7711b;
       padding: 0;
       position: absolute;
       z-index: 0;
@@ -91,7 +91,7 @@ body {
 
     #rate span:hover:before,
     #rate span:hover ~ span:before {
-      color: blue;
+      color: #e7711b;
       content: "\2605";
       position: absolute;
     }
@@ -104,7 +104,7 @@ body {
 
     #update-rate span:hover:before,
     #update-rate span:hover ~ span:before {
-      color: blue;
+      color: #e7711b;
       /*content: "\2605";
       position: absolute;*/
     }

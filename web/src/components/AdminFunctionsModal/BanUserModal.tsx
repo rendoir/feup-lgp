@@ -1,29 +1,29 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./AddAdminModal.css";
+import './AdminFunctionsModal.css';
 
-import { getApiURL } from "../../utils/apiURL";
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { getApiURL } from '../../utils/apiURL';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   onResponse: (success: boolean) => void;
 }
 
 interface IState {
-  admin_email: string;
+  user_email: string;
 }
 
-class AddAdminModal extends Component<IProps, IState> {
+class BanUserModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnTurnAdmin(email: string, onResponse: any) {
+  public static OnBanUser(email: string, onResponse: any) {
     const body = {
       email
     };
 
     axiosInstance
-      .post(getApiURL("/admin"), body)
+      .post(getApiURL('/admin/ban'), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -32,17 +32,17 @@ class AddAdminModal extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      admin_email: ""
+      user_email: ''
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleAddAdmin = this.handleAddAdmin.bind(this);
+    this.handleBanUser = this.handleBanUser.bind(this);
   }
 
   public render() {
     return (
       <div
-        id="add_admin_modal"
+        id="ban_user_modal"
         className="modal fade"
         tabIndex={-1}
         role="dialog"
@@ -57,7 +57,7 @@ class AddAdminModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {dictionary.add_admin[this.context]}
+                {dictionary.ban_user[this.context]}
               </h5>
               <button
                 type="button"
@@ -96,24 +96,24 @@ class AddAdminModal extends Component<IProps, IState> {
     );
   }
 
-  public apiAddAdmin() {
+  public apiBanUser() {
     const body = {
-      email: this.state.admin_email
+      email: this.state.user_email
     };
 
     axiosInstance
-      .post(getApiURL("/admin"), body)
+      .post(getApiURL('/admin/ban'), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }
 
-  private handleAddAdmin() {
-    this.apiAddAdmin();
+  private handleBanUser() {
+    this.apiBanUser();
   }
 
   private handleInputChange(e: any) {
     this.setState({
-      admin_email: e.target.value
+      user_email: e.target.value
     });
   }
 
@@ -125,7 +125,7 @@ class AddAdminModal extends Component<IProps, IState> {
           role="submit"
           className="btn btn-primary"
           data-dismiss="modal"
-          onClick={this.handleAddAdmin}
+          onClick={this.handleBanUser}
         >
           {dictionary.submit[this.context]}
         </button>
@@ -134,4 +134,4 @@ class AddAdminModal extends Component<IProps, IState> {
   }
 }
 
-export default AddAdminModal;
+export default BanUserModal;
