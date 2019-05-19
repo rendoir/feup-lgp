@@ -293,19 +293,16 @@ export function inviteNotified(req, res) {
 
 export async function updateProfile(req, res) {
 
-    const id = req.params.id;
-
-    if (id !== req.body.author) {
+    if (req.params.id !== req.body.author) {
         res.status(401).send({ message: 'This account can\'t be edited by anyone but its owner!' });
         return;
     }
 
     query({
         text: 'SELECT pass from users WHERE id=$1',
-        values: [id],
+        values: [req.params.id],
     }).then((result1) => {
-        if (req.params.old_password && req.params.old_password !== '') {
-
+        if (req.params.old_password !== undefined) {
             const hashOld = crypto.createHash('sha256');
             hashOld.update(req.body.old_password);
             const hashedOldPassword = hashOld.digest('hex');
@@ -314,6 +311,7 @@ export async function updateProfile(req, res) {
                 res.status(401).send({ message: 'The current password inserted is different than the one existent for this user!' });
                 return;
             }
+
             const hash = crypto.createHash('sha256');
             hash.update(req.body.password);
             const hashedPassword = hash.digest('hex');
@@ -338,7 +336,7 @@ export async function updateProfile(req, res) {
             values: [req.params.id, req.body.first_name, req.body.last_name,
             req.body.work, req.body.work_field, req.body.home_town,
             req.body.university, req.body.avatar, req.body.email],
-        }).then((result) => {
+        }).then(() => {
             res.status(200).send();
             // tslint:disable-next-line: no-shadowed-variable
         }).catch((error) => {

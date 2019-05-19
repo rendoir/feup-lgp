@@ -358,7 +358,9 @@ class Profile extends React.Component<IProps, State> {
         window.location.reload();
         this.resetState();
       })
-      .catch(error => console.log("Failed to edit user info: ") + error);
+      .catch(
+        error => console.log("Failed to edit user info: ") + error.response
+      );
   };
 
   private apiGetUserUserInteractions() {
