@@ -63,8 +63,7 @@ class Conference extends PureComponent<Props, State> {
   private id: number;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
-  private readonly conferenceDateOptions: object;
-  private readonly talkDateOptions: object;
+  private readonly dateOptions: object;
   private readonly errorMessages: {
     title;
     description;
@@ -75,16 +74,10 @@ class Conference extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.conferenceDateOptions = {
+    this.dateOptions = {
       day: '2-digit',
       hour: 'numeric',
       minute: 'numeric',
-      month: 'long',
-      weekday: 'long',
-      year: 'numeric'
-    };
-    this.talkDateOptions = {
-      day: '2-digit',
       month: 'long',
       weekday: 'long',
       year: 'numeric'
@@ -208,11 +201,11 @@ class Conference extends PureComponent<Props, State> {
   private renderConferenceCard = () => {
     const dateStart = new Date(this.state.dateStart).toLocaleDateString(
       dictionary.date_format[this.context],
-      this.conferenceDateOptions
+      this.dateOptions
     );
     const dateEnd = new Date(this.state.dateEnd).toLocaleDateString(
       dictionary.date_format[this.context],
-      this.conferenceDateOptions
+      this.dateOptions
     );
 
     return (
@@ -269,7 +262,7 @@ class Conference extends PureComponent<Props, State> {
           {this.state.talks.map(talk => {
             const dateEnd = new Date(talk.dateend).toLocaleDateString(
               dictionary.date_format[this.context],
-              this.conferenceDateOptions
+              this.dateOptions
             );
 
             return (
@@ -614,27 +607,27 @@ class Conference extends PureComponent<Props, State> {
     const editFields = this.state.editFields;
     const errors = this.state.errors;
 
+    editFields.title = editFields.title.trim();
+    editFields.description = editFields.description.trim();
+    editFields.dateStart = editFields.dateStart.trim();
+    editFields.dateEnd = editFields.dateEnd.trim();
+    editFields.place = editFields.place.trim();
+
     if (Object.values(errors).includes(true)) {
       return;
     } else {
       axiosInstance
         .put(`/conference/${this.id}`, {
-          about: editFields.description.trim(),
-          dateEnd: editFields.dateEnd.trim(),
-          dateStart: editFields.dateStart.trim(),
-          local: editFields.place.trim(),
-          title: editFields.title.trim()
+          about: editFields.description,
+          dateEnd: editFields.dateEnd,
+          dateStart: editFields.dateStart,
+          local: editFields.place,
+          title: editFields.title
         })
         .then(() => {
           this.setState({
             ...this.state,
-            editFields: {
-              dateEnd: editFields.dateEnd.trim(),
-              dateStart: editFields.dateStart.trim(),
-              description: editFields.description.trim(),
-              place: editFields.place.trim(),
-              title: editFields.title.trim()
-            },
+            ...editFields,
             editFormOpen: false
           });
         })
