@@ -694,4 +694,3 @@ INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challeng
 INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Question 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'answer_question','{"Question: What is the title of this conference","CorrectAnswer: User talk 2"}',3);
 INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Comment Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'comment_post','{"PostToComment: 25"}',3);
 INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Create Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'create_post','{"Description: Create a Post in this talk where you explain why it is so important for you!"}',3);
-

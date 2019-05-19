@@ -50,7 +50,7 @@
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
-      "./node_modules/.bin/prettier --single-qute --write --parser \"typescript\",",
+      "./node_modules/.bin/prettier --single-quote --write --parser \"typescript\",",
       "git add"
     ]
   },

@@ -18,8 +18,7 @@ export async function getFeed(req, res) {
                                     AND p.visibility IN ('public', 'followers')))
                             AND p.talk IS null
                         ORDER BY date_created DESC
-                        LIMIT 80
-                        OFFSET $3)
+                        LIMIT 80)
                     UNION
                     (SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
@@ -31,8 +30,7 @@ export async function getFeed(req, res) {
                             AND author != $1
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                         ORDER BY date_created DESC
-                        LIMIT 20
-                        OFFSET $3)
+                        LIMIT 20)
                     ORDER BY date_created DESC
                     LIMIT $2
                     OFFSET $3`,
@@ -42,13 +40,21 @@ export async function getFeed(req, res) {
             text: `SELECT COUNT(id)
                     FROM posts
                     WHERE (
-                      author = $1
-                      OR (
-                        author IN (SELECT followed FROM follows WHERE follower = $1)
-                        AND visibility IN ('public','followers')
-                      )
+                        (
+                            author = $1
+                            OR (
+                                author IN (SELECT followed FROM follows WHERE follower = $1)
+                                AND visibility IN ('public', 'followers')
+                                )
+                        )
+                        AND talk IS null
+                    ) OR (
+                        visibility = 'public'
+                        AND talk IS null
+                        AND author != $1
+                        AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                     )
-                    AND talk IS null`,
+                  `,
           values: [userId],
         });
         for (const post of result.rows) {
@@ -119,16 +125,15 @@ export async function getFeedStuff(req, res) {
                         LIMIT 15`,
             values: [userId],
         });
-        const talks = await query({
-            text: `SELECT t.id, t.title, t.dateStart
-                        FROM talks t
-                        INNER JOIN conferences c ON c.id = t.conference
+        const conferences = await query({
+            text: `SELECT c.id, c.title, c.dateStart
+                        FROM conferences c
                         WHERE c.privacy = 'public'
-                        ORDER BY t.dateStart DESC
+                        ORDER BY c.dateStart DESC
                         LIMIT 15`,
         });
         res.send({
-            talks: talks.rows,
+            conferences: conferences.rows,
             following: following.rows,
         });
     } catch (error) {

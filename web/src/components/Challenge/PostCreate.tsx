@@ -1,13 +1,13 @@
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from '../../utils/axiosInstance';
 
 // - Import react components
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./Challenge.module.css";
+import styles from './Challenge.module.css';
 
 // - Import utils
-import { dictionary, LanguageContext } from "../../utils/language";
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   talkID: number;
@@ -45,12 +45,12 @@ class PostCreate extends Component<Props, State> {
 
   public componentDidMount() {
     const content = this.props.content;
-    let description = "";
+    let description = '';
 
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Description: ")) {
-        description = content[i].split("Description: ")[1];
+      if (content[i].startsWith('Description: ')) {
+        description = content[i].split('Description: ')[1];
       }
     }
 
@@ -60,9 +60,9 @@ class PostCreate extends Component<Props, State> {
   public apiSolvedState(description: string) {
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
@@ -84,7 +84,7 @@ class PostCreate extends Component<Props, State> {
         });
       })
       .catch(() => {
-        console.log("Failed to get state of challenge");
+        console.log('Failed to get state of challenge');
         this.setState({
           description
         });
@@ -96,7 +96,7 @@ class PostCreate extends Component<Props, State> {
       <div className="card">
         <div className="card-header d-flex flex-row" id="challenge-header">
           <div
-            key={"Challenge_" + this.props.id + "_title"}
+            key={'Challenge_' + this.props.id + '_title'}
             className="mr-auto"
           >
             {this.props.title}
@@ -107,7 +107,7 @@ class PostCreate extends Component<Props, State> {
         </div>
         <div className="card-body">
           {this.parseContent()}
-          <hr key={"Hr_Challenge_" + this.props.id} />
+          <hr key={'Hr_Challenge_' + this.props.id} />
           {this.parsePrize()}
         </div>
         <div className={`card-footer ${styles.card_footer}`}>
@@ -127,11 +127,11 @@ class PostCreate extends Component<Props, State> {
   }
 
   public parsePrize() {
-    let prize = "";
+    let prize = '';
 
     if (
-      this.props.prize.includes("points") ||
-      this.props.prize.includes("Points")
+      this.props.prize.includes('points') ||
+      this.props.prize.includes('Points')
     ) {
       prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
         dictionary.points[this.context]
@@ -141,21 +141,21 @@ class PostCreate extends Component<Props, State> {
     }
 
     return (
-      <p key={"Prize_Challenge_" + this.props.id} className="card-text">
-        {" "}
-        {prize}{" "}
+      <p key={'Prize_Challenge_' + this.props.id} className="card-text">
+        {' '}
+        {prize}{' '}
       </p>
     );
   }
 
   public parseContent() {
     const content = this.props.content;
-    let description = "";
+    let description = '';
 
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Description: ")) {
-        description = content[i].split("Description: ")[1];
+      if (content[i].startsWith('Description: ')) {
+        description = content[i].split('Description: ')[1];
       }
     }
 
@@ -188,9 +188,9 @@ class PostCreate extends Component<Props, State> {
   public handleSolveChallenge() {
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     getUrl += `/talk/${this.props.talkID}/user/${this.props.userId}/posts`;
 
     axiosInstance
@@ -202,31 +202,31 @@ class PostCreate extends Component<Props, State> {
         }
       })
       .catch(() => {
-        console.log("Failed to get comments of post refered on challenge");
+        console.log('Failed to get comments of post refered on challenge');
       });
   }
 
   public apiSolveChallenge(complete: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
       .post(postUrl, {
         author: this.props.userId,
         challenge: this.props.id,
-        challenge_answer: "",
+        challenge_answer: '',
         completion: complete,
         headers: {}
       })
       .then(res => {
-        console.log("Challenge solved - reloading page...");
+        console.log('Challenge solved - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 }
 
