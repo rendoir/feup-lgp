@@ -65,7 +65,7 @@ export async function addAdmin(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { res.status(400).send({ message: 'The email does not belong to an user' }); }
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
         }).catch((error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while adding admin' });
@@ -83,12 +83,12 @@ export async function banUser(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { res.status(400).send({ message: 'The email does not belong to an user' }); }
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
         }).catch((error) => {
             console.log(error);
-            res.status(500).send({ message: 'An error ocurred while banning an user' });
+            res.status(500).send({ message: 'An error ocurred while banning a user' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to ban an user' }); }
+    } else { res.status(401).send({ message: 'You do not have permissions to ban a user' }); }
 }
 
 export async function makeUser(req, res) {
@@ -101,10 +101,10 @@ export async function makeUser(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { res.status(400).send({ message: 'The email does not belong to an user' }); }
+            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
         }).catch((error) => {
             console.log(error);
-            res.status(500).send({ message: 'An error ocurred while changing to an user' });
+            res.status(500).send({ message: 'An error ocurred while changing to a user' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to change to an user' }); }
+    } else { res.status(401).send({ message: 'You do not have permissions to change to a user' }); }
 }
