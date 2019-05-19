@@ -28,7 +28,7 @@ export let dictionary: Dictionary = {
   conferences: { PT: 'Conferências', EN: 'Conferences' },
   return_conference: {
     PT: ' Voltar para a conferência',
-    EN: 'Return to conference'
+    EN: ' Return to conference'
   },
   like_action: { PT: 'Gostar', EN: 'Like' },
   dislike_action: { PT: 'Não gostar', EN: 'Dislike' },
