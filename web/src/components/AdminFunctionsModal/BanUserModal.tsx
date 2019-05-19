@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./AdminFunctionsModal.css";
+import './AdminFunctionsModal.css';
 
-import { getApiURL } from "../../utils/apiURL";
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { getApiURL } from '../../utils/apiURL';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   onResponse: (success: boolean) => void;
@@ -23,7 +23,7 @@ class BanUserModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL("/admin/ban"), body)
+      .post(getApiURL('/admin/ban'), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -32,7 +32,7 @@ class BanUserModal extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      user_email: ""
+      user_email: ''
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -101,9 +101,8 @@ class BanUserModal extends Component<IProps, IState> {
       email: this.state.user_email
     };
 
-    console.log("1");
     axiosInstance
-      .post(getApiURL("/admin/ban"), body)
+      .post(getApiURL('/admin/ban'), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

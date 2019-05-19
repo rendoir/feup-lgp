@@ -19,7 +19,6 @@ export async function login(req, res, next) {
             next(err);
             return;
         } else if (user.permissions === 'banned') {
-            console.log('You are banned');
             const err = new Error('You are banned from this site');
             err.name = 'BanError';
             next(err);
