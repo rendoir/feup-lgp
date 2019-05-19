@@ -188,7 +188,7 @@ class Conference extends PureComponent<Props, State> {
       );
     } else {
       return (
-        <div id="Conference" className="container-fluid w-75 my-5">
+        <div id="Conference" className="container-fluid w-100 my-5">
           <div className={'d-flex flex-row flex-wrap'}>
             <div className={'col-lg-4 mb-3'}>{this.renderConferenceCard()}</div>
             <div className={'col-lg-8'}>{this.renderTalks()}</div>
