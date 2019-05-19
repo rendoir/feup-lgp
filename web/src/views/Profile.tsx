@@ -155,8 +155,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private handleUserRate(e: any) {
-    if (this.state.userRated) {
-    } else {
+    if (!this.state.userRated) {
       const rateTarget = e.target.id;
 
       const incrementRate = Number(this.state.numberOfRatings) + 1;
