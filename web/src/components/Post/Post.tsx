@@ -82,6 +82,8 @@ interface IState {
 class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
 
+  private auth = new AuthHelperMethods();
+
   constructor(props: Props) {
     super(props);
 
@@ -717,12 +719,16 @@ class Post extends Component<Props, IState> {
         {dictionary.delete_post[this.context]}
       </button>
     );
-    const dropdownButtons = [
-      inviteButton,
-      reportButton,
-      editButton,
-      deleteButton
-    ];
+
+    const dropdownButtons = [inviteButton, reportButton];
+
+    if (this.auth.isLoggedInUser(this.props.user_id)) {
+      dropdownButtons.push(editButton);
+    }
+    if (this.auth.isLoggedInUser(this.props.user_id) || this.auth.isAdmin()) {
+      dropdownButtons.push(deleteButton);
+    }
+
     return dropdownButtons;
   }
 

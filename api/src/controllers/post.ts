@@ -91,7 +91,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content,
+            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
