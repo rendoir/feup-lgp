@@ -294,21 +294,23 @@ export function inviteNotified(req, res) {
 
 export async function updateProfile(req, res) {
     if (req.params.id !== req.body.author) {
-        res.status(401).send({ message: 'This account can\'t be edited by anyone but its owner!' });
+        res.status(400).send({ message: 'This account can\'t be edited by anyone but its owner!' });
         return;
     }
 
-    query({
-        text: 'SELECT pass from users WHERE id=$1',
-        values: [req.params.id],
-    }).then(async (result1) => {
-        if (req.params.old_password !== undefined) {
+    if (req.body.old_password !== undefined) {
+        try {
+            const password = await query({
+                text: 'SELECT pass from users WHERE id=$1',
+                values: [req.params.id],
+            });
+
             const hashOld = crypto.createHash('sha256');
             hashOld.update(req.body.old_password);
             const hashedOldPassword = hashOld.digest('hex');
 
-            if (result1.rows[0].pass !== hashedOldPassword) {
-                res.status(401).send({ message: 'The current password inserted is different than the one existent for this user!' });
+            if (password.rows[0].pass !== hashedOldPassword) {
+                res.status(400).send({ message: 'The current password inserted is different than the one existent for this user!' });
                 return;
             }
 
@@ -316,20 +318,29 @@ export async function updateProfile(req, res) {
             hash.update(req.body.password);
             const hashedPassword = hash.digest('hex');
 
-            query({
-                text: `UPDATE users SET pass = $2
-                        WHERE id = $1`,
-                values: [req.params.id, hashedPassword],
-            }).then((result) => {
+            try {
+                (await query({
+                    text: `UPDATE users SET first_name = $2, last_name = $3,
+                            work = $4, work_field = $5, home_town = $6, university = $7,
+                            email = $8, pass=$9
+                            WHERE id = $1`,
+                    values: [req.params.id, req.body.first_name, req.body.last_name,
+                    req.body.work, req.body.work_field, req.body.home_town,
+                    req.body.university, req.body.email, hashedPassword],
+                }));
+                // saveAvatar(req, res, req.params.id);
                 res.status(200).send();
-            }).catch((error) => {
+            } catch (error) {
                 console.log('\n\nERROR:', error);
-                res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
-            });
+                res.status(400).send({ message: 'An error occured while updating the user profile' });
+            }
+        } catch (error) {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
         }
-
+    } else {
         try {
-            const user = (await query({
+            (await query({
                 text: `UPDATE users SET first_name = $2, last_name = $3,
                         work = $4, work_field = $5, home_town = $6, university = $7,
                         email = $8
@@ -344,8 +355,5 @@ export async function updateProfile(req, res) {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the user profile' });
         }
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error occured while updating the user profile' });
-    });
+    }
 }

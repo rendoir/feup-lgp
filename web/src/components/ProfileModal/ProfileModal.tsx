@@ -1,25 +1,25 @@
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
-import { dictionary, LanguageContext } from "../../utils/language";
-import Button from "../Button/Button";
-import HotKeys from "../HotKeys/HotKeys";
-import IconButton from "../IconButton/IconButton";
-import ImageEdit from "../ImageEdit/ImageEdit";
-import { HTMLAbstractInputElement } from "../InputNext/InputNext";
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { ChangeEvent, MouseEvent, PureComponent } from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
+import Button from '../Button/Button';
+import HotKeys from '../HotKeys/HotKeys';
+import IconButton from '../IconButton/IconButton';
+import ImageEdit from '../ImageEdit/ImageEdit';
+import { HTMLAbstractInputElement } from '../InputNext/InputNext';
 import {
   ModalBody,
   ModalClose,
   ModalFooter,
   ModalHeader,
   ModalProvider
-} from "../Modal/index";
-import Modal from "../Modal/Modal";
+} from '../Modal/index';
+import Modal from '../Modal/Modal';
 
-import CreateGroupInfoForm from "./CreateGroupInfoForm";
+import CreateGroupInfoForm from './CreateGroupInfoForm';
 
-import styles from "./CreateNewModal.module.css";
-import { Props } from "./types";
+import styles from './CreateNewModal.module.css';
+import { Props } from './types';
 
 type CreateNewModalState = {
   isPublic: boolean;
@@ -29,7 +29,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {
-    id: "create_new_modal",
+    id: 'create_new_modal',
     isMaxGroupSizeVisible: false,
     isPublicGroupEnabled: true
   };
@@ -68,7 +68,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
       ...this.props.request,
       avatar
     });
-    this.props.onStepChange("profile");
+    this.props.onStepChange('profile');
   };
 
   private handleAvatarRemove = (): void => {
@@ -83,7 +83,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
       ...this.props.request,
       avatar
     });
-    this.props.onStepChange("avatar");
+    this.props.onStepChange('avatar');
   };
 
   private handleSubmit = (event?: MouseEvent): void => {
@@ -97,11 +97,11 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
   };
 
   private handleCancelAvatarEdit = (): void => {
-    this.props.onStepChange("profile");
+    this.props.onStepChange('profile');
   };
 
   private handleHotKey = (hotKey: string, event: KeyboardEvent): void => {
-    if (hotKey === "Enter") {
+    if (hotKey === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
     }
@@ -149,7 +149,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
           <ModalBody className={styles.body}>
             <ImageEdit
               image={avatar}
-              type={"circle"}
+              type={'circle'}
               size={250}
               height={400}
               onSubmit={this.handleAvatarChange}
@@ -185,6 +185,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
             first_name={request.first_name}
             home_town={request.home_town}
             last_name={request.last_name}
+            loading={request.loading}
             old_password={request.old_password}
             password={request.password}
             confirm_password={request.confirm_password}
@@ -202,8 +203,8 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
           <Button
             wide={true}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleSubmit}
           >
@@ -218,9 +219,9 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
     const { step } = this.props;
 
     switch (step) {
-      case "profile":
+      case 'profile':
         return this.renderProfileStep();
-      case "avatar":
+      case 'avatar':
         return this.renderAvatarStep();
       default:
         return null;

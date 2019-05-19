@@ -485,6 +485,11 @@ export let dictionary: Dictionary = {
     PT: 'Não foi possível tornar o utilizador num administrador',
     EN: 'Error turning user into administrator'
   },
+  not_current_password: {
+    PT: 'A palavra passe inserida não é a palavra passe correcta!',
+    EN:
+      'The current password inserted is different than the one existent for this user!'
+  },
   empty: { PT: '', EN: '' }
 };
 

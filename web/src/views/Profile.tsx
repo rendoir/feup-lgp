@@ -309,13 +309,15 @@ class Profile extends React.Component<IProps, State> {
       return;
     }
 
+    if (request.password !== request.confirm_password) {
+      return;
+    }
+
+    if (request.old_password !== '' && request.password === '') {
+      return;
+    }
+
     const formData = new FormData();
-
-    console.log('Avatar:' + request.avatar);
-
-    formData.append('author', String(this.auth.getUserPayload().id));
-
-    formData.append('email', request.email);
 
     if (
       request.old_password !== '' &&
@@ -324,6 +326,10 @@ class Profile extends React.Component<IProps, State> {
       formData.append('old_password', request.old_password);
       formData.append('password', request.password);
     }
+
+    formData.append('author', String(this.auth.getUserPayload().id));
+
+    formData.append('email', request.email);
 
     if (request.avatar !== undefined) {
       formData.append('avatar', request.avatar);
@@ -349,9 +355,25 @@ class Profile extends React.Component<IProps, State> {
         this.resetState();
       })
       .catch(
-        error => console.log('Failed to edit user info: ') + error.response
+        error => (
+          console.log(
+            'Failed to edit user info: ' + error.response.data.message
+          ),
+          this.handlePasswordError(error)
+        )
       );
   };
+
+  private handlePasswordError(error: any) {
+    if (
+      error.response.data.message ===
+      'The current password inserted is different than the one existent for this user!'
+    ) {
+      const requestCopy = this.state.request;
+      requestCopy.loading = true;
+      this.setState({ request: requestCopy });
+    }
+  }
 
   private apiGetUserUserInteractions() {
     apiGetUserInteractions('users', this.id)

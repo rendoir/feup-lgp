@@ -1,15 +1,10 @@
-import classNames from "classnames";
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  MouseEvent,
-  PureComponent
-} from "react";
-import { fileToBase64 } from "../../utils/fileToBase64";
-import { dictionary, LanguageContext } from "../../utils/language";
-import AvatarSelector from "../AvatarSelector/AvatarSelector";
-import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
-import styles from "./CreateNewModal.module.css";
+import classNames from 'classnames';
+import React, { ChangeEvent, PureComponent } from 'react';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { dictionary, LanguageContext } from '../../utils/language';
+import AvatarSelector from '../AvatarSelector/AvatarSelector';
+import InputNext, { HTMLAbstractInputElement } from '../InputNext/InputNext';
+import styles from './CreateNewModal.module.css';
 
 export type Props = {
   id: string;
@@ -19,6 +14,7 @@ export type Props = {
   first_name: string;
   home_town: string;
   last_name: string;
+  loading: boolean;
   old_password: string;
   password: string;
   university: string;
@@ -47,6 +43,8 @@ export type State = {
   last_nameError: boolean;
   last_nameErrorMessage: string;
   loading: boolean;
+  oldPasswordError: boolean;
+  oldPasswordHadInteraction: boolean;
   passwordError: boolean;
   passwordErrorMessage: string;
   passwordHadInteraction: boolean;
@@ -57,14 +55,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
   public static defaultProps = {
     aboutMaxLength: 130,
-    email: "string",
-    first_name: "string",
-    home_town: "string",
-    last_name: "string",
-    password: "string",
-    university: "string",
+    email: 'string',
+    first_name: 'string',
+    home_town: 'string',
+    last_name: 'string',
+    password: 'string',
+    university: 'string',
     vertical: false,
-    work: "string"
+    work: 'string'
   };
 
   constructor(props: Props) {
@@ -73,18 +71,20 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     this.state = {
       avatar: undefined,
       confirmPasswordError: true,
-      confirmPasswordErrorMessage: "",
+      confirmPasswordErrorMessage: '',
       emailError: true,
-      emailErrorMessage: "",
+      emailErrorMessage: '',
       emailExists: true,
       emailHadInteraction: false,
       first_nameError: true,
-      first_nameErrorMessage: "",
+      first_nameErrorMessage: '',
       last_nameError: true,
-      last_nameErrorMessage: "",
+      last_nameErrorMessage: '',
       loading: false,
+      oldPasswordError: false,
+      oldPasswordHadInteraction: false,
       passwordError: true,
-      passwordErrorMessage: "",
+      passwordErrorMessage: '',
       passwordHadInteraction: false
     };
   }
@@ -103,14 +103,14 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     return (
       <div className={className}>
         {this.renderAvatar()}
-        <form id={id} autoComplete={"off"} className={styles.form}>
+        <form id={id} autoComplete={'off'} className={styles.form}>
           <div className="form-row">
             <div className="form-group col-6">
               <InputNext
                 className={styles.input}
                 id={`${id}_first_name`}
-                name={"first_name"}
-                onChange={e => this.validate(e, "first_name")}
+                name={'first_name'}
+                onChange={e => this.validate(e, 'first_name')}
                 placeholder={dictionary.first_name[this.context]}
                 label={dictionary.first_name[this.context]}
                 value={this.props.first_name}
@@ -122,8 +122,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               <InputNext
                 className={styles.input}
                 id={`${id}_last_name`}
-                name={"last_name"}
-                onChange={e => this.validate(e, "last_name")}
+                name={'last_name'}
+                onChange={e => this.validate(e, 'last_name')}
                 placeholder={dictionary.last_name[this.context]}
                 label={dictionary.last_name[this.context]}
                 value={this.props.last_name}
@@ -136,8 +136,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             <InputNext
               className={styles.input}
               id={`${id}_work`}
-              name={"work"}
-              onChange={e => this.validate(e, "work")}
+              name={'work'}
+              onChange={e => this.validate(e, 'work')}
               placeholder={dictionary.workplace_institution[this.context]}
               label={dictionary.workplace_institution[this.context]}
               value={this.props.work}
@@ -148,8 +148,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             <InputNext
               className={styles.input}
               id={`${id}_work_field`}
-              name={"work_field"}
-              onChange={e => this.validate(e, "work_field")}
+              name={'work_field'}
+              onChange={e => this.validate(e, 'work_field')}
               placeholder={dictionary.profession_field[this.context]}
               label={dictionary.profession_field[this.context]}
               value={this.props.work_field}
@@ -160,8 +160,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             <InputNext
               className={styles.input}
               id={`${id}_home_town`}
-              name={"home_town"}
-              onChange={e => this.validate(e, "home_town")}
+              name={'home_town'}
+              onChange={e => this.validate(e, 'home_town')}
               placeholder={dictionary.hometown[this.context]}
               label={dictionary.hometown[this.context]}
               value={this.props.home_town}
@@ -173,8 +173,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             <InputNext
               className={styles.input}
               id={`${id}_university`}
-              name={"university"}
-              onChange={e => this.validate(e, "university")}
+              name={'university'}
+              onChange={e => this.validate(e, 'university')}
               placeholder={dictionary.university[this.context]}
               label={dictionary.university[this.context]}
               value={this.props.university}
@@ -186,11 +186,11 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             <InputNext
               className={styles.input}
               id={`${id}_email`}
-              name={"email"}
+              name={'email'}
               type="email"
-              onChange={e => this.validate(e, "email")}
-              placeholder={"E-mail"}
-              label={"E-mail"}
+              onChange={e => this.validate(e, 'email')}
+              placeholder={'E-mail'}
+              label={'E-mail'}
               value={this.props.email}
               htmlAutoFocus={true}
               required={true}
@@ -208,23 +208,24 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               <InputNext
                 className={styles.input}
                 id={`${id}_password`}
-                name={"old_password"}
+                name={'old_password'}
                 type="password"
-                onChange={e => this.validate(e, "old_password")}
+                onChange={e => this.validate(e, 'old_password')}
                 placeholder={dictionary.old_password[this.context]}
                 label={dictionary.old_password[this.context]}
                 value={this.props.old_password}
                 htmlAutoFocus={true}
                 required={true}
               />
+              {this.renderErrorOldPassword()}
             </div>
             <div className="form-group mt-3">
               <InputNext
                 className={styles.input}
                 id={`${id}_password`}
-                name={"password"}
+                name={'password'}
                 type="password"
-                onChange={e => this.validate(e, "password")}
+                onChange={e => this.validate(e, 'password')}
                 placeholder={dictionary.new_password[this.context]}
                 label={dictionary.new_password[this.context]}
                 value={this.props.password}
@@ -239,9 +240,9 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               <InputNext
                 className={styles.input}
                 id={`${id}_confirm_password`}
-                name={"confirm_password"}
+                name={'confirm_password'}
                 type="password"
-                onChange={e => this.validate(e, "confirm_password")}
+                onChange={e => this.validate(e, 'confirm_password')}
                 placeholder={dictionary.confirm_password[this.context]}
                 label={dictionary.confirm_password[this.context]}
                 value={this.props.confirm_password}
@@ -276,7 +277,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
   private handleSubmit = (event: Event) => {
     event.preventDefault();
-
     this.props.onSubmit(event);
   };
 
@@ -288,6 +288,18 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
     // this.props.onChange(value, event.target.name);
   };
 
+  private renderErrorOldPassword() {
+    if (this.props.loading === true) {
+      return (
+        <p id="oldPasswordErrorMessage">
+          {dictionary.not_current_password[this.context]}
+        </p>
+      );
+    } else {
+      return null;
+    }
+  }
+
   private renderAvatar() {
     const { avatar } = this.state;
     const { email } = this.props;
@@ -296,7 +308,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
       <div className={styles.avatarBlock}>
         <AvatarSelector
           title={email}
-          placeholder={"empty"}
+          placeholder={'empty'}
           avatar={avatar}
           size={140}
           onRemove={this.props.onAvatarRemove}
@@ -307,90 +319,103 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   }
 
   private validate(value, type) {
-    if (type === "email") {
-      const emailError = document.getElementById("emailErrorMessage");
+    if (type === 'email') {
+      const emailError = document.getElementById('emailErrorMessage');
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (re.test(value)) {
         this.setState(() => ({ emailError: false }));
         if (emailError !== null) {
-          emailError.style.display = "none";
+          emailError.style.display = 'none';
         }
       } else {
         this.props.onChange(value, type);
         if (emailError !== null) {
-          emailError.style.display = "block";
+          emailError.style.display = 'block';
         }
       }
       this.setState(() => ({ emailHadInteraction: true }));
       this.props.onChange(value, type);
-    } else if (type === "old_password") {
+    } else if (type === 'old_password') {
+      /*const oldPasswordError = document.getElementById("oldPasswordErrorMessage");
+      if(this.props.loading === false) {
+        this.setState(() => ({ oldPasswordError: false }));
+        if (oldPasswordError !== null) {
+          oldPasswordError.style.display = "none";
+        }
+      } else {
+        this.setState(() => ({ oldPasswordError: true }));
+        if (oldPasswordError !== null) {
+          oldPasswordError.style.display = "block";
+        }
+      }
+      this.setState(() => ({ oldPasswordHadInteraction: true }));*/
       this.props.onChange(value, type);
-    } else if (type === "password") {
-      const passwordError = document.getElementById("passwordErrorMessage");
+    } else if (type === 'password') {
+      const passwordError = document.getElementById('passwordErrorMessage');
       if (String(value).length >= 8 && /\d/.test(value)) {
         this.setState(() => ({ passwordError: false }));
         if (passwordError !== null) {
-          passwordError.style.display = "none";
+          passwordError.style.display = 'none';
         }
       } else {
         this.setState(() => ({ passwordError: true }));
         if (passwordError !== null) {
-          passwordError.style.display = "block";
+          passwordError.style.display = 'block';
         }
       }
       this.setState(() => ({ passwordHadInteraction: true }));
       this.props.onChange(value, type);
-    } else if (type === "confirm_password") {
+    } else if (type === 'confirm_password') {
       const confirmPasswordError = document.getElementById(
-        "confirmPasswordErrorMessage"
+        'confirmPasswordErrorMessage'
       );
       if (this.props.password === value) {
         this.setState(() => ({ confirmPasswordError: false }));
         if (confirmPasswordError !== null) {
-          confirmPasswordError.style.display = "none";
+          confirmPasswordError.style.display = 'none';
         }
       } else {
         this.setState(() => ({ confirmPasswordError: true }));
         if (confirmPasswordError !== null) {
-          confirmPasswordError.style.display = "block";
+          confirmPasswordError.style.display = 'block';
         }
       }
       this.props.onChange(value, type);
-    } else if (type === "first_name") {
-      const firstNameError = document.getElementById("firstNameErrorMessage");
+    } else if (type === 'first_name') {
+      const firstNameError = document.getElementById('firstNameErrorMessage');
       if (value.toString().length > 1) {
         this.setState(() => ({ first_nameError: value }));
         if (firstNameError !== null) {
-          firstNameError.style.display = "none";
+          firstNameError.style.display = 'none';
         }
       } else {
         this.setState(() => ({ first_nameError: true }));
         if (firstNameError !== null) {
-          firstNameError.style.display = "block";
+          firstNameError.style.display = 'block';
         }
       }
       this.props.onChange(value, type);
-    } else if (type === "last_name") {
-      const lastNameError = document.getElementById("lastNameErrorMessage");
+    } else if (type === 'last_name') {
+      const lastNameError = document.getElementById('lastNameErrorMessage');
       if (value.toString().length > 1) {
         this.setState(() => ({ last_nameError: value }));
         if (lastNameError !== null) {
-          lastNameError.style.display = "none";
+          lastNameError.style.display = 'none';
         }
       } else {
         this.setState(() => ({ last_nameError: true }));
         if (lastNameError !== null) {
-          lastNameError.style.display = "block";
+          lastNameError.style.display = 'block';
         }
       }
       this.props.onChange(value, type);
-    } else if (type === "work") {
+    } else if (type === 'work') {
       this.props.onChange(value, type);
-    } else if (type === "work_field") {
+    } else if (type === 'work_field') {
       this.props.onChange(value, type);
-    } else if (type === "home_town") {
+    } else if (type === 'home_town') {
       this.props.onChange(value, type);
-    } else if (type === "university") {
+    } else if (type === 'university') {
       this.props.onChange(value, type);
     }
   }
