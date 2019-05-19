@@ -162,7 +162,7 @@ commentRouter.put('/:id', controller.editComment);
 commentRouter.post('/:id/report', controller.reportComment);
 
 /**
- * @api {post} /api/post/:post_id/comment/:id/check_report Check if a comment as been reported by a given user
+ * @api {get} /api/post/:post_id/comment/:id/report Check if a comment as been reported by a given user
  * @apiName Check-Comment-Report
  * @apiGroup Comment
  *

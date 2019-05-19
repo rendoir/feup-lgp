@@ -116,3 +116,16 @@ adminRouter.get('/amount_notifications', controller.amountReportNotifications);
  *     }
  */
 adminRouter.post('/report_reasons', controller.getReportReasons);
+
+/**
+ * @api {post} /api/admin/ignore_reports Ignore all reports to a given content
+ * @apiName Ignore-Reports
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.post('/ignore_reports', controller.ignoreContentReports);

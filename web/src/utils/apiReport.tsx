@@ -87,3 +87,49 @@ export async function apiGetReportReasons(
     return null;
   }
 }
+
+export async function apiIgnoreReports(
+  reportedContentId: number,
+  reportedContentType: string
+): Promise<boolean> {
+  const apiURL = `admin/ignore_reports`;
+  const body = {
+    content_id: reportedContentId,
+    content_type: reportedContentType
+  };
+
+  try {
+    const res = await axiosInstance.post(apiURL, body);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export async function apiDeleteContent(
+  reportedContentId: number,
+  reportedContentType: string
+): Promise<boolean> {
+  const apiURL =
+    reportedContentType === "comment"
+      ? `/post/1/comment/${reportedContentId}`
+      : `/post/${reportedContentId}`;
+  const body =
+    reportedContentType === "comment"
+      ? {
+          data: {
+            id: reportedContentId
+          }
+        }
+      : {};
+
+  try {
+    const res = await axiosInstance.delete(apiURL, body);
+    console.log("DELETE BEM SUCEDIDO");
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}

@@ -111,6 +111,28 @@ export async function getReportReasons(req, res) {
     });
 }
 
+export async function ignoreContentReports(req, res) {
+    console.log("IGNORING CONTENT REPORTS");
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot ignore reports if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred ignoring reports: You are not an admin.' });
+        return;
+    }
+    console.log("REPORT CONTENT ID", req.body.content_id);
+    console.log("REPORT CONTENT TYPE", req.body.content_type);
+    query({
+        text: `UPDATE content_reports SET admin_review = TRUE
+                WHERE content_id = $1 AND
+                content_type = $2`,
+        values: [req.body.content_id, req.body.content_type],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while ignoring reports' });
+    });
+}
+
 async function isAdmin(userId): Promise<boolean> {
     try {
         const result = await query({

@@ -334,7 +334,13 @@ export let dictionary: Dictionary = {
     EN: "Insert user's first and last name"
   },
   empty: { PT: "", EN: "" },
-  followers: { PT: "A seguir", EN: "Following" }
+  followers: { PT: "A seguir", EN: "Following" },
+  see_all_reports: { PT: "Ver todas as denúncias", EN: "See all reports" },
+  days: { PT: "dias", EN: "days" },
+  hours: { PT: "horas", EN: "hours" },
+  minutes: { PT: "minutos", EN: "minutes" },
+  now: { PT: "agora", EN: "now" },
+  ago: { PT: "atrás", EN: "ago" }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

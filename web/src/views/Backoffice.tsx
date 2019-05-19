@@ -10,6 +10,7 @@ import withAuth from "../utils/withAuth";
 type BackofficeState = {
   fetchingNotifications: boolean;
   notifications: any[];
+  notificationsAmount: number;
   usersAreaActive: boolean;
 };
 
@@ -22,6 +23,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.state = {
       fetchingNotifications: true,
       notifications: [],
+      notificationsAmount: 0,
       usersAreaActive: false
     };
 
@@ -33,10 +35,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
-    // Notification button handlers
-    this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
-    this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
-    this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
   }
 
   public componentDidMount(): void {
@@ -67,7 +65,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 onClick={this.handleNotifArea}
               >
                 {dictionary.notifications[this.context]}{" "}
-                <span className="badge badge-light">4</span>
+                <span className="badge badge-light">
+                  {this.state.notificationsAmount}
+                </span>
               </a>
             </div>
           </div>
@@ -80,10 +80,12 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private async apiGetNotifications() {
     const notifications = await apiGetReportNotificationsInfo();
+    const notificationsAmount = notifications ? notifications.length : 0;
     console.log(notifications);
     this.setState({
       fetchingNotifications: false,
-      notifications
+      notifications,
+      notificationsAmount
     });
   }
 
@@ -231,9 +233,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           reporterUserFirstName={notif.reported_user_first_name}
           reporterUserLastName={notif.reported_user_last_name}
           reportsAmount={notif.reports_amount}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
         />
       );
     });

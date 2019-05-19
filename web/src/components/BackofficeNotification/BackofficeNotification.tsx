@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 
-import { apiGetReportReasons } from "../../utils/apiReport";
+import {
+  apiDeleteContent,
+  apiGetReportReasons,
+  apiIgnoreReports
+} from "../../utils/apiReport";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
@@ -11,13 +15,12 @@ interface IProps {
   reporterUserFirstName: string;
   reporterUserLastName: string;
   reportsAmount: number;
-  banUserHandler: any;
-  deleteContentHandler: any;
-  ignoreHandler: any;
 }
 
 interface IState {
+  adminReviewed: boolean;
   fetchingReasons: boolean;
+  operationFailed: boolean;
   reportReasons: any;
 }
 
@@ -37,16 +40,53 @@ export class BackofficeNotification extends Component<IProps, IState> {
         : `/${this.props.contentType}/${this.props.contentId}`;
 
     this.state = {
+      adminReviewed: false,
       fetchingReasons: true,
+      operationFailed: false,
       reportReasons: []
     };
+
+    this.handleUserBan = this.handleUserBan.bind(this);
+    this.handleContentDelete = this.handleContentDelete.bind(this);
+    this.handleReportIgnore = this.handleReportIgnore.bind(this);
   }
 
   public componentDidMount(): void {
     this.apiGetReasons();
   }
 
+  public handleUserBan() {
+    console.log("USER BAN");
+    this.apiReportSeen();
+  }
+
+  public async handleContentDelete() {
+    console.log("CONTENT DELETE");
+    const deleteSuccess = await apiDeleteContent(
+      this.props.contentId,
+      this.props.contentType
+    );
+
+    if (!deleteSuccess) {
+      this.setState({ operationFailed: true });
+      return;
+    }
+
+    this.apiReportSeen();
+  }
+
+  public handleReportIgnore() {
+    console.log("IGNORE REPORT");
+    this.apiReportSeen();
+  }
+
   public render() {
+    if (this.state.adminReviewed) {
+      return null;
+    } else if (this.state.operationFailed) {
+      return <div>{dictionary.error_occurred[this.context]}</div>;
+    }
+
     return (
       <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
@@ -58,7 +98,7 @@ export class BackofficeNotification extends Component<IProps, IState> {
           </div>
           <button
             className="close align-self-end"
-            onClick={this.props.ignoreHandler}
+            onClick={this.handleReportIgnore}
           >
             <i className="fas fa-times" />
           </button>
@@ -89,7 +129,9 @@ export class BackofficeNotification extends Component<IProps, IState> {
               aria-expanded="false"
               aria-controls={this.reportReasonsExpansionId}
             >
-              See all {this.props.reportsAmount} reports
+              {`${dictionary.see_all_reports[this.context]} (${
+                this.props.reportsAmount
+              })`}
             </a>
           </div>
 
@@ -108,21 +150,21 @@ export class BackofficeNotification extends Component<IProps, IState> {
               <a
                 className="dropdown-item"
                 href="#"
-                onClick={this.props.banUserHandler}
+                onClick={this.handleUserBan}
               >
                 {dictionary.ban_user[this.context]}
               </a>
               <a
                 className="dropdown-item"
                 href="#"
-                onClick={this.props.deleteContentHandler}
+                onClick={this.handleContentDelete}
               >
                 {dictionary.delete_content[this.context]}
               </a>
               <a
                 className="dropdown-item"
                 href="#"
-                onClick={this.props.ignoreHandler}
+                onClick={this.handleReportIgnore}
               >
                 {dictionary.ignore[this.context]}
               </a>
@@ -167,19 +209,21 @@ export class BackofficeNotification extends Component<IProps, IState> {
 
   private getElapsedTime(timeInterval) {
     if (!timeInterval.minutes) {
-      return "now";
+      return dictionary.now[this.context];
     }
 
-    let elapsedTime = timeInterval.days ? timeInterval.days + " days" : "";
+    let elapsedTime = timeInterval.days
+      ? timeInterval.days + ` ${dictionary.days[this.context]}`
+      : "";
     elapsedTime +=
       timeInterval.hours && timeInterval.hours > 0
-        ? " " + timeInterval.hours + " hours"
+        ? " " + timeInterval.hours + ` ${dictionary.hours[this.context]}`
         : "";
     elapsedTime +=
       timeInterval.minutes && timeInterval.minutes > 0
-        ? " " + timeInterval.minutes + " minutes"
+        ? " " + timeInterval.minutes + ` ${dictionary.minutes[this.context]}`
         : "";
-    return elapsedTime + " ago";
+    return elapsedTime + ` ${dictionary.ago[this.context]}`;
   }
 
   private async apiGetReasons() {
@@ -191,5 +235,10 @@ export class BackofficeNotification extends Component<IProps, IState> {
       fetchingReasons: false,
       reportReasons
     });
+  }
+
+  private apiReportSeen() {
+    apiIgnoreReports(this.props.contentId, this.props.contentType);
+    this.setState({ adminReviewed: true });
   }
 }
