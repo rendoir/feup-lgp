@@ -12,15 +12,6 @@ import { dictionary, LanguageContext } from "../utils/language";
 import AuthHelperMethods from "../utils/AuthHelperMethods";
 import withAuth from "../utils/withAuth";
 
-import { Button } from "../components";
-import {
-  ModalBody,
-  ModalClose,
-  ModalFooter,
-  ModalHeader,
-  ModalProvider
-} from "../components/Modal/index";
-import Modal from "../components/Modal/Modal";
 import ProfileModal from "../components/ProfileModal/ProfileModal";
 
 import { isNull } from "util";
