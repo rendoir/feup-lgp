@@ -1,22 +1,22 @@
-import * as React from "react";
-import { MouseEvent } from "react";
+import * as React from 'react';
+import { MouseEvent } from 'react';
 
-import Avatar from "../components/Avatar/Avatar";
-import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
-import Post from "../components/Post/Post";
-import { apiSubscription } from "../utils/apiSubscription";
-import { apiGetUserInteractions } from "../utils/apiUserInteractions";
-import axiosInstance from "../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../utils/language";
+import Avatar from '../components/Avatar/Avatar';
+import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
+import Post from '../components/Post/Post';
+import { apiSubscription } from '../utils/apiSubscription';
+import { apiGetUserInteractions } from '../utils/apiUserInteractions';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
 
-import AuthHelperMethods from "../utils/AuthHelperMethods";
-import withAuth from "../utils/withAuth";
+import AuthHelperMethods from '../utils/AuthHelperMethods';
+import withAuth from '../utils/withAuth';
 
-import ProfileModal from "../components/ProfileModal/ProfileModal";
+import ProfileModal from '../components/ProfileModal/ProfileModal';
 
-import { isNull } from "util";
+import { isNull } from 'util';
 
-import { Request, Step } from "../components/ProfileModal/types";
+import { Request, Step } from '../components/ProfileModal/types';
 
 interface IProps {
   match: {
@@ -74,19 +74,19 @@ class Profile extends React.Component<IProps, State> {
       posts: [],
       request: {
         avatar: undefined,
-        confirm_password: "",
-        email: "",
-        first_name: "",
-        home_town: "",
-        last_name: "",
+        confirm_password: '',
+        email: '',
+        first_name: '',
+        home_town: '',
+        last_name: '',
         loading: false,
-        old_password: "",
-        password: "",
-        university: "",
-        work: "",
-        work_field: ""
+        old_password: '',
+        password: '',
+        university: '',
+        work: '',
+        work_field: ''
       },
-      step: "profile",
+      step: 'profile',
       user: {},
       userRate: 50,
       userRateTotal: 50,
@@ -111,17 +111,17 @@ class Profile extends React.Component<IProps, State> {
     }
 
     const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
+      ? 'fas fa-bell-slash'
+      : 'fas fa-bell';
     const subscribeBtnText = this.state.userSubscription
       ? dictionary.unsubscribe_action[this.context]
       : dictionary.subscribe_action[this.context];
 
     let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
       profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}/posts`;
     } else {
-      profileUrl += "/api/users/" + this.id + "/posts";
+      profileUrl += '/api/users/' + this.id + '/posts';
     }
     return (
       <div className="Profile">
@@ -195,13 +195,13 @@ class Profile extends React.Component<IProps, State> {
                     onRequestChange={request => this.setState({ request })}
                     onClose={this.resetState}
                     autoFocus={false}
-                    step={"profile"}
+                    step={'profile'}
                   />
                 ) : null}
               </ul>
             </div>
             <div id="right-div">
-              <div className={"col-lg-14"}>
+              <div className={'col-lg-14'}>
                 <InfiniteScroll requestUrl={profileUrl} />
               </div>
             </div>
@@ -216,30 +216,28 @@ class Profile extends React.Component<IProps, State> {
       isOpen: false,
       request: {
         avatar: undefined,
-        confirm_password: "",
+        confirm_password: '',
         email: this.state.user.email,
         first_name: this.state.user.first_name,
         home_town: this.state.user.home_town,
         last_name: this.state.user.last_name,
         loading: false,
-        old_password: "",
-        password: "",
+        old_password: '',
+        password: '',
         university: this.state.user.university,
         work: isNull(this.state.user.work_field)
-          ? ""
+          ? ''
           : this.state.user.work_field,
         work_field: isNull(this.state.user.work_field)
-          ? ""
+          ? ''
           : this.state.user.work_field
       },
-      step: "profile"
+      step: 'profile'
     });
   };
 
   private handleUserRate(e: any) {
-    if (this.state.userRated) {
-      console.log("You already rated this user");
-    } else {
+    if (!this.state.userRated) {
       const rateTarget = e.target.id;
 
       const incrementRate = Number(this.state.numberOfRatings) + 1;
@@ -255,7 +253,6 @@ class Profile extends React.Component<IProps, State> {
         rate: parseInt(rateTarget, 10)
       };
 
-      console.log("User Rating updated to: ", userRating);
       const apiUrl = `/users/${this.id}/rate`;
       return axiosInstance
         .post(apiUrl, body)
@@ -267,7 +264,7 @@ class Profile extends React.Component<IProps, State> {
           });
         })
         .catch(() => {
-          console.log("Rating system failed");
+          console.log('Rating system failed');
         });
     }
   }
@@ -275,12 +272,12 @@ class Profile extends React.Component<IProps, State> {
   private handleUserSubscription() {
     if (this.state.waitingSubscriptionRequest) {
       console.log(
-        "Error trying subscription action! Waiting for response from last request"
+        'Error trying subscription action! Waiting for response from last request'
       );
       return;
     }
 
-    const method = this.state.userSubscription ? "delete" : "post";
+    const method = this.state.userSubscription ? 'delete' : 'post';
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -292,7 +289,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiSubscription(method: string) {
-    apiSubscription("users", method, this.id)
+    apiSubscription('users', method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -300,10 +297,10 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: method === "delete",
+          userSubscription: method === 'delete',
           waitingSubscriptionRequest: false
         });
-        console.log("Subscription system failed");
+        console.log('Subscription system failed');
       });
   }
 
@@ -314,50 +311,50 @@ class Profile extends React.Component<IProps, State> {
 
     const formData = new FormData();
 
-    console.log("Avatar:" + request.avatar);
+    console.log('Avatar:' + request.avatar);
 
-    formData.append("author", String(this.auth.getUserPayload().id));
+    formData.append('author', String(this.auth.getUserPayload().id));
 
-    formData.append("email", request.email);
+    formData.append('email', request.email);
 
     if (
-      request.old_password !== "" &&
+      request.old_password !== '' &&
       request.password === request.confirm_password
     ) {
-      formData.append("old_password", request.old_password);
-      formData.append("password", request.password);
+      formData.append('old_password', request.old_password);
+      formData.append('password', request.password);
     }
 
     if (request.avatar !== undefined) {
-      formData.append("avatar", request.avatar);
+      formData.append('avatar', request.avatar);
     }
 
-    formData.append("first_name", request.first_name);
-    formData.append("last_name", request.last_name);
+    formData.append('first_name', request.first_name);
+    formData.append('last_name', request.last_name);
 
-    formData.append("work", request.work);
-    formData.append("work_field", request.work_field);
-    formData.append("home_town", request.home_town);
-    formData.append("university", request.university);
+    formData.append('work', request.work);
+    formData.append('work_field', request.work_field);
+    formData.append('home_town', request.home_town);
+    formData.append('university', request.university);
 
     axiosInstance
       .post(`/users/${this.id}/edit`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {
-        console.log("Edited user info - reloading page...");
+        console.log('Edited user info - reloading page...');
         window.location.reload();
         this.resetState();
       })
       .catch(
-        error => console.log("Failed to edit user info: ") + error.response
+        error => console.log('Failed to edit user info: ') + error.response
       );
   };
 
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.id)
+    apiGetUserInteractions('users', this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
@@ -372,7 +369,7 @@ class Profile extends React.Component<IProps, State> {
           });
         }
       })
-      .catch(() => console.log("Failed to get user-user interactions"));
+      .catch(() => console.log('Failed to get user-user interactions'));
   }
 
   private handleStars() {
@@ -419,14 +416,14 @@ class Profile extends React.Component<IProps, State> {
         this.setState({
           request: {
             avatar: res.data.user.avatar,
-            confirm_password: "",
+            confirm_password: '',
             email: res.data.user.email,
             first_name: res.data.user.first_name,
             home_town: res.data.user.home_town,
             last_name: res.data.user.last_name,
             loading: false,
-            old_password: "",
-            password: "",
+            old_password: '',
+            password: '',
             university: res.data.user.university,
             work: res.data.user.work,
             work_field: res.data.user.work_field
@@ -434,7 +431,7 @@ class Profile extends React.Component<IProps, State> {
           user: res.data.user
         });
       })
-      .catch(() => console.log("Failed to get user"));
+      .catch(() => console.log('Failed to get user'));
   }
 
   private handleEditProfile = (event: MouseEvent) => {
@@ -456,8 +453,8 @@ class Profile extends React.Component<IProps, State> {
     if (this.state.user.first_name && this.state.user.last_name) {
       return (
         <span>
-          {" "}
-          {this.state.user.first_name} {this.state.user.last_name}{" "}
+          {' '}
+          {this.state.user.first_name} {this.state.user.last_name}{' '}
         </span>
       );
     }
@@ -520,13 +517,13 @@ class Profile extends React.Component<IProps, State> {
         <Post
           key={post.id}
           id={post.id}
-          author={post.first_name + " " + post.last_name}
+          author={post.first_name + ' ' + post.last_name}
           content={post.content}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
+          date={post.date_created.replace(/T.*/gi, '')}
           visibility={post.visibility}
           files={post.files}
         />

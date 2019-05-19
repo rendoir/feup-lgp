@@ -183,7 +183,8 @@ export async function getProfilePosts(req, res) {
                 p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON (p.author = a.id)
-					WHERE p.author = $1 AND
+					WHERE p.author = $1
+					AND p.talk IS null AND
 							(p.visibility = 'public'
 							OR (p.visibility= 'private' AND p.author = $2)
 							OR (p.visibility = 'followers'

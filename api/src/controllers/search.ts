@@ -19,6 +19,7 @@ async function postQuery(keywords: string[], tags: string[], limit: number, offs
                     AND $7::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
+                    AND p.talk IS null
                     AND p.date_created >= (SELECT TO_TIMESTAMP($5)) AND p.date_created <= (SELECT TO_TIMESTAMP($6))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND (p.author IN (SELECT followed FROM follows WHERE follower = $1)
@@ -37,6 +38,7 @@ async function postQuery(keywords: string[], tags: string[], limit: number, offs
                     AND $5::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
+                    AND p.talk IS null
                     AND p.date_created >= (SELECT TO_TIMESTAMP($3)) AND p.date_created <= (SELECT TO_TIMESTAMP($4))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND (p.author IN (SELECT followed FROM follows WHERE follower = $1)
@@ -64,6 +66,7 @@ async function authorQuery(keywords: string[], tags: string[], limit: number, of
                     AND $7::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
+                    AND p.talk IS null
                     AND p.date_created >= (SELECT TO_TIMESTAMP($5)) AND p.date_created <= (SELECT TO_TIMESTAMP($6))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))
@@ -83,6 +86,7 @@ async function authorQuery(keywords: string[], tags: string[], limit: number, of
                     AND $5::TEXT[] <@ (SELECT ARRAY(SELECT tags.name
                                         FROM tags INNER JOIN posts_tags pt ON (pt.tag = tags.id)
                                         WHERE pt.post = p.id))
+                    AND p.talk IS null
                     AND p.date_created >= (SELECT TO_TIMESTAMP($3)) AND p.date_created <= (SELECT TO_TIMESTAMP($4))
                     AND (p.visibility = 'public'
                         OR (p.visibility = 'followers' AND p.author IN (SELECT followed FROM follows WHERE follower = $1))

@@ -1,24 +1,24 @@
 // - Import react components
 
-import Avatar from "../Avatar/Avatar";
+import Avatar from '../Avatar/Avatar';
 
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import app components
-import ReportModal from "../PostModal/ReportModal";
+import ReportModal from '../PostModal/ReportModal';
 
 // - Import style
-import "@fortawesome/fontawesome-free/css/all.css";
+import '@fortawesome/fontawesome-free/css/all.css';
 // import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
+import 'bootstrap/dist/js/bootstrap.js';
 
-import styles from "./../Post/Post.module.scss";
+import styles from './../Post/Post.module.scss';
 
 // - Import utils
-import { apiCheckCommentUserReport } from "../../utils/apiReport";
-import AuthHelperMethods from "../../utils/AuthHelperMethods";
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { apiCheckCommentUserReport } from '../../utils/apiReport';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   // comment: Comment //from model (substitutes title, text)
@@ -55,14 +55,14 @@ class Comment extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.id = "comment_" + this.props.title;
+    this.id = 'comment_' + this.props.title;
 
     this.state = {
       commentID: 0,
       commentText: this.props.text,
-      commentValue: "",
+      commentValue: '',
       comments: [],
-      hrefComment: "",
+      hrefComment: '',
       isHovered: false,
       likers: [],
       likes: 0,
@@ -105,12 +105,12 @@ class Comment extends Component<Props, State> {
                   className={styles.comment_action}
                   role="button"
                   data-toggle="collapse"
-                  data-target={"#" + this.state.hrefComment + "_form"}
+                  data-target={'#' + this.state.hrefComment + '_form'}
                 >
                   {dictionary.reply_action[this.context]}
                 </button>
               )}
-              <a className={styles.post_date} href={"/post/" + this.id} />
+              <a className={styles.post_date} href={'/post/' + this.id} />
               <div className={`${styles.post_options} btn-group`}>
                 <button
                   className="w-100 h-100 ml-2"
@@ -128,7 +128,7 @@ class Comment extends Component<Props, State> {
                 <div className={`${styles.post_comment} w-100`}>
                   {this.renderLevelComments()}
                   <div
-                    id={this.state.hrefComment + "_form"}
+                    id={this.state.hrefComment + '_form'}
                     className="collapse"
                   >
                     <form
@@ -285,7 +285,7 @@ class Comment extends Component<Props, State> {
   public componentDidMount() {
     this.setState({
       commentID: Number(this.props.title),
-      hrefComment: "comment_section_" + this.props.title
+      hrefComment: 'comment_section_' + this.props.title
     });
     this.apiGetCommentsOfComment(Number(this.props.title));
     this.apiGetWhoLikedComment(Number(this.props.title));
@@ -313,7 +313,7 @@ class Comment extends Component<Props, State> {
   };
 
   public getLikeButton() {
-    const userLoggedIn = 2;
+    const userLoggedIn = this.auth.getUserPayload().id;
     const foundValue = this.state.likers.find(e => {
       if (e.id === userLoggedIn.toString()) {
         return e;
@@ -347,10 +347,9 @@ class Comment extends Component<Props, State> {
         headers: {}
       })
       .then(res => {
-        console.log("Comment created - reloading page...");
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 
   public changeCommentValue(event: any) {
@@ -360,7 +359,7 @@ class Comment extends Component<Props, State> {
   public handleAddLike(event: any) {
     event.preventDefault();
 
-    const userLoggedIn = 2;
+    const userLoggedIn = this.auth.getUserPayload().id;
     const foundValue = this.state.likers.find(e => {
       if (e.id === userLoggedIn.toString()) {
         return e;
@@ -377,8 +376,8 @@ class Comment extends Component<Props, State> {
   }
 
   public userLiked() {
-    const userLoggedIn = 2;
-    const divStyle = { color: "black" };
+    const userLoggedIn = this.auth.getUserPayload().id;
+    const divStyle = { color: 'black' };
 
     const foundValue = this.state.likers.find(e => {
       if (e.id === userLoggedIn.toString()) {
@@ -389,7 +388,7 @@ class Comment extends Component<Props, State> {
     });
 
     if (foundValue != null) {
-      divStyle.color = "blue";
+      divStyle.color = 'blue';
     }
 
     return <i className="fas fa-thumbs-up" style={divStyle} />;
@@ -410,7 +409,7 @@ class Comment extends Component<Props, State> {
           comments: res.data
         });
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 
   public apiAddLikeToComment() {
@@ -421,10 +420,9 @@ class Comment extends Component<Props, State> {
     axiosInstance
       .post(postUrl)
       .then(res => {
-        console.log("Comment liked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
       })
-      .catch(() => console.log("Failed to add like to comment"));
+      .catch(() => console.log('Failed to add like to comment'));
   }
 
   public apiDeleteLikeToComment() {
@@ -435,10 +433,9 @@ class Comment extends Component<Props, State> {
     axiosInstance
       .delete(postUrl)
       .then(res => {
-        console.log("Comment disliked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
       })
-      .catch(() => console.log("Failed to delete like from a comment"));
+      .catch(() => console.log('Failed to delete like from a comment'));
   }
 
   public apiGetWhoLikedComment(id: number) {
@@ -452,7 +449,7 @@ class Comment extends Component<Props, State> {
           likes: res.data.length
         });
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 
   public apiEditComment() {
@@ -466,8 +463,7 @@ class Comment extends Component<Props, State> {
         id: this.state.commentID
       })
       .then(res => {
-        console.log(`Comment edited to ${res.data.newComment}`);
-        if (window.location.pathname === "/post/" + this.id) {
+        if (window.location.pathname === '/post/' + this.id) {
           this.setState({
             redirect: true
           });
@@ -476,7 +472,7 @@ class Comment extends Component<Props, State> {
           window.location.reload();
         }
       })
-      .catch(() => console.log("Failed to edit comment"));
+      .catch(() => console.log('Failed to edit comment'));
   }
 
   public apiDeleteComment() {
@@ -490,8 +486,7 @@ class Comment extends Component<Props, State> {
         }
       })
       .then(res => {
-        console.log("Comment deleted");
-        if (window.location.pathname === "/post/" + this.id) {
+        if (window.location.pathname === '/post/' + this.id) {
           this.setState({
             redirect: true
           });
@@ -500,7 +495,7 @@ class Comment extends Component<Props, State> {
           window.location.reload();
         }
       })
-      .catch(() => console.log("Failed to delete comment"));
+      .catch(() => console.log('Failed to delete comment'));
   }
 
   public handleCommentDeletion() {
@@ -509,12 +504,12 @@ class Comment extends Component<Props, State> {
 
   public renderRedirect() {
     if (this.state.redirect) {
-      window.location.href = "/";
+      window.location.href = '/';
     }
   }
 
   public handleRedirect() {
-    if (window.location.pathname === "/post/" + this.id) {
+    if (window.location.pathname === '/post/' + this.id) {
       this.renderRedirect();
     }
   }
@@ -581,7 +576,7 @@ class Comment extends Component<Props, State> {
   public getLikers() {
     const likedUsersDiv = this.state.likers.map((liker, idx) => {
       return (
-        <span key={"user" + idx + "liked-comment"} className="dropdown-item">
+        <span key={'user' + idx + 'liked-comment'} className="dropdown-item">
           {liker.first_name} {liker.last_name}
         </span>
       );
@@ -589,7 +584,7 @@ class Comment extends Component<Props, State> {
 
     return (
       <span
-        id={"comment_" + this.state.commentID + " show_likes"}
+        id={'comment_' + this.state.commentID + ' show_likes'}
         className="dropdown-menu dropdown-menu-right"
       >
         {likedUsersDiv}
@@ -602,17 +597,17 @@ class Comment extends Component<Props, State> {
     if (this.state.likes > 0) {
       likesDiv.push(
         <span
-          key={this.state.hrefComment + "_span_like"}
+          key={this.state.hrefComment + '_span_like'}
           className={styles.comment_detail}
         >
           <a
-            key={"comment_" + this.state.commentID + " show_likes_button"}
+            key={'comment_' + this.state.commentID + ' show_likes_button'}
             role="button"
             data-toggle="dropdown"
-            data-target={"#comment_" + this.state.commentID + " show_likes"}
+            data-target={'#comment_' + this.state.commentID + ' show_likes'}
           >
             {this.userLiked()}
-          </a>{" "}
+          </a>{' '}
           {this.state.likes}
           {this.getLikers()}
         </span>
@@ -623,13 +618,13 @@ class Comment extends Component<Props, State> {
 
   public renderLevelComments() {
     const commentSection = this.state.comments.map((comment, idx) => {
-      const key = "comment" + this.props.title + " " + idx;
+      const key = 'comment' + this.props.title + ' ' + idx;
       return (
         <Comment
           key={key}
           postID={comment.post}
           title={comment.id}
-          author={comment.first_name + " " + comment.last_name}
+          author={comment.first_name + ' ' + comment.last_name}
           text={comment.comment}
           secondLevel={true}
         />
@@ -649,13 +644,13 @@ class Comment extends Component<Props, State> {
     if (this.state.comments.length > 0) {
       actionSeeRepliesDiv.push(
         <button
-          key={this.state.hrefComment + "_button"}
+          key={this.state.hrefComment + '_button'}
           className={styles.comment_action}
           role="button"
           data-toggle="collapse"
-          data-target={"#" + this.state.hrefComment}
+          data-target={'#' + this.state.hrefComment}
         >
-          {dictionary.see_replies[this.context]} {this.state.comments.length}{" "}
+          {dictionary.see_replies[this.context]} {this.state.comments.length}{' '}
           {dictionary.replies[this.context]}
         </button>
       );
@@ -669,11 +664,11 @@ class Comment extends Component<Props, State> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 }
 
