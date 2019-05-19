@@ -26,6 +26,10 @@ export let dictionary: Dictionary = {
   edit_profile: { PT: "Editar perfil", EN: "Edit profile" },
   logout: { PT: "Terminar sessão", EN: "Logout" },
   conferences: { PT: "Conferências", EN: "Conferences" },
+  return_conference: {
+    PT: " Voltar para a conferência",
+    EN: " Return to conference"
+  },
   like_action: { PT: "Gostar", EN: "Like" },
   dislike_action: { PT: "Não gostar", EN: "Dislike" },
   comment_action: { PT: "Comentar", EN: "Comment" },
@@ -72,10 +76,10 @@ export let dictionary: Dictionary = {
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
   closed_talk: {
-    PT: "Esta palestra foi encerrada!",
-    EN: "This talk has been closed!"
+    PT: "Esta palestra encontra-se fechada!",
+    EN: "This talk is closed!"
   },
-  reopen_talk: { PT: "Reabrir palestra", EN: "Reopen talk" },
+  reopen_talk: { PT: "Abrir palestra", EN: "Open talk" },
   hide_talk: { PT: "Esconder palestra", EN: "Hide talk" },
   report_talk: { PT: "Reportar palestra", EN: "Report talk" },
   archive_talk: { PT: "Arquivar palestra", EN: "Archive talk" },
@@ -88,6 +92,7 @@ export let dictionary: Dictionary = {
     EN: "Start livestream"
   },
   create_challenge_talk: { PT: "Criar desafio", EN: "Create challenge" },
+  edit_conference: { PT: "Editar conferência", EN: "Edit conference" },
   invite_users: { PT: "Convidar utilizadores", EN: "Invite users" },
   leave_talk: { PT: "Sair da palestra", EN: "Leave talk" },
   join_talk: { PT: "Entrar na palestra", EN: "Join talk" },
@@ -159,7 +164,7 @@ export let dictionary: Dictionary = {
   shop_search_points: { PT: "Procurar produtos", EN: "Search products" },
   shop_exchange: { PT: "Trocar", EN: "Exchange" },
   tag_placeholder: {
-    PT: "Procure ou insira uma nova categoria e carregue Enter.",
+    PT: "Procure ou insira uma nova tag e clique Enter.",
     EN: "Search for or insert a new tag and click Enter."
   },
   report: { PT: "Denúncia", EN: "Report" },
@@ -199,7 +204,10 @@ export let dictionary: Dictionary = {
   date_start: { PT: "Início", EN: "Start" },
   date_end: { PT: "Fim", EN: "End" },
   livestream: { PT: "Transmissão em direto", EN: "Livestream" },
-  livestream_url: { PT: "URL da transmissão em direto", EN: "Livestream URL" },
+  livestream_url: {
+    PT: "URL da transmissão em direto (Embed Link)",
+    EN: "Livestream URL (Embed Link)"
+  },
   tags: { PT: "Categorias", EN: "Tags" },
   files: { PT: "Ficheiros", EN: "Files" },
   post_cap: { PT: "Publicação", EN: "Post" },
@@ -452,6 +460,10 @@ export let dictionary: Dictionary = {
     EN: "Insert user's first and last name"
   },
   followers: { PT: "A seguir", EN: "Following" },
+  following: {
+    PT: "Você não segue ninguém ainda!",
+    EN: "You don't follow anyone yet!"
+  },
   create_post_chal: {
     PT: "Leia a descrição e crie uma publicação nesta palestra.",
     EN: "Read the description and create a post in this talk."

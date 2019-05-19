@@ -94,7 +94,7 @@ class PostCreate extends Component<Props, State> {
   public render() {
     return (
       <div className="card">
-        <div className="card-header d-flex flex-row">
+        <div className="card-header d-flex flex-row" id="challenge-header">
           <div
             key={"Challenge_" + this.props.id + "_title"}
             className="mr-auto"

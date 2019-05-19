@@ -313,7 +313,7 @@ class Comment extends Component<Props, State> {
   };
 
   public getLikeButton() {
-    const userLoggedIn = 2;
+    const userLoggedIn = this.auth.getUserPayload().id;
     const foundValue = this.state.likers.find(e => {
       if (e.id === userLoggedIn.toString()) {
         return e;
@@ -347,7 +347,6 @@ class Comment extends Component<Props, State> {
         headers: {}
       })
       .then(res => {
-        console.log("Comment created - reloading page...");
         window.location.reload();
       })
       .catch(() => console.log("Failed to create comment"));
@@ -360,7 +359,7 @@ class Comment extends Component<Props, State> {
   public handleAddLike(event: any) {
     event.preventDefault();
 
-    const userLoggedIn = 2;
+    const userLoggedIn = this.auth.getUserPayload().id;
     const foundValue = this.state.likers.find(e => {
       if (e.id === userLoggedIn.toString()) {
         return e;
@@ -377,7 +376,7 @@ class Comment extends Component<Props, State> {
   }
 
   public userLiked() {
-    const userLoggedIn = 2;
+    const userLoggedIn = this.auth.getUserPayload().id;
     const divStyle = { color: "black" };
 
     const foundValue = this.state.likers.find(e => {
@@ -421,7 +420,6 @@ class Comment extends Component<Props, State> {
     axiosInstance
       .post(postUrl)
       .then(res => {
-        console.log("Comment liked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
       })
       .catch(() => console.log("Failed to add like to comment"));
@@ -435,7 +433,6 @@ class Comment extends Component<Props, State> {
     axiosInstance
       .delete(postUrl)
       .then(res => {
-        console.log("Comment disliked - reloading page...");
         this.apiGetWhoLikedComment(this.state.commentID);
       })
       .catch(() => console.log("Failed to delete like from a comment"));
@@ -466,7 +463,6 @@ class Comment extends Component<Props, State> {
         id: this.state.commentID
       })
       .then(res => {
-        console.log(`Comment edited to ${res.data.newComment}`);
         if (window.location.pathname === "/post/" + this.id) {
           this.setState({
             redirect: true
@@ -490,7 +486,6 @@ class Comment extends Component<Props, State> {
         }
       })
       .then(res => {
-        console.log("Comment deleted");
         if (window.location.pathname === "/post/" + this.id) {
           this.setState({
             redirect: true

@@ -57,6 +57,7 @@ interface IState {
   archived: boolean;
   challenges: any[];
   clickedChallenge: number | undefined;
+  conf_id: number;
   hasChat: boolean;
   step: Step;
   stepChallenge: StepChallenge;
@@ -128,6 +129,7 @@ class Talk extends React.Component<IProps, IState> {
       archived: false,
       challenges: [],
       clickedChallenge: undefined,
+      conf_id: 0,
       date_end: "",
       date_start: "",
       description: "",
@@ -136,7 +138,7 @@ class Talk extends React.Component<IProps, IState> {
       isChallengeModalOpen: false,
       isHidden: false,
       livestreamUrl: "https://www.youtube.com/embed/UVxU2HzPGug",
-      owner_id: 1,
+      owner_id: 0,
       owner_name: "",
       place: "",
       points: 0,
@@ -191,10 +193,12 @@ class Talk extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     this.apiGetTalk();
-    this.getPossibleTags();
-    this.apiGetUserCanJoin();
-    this.apiGetUserParticipation();
-    this.apiGetPointsOfUserTalk();
+    if (this.userId === this.state.owner_id || !this.state.isHidden) {
+      this.getPossibleTags();
+      this.apiGetUserCanJoin();
+      this.apiGetUserParticipation();
+      this.apiGetPointsOfUserTalk();
+    }
   }
 
   public async handleJoinTalk() {
@@ -270,6 +274,7 @@ class Talk extends React.Component<IProps, IState> {
         this.setState({
           archived: talk.archived,
           challenges: challengesConf,
+          conf_id: talk.conference,
           date_end: dateend,
           date_start: datestart,
           description: talk.about,
@@ -348,10 +353,16 @@ class Talk extends React.Component<IProps, IState> {
 
   public render() {
     const isArchived = this.state.archived;
-    if (this.state.isHidden && this.userId === this.state.owner_id) {
+    if (this.state.isHidden && this.userId !== this.state.owner_id) {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={"/conference/" + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>
               {dictionary.title[this.context]}: {this.state.title}
             </h4>
@@ -369,6 +380,12 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={"/conference/" + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
@@ -378,20 +395,14 @@ class Talk extends React.Component<IProps, IState> {
             this.renderStream()}
           <div className="container my-5">
             <div className="conf_side">
+              {this.getJoinButton()}
               <div className="p-3">{this.getDetails()}</div>
               {this.state.owner_id === this.userId ? (
                 <div className="p-3">{this.getAdminButtons()}</div>
               ) : null}
+              {this.getChallenges()}
             </div>
             <div className="conf_posts">
-              {this.getJoinButton()}
-              <button
-                className="create"
-                onClick={this.createConfPost}
-                disabled={isArchived}
-              >
-                {dictionary.create_post[this.context]}
-              </button>
               {this.state.postModalOpen ? (
                 <CreateNewModal
                   pending={false}
@@ -406,7 +417,13 @@ class Talk extends React.Component<IProps, IState> {
                   tags={this.tags}
                 />
               ) : null}
-              {this.getChallenges()}
+              <button
+                className="create"
+                onClick={this.createConfPost}
+                hidden={isArchived}
+              >
+                {dictionary.create_post[this.context]}
+              </button>
               <InfiniteScroll requestUrl={`/talk/${this.id}`} />
             </div>
           </div>
@@ -468,6 +485,10 @@ class Talk extends React.Component<IProps, IState> {
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
     return dropdownButtons;
+  }
+
+  private returnToConf() {
+    window.location.href = "/conference/" + this.state.conf_id;
   }
 
   private createConfPost = (event: MouseEvent) => {
@@ -716,7 +737,7 @@ class Talk extends React.Component<IProps, IState> {
         ) : null}
         <button disabled={isArchived}>
           <i className="fas fa-pen" />
-          Edit conference
+          {dictionary.edit_conference[this.context]}
         </button>
         <button
           type="button"

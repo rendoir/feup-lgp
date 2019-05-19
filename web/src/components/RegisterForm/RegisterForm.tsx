@@ -186,7 +186,6 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
       return axios
         .post(getApiURL("/users"), body)
         .then(() => {
-          console.log("Registration completed, redirecting to feed!");
           this.setState({
             loading: false
           });

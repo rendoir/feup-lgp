@@ -280,7 +280,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
             name={"livestream"}
             label={dictionary.livestream_url[this.context]}
             type={"url"}
-            placeholder={"https://www.youtube.com/embed/<id>"}
+            placeholder={"Ex: https://www.youtube.com/embed/<id>"}
             disabled={!(this.props.switcher === "true")}
           />
         </div>
@@ -339,6 +339,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           label={dictionary.tags[this.context]}
           name={"tagsInput"}
           list={"possible_tags"}
+          placeholder={dictionary.tag_placeholder[this.context]}
           onKeyUp={this.handleKeyUp}
         />
         <datalist id={"possible_tags"}>

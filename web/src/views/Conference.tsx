@@ -315,7 +315,6 @@ class Conference extends React.Component<IProps, IState> {
           title: request.title
         })
         .then(res => {
-          console.log(`talk with id = ${res.data.id} created`);
           window.location.href = "/talk/" + res.data.id;
           this.resetState();
         })

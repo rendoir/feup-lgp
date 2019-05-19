@@ -113,8 +113,9 @@ export function deleteComment(req, res) {
 }
 
 export function deleteALikeToComment(req, res) {
+    const userId = req.user.id;
     query({
-        text: 'DELETE FROM likes_a_comment WHERE comment = $1 AND author = $2', values: [req.params.id, req.body.author],
+        text: 'DELETE FROM likes_a_comment WHERE comment = $1 AND author = $2', values: [req.params.id, userId],
     }).then((result) => {
         res.status(200).send();
     }).catch((error) => {

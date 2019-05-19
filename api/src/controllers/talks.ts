@@ -47,6 +47,10 @@ export function createTalk(req, res) {
     }
   }
 
+  let livestreamURL = req.body.livestream;
+  if (livestreamURL.includes('youtube.com')) {
+    livestreamURL = 'https://www.youtube.com/embed/' + req.body.livestream.substr(req.body.livestream.length - 11);
+  }
   const userId = req.user.id;
 
   query({
@@ -56,12 +60,12 @@ export function createTalk(req, res) {
       userId,
       req.body.title,
       req.body.about,
-      req.body.livestream,
+      livestreamURL,
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
       req.body.avatar,
-      req.body.privacy,
+      'closed',
       req.body.conference,
     ],
   }).then((result) => {
@@ -241,15 +245,16 @@ export async function gettalk(req, res) {
      */
     const talk = await query({
       text: `
-              SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.livestream_url, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy, c.archived
-              FROM talks c
-              INNER JOIN users a ON c.author = a.id
-              WHERE c.id = $1
-                AND (c.author = $2
-                    OR c.privacy = 'public'
-                    OR (c.privacy = 'followers'
-                        AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
+              SELECT t.id, a.id as user_id, a.first_name, a.last_name, t.title, t.conference,
+              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived
+              FROM talks t
+              INNER JOIN users a ON t.author = a.id
+              WHERE t.id = $1
+                AND (t.author = $2
+                    OR t.privacy = 'public'
+                    OR t.privacy = 'closed'
+                    OR (t.privacy = 'followers'
+                        AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )
                 )
             `,
@@ -357,7 +362,6 @@ export async function archiveTalk(req, res) {
   const id = req.params.id;
   const userId = req.user.id;
   try {
-    console.log('id asdasd ' + id);
     const archivedConference = await query({
       text: `UPDATE talks
               SET archived = TRUE
@@ -406,7 +410,6 @@ export function getPointsUserTalk(req, res) {
     text: `SELECT points FROM talk_participants WHERE talk = $1 AND participant_user = $2`,
     values: [req.params.id, req.params.user_id],
   }).then((result) => {
-    console.log('Points ' + result.rows);
     const results = {points: 0};
     if (result.rows !== []) {
       results.points = result.rows[0].points;
