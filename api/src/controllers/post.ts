@@ -11,11 +11,12 @@ export async function createPost(req, res) {
     const userId = req.user.id;
 
     try {
-        if (req.body.conference > 0) {
+        console.log('Created post on talk: ' + req.body.talk);
+        if ( req.body.talk > 0) {
             const post = (await query({
-                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, conference)
+                text: `INSERT INTO posts (author, title, content, search_tokens, visibility, talk)
                 VALUES ($1, $2, $3, TO_TSVECTOR($2 || ' ' || $3), $4, $5) RETURNING id`,
-                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.conference],
+                values: [userId, req.body.title, req.body.text, req.body.visibility, req.body.talk],
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
@@ -90,7 +91,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content, p.likes,
+            text: `SELECT p.id, first_name, last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
@@ -276,29 +277,6 @@ export function updateRate(req, res) {
     }).catch((error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an post' });
-    });
-}
-
-export function addALikeToPost(req, res) {
-    query({
-        text: `INSERT INTO likes_a_post (post,author) VALUES ($1,$2)`,
-        values: [req.params.id, req.body.author],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while liking a post' });
-    });
-}
-
-export function deleteALikeToPost(req, res) {
-    query({
-        text: 'DELETE FROM likes_a_post WHERE post=$1 AND author=$2', values: [req.params.id, req.body.author],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
     });
 }
 

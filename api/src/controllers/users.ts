@@ -255,12 +255,12 @@ export async function getProfilePosts(req, res) {
 export async function getNotifications(req, res) {
     const userId = req.user.id;
     try {
-        const unseenInvitesQuery = await query({
-            text: `SELECT DISTINCT invites.id, invite_subject_id,
-                (CASE WHEN invite_type = 'conference' THEN conferences.title ELSE posts.title END) as title, invite_type, date_invited
-                FROM invites, conferences, posts
+      const unseenInvitesQuery = await query({
+        text: `SELECT DISTINCT invites.id, invite_subject_id,
+                (CASE WHEN invite_type = 'talk' THEN talks.title ELSE posts.title END) as title, invite_type, date_invited
+                FROM invites, talks, posts
                 WHERE (
-                        (invite_type = 'conference' AND conferences.id = invite_subject_id) OR
+                        (invite_type = 'talk' AND talks.id = invite_subject_id) OR
                         (invite_type = 'post' AND posts.id = invite_subject_id)
                     ) AND
                     invited_user = $1 AND
@@ -269,7 +269,7 @@ export async function getNotifications(req, res) {
             values: [userId],
         });
 
-        res.status(200).send({ notifications: unseenInvitesQuery.rows });
+      res.status(200).send({ notifications: unseenInvitesQuery.rows });
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user notifications'));

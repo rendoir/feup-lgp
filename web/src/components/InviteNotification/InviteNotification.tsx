@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 
 // - Import utils
-import { apiUserJoinConference } from "../../utils/apiConference";
 import { apiInviteNotified } from "../../utils/apiInvite";
 import { apiSubscription } from "../../utils/apiSubscription";
+import { apiUserJoinTalk } from "../../utils/apiTalk";
 import { dictionary, LanguageContext } from "../../utils/language";
 
 interface IProps {
   id: number;
   subjectId: number;
-  subjectType: string; // 'post' or 'conference'
+  subjectType: string; // 'post' or 'talk'
   subjectTitle: string;
 }
 
@@ -37,8 +37,8 @@ class InviteNotification extends Component<IProps, IState> {
     let joinSuccess: boolean = true;
 
     // Joining posts is yet to be implemented
-    if (this.props.subjectType === "conference") {
-      joinSuccess = await apiUserJoinConference(this.props.subjectId);
+    if (this.props.subjectType === "talk") {
+      joinSuccess = await apiUserJoinTalk(this.props.subjectId);
     } else if (this.props.subjectType === "post") {
       try {
         await apiSubscription("post", "post", this.props.subjectId);

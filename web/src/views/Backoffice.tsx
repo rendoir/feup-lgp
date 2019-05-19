@@ -1,10 +1,13 @@
 import * as React from "react";
+import AddAdminModal from "../components/AddAdminModal/AddAdminModal";
 import { BackofficeNotification } from "../components/BackofficeNotification/BackofficeNotification";
 import { BackofficeUserCard } from "../components/BackofficeUserCard/BackofficeUserCard";
 import { dictionary, LanguageContext } from "../utils/language";
 import withAuth from "../utils/withAuth";
 
 type BackofficeState = {
+  addAdminSuccess: boolean;
+  showAlert: boolean;
   usersAreaActive: boolean;
 };
 
@@ -17,11 +20,14 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      addAdminSuccess: false,
+      showAlert: false,
       usersAreaActive: true
     };
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
+    this.onAddAdminResponse = this.onAddAdminResponse.bind(this);
     // User card button handlers
     this.handleUserCardBan = this.handleUserCardBan.bind(this);
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
@@ -36,6 +42,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   public render() {
     return (
       <div id="backoffice_container" className="container mt-3 ml-0">
+        {this.getAlert()}
         <div className="row">
           {/* Admin menu */}
           <div className="col-12 col-md-3">
@@ -59,10 +66,19 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 {dictionary.notifications[this.context]}{" "}
                 <span className="badge badge-light">4</span>
               </a>
+              <a
+                id="add_admin"
+                className="dropdown-item"
+                data-toggle="modal"
+                data-target="#add_admin_modal"
+              >
+                {dictionary.add_admin[this.context]}
+              </a>
             </div>
           </div>
           {this.state.usersAreaActive && this.getUsersArea()}
           {!this.state.usersAreaActive && this.getNotifications()}
+          {this.getAddAdminModal()}
         </div>
       </div>
     );
@@ -88,8 +104,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     console.log("UN-BAN USER CARD");
   }
 
-  private handleUserCardTurnAdmin() {
-    console.log("TURN USER CARD");
+  private handleUserCardTurnAdmin(email: string) {
+    AddAdminModal.OnTurnAdmin(email, this.onAddAdminResponse);
   }
 
   private handleUserCardExpelAdmin() {
@@ -106,6 +122,48 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleNotifIgnore() {
     console.log("IGNORE NOTIFICATION");
+  }
+
+  private getAddAdminModal() {
+    return <AddAdminModal onResponse={this.onAddAdminResponse} />;
+  }
+
+  private onAddAdminResponse(success: boolean) {
+    this.setState({
+      addAdminSuccess: success,
+      showAlert: true
+    });
+  }
+
+  private getAlert() {
+    const alertMessage = this.state.addAdminSuccess
+      ? dictionary.success_add_admin[this.context]
+      : dictionary.error_add_admin[this.context];
+    const alertType = this.state.addAdminSuccess
+      ? "alert-success"
+      : "alert-danger";
+
+    if (!this.state.showAlert) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`alert ${alertType} alert-dismissible fade show`}
+        role="alert"
+      >
+        {alertMessage}
+        <button
+          type="button"
+          className="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onClick={() => this.setState({ showAlert: false })}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    );
   }
 
   private getUsersArea() {

@@ -15,12 +15,14 @@ type Dictionary = {
 
 /* tslint:disable:object-literal-sort-keys */
 export let dictionary: Dictionary = {
+  of: { PT: "de", EN: "of" },
   home: { PT: "Início", EN: "Home" },
   shop: { PT: "Loja", EN: "Shop" },
   search: { PT: "Procurar", EN: "Search" },
   new: { PT: "Novo", EN: "New" },
   user_dropdown: { PT: "Utilizador", EN: "User" },
   profile: { PT: "Perfil", EN: "Profile" },
+  talks: { PT: "Palestras", EN: "Talks" },
   edit_profile: { PT: "Editar perfil", EN: "Edit profile" },
   logout: { PT: "Terminar sessão", EN: "Logout" },
   conferences: { PT: "Conferências", EN: "Conferences" },
@@ -69,29 +71,29 @@ export let dictionary: Dictionary = {
   unknown_error: { PT: "Erro desconhecido", EN: "Something went wrong" },
   title: { PT: "Título", EN: "Title" },
   create_post: { PT: "Criar publicação", EN: "Create post" },
-  closed_conference: {
-    PT: "Esta conferência foi encerrada!",
-    EN: "This conference has been closed!"
+  closed_talk: {
+    PT: "Esta palestra foi encerrada!",
+    EN: "This talk has been closed!"
   },
-  reopen_conference: { PT: "Reabrir conferência", EN: "Reopen conference" },
-  hide_conference: { PT: "Esconder conferência", EN: "Hide conference" },
-  report_conference: { PT: "Reportar conferência", EN: "Report conference" },
-  archive_conference: { PT: "Arquivar conferência", EN: "Archive conference" },
-  unarchive_conference: {
+  reopen_talk: { PT: "Reabrir palestra", EN: "Reopen talk" },
+  hide_talk: { PT: "Esconder palestra", EN: "Hide talk" },
+  report_talk: { PT: "Reportar palestra", EN: "Report talk" },
+  archive_talk: { PT: "Arquivar palestra", EN: "Archive talk" },
+  unarchive_talk: {
     PT: "Desarquivar conferência",
     EN: "Unarchive conference"
   },
-  start_livestream_conference: {
+  start_livestream_talk: {
     PT: "Começar transmissão em direto",
     EN: "Start livestream"
   },
-  create_challenge_conference: { PT: "Criar desafio", EN: "Create challenge" },
+  create_challenge_talk: { PT: "Criar desafio", EN: "Create challenge" },
   invite_users: { PT: "Convidar utilizadores", EN: "Invite users" },
-  leave_conference: { PT: "Sair da conferência", EN: "Leave conference" },
-  join_conference: { PT: "Entrar na conferência", EN: "Join conference" },
-  no_access_conference: {
-    PT: "Não tem permissões para aceder a esta conferência",
-    EN: "You don't have permissions to access this conference"
+  leave_talk: { PT: "Sair da palestra", EN: "Leave talk" },
+  join_talk: { PT: "Entrar na palestra", EN: "Join talk" },
+  no_access_talk: {
+    PT: "Não tem permissões para aceder a esta palestra",
+    EN: "You don't have permissions to access this talk"
   },
   login: { PT: "Entrar", EN: "Login" },
   username: { PT: "Nome de utilizador", EN: "Username" },
@@ -122,8 +124,8 @@ export let dictionary: Dictionary = {
   comment_encourage: { PT: "Comente e Incentive", EN: "Comment and Encourage" },
   search_find: { PT: "Procure e Encontre", EN: "Search and Find" },
   website_description2: {
-    PT: "Teses, casos de estudo, video-conferências, ...",
-    EN: "Thesis, clinical cases, video conferences..."
+    PT: "Teses, casos de estudo, video-palestras, ...",
+    EN: "Thesis, clinical cases, video talks..."
   },
   signup: { PT: "Registar", EN: "Sign up" },
   first_name: { PT: "Primeiro nome", EN: "First name" },
@@ -175,12 +177,13 @@ export let dictionary: Dictionary = {
   unban_action: { PT: "Desbanir", EN: "Unban" },
   turn_admin: { PT: "Tornar admin", EN: "Turn admin" },
   expel_admin: { PT: "Expulsar admin", EN: "Expel admin" },
-  conference_chat: { PT: "Chat da conferência", EN: "Conference Chat" },
+  talk_chat: { PT: "Chat da palestra", EN: "Talk Chat" },
   chat_message_placeholder: {
     PT: "Insira aqui a sua mensagem...",
     EN: "Insert your message here..."
   },
   conference: { PT: "conferência", EN: "conference" },
+  talk: { PT: "palestra", EN: "talk" },
   post: { PT: "publicação", EN: "post" },
   description: { PT: "Descrição", EN: "Description" },
   description_placeholder: {
@@ -191,6 +194,7 @@ export let dictionary: Dictionary = {
   visibility_followers: { PT: "Seguidores", EN: "Followers" },
   visibility_private: { PT: "Privado", EN: "Private" },
   visibility: { PT: "Visibilidade", EN: "Visibility" },
+  talk_local: { PT: "Local da palestra", EN: "Talk location" },
   conference_local: { PT: "Local da conferência", EN: "Conference location" },
   location: { PT: "Localização", EN: "Location" },
   dates: { PT: "Datas", EN: "Dates" },
@@ -205,6 +209,11 @@ export let dictionary: Dictionary = {
     PT: "Publicações são o mecanismo básico de partilha de conhecimento",
     EN: "Post are the basic mechanism used to share knowledge."
   },
+  talk_cap: { PT: "Palestra", EN: "Talk" },
+  talk_description: {
+    PT: "Palestras são sessões formais para a discussão de um tópico",
+    EN: "Talks are formal meetings for discussion of a particular topic."
+  },
   conference_cap: { PT: "Conferência", EN: "Conference" },
   conference_description: {
     PT: "Conferências são sessões formais para a discussão de um tópico",
@@ -215,9 +224,9 @@ export let dictionary: Dictionary = {
   next: { PT: "Continuar", EN: "Next" },
   finish: { PT: "Concluir", EN: "Finish" },
   edit_avatar: { PT: "Editar Avatar", EN: "Edit Avatar" },
-  new_conference_post: {
-    PT: "Nova publicação de conferência",
-    EN: "New Conference Post"
+  new_talk_post: {
+    PT: "Nova publicação de palestra",
+    EN: "New talk Post"
   },
   accept: { PT: "Aceitar", EN: "Accept" },
   refuse: { PT: "Recusar", EN: "Refuse" },
@@ -299,8 +308,142 @@ export let dictionary: Dictionary = {
     PT: "Insira imagens, videos e documentos",
     EN: "Insert images, videos and documents"
   },
+  start_at: { PT: "Começou a", EN: "Started at" },
+  day_split: { PT: "Acaba a: ", EN: "Ends at: " },
+  month1: { PT: "Janeiro", EN: "January" },
+  month2: { PT: "Fevereiro", EN: "February" },
+  month3: { PT: "Março", EN: "March" },
+  month4: { PT: "Abril", EN: "April" },
+  month5: { PT: "Maio", EN: "May" },
+  month6: { PT: "Junho", EN: "June" },
+  month7: { PT: "Julho", EN: "July" },
+  month8: { PT: "Agosto", EN: "August" },
+  month9: { PT: "Setembro", EN: "September" },
+  month10: { PT: "Outubro", EN: "October" },
+  month11: { PT: "Novembro", EN: "November" },
+  month12: { PT: "Dezembro", EN: "December" },
+
   create_new_post: { PT: "Criar nova publicação", EN: "Create new post" },
+  create_new_talk: { PT: "Criar nova palestra", EN: "Create new talk" },
   save_changes: { PT: "Gravar mudanças", EN: "Save changes" },
+  challenge_conference: { PT: "Desafios", EN: "Challenges" },
+  no_challenges: {
+    PT: "Ainda não há desafios. Tenta mais tarde!",
+    EN: "No challenges yet. Try later!"
+  },
+  simple_question: {
+    PT: "Desafios de Questão Simples",
+    EN: "Simple Question Challenges"
+  },
+  simple_question_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a responder a uma pergunta para ganhar algo.",
+    EN:
+      "serve to invite conference participants to answer a question to win something."
+  },
+  mult_choice_question: {
+    PT: "Desafios de Questão de Escolha Múltipla",
+    EN: "Multiple Choice Question Challenges"
+  },
+  mult_choice_question_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a responder a uma pergunta de escolha múltipla para ganhar algo.",
+    EN:
+      "serve to invite conference participants to answer a question with multiple choice options, to win something."
+  },
+  post_create: {
+    PT: "Desafios de Publicar na conferência",
+    EN: "Post on Conference Challenges"
+  },
+  post_create_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a criar publicações na conferência.",
+    EN: "serve to invite conference participants to write posts on conference."
+  },
+  comment_post: {
+    PT: "Desafios de Comentar uma Publicação",
+    EN: "Comment on a Post Challenges"
+  },
+  comment_post_desc: {
+    PT:
+      "servem para convidar os participantes da conferência a escrever comentários em certas publicações na conferência.",
+    EN:
+      "serve to invite conference participants to write comments on specific posts on conference."
+  },
+  new_challenge: {
+    PT: "Novo Desafio",
+    EN: "New Challenge"
+  },
+  challenge_title: {
+    PT: "Título do Desafio",
+    EN: "Challenge title"
+  },
+  chal_description_placeholder: {
+    PT: "Escreva uma breve descrição do desafio.",
+    EN: "Write a brief description of the challenge."
+  },
+  prize: {
+    PT: "Prémio",
+    EN: "Prize"
+  },
+  prize_desc: {
+    PT:
+      "Escreva uma breve descrição do prémio. Se este for em pontos indique 'points'.",
+    EN:
+      "Write a short description of the prize to give. If it is in points, write 'points'."
+  },
+  my_points: {
+    PT: "Os Meus Pontos: ",
+    EN: "My Points: "
+  },
+  points: {
+    PT: "Pontos",
+    EN: "Points"
+  },
+  points_desc: {
+    PT: "Se o prémio não for em pontos, escreva '0'",
+    EN: "If prize is not points, write '0'"
+  },
+  question: {
+    PT: "Questão",
+    EN: "Question"
+  },
+  correct_answer: {
+    PT: "Resposta Correcta",
+    EN: "Correct Answer"
+  },
+  options: {
+    PT: "Opções",
+    EN: "Options"
+  },
+  post_to_com: {
+    PT: "Publicação a comentar",
+    EN: "Post to Comment"
+  },
+  ending_at: {
+    PT: "Acaba em:",
+    EN: "Ending at:"
+  },
+  solve_challenge: {
+    PT: "Resolver Desafio",
+    EN: "Solve Challenge"
+  },
+  win: {
+    PT: "Ganha",
+    EN: "Win"
+  },
+  comment_on_post: {
+    PT: "Comenta na publicação com o título:",
+    EN: "Comment On Post with title:"
+  },
+  write_answer: {
+    PT: "Escreve aqui a tua resposta",
+    EN: "Write here your answer"
+  },
+  new_mp: {
+    PT: "Novos",
+    EN: "New"
+  },
   join: { PT: "Aderir", EN: "Join" },
   invite_discussion: {
     PT: "Convidar para a discussão",
@@ -309,6 +452,21 @@ export let dictionary: Dictionary = {
   invite_discussion_placeholder: {
     PT: "Insira o primeiro e último nome do utilizador",
     EN: "Insert user's first and last name"
+  },
+  followers: { PT: "A seguir", EN: "Following" },
+  create_post_chal: {
+    PT: "Leia a descrição e crie uma publicação nesta palestra.",
+    EN: "Read the description and create a post in this talk."
+  },
+  add_admin: { PT: "Adicionar Administrador", EN: "Add Administrator" },
+  insert_admin_email: { PT: "Email do utilizador", EN: "User email" },
+  success_add_admin: {
+    PT: "O utilizador é agora administrador",
+    EN: "User is now an administrator"
+  },
+  error_add_admin: {
+    PT: "Não foi possível tornar o utilizador num administrador",
+    EN: "Error turning user into administrator"
   },
   empty: { PT: "", EN: "" }
 };

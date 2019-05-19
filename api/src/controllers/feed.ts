@@ -9,25 +9,25 @@ export async function getFeed(req, res) {
     try {
         const result = await query({
             text: `(SELECT p.id, first_name, last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
                             (author = $1
                                 OR (author IN (SELECT followed FROM follows WHERE follower = $1)
                                     AND p.visibility IN ('public', 'followers')))
-                            AND p.conference IS null
+                            AND p.talk IS null
                         ORDER BY date_created DESC
                         LIMIT 80
                         OFFSET $3)
                     UNION
                     (SELECT p.id, first_name, last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.conference, users.id AS user_id
+                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
                             (p.visibility = 'public')
-                            AND p.conference IS null
+                            AND p.talk IS null
                             AND author != $1
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
                         ORDER BY date_created DESC
@@ -39,7 +39,7 @@ export async function getFeed(req, res) {
             values: [userId, limit, offset],
         });
         const totalSize = await query({
-          text: `SELECT COUNT(id)
+            text: `SELECT COUNT(id)
                     FROM posts
                     WHERE (
                       author = $1
@@ -48,7 +48,7 @@ export async function getFeed(req, res) {
                         AND visibility IN ('public','followers')
                       )
                     )
-                    AND conference IS null`,
+                    AND talk IS null`,
           values: [userId],
         });
         for (const post of result.rows) {
@@ -85,12 +85,54 @@ export async function getFeed(req, res) {
             post.tags = tagsPost.rows;
             post.files = files.rows;
         }
+        const following = await query({
+            text: `SELECT a.id, a.first_name, a.last_name, p.date_created
+                        FROM users a
+                        INNER JOIN follows f ON a.id=f.followed
+                        INNER JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1 AND p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                        ORDER BY p.date_created DESC
+                        LIMIT 15`,
+            values: [userId],
+        });
         res.send({
             posts: result.rows,
             size: totalSize.rows[0].count,
+            following: following.rows,
         });
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving feed'));
+    }
+}
+
+export async function getFeedStuff(req, res) {
+    const userId = req.user.id;
+    try {
+        const following = await query({
+            text: `SELECT a.id, a.first_name, a.last_name, p.date_created
+                        FROM users a
+                        INNER JOIN follows f ON a.id=f.followed
+                        INNER JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1 AND p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                        ORDER BY p.date_created DESC
+                        LIMIT 15`,
+            values: [userId],
+        });
+        const talks = await query({
+            text: `SELECT t.id, t.title, t.dateStart
+                        FROM talks t
+                        INNER JOIN conferences c ON c.id = t.conference
+                        WHERE c.privacy = 'public'
+                        ORDER BY t.dateStart DESC
+                        LIMIT 15`,
+        });
+        res.send({
+            talks: talks.rows,
+            following: following.rows,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving feed '));
     }
 }

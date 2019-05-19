@@ -191,7 +191,7 @@ async function runQueries(type, keywords, tags, limit, offset, initialDate, fina
 }
 
 /**
- * TODO: Integrate conferences
+ * TODO: Integrate talks
  * @param req
  * @param res
  */
