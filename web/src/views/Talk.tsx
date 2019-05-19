@@ -357,6 +357,12 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={"/conference/" + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>
               {dictionary.title[this.context]}: {this.state.title}
             </h4>
@@ -374,6 +380,12 @@ class Talk extends React.Component<IProps, IState> {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={"/conference/" + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
             <h4>{this.state.title}</h4>
             <p>{this.state.description}</p>
           </div>
@@ -473,6 +485,10 @@ class Talk extends React.Component<IProps, IState> {
     );
     const dropdownButtons = [reportButton, deleteButton, archiveButton];
     return dropdownButtons;
+  }
+
+  private returnToConf() {
+    window.location.href = "/conference/" + this.state.conf_id;
   }
 
   private createConfPost = (event: MouseEvent) => {
