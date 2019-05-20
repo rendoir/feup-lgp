@@ -448,6 +448,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
           content={notif.content_description}
           contentType={notif.content_type}
           reportedUserId={notif.reported_user_id}
+          reportedUserEmail={notif.reported_user_email}
           reporterUserFirstName={notif.reported_user_first_name}
           reporterUserLastName={notif.reported_user_last_name}
           reportsAmount={notif.reports_amount}

@@ -1,17 +1,19 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 import {
   apiDeleteContent,
   apiGetReportReasons,
   apiIgnoreReports
-} from "../../utils/apiReport";
-import { dictionary, LanguageContext } from "../../utils/language";
+} from '../../utils/apiReport';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   contentId: number;
   content: string;
   contentType: string;
   reportedUserId: number;
+  reportedUserEmail: string;
   reporterUserFirstName: string;
   reporterUserLastName: string;
   reportsAmount: number;
@@ -35,8 +37,8 @@ export class BackofficeNotification extends Component<IProps, IState> {
     super(props);
 
     this.contentURL =
-      this.props.contentType === "comment"
-        ? "#"
+      this.props.contentType === 'comment'
+        ? '#'
         : `/${this.props.contentType}/${this.props.contentId}`;
 
     this.state = {
@@ -56,8 +58,14 @@ export class BackofficeNotification extends Component<IProps, IState> {
   }
 
   public handleUserBan() {
-    console.log("USER BAN");
-    this.apiReportSeen();
+    const body = {
+      email: this.props.reportedUserEmail
+    };
+
+    axiosInstance
+      .post('/admin/ban', body)
+      .then(res => this.apiReportSeen())
+      .catch(() => this.setState({ operationFailed: true }));
   }
 
   public async handleContentDelete() {
@@ -88,9 +96,9 @@ export class BackofficeNotification extends Component<IProps, IState> {
     return (
       <div className="container border mb-2 admin_notif">
         <div className="row d-flex justify-content-between mx-1">
-          <div className="mt-2" style={{ textTransform: "capitalize" }}>
+          <div className="mt-2" style={{ textTransform: 'capitalize' }}>
             <b>
-              {dictionary[this.props.contentType][this.context]}{" "}
+              {dictionary[this.props.contentType][this.context]}{' '}
               {dictionary.report[this.context]}
             </b>
           </div>
@@ -110,8 +118,8 @@ export class BackofficeNotification extends Component<IProps, IState> {
             {`${this.props.reporterUserFirstName} ${
               this.props.reporterUserLastName
             }`}
-          </a>{" "}
-          {dictionary[this.props.contentType][this.context]}:{" "}
+          </a>{' '}
+          {dictionary[this.props.contentType][this.context]}:{' '}
           {/* Reported content link */}
           <a href={this.contentURL}>"{this.props.content}"</a>
         </p>
@@ -211,15 +219,15 @@ export class BackofficeNotification extends Component<IProps, IState> {
 
     let elapsedTime = timeInterval.days
       ? timeInterval.days + ` ${dictionary.days[this.context]}`
-      : "";
+      : '';
     elapsedTime +=
       timeInterval.hours && timeInterval.hours > 0
-        ? " " + timeInterval.hours + ` ${dictionary.hours[this.context]}`
-        : "";
+        ? ' ' + timeInterval.hours + ` ${dictionary.hours[this.context]}`
+        : '';
     elapsedTime +=
       timeInterval.minutes && timeInterval.minutes > 0
-        ? " " + timeInterval.minutes + ` ${dictionary.minutes[this.context]}`
-        : "";
+        ? ' ' + timeInterval.minutes + ` ${dictionary.minutes[this.context]}`
+        : '';
     return elapsedTime + ` ${dictionary.ago[this.context]}`;
   }
 

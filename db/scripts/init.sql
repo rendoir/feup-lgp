@@ -333,11 +333,12 @@ $$ LANGUAGE SQL;
 -- ADMIN REPORT NOTIFICATIONS (ALL ADMINS RECEIVE THE SAME NOTIFICATIONS)
 CREATE OR REPLACE FUNCTION retrieve_admin_notifications()
 RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum,
-                reported_user_id BIGINT, reported_user_first_name TEXT, reported_user_last_name TEXT, reports_amount BIGINT) AS $$
+                reported_user_id BIGINT, reported_user_email TEXT, reported_user_first_name TEXT, reported_user_last_name TEXT, reports_amount BIGINT) AS $$
 	SELECT content_id, 
             (CASE WHEN content_type = 'post' THEN posts.title ELSE comments.comment END) as content_description, 
             content_type,
             users.id,
+            users.email,
             users.first_name,
             users.last_name,
             COUNT(DISTINCT content_reports.id) as reports_amount
