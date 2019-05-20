@@ -1,16 +1,16 @@
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from '../../utils/axiosInstance';
 
 // - Import react components
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./Challenge.module.css";
+import styles from './Challenge.module.css';
 
-import Radio from "../Radio/Radio";
-import RadioGroup from "../Radio/RadioGroup";
+import Radio from '../Radio/Radio';
+import RadioGroup from '../Radio/RadioGroup';
 
 // - Import utils
-import { dictionary, LanguageContext } from "../../utils/language";
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export interface IProps {
   talkID: number;
@@ -41,11 +41,11 @@ class QuestionOptions extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      correctAnswer: "",
+      correctAnswer: '',
       isCorrect: undefined,
       possibleAnswers: [],
-      question: "",
-      value: ""
+      question: '',
+      value: ''
     };
 
     this.handleSolveChallenge = this.handleSolveChallenge.bind(this);
@@ -53,21 +53,21 @@ class QuestionOptions extends Component<IProps, IState> {
 
   public componentDidMount() {
     const content = this.props.content;
-    let question = "";
-    let correctAnswer = "";
+    let question = '';
+    let correctAnswer = '';
     const possibleAnswers: any[] = [];
 
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Question: ")) {
-        question = content[i].split("Question: ")[1];
-        if (!question.includes("?")) {
-          question += " ?";
+      if (content[i].startsWith('Question: ')) {
+        question = content[i].split('Question: ')[1];
+        if (!question.includes('?')) {
+          question += ' ?';
         }
-      } else if (content[i].startsWith("CorrectAnswer: ")) {
-        correctAnswer = content[i].split("CorrectAnswer: ")[1];
-      } else if (content[i].startsWith("Answer: ")) {
-        possibleAnswers.push(content[i].split("Answer: ")[1]);
+      } else if (content[i].startsWith('CorrectAnswer: ')) {
+        correctAnswer = content[i].split('CorrectAnswer: ')[1];
+      } else if (content[i].startsWith('Answer: ')) {
+        possibleAnswers.push(content[i].split('Answer: ')[1]);
       }
     }
 
@@ -81,9 +81,9 @@ class QuestionOptions extends Component<IProps, IState> {
   ) {
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
@@ -95,7 +95,7 @@ class QuestionOptions extends Component<IProps, IState> {
         }
       })
       .then(res => {
-        let value = "";
+        let value = '';
         let isCorrect: boolean | undefined;
 
         if (res.data.state.length > 0) {
@@ -112,7 +112,7 @@ class QuestionOptions extends Component<IProps, IState> {
         });
       })
       .catch(() => {
-        console.log("Failed to get state of challenge");
+        console.log('Failed to get state of challenge');
         this.setState({ question, correctAnswer, possibleAnswers });
       });
   }
@@ -122,7 +122,7 @@ class QuestionOptions extends Component<IProps, IState> {
       <div className="card">
         <div className="card-header d-flex flex-row">
           <div
-            key={"Challenge_" + this.props.id + "_title"}
+            key={'Challenge_' + this.props.id + '_title'}
             className="mr-auto"
           >
             {this.props.title}
@@ -133,7 +133,7 @@ class QuestionOptions extends Component<IProps, IState> {
         </div>
         <div className="card-body">
           {this.parseContent()}
-          <hr key={"Hr_Challenge_" + this.props.id} />
+          <hr key={'Hr_Challenge_' + this.props.id} />
           {this.parsePrize()}
         </div>
         <div className={`card-footer ${styles.card_footer}`}>
@@ -153,11 +153,11 @@ class QuestionOptions extends Component<IProps, IState> {
   }
 
   public parsePrize() {
-    let prize = "";
+    let prize = '';
 
     if (
-      this.props.prize.includes("points") ||
-      this.props.prize.includes("Points")
+      this.props.prize.includes('points') ||
+      this.props.prize.includes('Points')
     ) {
       prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
         dictionary.points[this.context]
@@ -167,9 +167,9 @@ class QuestionOptions extends Component<IProps, IState> {
     }
 
     return (
-      <p key={"Prize_Challenge_" + this.props.id} className="card-text">
-        {" "}
-        {prize}{" "}
+      <p key={'Prize_Challenge_' + this.props.id} className="card-text">
+        {' '}
+        {prize}{' '}
       </p>
     );
   }
@@ -183,20 +183,20 @@ class QuestionOptions extends Component<IProps, IState> {
       for (let i = 0; i < this.state.possibleAnswers.length; i++) {
         answers.push(
           <Radio
-            key={"Radio_Challenge_" + this.props.id + "_" + String(i)}
+            key={'Radio_Challenge_' + this.props.id + '_' + String(i)}
             value={this.state.possibleAnswers[i]}
           >
             <p
-              key={"Radio_Challenge_p_" + this.props.id + "_" + String(i)}
+              key={'Radio_Challenge_p_' + this.props.id + '_' + String(i)}
               style={this.getInputRequiredStyle(this.state.possibleAnswers[i])}
             >
-              {" "}
+              {' '}
               {this.state.possibleAnswers[i]}
             </p>
           </Radio>
         );
         answers.push(
-          <br key={"Br_Challenge_" + this.props.id + "_" + String(i)} />
+          <br key={'Br_Challenge_' + this.props.id + '_' + String(i)} />
         );
       }
     }
@@ -206,7 +206,7 @@ class QuestionOptions extends Component<IProps, IState> {
         <h6 className="card-title">{this.state.question}</h6>
         <ul className="answers">
           <RadioGroup
-            key={"Challenge_" + this.props.id}
+            key={'Challenge_' + this.props.id}
             onChange={this.handleChange}
             value={this.state.value}
             disabled={this.getButtonRequiredClass()}
@@ -223,9 +223,9 @@ class QuestionOptions extends Component<IProps, IState> {
 
     if (content === this.state.value) {
       if (this.state.isCorrect === true) {
-        css = { color: "green" };
+        css = { color: 'green' };
       } else if (this.state.isCorrect === false) {
-        css = { color: "red" };
+        css = { color: 'red' };
       }
     }
 
@@ -249,9 +249,9 @@ class QuestionOptions extends Component<IProps, IState> {
   public apiSolveChallenge(completion: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
@@ -263,10 +263,10 @@ class QuestionOptions extends Component<IProps, IState> {
         headers: {}
       })
       .then(res => {
-        console.log("Challenge solved - reloading page...");
+        console.log('Challenge solved - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 }
 

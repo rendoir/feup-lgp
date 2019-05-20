@@ -43,16 +43,85 @@ export function deleteUserFromWhiteList(req, res) {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while deleting user' });
     });
-
 }
 
-async function isAdmin(id) {
-    const result = await query({
-        text: 'SELECT id FROM users WHERE id = $1 AND permissions = \'admin\'',
-        values: [id],
-    });
+export async function getReportNotifications(req, res) {
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications: You are not an admin.' });
+        return;
+    }
 
-    return result.rowCount > 0;
+    query({
+        text: 'SELECT * FROM retrieve_admin_notifications()',
+    }).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
+    });
+}
+
+export async function amountReportNotifications(req, res) {
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
+        return;
+    }
+
+    try {
+        const amountReportNotificationsQuery = await query({
+            text: `SELECT COUNT(*) FROM retrieve_admin_notifications()`,
+        });
+        res.status(200).send({ amountReportNotifications: amountReportNotificationsQuery.rows[0].count });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving report notifications count'));
+    }
+}
+
+export async function getReportReasons(req, res) {
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report reasons if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report reasons: You are not an admin.' });
+        return;
+    }
+
+    query({
+        text: `SELECT description, justify_hours(age(current_timestamp, date_reported)) as elapsed_time,
+                reporter, users.first_name, users.last_name
+                    FROM content_reports, users
+                    WHERE admin_review = FALSE AND
+                    content_id = $1 AND content_type = $2 AND
+                    users.id = reporter
+                    ORDER BY date_reported DESC`,
+        values: [req.body.content_id, req.body.content_type],
+    }).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report reasons' });
+    });
+}
+
+export async function ignoreContentReports(req, res) {
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot ignore reports if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred ignoring reports: You are not an admin.' });
+        return;
+    }
+
+    query({
+        text: `UPDATE content_reports SET admin_review = TRUE
+                WHERE content_id = $1 AND
+                content_type = $2`,
+        values: [req.body.content_id, req.body.content_type],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while ignoring reports' });
+    });
 }
 
 export async function addAdmin(req, res) {
@@ -107,4 +176,17 @@ export async function makeUser(req, res) {
             res.status(500).send({ message: 'An error ocurred while changing to a user' });
         });
     } else { res.status(401).send({ message: 'You do not have permissions to change to a user' }); }
+}
+
+async function isAdmin(userId): Promise<boolean> {
+    try {
+        const result = await query({
+            text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,
+            values: [userId],
+        });
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }

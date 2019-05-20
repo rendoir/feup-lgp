@@ -368,7 +368,7 @@ class Talk extends React.Component<IProps, IState> {
 
   public render() {
     const isArchived = this.state.archived;
-    if (this.state.isHidden && this.props.user.id === this.ownerId) {
+    if (this.state.isHidden && this.props.user.id !== this.ownerId) {
       return (
         <div id="Talk" className="my-5">
           <div className="container my-5">

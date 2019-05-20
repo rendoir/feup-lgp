@@ -1,5 +1,7 @@
 import {
+  faBell,
   faClinicMedical,
+  faExclamationCircle,
   faPlus,
   faUserMd
 } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +20,9 @@ import Icon from '../Icon/Icon';
 import SearchSimpleForm from '../SearchSimpleForm/SearchSimpleForm';
 import Select from '../Select/Select';
 import styles from './Header.module.css';
+
+import { apiGetNotificationsAmount } from '../../utils/apiInvite';
+import { apiGetReportNotificationsAmount } from '../../utils/apiReport';
 
 type Props = {
   title: string;
@@ -48,6 +53,8 @@ type State = {
     livestream: string;
     switcher: string;
   };
+  adminNotifications: number;
+  userNotifications: number;
 };
 
 class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
@@ -59,6 +66,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     super(props);
 
     this.state = {
+      adminNotifications: 0,
       isOpen: false,
       request: {
         about: '',
@@ -79,7 +87,8 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         type: 'post'
       },
       search: '',
-      step: 'type'
+      step: 'type',
+      userNotifications: 0
     };
 
     this.tags = [];
@@ -88,6 +97,8 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   public componentDidMount(): void {
     if (this.auth.loggedIn()) {
       this.getPossibleTags();
+      this.getUserNotificationAmount();
+      this.getAdminNotificationAmount();
     }
   }
 
@@ -153,9 +164,34 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     );
   }
 
+  private getNotificationIcon(type: string = 'user') {
+    const href = type === 'admin' ? '/admin' : '/notifications';
+    const icon = type === 'admin' ? faExclamationCircle : faBell;
+    const notifsAmount =
+      type === 'admin'
+        ? this.state.adminNotifications
+        : this.state.userNotifications;
+    return (
+      <Nav.Link href={href} className={styles.link}>
+        <Icon
+          icon={icon}
+          size={'lg'}
+          inverse={true}
+          theme={'primary'}
+          className={'mr-1'}
+        />
+        {notifsAmount > 0 && (
+          <span className="badge badge-light">{notifsAmount}</span>
+        )}
+      </Nav.Link>
+    );
+  }
+
   private renderButtons() {
     return (
       <Nav>
+        {this.auth.isAdmin() && this.getNotificationIcon('admin')}
+        {this.getNotificationIcon('user')}
         <Nav.Link href={'#'} onClick={this.handleClick} className={styles.link}>
           <Icon
             icon={faPlus}
@@ -273,6 +309,18 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       })
       .catch(() => console.log('Failed to get tags'));
   };
+
+  private async getUserNotificationAmount() {
+    const userNotifications = await apiGetNotificationsAmount();
+    this.setState({ userNotifications });
+  }
+
+  private async getAdminNotificationAmount() {
+    if (this.auth.isAdmin()) {
+      const adminNotifications = await apiGetReportNotificationsAmount();
+      this.setState({ adminNotifications });
+    }
+  }
 
   private resetState = () => {
     this.setState({

@@ -1,5 +1,5 @@
-import { List, OrderedSet } from "immutable";
-import { PeerInfo } from "../../utils/types";
+import { List, OrderedSet } from 'immutable';
+import { PeerInfo } from '../../utils/types';
 
 export interface ISelectorState<T> {
   hasQuery(): boolean;
@@ -41,7 +41,7 @@ export type Request = {
   work_field: string;
 };
 
-export type Step = "profile" | "avatar";
+export type Step = 'profile' | 'avatar';
 
 export type Props = {
   id: string;

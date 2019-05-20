@@ -467,6 +467,12 @@ export let dictionary: Dictionary = {
     PT: 'Insira o primeiro e último nome do utilizador',
     EN: "Insert user's first and last name"
   },
+  see_all_reports: { PT: 'Ver todas as denúncias', EN: 'See all reports' },
+  days: { PT: 'dias', EN: 'days' },
+  hours: { PT: 'horas', EN: 'hours' },
+  minutes: { PT: 'minutos', EN: 'minutes' },
+  now: { PT: 'agora', EN: 'now' },
+  ago: { PT: 'atrás', EN: 'ago' },
   followers: { PT: 'A seguir', EN: 'Following' },
   following: {
     PT: 'Você não segue ninguém ainda!',

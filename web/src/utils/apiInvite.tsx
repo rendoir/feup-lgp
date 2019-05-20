@@ -93,3 +93,15 @@ export async function apiGetNotifications() {
     return null;
   }
 }
+
+export async function apiGetNotificationsAmount() {
+  const apiURL = `/users/1/amount_notifications`;
+
+  try {
+    const res = await axiosInstance.get(apiURL);
+    return res.data.amountNotifications;
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
+}
