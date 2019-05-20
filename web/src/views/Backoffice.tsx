@@ -7,6 +7,7 @@ import RemoveAdminModal from '../components/AdminFunctionsModal/RemoveAdminModal
 import UnbanUserModal from '../components/AdminFunctionsModal/UnbanUserModal';
 import { BackofficeNotification } from '../components/BackofficeNotification/BackofficeNotification';
 import { BackofficeUserCard } from '../components/BackofficeUserCard/BackofficeUserCard';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
 
@@ -212,6 +213,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       addAdminSuccess: success,
       showTurnAdminAlert: true
     });
+    window.location.reload();
   }
 
   private onRemoveAdminResponse(success: boolean) {
@@ -219,6 +221,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       removeAdminSuccess: success,
       showExpelAdminAlert: true
     });
+    window.location.reload();
   }
 
   private onBanUserResponse(success: boolean) {
@@ -226,6 +229,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       banUserSuccess: success,
       showBanUserAlert: true
     });
+    window.location.reload();
   }
 
   private onUnbanUserResponse(success: boolean) {
@@ -233,6 +237,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       showUnbanUserAlert: true,
       unbanUserSuccess: success
     });
+    window.location.reload();
   }
 
   private getTurnAdminAlert() {
@@ -436,45 +441,71 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleSetUser(e) {
     e.preventDefault();
-    this.setState({ usersTypeSearch: 'user' });
+    this.setState({ usersTypeSearch: 'banned' });
   }
 
   private getUsersList() {
     const users: any[] = [];
 
     for (const user of this.state.usersSearchResult) {
-      if (
-        this.state.usersTypeSearch !== 'admin' &&
-        user.permissions === 'user'
-      ) {
-        users.push(
-          <BackofficeUserCard
-            key={'user_search_result_' + user.id}
-            name={user.first_name + ' ' + user.last_name}
-            image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-            email={user.email}
-            institution={user.work}
-            profession={user.work_field}
-            banHandler={this.handleUserCardBan}
-            turnAdminHandler={this.handleUserCardTurnAdmin}
-          />
-        );
-      } else if (
-        this.state.usersTypeSearch !== 'user' &&
-        user.permissions === 'admin'
-      ) {
-        users.push(
-          <BackofficeUserCard
-            key={'user_search_result_' + user.id}
-            name={user.first_name + ' ' + user.last_name}
-            image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
-            email={user.email}
-            institution={user.work}
-            profession={user.work_field}
-            banHandler={this.handleUserCardBan}
-            turnAdminHandler={this.handleUserCardTurnAdmin}
-          />
-        );
+      console.log(new AuthHelperMethods().getUserPayload().id);
+      if (new AuthHelperMethods().getUserPayload().id !== user.id) {
+        if (this.state.usersTypeSearch === 'all') {
+          users.push(
+            console.log(user.email + ' ' + user.permissions),
+            <BackofficeUserCard
+              key={'user_search_result_' + user.id}
+              name={user.first_name + ' ' + user.last_name}
+              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              email={user.email}
+              institution={user.work}
+              userType={user.permissions}
+              profession={user.work_field}
+              banHandler={this.handleUserCardBan}
+              unbanHandler={this.handleUserCardUnban}
+              turnAdminHandler={this.handleUserCardTurnAdmin}
+              expelAdminHandler={this.handleUserCardExpelAdmin}
+            />
+          );
+        } else if (
+          this.state.usersTypeSearch === 'admin' &&
+          user.permissions === 'admin'
+        ) {
+          users.push(
+            <BackofficeUserCard
+              key={'user_search_result_' + user.id}
+              name={user.first_name + ' ' + user.last_name}
+              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              email={user.email}
+              institution={user.work}
+              userType={user.permissions}
+              profession={user.work_field}
+              banHandler={this.handleUserCardBan}
+              unbanHandler={this.handleUserCardUnban}
+              turnAdminHandler={this.handleUserCardTurnAdmin}
+              expelAdminHandler={this.handleUserCardExpelAdmin}
+            />
+          );
+        } else if (
+          this.state.usersTypeSearch === 'banned' &&
+          user.permissions === 'banned'
+        ) {
+          users.push(
+            <BackofficeUserCard
+              key={'user_search_result_' + user.id}
+              name={user.first_name + ' ' + user.last_name}
+              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              email={user.email}
+              institution={user.work}
+              userType={user.permissions}
+              profession={user.work_field}
+              banHandler={this.handleUserCardBan}
+              unbanHandler={this.handleUserCardUnban}
+              turnAdminHandler={this.handleUserCardTurnAdmin}
+              expelAdminHandler={this.handleUserCardExpelAdmin}
+            />
+          );
+        }
       }
     }
 
