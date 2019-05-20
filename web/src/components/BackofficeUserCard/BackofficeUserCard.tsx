@@ -97,27 +97,31 @@ export class BackofficeUserCard extends React.Component<
       </button>
     );
 
-    let userTypeButton;
+    let userTypeButton1;
+    let userTypeButton2;
+
     switch (this.props.userType) {
       case BackofficeUserCard.BANNED_USER:
-        userTypeButton = unbanButton;
+        userTypeButton1 = unbanButton;
         break;
 
       case BackofficeUserCard.ADMIN_USER:
-        userTypeButton = expelAdminButton;
+        userTypeButton1 = banButton;
+        userTypeButton2 = expelAdminButton;
         break;
 
       default:
-        userTypeButton = turnAdminButton;
+        userTypeButton1 = banButton;
+        userTypeButton2 = turnAdminButton;
         break;
     }
 
     return (
       <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
         {this.props.userType !== BackofficeUserCard.BANNED_USER && (
-          <div className="row mb-3">{unbanButton}</div>
+          <div className="row mb-3">{userTypeButton2}</div>
         )}
-        <div className="row">{userTypeButton}</div>
+        <div className="row">{userTypeButton1}</div>
       </div>
     );
   }

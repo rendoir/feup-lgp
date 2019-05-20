@@ -105,6 +105,8 @@ export let dictionary: Dictionary = {
   username: { PT: 'Nome de utilizador', EN: 'Username' },
   email: { PT: 'E-mail', EN: 'E-mail' },
   password: { PT: 'Palavra passe', EN: 'Password' },
+  new_password: { PT: 'Nova palavra passe', EN: 'New Password' },
+  old_password: { PT: 'Palavra passe atual', EN: 'Current Password' },
   notifications: { PT: 'Notificações', EN: 'Notifications' },
   no_notifications: {
     PT: 'Não tem notificações',
@@ -489,6 +491,11 @@ export let dictionary: Dictionary = {
   error_add_admin: {
     PT: 'Não foi possível tornar o utilizador num administrador',
     EN: 'Error turning user into administrator'
+  },
+  not_current_password: {
+    PT: 'A palavra passe inserida não é a palavra passe correcta!',
+    EN:
+      'The current password inserted is different than the one existent for this user!'
   },
   success_remove_admin: {
     PT: 'O utilizador já não é administrador',

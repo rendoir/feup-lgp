@@ -1,26 +1,26 @@
-import * as React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import * as React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import Header from "../components/header/Header";
-import "../styles/App.css";
+import Header from '../components/header/Header';
+import '../styles/App.css';
 import {
   defaultLanguage,
   LanguageContext,
   preferedLanguage,
   saveLanguage
-} from "../utils/language";
+} from '../utils/language';
 
-import Backoffice from "./Backoffice";
-import Conference from "./Conference";
-import ErrorBoundary from "./ErrorBoundary";
-import Feed from "./Feed";
-import Landing from "./Landing";
-import Notifications from "./Notifications";
-import PostView from "./PostView";
-import Profile from "./Profile";
-import SearchResults from "./SearchResults";
-import Shop from "./Shop";
-import Talk from "./Talk";
+import Backoffice from './Backoffice';
+import Conference from './Conference';
+import ErrorBoundary from './ErrorBoundary';
+import Feed from './Feed';
+import Landing from './Landing';
+import Notifications from './Notifications';
+import PostView from './PostView';
+import Profile from './Profile';
+import SearchResults from './SearchResults';
+import Shop from './Shop';
+import Talk from './Talk';
 
 type State = {
   language: string;
@@ -43,9 +43,10 @@ class App extends React.Component<{}, State> {
         <LanguageContext.Provider value={this.state.language}>
           <Router>
             <ErrorBoundary>
-              <Header title={"gNet"} onLanguageChange={this.onLanguageChange} />
+              <Header title={'gNet'} onLanguageChange={this.onLanguageChange} />
               <Switch>
                 <Route path="/user/:id" component={Profile} />
+                {/*<Route path="/user/:id/edit" component={EditProfile} />*/}
                 <Route path="/post/:id" component={PostView} />
                 <Route path="/admin" component={Backoffice} />
                 <Route path="/shop" component={Shop} />

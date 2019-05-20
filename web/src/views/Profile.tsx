@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { MouseEvent } from 'react';
+
 import Avatar from '../components/Avatar/Avatar';
 import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
 import Post from '../components/Post/Post';
@@ -6,7 +8,15 @@ import { apiSubscription } from '../utils/apiSubscription';
 import { apiGetUserInteractions } from '../utils/apiUserInteractions';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
+
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import withAuth from '../utils/withAuth';
+
+import ProfileModal from '../components/ProfileModal/ProfileModal';
+
+import { isNull } from 'util';
+
+import { Request, Step } from '../components/ProfileModal/types';
 
 interface IProps {
   match: {
@@ -18,6 +28,7 @@ interface IProps {
 
 type State = {
   fetchingUserUserInteractions: boolean;
+  isOpen: boolean;
   userRate: number;
   userRateTotal: number;
   userRated: boolean;
@@ -28,12 +39,28 @@ type State = {
   posts: any[];
   user: any;
   fetchingInfo: boolean;
+  request: {
+    avatar?: File;
+    email: string;
+    first_name: string;
+    home_town: string;
+    last_name: string;
+    loading: boolean;
+    old_password: string;
+    password: string;
+    confirm_password: string;
+    university: string;
+    work: string;
+    work_field: string;
+  };
+  step: Step;
 };
 
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
   public id: number; // Id of the profile's user
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -42,8 +69,24 @@ class Profile extends React.Component<IProps, State> {
     this.state = {
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
+      isOpen: false,
       numberOfRatings: 1,
       posts: [],
+      request: {
+        avatar: undefined,
+        confirm_password: '',
+        email: '',
+        first_name: '',
+        home_town: '',
+        last_name: '',
+        loading: false,
+        old_password: '',
+        password: '',
+        university: '',
+        work: '',
+        work_field: ''
+      },
+      step: 'profile',
       user: {},
       userRate: 50,
       userRateTotal: 50,
@@ -136,11 +179,25 @@ class Profile extends React.Component<IProps, State> {
           </div>
           <div id="bottom-div" className="w-100 mt-5">
             <div id="left-div" className="p-3">
+              {this.getEditButton()}
               <ul className="p-0 m-0">
                 {this.getProfileWork()}
                 {this.getProfileUniv()}
                 {this.getProfileTown()}
                 {this.getProfileEmail()}
+                {this.state.isOpen ? (
+                  <ProfileModal
+                    pending={false}
+                    onSubmit={this.apiEditProfile}
+                    onStepChange={step => this.setState({ step })}
+                    maxGroupSize={5}
+                    request={this.state.request}
+                    onRequestChange={request => this.setState({ request })}
+                    onClose={this.resetState}
+                    autoFocus={false}
+                    step={'profile'}
+                  />
+                ) : null}
               </ul>
             </div>
             <div id="right-div">
@@ -153,6 +210,31 @@ class Profile extends React.Component<IProps, State> {
       </div>
     );
   }
+
+  private resetState = () => {
+    this.setState({
+      isOpen: false,
+      request: {
+        avatar: undefined,
+        confirm_password: '',
+        email: this.state.user.email,
+        first_name: this.state.user.first_name,
+        home_town: this.state.user.home_town,
+        last_name: this.state.user.last_name,
+        loading: false,
+        old_password: '',
+        password: '',
+        university: this.state.user.university,
+        work: isNull(this.state.user.work_field)
+          ? ''
+          : this.state.user.work_field,
+        work_field: isNull(this.state.user.work_field)
+          ? ''
+          : this.state.user.work_field
+      },
+      step: 'profile'
+    });
+  };
 
   private handleUserRate(e: any) {
     if (!this.state.userRated) {
@@ -222,6 +304,77 @@ class Profile extends React.Component<IProps, State> {
       });
   }
 
+  private apiEditProfile = (request: Request) => {
+    if (this.auth.getUserPayload().id !== this.id) {
+      return;
+    }
+
+    if (request.password !== request.confirm_password) {
+      return;
+    }
+
+    if (request.old_password !== '' && request.password === '') {
+      return;
+    }
+
+    const formData = new FormData();
+
+    if (
+      request.old_password !== '' &&
+      request.password === request.confirm_password
+    ) {
+      formData.append('old_password', request.old_password);
+      formData.append('password', request.password);
+    }
+
+    formData.append('author', String(this.auth.getUserPayload().id));
+
+    formData.append('email', request.email);
+
+    if (request.avatar !== undefined) {
+      formData.append('avatar', request.avatar);
+    }
+
+    formData.append('first_name', request.first_name);
+    formData.append('last_name', request.last_name);
+
+    formData.append('work', request.work);
+    formData.append('work_field', request.work_field);
+    formData.append('home_town', request.home_town);
+    formData.append('university', request.university);
+
+    axiosInstance
+      .post(`/users/${this.id}/edit`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(res => {
+        console.log('Edited user info - reloading page...');
+        window.location.reload();
+        this.resetState();
+      })
+      .catch(
+        error => (
+          console.log(
+            'Failed to edit user info: ' + error.response.data.message
+          ),
+          this.handlePasswordError(error)
+        )
+      );
+  };
+
+  private handlePasswordError(error: any) {
+    if (
+      error.response.data.message ===
+      'The current password inserted is different than the one existent for this user!'
+    ) {
+      const requestCopy = this.state.request;
+      requestCopy.loading = true;
+      this.setState({ request: requestCopy });
+    }
+  }
+
   private apiGetUserUserInteractions() {
     apiGetUserInteractions('users', this.id)
       .then(res => {
@@ -282,9 +435,40 @@ class Profile extends React.Component<IProps, State> {
     axiosInstance
       .get(`/users/${this.id}`)
       .then(res => {
-        this.setState({ user: res.data.user });
+        this.setState({
+          request: {
+            avatar: res.data.user.avatar,
+            confirm_password: '',
+            email: res.data.user.email,
+            first_name: res.data.user.first_name,
+            home_town: res.data.user.home_town,
+            last_name: res.data.user.last_name,
+            loading: false,
+            old_password: '',
+            password: '',
+            university: res.data.user.university,
+            work: res.data.user.work,
+            work_field: res.data.user.work_field
+          },
+          user: res.data.user
+        });
       })
-      .catch(() => console.log('Failed to get posts'));
+      .catch(() => console.log('Failed to get user'));
+  }
+
+  private handleEditProfile = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private getEditButton() {
+    if (this.auth.getUserPayload().id === this.id) {
+      return (
+        <span className="edit-icon" onClick={this.handleEditProfile}>
+          <i className="fas fa-pencil-alt" />
+        </span>
+      );
+    }
   }
 
   private getProfileName() {
