@@ -46,9 +46,9 @@ export async function apiReportComment(commentId: number, reason: string) {
 
 export async function apiGetReportNotificationsAmount() {
   const apiURL = `admin/amount_notifications`;
+
   try {
     const res = await axiosInstance.get(apiURL);
-    console.log("QUANT ADMIN NOTIFS: ", res.data.amountReportNotifications);
     return res.data.amountReportNotifications;
   } catch (error) {
     console.log(error);
@@ -58,9 +58,9 @@ export async function apiGetReportNotificationsAmount() {
 
 export async function apiGetReportNotificationsInfo() {
   const apiURL = `admin/notifications`;
+
   try {
     const res = await axiosInstance.get(apiURL);
-    console.log("ADMIN NOTIFS: ", res.data);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -80,7 +80,6 @@ export async function apiGetReportReasons(
 
   try {
     const res = await axiosInstance.post(apiURL, body);
-    console.log("REPORT REASONS: ", res.data);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -126,7 +125,6 @@ export async function apiDeleteContent(
 
   try {
     const res = await axiosInstance.delete(apiURL, body);
-    console.log("DELETE BEM SUCEDIDO");
     return true;
   } catch (error) {
     console.log(error);

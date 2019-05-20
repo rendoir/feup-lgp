@@ -81,7 +81,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   private async apiGetNotifications() {
     const notifications = await apiGetReportNotificationsInfo();
     const notificationsAmount = notifications ? notifications.length : 0;
-    console.log(notifications);
     this.setState({
       fetchingNotifications: false,
       notifications,
@@ -115,18 +114,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleUserCardExpelAdmin() {
     console.log("EXPEL USER CARD");
-  }
-
-  private handleNotifUserBan() {
-    console.log("BAN NOTIFICATION");
-  }
-
-  private handleNotifContentDelete() {
-    console.log("DELETE CONTENT NOTIFICATION");
-  }
-
-  private handleNotifIgnore() {
-    console.log("IGNORE NOTIFICATION");
   }
 
   private getUsersArea() {
@@ -222,7 +209,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     }
 
     const notificationList = this.state.notifications.map(notif => {
-      console.log(notif);
       return (
         <BackofficeNotification
           key={notif.content_id + notif.content_type}

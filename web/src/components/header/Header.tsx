@@ -313,7 +313,6 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   };
 
   private async getUserNotificationAmount() {
-    console.log("getUserNotificationAmount");
     const userNotifications = await apiGetNotificationsAmount();
     this.setState({ userNotifications });
   }

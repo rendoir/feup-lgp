@@ -46,7 +46,6 @@ export function deleteUserFromWhiteList(req, res) {
 }
 
 export async function getReportNotifications(req, res) {
-    console.log("GETTING ADMIN NOTIFICATIONS...");
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');
         res.status(403).send({ message: 'An error ocurred fetching report notifications: You are not an admin.' });
@@ -56,7 +55,6 @@ export async function getReportNotifications(req, res) {
     query({
         text: 'SELECT * FROM retrieve_admin_notifications()',
     }).then((result) => {
-        console.log("ADMIN NOTIFS: ", result.rows);
         res.status(200).send(result.rows);
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -65,7 +63,6 @@ export async function getReportNotifications(req, res) {
 }
 
 export async function amountReportNotifications(req, res) {
-    console.log("GETTING ADMIN NOTIFICATIONS AMOUNT...");
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
         res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
@@ -76,7 +73,6 @@ export async function amountReportNotifications(req, res) {
         const amountReportNotificationsQuery = await query({
             text: `SELECT COUNT(*) FROM retrieve_admin_notifications()`,
         });
-        console.log("ADMIN NOTIFS AMOUNT: ", amountReportNotificationsQuery.rows[0].count);
         res.status(200).send({ amountReportNotifications: amountReportNotificationsQuery.rows[0].count });
     } catch (error) {
         console.error(error);
@@ -85,14 +81,12 @@ export async function amountReportNotifications(req, res) {
 }
 
 export async function getReportReasons(req, res) {
-    console.log("GETTING REPORT REASONS...");
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report reasons if you are not an admin');
         res.status(403).send({ message: 'An error ocurred fetching report reasons: You are not an admin.' });
         return;
     }
-    console.log("REPORT CONTENT ID", req.body.content_id);
-    console.log("REPORT CONTENT TYPE", req.body.content_type);
+
     query({
         text: `SELECT description, justify_hours(age(current_timestamp, date_reported)) as elapsed_time,
                 reporter, users.first_name, users.last_name
@@ -103,7 +97,6 @@ export async function getReportReasons(req, res) {
                     ORDER BY date_reported DESC`,
         values: [req.body.content_id, req.body.content_type],
     }).then((result) => {
-        console.log("REPORT REASONS: ", result.rows);
         res.status(200).send(result.rows);
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -112,14 +105,12 @@ export async function getReportReasons(req, res) {
 }
 
 export async function ignoreContentReports(req, res) {
-    console.log("IGNORING CONTENT REPORTS");
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot ignore reports if you are not an admin');
         res.status(403).send({ message: 'An error ocurred ignoring reports: You are not an admin.' });
         return;
     }
-    console.log("REPORT CONTENT ID", req.body.content_id);
-    console.log("REPORT CONTENT TYPE", req.body.content_type);
+
     query({
         text: `UPDATE content_reports SET admin_review = TRUE
                 WHERE content_id = $1 AND

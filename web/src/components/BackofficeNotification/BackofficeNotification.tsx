@@ -61,7 +61,6 @@ export class BackofficeNotification extends Component<IProps, IState> {
   }
 
   public async handleContentDelete() {
-    console.log("CONTENT DELETE");
     const deleteSuccess = await apiDeleteContent(
       this.props.contentId,
       this.props.contentType
@@ -76,7 +75,6 @@ export class BackofficeNotification extends Component<IProps, IState> {
   }
 
   public handleReportIgnore() {
-    console.log("IGNORE REPORT");
     this.apiReportSeen();
   }
 
@@ -190,7 +188,6 @@ export class BackofficeNotification extends Component<IProps, IState> {
     }
 
     const reasonList = this.state.reportReasons.map(reason => {
-      console.log(reason);
       return (
         <div className="card card-body pt-0 pb-0 mb-2" key={reason.reporter}>
           <p className="card-text">{reason.description}</p>
