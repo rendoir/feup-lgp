@@ -262,9 +262,10 @@ class Talk extends React.Component<IProps, IState> {
             <div className="conf_side">
               {this.getJoinButton()}
               <div className="p-3">{this.getDetails()}</div>
-              {this.ownerId === this.props.user.id ? (
+              {(this.auth.isLoggedInUser(this.ownerId) ||
+                this.auth.isAdmin()) && (
                 <div className="p-3">{this.getAdminButtons()}</div>
-              ) : null}
+              )}
               {this.getChallenges()}
             </div>
             <div className="conf_posts">
