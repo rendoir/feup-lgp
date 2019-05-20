@@ -124,28 +124,6 @@ export async function ignoreContentReports(req, res) {
     });
 }
 
-async function isAdmin(userId): Promise<boolean> {
-    try {
-        const result = await query({
-            text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,
-            values: [userId],
-        });
-        return result.rowCount > 0;
-    } catch (error) {
-        console.error(error);
-        return false;
-    }
-}
-
-async function isAdmin(id) {
-    const result = await query({
-        text: 'SELECT id FROM users WHERE id = $1 AND permissions = \'admin\'',
-        values: [id],
-    });
-
-    return result.rowCount > 0;
-}
-
 export async function addAdmin(req, res) {
     const isRequesterAdmin = await isAdmin(req.user.id);
 
@@ -198,4 +176,17 @@ export async function makeUser(req, res) {
             res.status(500).send({ message: 'An error ocurred while changing to a user' });
         });
     } else { res.status(401).send({ message: 'You do not have permissions to change to a user' }); }
+}
+
+async function isAdmin(userId): Promise<boolean> {
+    try {
+        const result = await query({
+            text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,
+            values: [userId],
+        });
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }
