@@ -521,6 +521,10 @@ export let dictionary: Dictionary = {
     PT: 'Não foi possível desbanir o utilizador',
     EN: 'Error unbanning user'
   },
+  send_email: {
+    PT: 'Insira o email da pessoa que deseja convidar para a plataforma:',
+    EN: 'Enter the email of the person you want to invite to the platform:'
+  },
   empty: { PT: '', EN: '' }
 };
 

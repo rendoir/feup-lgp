@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as React from 'react';
 import '../styles/Invite.css';
 import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
 
 interface IState {
@@ -9,6 +10,7 @@ interface IState {
 }
 
 class Invite extends React.Component<{}, IState> {
+  public static contextType = LanguageContext;
   public webmail = 'joaorreis@gmail.com';
   constructor(props) {
     super(props);
@@ -44,7 +46,7 @@ class Invite extends React.Component<{}, IState> {
     return (
       <div className="col-lg-6 col-centered">
         <label>
-          Insira o email da pessoa que deseja convidar para a plataforma:
+          {dictionary.send_email[this.context]}
           <input
             type="text"
             value={this.state.email}
@@ -55,7 +57,7 @@ class Invite extends React.Component<{}, IState> {
           className="btn btn-primary"
           onClick={() => this.apiSendMail(this.state.email)}
         >
-          Convidar
+          {dictionary.invite[this.context]}
         </button>
       </div>
     );

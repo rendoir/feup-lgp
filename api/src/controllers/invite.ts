@@ -10,7 +10,6 @@ export async function sendMail(req) {
         pass: 'abcd@1234',
       },
     });
-
     // send mail with defined transport object
     const mailOptions = await transporter.sendMail({
       from: '"gNet 💉" <lgpgrupo3gltt@gmail.com>', // sender address
@@ -20,13 +19,7 @@ export async function sendMail(req) {
       html: '<b>Hello, you were invited to join gNet Platform. You can join it at this link: http://voidlab.fe.up.pt/</b>', // html body
     });
 
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(info);
-      }
-    });
+    transporter.sendMail(mailOptions);
   }
   email().catch(console.error);
 }
