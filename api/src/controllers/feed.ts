@@ -119,7 +119,7 @@ export async function getFeedStuff(req, res) {
             text: `SELECT a.id, a.first_name, a.last_name
                         FROM users a
                         INNER JOIN follows f ON a.id=f.followed
-                        WHERE f.follower=$1 
+                        WHERE f.follower=$1
                         LIMIT 15`,
             values: [userId],
         });

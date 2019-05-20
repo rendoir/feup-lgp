@@ -48,7 +48,7 @@ class Invite extends React.Component<{}, IState> {
         <label>
           {dictionary.send_email[this.context]}
           <input
-            type="text"
+            type="invite"
             value={this.state.email}
             onChange={this.handleChange}
           />
