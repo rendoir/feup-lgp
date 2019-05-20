@@ -12,13 +12,18 @@ export async function login(req, res, next) {
             text: 'SELECT id, permissions FROM users WHERE email = $1 AND pass = $2',
             values: [req.body.email, hashedPassword],
         });
+        const user = result.rows[0];
         if (result.rowCount === 0) {
             const err = new Error('Invalid Credentials');
             err.name = 'UnauthorizedError';
             next(err);
             return;
+        } else if (user.permissions === 'banned') {
+            const err = new Error('You are banned from this site');
+            err.name = 'BanError';
+            next(err);
+            return;
         }
-        const user = result.rows[0];
         const userToken = new UserToken(req.body.email, user.id, user.permissions);
         const token = jwt.sign(userToken.properties, process.env.JWT_SECRET);
         const body = {

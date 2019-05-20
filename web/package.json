@@ -21,7 +21,6 @@
     "@types/react-virtualized": "^9.21.1",
     "@types/socket.io-client": "^1.4.32",
     "axios": "^0.18.0",
-    "babel-loader": "^8.0.5",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "croppie": "^2.6.4",
@@ -51,7 +50,7 @@
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
-      "./node_modules/.bin/prettier --single-qute --write --parser \"typescript\",",
+      "./node_modules/.bin/prettier --single-quote --write --parser \"typescript\",",
       "git add"
     ]
   },

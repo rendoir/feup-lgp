@@ -1,16 +1,16 @@
-import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
-import React, { Component, Fragment } from "react";
-import axiosInstance from "../../utils/axiosInstance";
-import Icon from "../Icon/Icon";
-import Post, { Props as PostProps } from "../Post/Post";
-import UserCard, { Props as UserProps } from "../UserCard/UserCard";
-import styles from "./InfiniteScroll.module.css";
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import React, { Component, Fragment } from 'react';
+import axiosInstance from '../../utils/axiosInstance';
+import Icon from '../Icon/Icon';
+import Post, { Props as PostProps } from '../Post/Post';
+import UserCard, { Props as UserProps } from '../UserCard/UserCard';
+import styles from './InfiniteScroll.module.css';
 
 export type Props = {
   requestUrl: string;
   requestParams?: object;
   itemsPerPage: number;
-  type: "posts" | "users";
+  type: 'posts' | 'users';
 };
 
 export type State = {
@@ -23,18 +23,18 @@ export type State = {
 function defaultUrl() {
   let url = `${location.protocol}//${location.hostname}`;
   url +=
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+    !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? `:${process.env.REACT_APP_API_PORT}/feed`
-      : "/api/feed";
+      : '/api/feed';
 
   return url;
 }
 
 class InfiniteScroll extends Component<Props, State> {
   public static defaultProps = {
-    itemsPerPage: 20,
+    itemsPerPage: 5,
     requestUrl: defaultUrl(),
-    type: "posts"
+    type: 'posts'
   };
 
   constructor(props: Props) {
@@ -62,13 +62,13 @@ class InfiniteScroll extends Component<Props, State> {
         window.innerHeight + document.documentElement.scrollTop ===
         document.documentElement.offsetHeight
       ) {
-        this.props.type === "posts" ? LoadMorePosts() : LoadMoreUsers();
+        this.props.type === 'posts' ? LoadMorePosts() : LoadMoreUsers();
       }
     };
   }
 
   public componentWillMount(): void {
-    this.props.type === "posts" ? this.LoadMorePosts() : this.LoadMoreUsers();
+    this.props.type === 'posts' ? this.LoadMorePosts() : this.LoadMoreUsers();
   }
 
   public render() {
@@ -76,7 +76,7 @@ class InfiniteScroll extends Component<Props, State> {
 
     return (
       <div>
-        {this.props.type === "posts"
+        {this.props.type === 'posts'
           ? (content as PostProps[]).map(post => (
               <Fragment key={post.id}>
                 <Post
@@ -89,6 +89,7 @@ class InfiniteScroll extends Component<Props, State> {
                   comments={post.comments}
                   tags={post.tags}
                   user_id={post.user_id}
+                  files={post.files}
                 />
               </Fragment>
             ))
@@ -107,7 +108,7 @@ class InfiniteScroll extends Component<Props, State> {
         {error ? <div className={styles.error}>Error: {error}</div> : null}
         {isLoading ? (
           <div className={styles.spinner}>
-            <Icon icon={faSpinner} pulse={true} size={"2x"} theme={"primary"} />
+            <Icon icon={faSpinner} pulse={true} size={'2x'} theme={'primary'} />
           </div>
         ) : null}
         {!hasMore ? <div>You reached the end!</div> : null}
@@ -134,13 +135,14 @@ class InfiniteScroll extends Component<Props, State> {
         .get(this.props.requestUrl, { params })
         .then(results => {
           const incoming = results.data;
+          console.log(incoming);
 
           incoming.posts.map((post: PostProps, idx: number) => {
             post.author =
               incoming.posts[idx].first_name +
-              " " +
+              ' ' +
               incoming.posts[idx].last_name;
-            post.date = incoming.posts[idx].date_created.replace(/T.*/gi, "");
+            post.date = incoming.posts[idx].date_created.replace(/T.*/gi, '');
             post.comments = incoming.posts[idx].comments;
             post.tags = incoming.posts[idx].tags;
             post.files = incoming.posts[idx].files;

@@ -1,0 +1,25 @@
+@import "../../styles/variables";
+
+$tags-color: $color-primary;
+$tags-remove-color: rgba($black, 0.5);
+$tags-background-color: rgba($greyish, 0.25);
+$tags-font-family: $default-font-family;
+$tags-font-size: $default-font-size-small;
+$tags-padding: $default-padding;
+$tags-width: 100px;
+
+.option {
+  word-wrap: break-word;
+  word-break: break-all; 
+  text-transform: capitalize;
+  padding-top:0.5em;
+}
+
+.icon {
+  margin-left: $tags-padding;
+  color: $tags-remove-color;
+
+  &:hover {
+    color: $color-danger;
+  }
+}

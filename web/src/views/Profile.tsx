@@ -1,12 +1,12 @@
-import * as React from "react";
-import Avatar from "../components/Avatar/Avatar";
-import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
-import Post from "../components/Post/Post";
-import { apiSubscription } from "../utils/apiSubscription";
-import { apiGetUserInteractions } from "../utils/apiUserInteractions";
-import axiosInstance from "../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
+import * as React from 'react';
+import Avatar from '../components/Avatar/Avatar';
+import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
+import Post from '../components/Post/Post';
+import { apiSubscription } from '../utils/apiSubscription';
+import { apiGetUserInteractions } from '../utils/apiUserInteractions';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
 
 interface IProps {
   match: {
@@ -68,17 +68,17 @@ class Profile extends React.Component<IProps, State> {
     }
 
     const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
+      ? 'fas fa-bell-slash'
+      : 'fas fa-bell';
     const subscribeBtnText = this.state.userSubscription
       ? dictionary.unsubscribe_action[this.context]
       : dictionary.subscribe_action[this.context];
 
     let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
       profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}/posts`;
     } else {
-      profileUrl += "/api/users/" + this.id + "/posts";
+      profileUrl += '/api/users/' + this.id + '/posts';
     }
     return (
       <div className="Profile">
@@ -144,7 +144,7 @@ class Profile extends React.Component<IProps, State> {
               </ul>
             </div>
             <div id="right-div">
-              <div className={"col-lg-14"}>
+              <div className={'col-lg-14'}>
                 <InfiniteScroll requestUrl={profileUrl} />
               </div>
             </div>
@@ -155,9 +155,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private handleUserRate(e: any) {
-    if (this.state.userRated) {
-      console.log("You already rated this user");
-    } else {
+    if (!this.state.userRated) {
       const rateTarget = e.target.id;
 
       const incrementRate = Number(this.state.numberOfRatings) + 1;
@@ -173,7 +171,6 @@ class Profile extends React.Component<IProps, State> {
         rate: parseInt(rateTarget, 10)
       };
 
-      console.log("User Rating updated to: ", userRating);
       const apiUrl = `/users/${this.id}/rate`;
       return axiosInstance
         .post(apiUrl, body)
@@ -185,7 +182,7 @@ class Profile extends React.Component<IProps, State> {
           });
         })
         .catch(() => {
-          console.log("Rating system failed");
+          console.log('Rating system failed');
         });
     }
   }
@@ -193,12 +190,12 @@ class Profile extends React.Component<IProps, State> {
   private handleUserSubscription() {
     if (this.state.waitingSubscriptionRequest) {
       console.log(
-        "Error trying subscription action! Waiting for response from last request"
+        'Error trying subscription action! Waiting for response from last request'
       );
       return;
     }
 
-    const method = this.state.userSubscription ? "delete" : "post";
+    const method = this.state.userSubscription ? 'delete' : 'post';
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -210,7 +207,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   private apiSubscription(method: string) {
-    apiSubscription("users", method, this.id)
+    apiSubscription('users', method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -218,15 +215,15 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: method === "delete",
+          userSubscription: method === 'delete',
           waitingSubscriptionRequest: false
         });
-        console.log("Subscription system failed");
+        console.log('Subscription system failed');
       });
   }
 
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.id)
+    apiGetUserInteractions('users', this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
@@ -241,7 +238,7 @@ class Profile extends React.Component<IProps, State> {
           });
         }
       })
-      .catch(() => console.log("Failed to get user-user interactions"));
+      .catch(() => console.log('Failed to get user-user interactions'));
   }
 
   private handleStars() {
@@ -287,15 +284,15 @@ class Profile extends React.Component<IProps, State> {
       .then(res => {
         this.setState({ user: res.data.user });
       })
-      .catch(() => console.log("Failed to get posts"));
+      .catch(() => console.log('Failed to get posts'));
   }
 
   private getProfileName() {
     if (this.state.user.first_name && this.state.user.last_name) {
       return (
         <span>
-          {" "}
-          {this.state.user.first_name} {this.state.user.last_name}{" "}
+          {' '}
+          {this.state.user.first_name} {this.state.user.last_name}{' '}
         </span>
       );
     }
@@ -358,13 +355,13 @@ class Profile extends React.Component<IProps, State> {
         <Post
           key={post.id}
           id={post.id}
-          author={post.first_name + " " + post.last_name}
+          author={post.first_name + ' ' + post.last_name}
           content={post.content}
           user_id={post.user_id}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
+          date={post.date_created.replace(/T.*/gi, '')}
           visibility={post.visibility}
           files={post.files}
         />

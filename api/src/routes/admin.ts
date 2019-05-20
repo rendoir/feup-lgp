@@ -129,3 +129,90 @@ adminRouter.post('/report_reasons', controller.getReportReasons);
  *     }
  */
 adminRouter.post('/ignore_reports', controller.ignoreContentReports);
+
+/**
+ * @api {post} /api/admin Make user an admin
+ * @apiName Add-admin
+ * @apiGroup Admin
+ *
+ * @apiParam {String} email Email of the user to became admin.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to add an admin'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while adding admin'
+ *     }
+ */
+adminRouter.post('/', controller.addAdmin);
+
+/**
+ * @api {post} /api/admin/ban Ban a user
+ * @apiName Ban-user
+ * @apiGroup Admin
+ *
+ * @apiParam {String} email Email of the user to be banned
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to ban a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while banning user'
+ *     }
+ */
+adminRouter.post('/ban', controller.banUser);
+
+/**
+ * @api {post} /api/admin/user Change to user
+ * @apiName Change-user
+ * @apiGroup Admin
+ *
+ * @apiParam {String} email Email of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to change to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while changing to a user'
+ *     }
+ */
+adminRouter.post('/user', controller.makeUser);

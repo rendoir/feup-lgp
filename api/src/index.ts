@@ -32,6 +32,7 @@ if (process.env.PRODUCTION === 'true') {
 
 import {
     adminRouter,
+    challengeRouter,
     commentRouter,
     conferenceRouter,
     feedRouter,
@@ -75,6 +76,7 @@ app.use('/admin', adminRouter);
 app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
 app.use('/talk', talkRouter);
+app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
 app.use('/conference', conferenceRouter);
 app.get('/', (req, res) => {

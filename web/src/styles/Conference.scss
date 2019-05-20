@@ -116,6 +116,14 @@
         }
     }
 
+    .challenges {
+        > div {
+            border: $light-border;
+            margin-bottom: 2em;
+        }
+
+    }
+
     @media (max-width: $min_screen_width_chat) {
         .conf_posts,
         .conf_side {
