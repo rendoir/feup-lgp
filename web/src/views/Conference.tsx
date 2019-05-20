@@ -209,7 +209,7 @@ class Conference extends PureComponent<Props, State> {
     );
 
     return (
-      <Card border={'light'}>
+      <Card>
         <Card.Header>
           <div
             className={'d-flex justify-content-between align-items-center mb-1'}

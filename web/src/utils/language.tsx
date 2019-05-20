@@ -16,6 +16,7 @@ type Dictionary = {
 /* tslint:disable:object-literal-sort-keys */
 export let dictionary: Dictionary = {
   of: { PT: 'de', EN: 'of' },
+  by: { PT: 'por', EN: 'by' },
   home: { PT: 'Início', EN: 'Home' },
   shop: { PT: 'Loja', EN: 'Shop' },
   search: { PT: 'Procurar', EN: 'Search' },
@@ -207,6 +208,8 @@ export let dictionary: Dictionary = {
   dates: { PT: 'Datas', EN: 'Dates' },
   date_start: { PT: 'Início', EN: 'Start' },
   date_end: { PT: 'Fim', EN: 'End' },
+  starting_date: { PT: 'Data de inicio', EN: 'Starting date' },
+  ending_date: { PT: 'Data de termino', EN: 'Ending date' },
   date_format: {
     PT: 'pt-PT',
     EN: 'en-US'
@@ -515,7 +518,8 @@ export let dictionary: Dictionary = {
     PT: 'Não foi possível desbanir o utilizador',
     EN: 'Error unbanning user'
   },
-  empty: { PT: '', EN: '' }
+  empty: { PT: '', EN: '' },
+  orderBy: { PT: 'Ordenar por', EN: 'Order by' }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(
