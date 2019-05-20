@@ -1,8 +1,8 @@
 // - Import react components
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./Challenge.module.css";
+import styles from './Challenge.module.css';
 
 export type Props = {
   id: number;
@@ -29,7 +29,7 @@ class TextChallenge extends Component<Props, State> {
       <div className="card">
         <div className="card-header d-flex flex-row">
           <div
-            key={"Challenge_" + this.props.id + "_title"}
+            key={'Challenge_' + this.props.id + '_title'}
             className="mr-auto"
           >
             {this.props.title}

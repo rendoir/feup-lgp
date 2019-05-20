@@ -79,6 +79,58 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
 adminRouter.get('/users', controller.getAllUsers);
 
 /**
+ * @api {get} /api/admin/notifications Get list of reported content who has not been subject of admin review
+ * @apiName Get-Report-Notifications
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.get('/notifications', controller.getReportNotifications);
+
+/**
+ * @api {get} /api/admin/amount_notifications Get amount of report notifications
+ * @apiName Get-Amount-Report-Notifications
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.get('/amount_notifications', controller.amountReportNotifications);
+
+/**
+ * @api {post} /api/admin/report_reasons Get reasons of a report
+ * @apiName Get-Report-Reasons
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.post('/report_reasons', controller.getReportReasons);
+
+/**
+ * @api {post} /api/admin/ignore_reports Ignore all reports to a given content
+ * @apiName Ignore-Reports
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.post('/ignore_reports', controller.ignoreContentReports);
+
+/**
  * @api {post} /api/admin Make user an admin
  * @apiName Add-admin
  * @apiGroup Admin

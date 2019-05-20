@@ -1,21 +1,21 @@
-import classNames from "classnames";
+import classNames from 'classnames';
 import React, {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
   PureComponent
-} from "react";
-import InputNext, { HTMLAbstractInputElement } from "../InputNext/InputNext";
-import OptionAnswer from "../OptionAnswer/OptionAnswer";
-import Select from "../Select/Select";
-import styles from "./CreateNewModal.module.css";
+} from 'react';
+import InputNext, { HTMLAbstractInputElement } from '../InputNext/InputNext';
+import OptionAnswer from '../OptionAnswer/OptionAnswer';
+import Select from '../Select/Select';
+import styles from './CreateNewModal.module.css';
 
 // - Import utils
-import { dictionary, LanguageContext } from "../../utils/language";
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   id: string;
-  type: "question" | "options" | "post" | "comment";
+  type: 'question' | 'options' | 'post' | 'comment';
   title: string;
   about: string;
   dateStart: string;
@@ -45,13 +45,13 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {
-    about: "",
+    about: '',
     aboutMaxLength: 3000,
-    dateEnd: "",
-    dateStart: "",
-    pointsPrize: "",
-    prize: "",
-    title: "",
+    dateEnd: '',
+    dateStart: '',
+    pointsPrize: '',
+    prize: '',
+    title: '',
     vertical: false
   };
 
@@ -60,7 +60,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     this.state = {
       options: [],
-      optionsInput: ""
+      optionsInput: ''
     };
   }
 
@@ -86,11 +86,11 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     return (
       <div className={className}>
-        <form id={id} autoComplete={"off"} className={styles.form}>
+        <form id={id} autoComplete={'off'} className={styles.form}>
           <InputNext
             className={styles.input}
             id={`${id}_title`}
-            name={"title"}
+            name={'title'}
             onChange={this.props.onChange}
             placeholder={dictionary.challenge_title[this.context]}
             label={dictionary.title[this.context]}
@@ -101,13 +101,13 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           <InputNext
             className={styles.input}
             id={`${id}_about`}
-            name={"about"}
+            name={'about'}
             onChange={this.props.onChange}
             placeholder={dictionary.chal_description_placeholder[this.context]}
             label={dictionary.description[this.context]}
-            type={"textarea"}
+            type={'textarea'}
             rows={5}
-            value={about || ""}
+            value={about || ''}
             maxLength={aboutMaxLength}
             required={true}
           />
@@ -119,18 +119,18 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               onChange={this.props.onChange}
               id={`${id}_challenge_date_start`}
               value={this.props.dateStart}
-              name={"dateStart"}
+              name={'dateStart'}
               label={dictionary.date_start[this.context]}
-              type={"datetime-local"}
+              type={'datetime-local'}
               required={true}
             />
             <InputNext
               onChange={this.props.onChange}
               id={`${id}_challenge_date_end`}
               value={this.props.dateEnd}
-              name={"dateEnd"}
+              name={'dateEnd'}
               label={dictionary.date_end[this.context]}
-              type={"datetime-local"}
+              type={'datetime-local'}
               required={true}
             />
           </div>
@@ -144,9 +144,9 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               id={`${id}_challenge_prize_description`}
               value={prize}
               placeholder={dictionary.prize_desc[this.context]}
-              name={"prize"}
+              name={'prize'}
               label={dictionary.prize[this.context]}
-              type={"text"}
+              type={'text'}
               required={true}
             />
             <InputNext
@@ -154,15 +154,15 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               onChange={this.props.onChange}
               id={`${id}_challenge_prize_points`}
               value={prizePoints}
-              name={"prizePoints"}
+              name={'prizePoints'}
               label={dictionary.points[this.context]}
-              type={"text"}
+              type={'text'}
             />
           </div>
           <hr />
-          {type === "question" ? this.renderQuestionFields() : null}
-          {type === "options" ? this.renderOptionsFields() : null}
-          {type === "comment" ? this.renderCommentFields() : null}
+          {type === 'question' ? this.renderQuestionFields() : null}
+          {type === 'options' ? this.renderOptionsFields() : null}
+          {type === 'comment' ? this.renderCommentFields() : null}
         </form>
       </div>
     );
@@ -183,12 +183,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
   };
 
   private handleKeyUp = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       const options = this.state.options;
       if (!options.includes(this.state.optionsInput)) {
         options.push(this.state.optionsInput);
       }
-      this.setState({ options, optionsInput: "" });
+      this.setState({ options, optionsInput: '' });
       this.props.onOptionChange(this.state.optionsInput);
     }
   };
@@ -201,7 +201,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         <InputNext
           className={styles.input}
           id={`${id}_question`}
-          name={"question"}
+          name={'question'}
           onChange={this.props.onChange}
           placeholder={dictionary.question[this.context]}
           label={dictionary.question[this.context]}
@@ -212,7 +212,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         <InputNext
           className={styles.input}
           id={`${id}_correctAnswer`}
-          name={"correctAnswer"}
+          name={'correctAnswer'}
           onChange={this.props.onChange}
           placeholder={dictionary.correct_answer[this.context]}
           label={dictionary.correct_answer[this.context]}
@@ -232,7 +232,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         <InputNext
           className={styles.input}
           id={`${id}_question`}
-          name={"question"}
+          name={'question'}
           onChange={this.props.onChange}
           placeholder={dictionary.question[this.context]}
           label={dictionary.question[this.context]}
@@ -243,10 +243,10 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         <InputNext
           onChange={this.handleChange}
           id={`${id}_options`}
-          type={"text"}
+          type={'text'}
           value={this.state.optionsInput}
           label={dictionary.options[this.context]}
-          name={"optionsInput"}
+          name={'optionsInput'}
           onKeyUp={this.handleKeyUp}
         />
         <div className="list-group">
@@ -279,8 +279,8 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
     this.state.options.map((option, idx) =>
       optionsValues.push({
-        title: option || "",
-        value: idx || ""
+        title: option || '',
+        value: idx || ''
       })
     );
 
@@ -292,9 +292,9 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         </label>
         <Select
           id={`${id}_correctAnswer`}
-          name={"correctAnswer"}
+          name={'correctAnswer'}
           value={this.props.correctAnswer}
-          label={""}
+          label={''}
           options={optionsValues}
           onChange={this.props.onChange}
         />
@@ -325,9 +325,9 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         </label>
         <Select
           id={`${id}_post`}
-          name={"post"}
+          name={'post'}
           value={this.props.post}
-          label={""}
+          label={''}
           options={postValues}
           onChange={this.props.onChange}
         />

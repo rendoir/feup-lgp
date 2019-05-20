@@ -213,7 +213,6 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const isArchived = this.state.archived;
     if (this.state.isHidden && this.props.user.id === this.ownerId) {
       return (
         <div id="Talk" className="my-5">
@@ -286,7 +285,7 @@ class Talk extends React.Component<IProps, IState> {
               <button
                 className="create"
                 onClick={this.createConfPost}
-                hidden={isArchived}
+                hidden={this.state.archived}
               >
                 {dictionary.create_post[this.context]}
               </button>

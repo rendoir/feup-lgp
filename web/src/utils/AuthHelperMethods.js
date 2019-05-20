@@ -28,6 +28,11 @@ export default class AuthHelperMethods {
     return !!token && !this.isTokenExpired(token); // handwaiving here
   };
 
+  isAdmin = () => {
+    const user = this.getUserPayload(); // Getting token from localstorage
+    return this.loggedIn() && user && user.permission === 'admin';
+  };
+
   isTokenExpired = token => {
     try {
       const decoded = decode(token);

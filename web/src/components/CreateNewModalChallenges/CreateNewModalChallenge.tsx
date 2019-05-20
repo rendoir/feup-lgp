@@ -1,23 +1,23 @@
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
-import { dictionary, LanguageContext } from "../../utils/language";
-import Button from "../Button/Button";
-import HotKeys from "../HotKeys/HotKeys";
-import IconButton from "../IconButton/IconButton";
-import { HTMLAbstractInputElement } from "../InputNext/InputNext";
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { ChangeEvent, MouseEvent, PureComponent } from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
+import Button from '../Button/Button';
+import HotKeys from '../HotKeys/HotKeys';
+import IconButton from '../IconButton/IconButton';
+import { HTMLAbstractInputElement } from '../InputNext/InputNext';
 import {
   ModalBody,
   ModalClose,
   ModalFooter,
   ModalHeader,
   ModalProvider
-} from "../Modal/index";
-import Modal from "../Modal/Modal";
-import CreateGroupInfoForm from "./CreateGroupInfoForm";
-import CreateGroupTypeForm from "./CreateGroupTypeForm";
-import styles from "./CreateNewModal.module.css";
-import { Props } from "./types";
+} from '../Modal/index';
+import Modal from '../Modal/Modal';
+import CreateGroupInfoForm from './CreateGroupInfoForm';
+import CreateGroupTypeForm from './CreateGroupTypeForm';
+import styles from './CreateNewModal.module.css';
+import { Props } from './types';
 
 type CreateNewModalState = {
   isPublic: boolean;
@@ -30,7 +30,7 @@ class CreateNewModalChallenge extends PureComponent<
   public static contextType = LanguageContext;
 
   public static defaultProps = {
-    id: "create_new_challenge_modal",
+    id: 'create_new_challenge_modal',
     isMaxGroupSizeVisible: false,
     isPublicGroupEnabled: true
   };
@@ -55,16 +55,16 @@ class CreateNewModalChallenge extends PureComponent<
 
   private handlePrevStepClick = (): void => {
     const { step } = this.props;
-    if (step === "info") {
-      this.props.onStepChange("type");
+    if (step === 'info') {
+      this.props.onStepChange('type');
     }
   };
 
   private handleNextStepClick = (): void => {
     const { step } = this.props;
 
-    if (step === "type") {
-      this.props.onStepChange("info");
+    if (step === 'type') {
+      this.props.onStepChange('info');
     }
   };
 
@@ -87,7 +87,7 @@ class CreateNewModalChallenge extends PureComponent<
   };
 
   private handleHotKey = (hotKey: string, event: KeyboardEvent): void => {
-    if (hotKey === "Enter") {
+    if (hotKey === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
 
@@ -161,8 +161,8 @@ class CreateNewModalChallenge extends PureComponent<
             wide={true}
             form={id}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleNextStepClick}
           >
@@ -175,13 +175,13 @@ class CreateNewModalChallenge extends PureComponent<
 
   private titleModal(type: string) {
     switch (type) {
-      case "post":
+      case 'post':
         return dictionary.post_create[this.context];
-      case "question":
+      case 'question':
         return dictionary.simple_question[this.context];
-      case "options":
+      case 'options':
         return dictionary.mult_choice_question[this.context];
-      case "comment":
+      case 'comment':
         return dictionary.comment_post[this.context];
       default:
         return null;
@@ -196,8 +196,8 @@ class CreateNewModalChallenge extends PureComponent<
         <ModalHeader className={styles.header} withBorder={true}>
           <IconButton
             glyph={faArrowLeft}
-            size={"small"}
-            iconSize={"lg"}
+            size={'small'}
+            iconSize={'lg'}
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
@@ -235,8 +235,8 @@ class CreateNewModalChallenge extends PureComponent<
           <Button
             wide={true}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleSubmit}
           >
@@ -251,9 +251,9 @@ class CreateNewModalChallenge extends PureComponent<
     const { step } = this.props;
 
     switch (step) {
-      case "type":
+      case 'type':
         return this.renderTypeStep();
-      case "info":
+      case 'info':
         return this.renderInfoStep();
       default:
         return null;

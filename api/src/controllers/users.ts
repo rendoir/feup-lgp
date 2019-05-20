@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import {query} from '../db/db';
+import { query } from '../db/db';
 
 export function register(req, res) {
     query({
@@ -18,7 +18,7 @@ export function register(req, res) {
             text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
-                req.body.work, req.body.work_field, req.body.home_town, req.body.university],
+            req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
         }).catch((error) => {
             console.log('\n\nERROR:', error);
@@ -35,8 +35,8 @@ export function register(req, res) {
 export class UserToken {
     private _EMAIL: string;
     private _ID: number;
-    private _PERMISSION: 'user'|'admin';
-    constructor(email: string, id: number, permission: 'user'|'admin') {
+    private _PERMISSION: 'user' | 'admin';
+    constructor(email: string, id: number, permission: 'user' | 'admin') {
         this._EMAIL = email;
         this._PERMISSION = permission;
         this._ID = id;
@@ -55,7 +55,7 @@ export class UserToken {
     }
 
     get properties() {
-        return {email: this.email, id: this.id, permission: this.permission};
+        return { email: this.email, id: this.id, permission: this.permission };
     }
 }
 
@@ -63,13 +63,12 @@ export async function getUser(req, res) {
     const id = req.params.id;
     try {
         const user = await query({
-            text: `SELECT first_name, last_name, email, bio, home_town, university, work, work_field
+            text: `SELECT avatar, first_name, last_name, email, bio, home_town, university, work, work_field
                     FROM users
                     WHERE id = $1
                     `,
             values: [id],
         });
-
         res.send({ user: user.rows[0] });
     } catch (e) {
         console.log('Error getting user info. Error: ' + e.message);
@@ -258,20 +257,24 @@ export async function getNotifications(req, res) {
     const userId = req.user.id;
     try {
       const unseenInvitesQuery = await query({
-        text: `SELECT DISTINCT invites.id, invite_subject_id,
-                (CASE WHEN invite_type = 'talk' THEN talks.title ELSE posts.title END) as title, invite_type, date_invited
-                FROM invites, talks, posts
-                WHERE (
-                        (invite_type = 'talk' AND talks.id = invite_subject_id) OR
-                        (invite_type = 'post' AND posts.id = invite_subject_id)
-                    ) AND
-                    invited_user = $1 AND
-                    invites.user_notified = FALSE
-                ORDER BY date_invited DESC`,
+        text: `SELECT * FROM retrieve_user_notifications($1)`,
         values: [userId],
       });
-
       res.status(200).send({ notifications: unseenInvitesQuery.rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(new Error('Error retrieving user notifications'));
+    }
+}
+
+export async function amountNotifications(req, res) {
+    const userId = req.user.id;
+    try {
+      const amountNotificationsQuery = await query({
+        text: `SELECT COUNT(*) FROM retrieve_user_notifications($1)`,
+        values: [userId],
+      });
+      res.status(200).send({ amountNotifications: amountNotificationsQuery.rows[0].count });
     } catch (error) {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user notifications'));
@@ -291,4 +294,70 @@ export function inviteNotified(req, res) {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while setting invite as notified' });
     });
+}
+
+export async function updateProfile(req, res) {
+    if (req.params.id !== req.body.author) {
+        res.status(400).send({ message: 'This account can\'t be edited by anyone but its owner!' });
+        return;
+    }
+
+    if (req.body.old_password !== undefined) {
+        try {
+            const password = await query({
+                text: 'SELECT pass from users WHERE id=$1',
+                values: [req.params.id],
+            });
+
+            const hashOld = crypto.createHash('sha256');
+            hashOld.update(req.body.old_password);
+            const hashedOldPassword = hashOld.digest('hex');
+
+            if (password.rows[0].pass !== hashedOldPassword) {
+                res.status(400).send({ message: 'The current password inserted is different than the one existent for this user!' });
+                return;
+            }
+
+            const hash = crypto.createHash('sha256');
+            hash.update(req.body.password);
+            const hashedPassword = hash.digest('hex');
+
+            try {
+                (await query({
+                    text: `UPDATE users SET first_name = $2, last_name = $3,
+                            work = $4, work_field = $5, home_town = $6, university = $7,
+                            email = $8, pass=$9
+                            WHERE id = $1`,
+                    values: [req.params.id, req.body.first_name, req.body.last_name,
+                    req.body.work, req.body.work_field, req.body.home_town,
+                    req.body.university, req.body.email, hashedPassword],
+                }));
+                // saveAvatar(req, res, req.params.id);
+                res.status(200).send();
+            } catch (error) {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error occured while updating the user profile' });
+            }
+        } catch (error) {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
+        }
+    } else {
+        try {
+            (await query({
+                text: `UPDATE users SET first_name = $2, last_name = $3,
+                        work = $4, work_field = $5, home_town = $6, university = $7,
+                        email = $8
+                        WHERE id = $1`,
+                values: [req.params.id, req.body.first_name, req.body.last_name,
+                req.body.work, req.body.work_field, req.body.home_town,
+                req.body.university, req.body.email],
+            }));
+            // saveAvatar(req, res, req.params.id);
+            res.status(200).send();
+        } catch (error) {
+            console.log('\n\nERROR:', error);
+            res.status(400).send({ message: 'An error occured while updating the user profile' });
+        }
+    }
 }

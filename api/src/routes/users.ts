@@ -154,6 +154,19 @@ usersRouter.post('/:id/rate', controller.rate);
 usersRouter.get('/:id/notifications', controller.getNotifications);
 
 /**
+ * @api {get} /api/users/:id/amount_notifications Fetch logged user's received invites amount, which he hasn't seen yet
+ * @apiName Get-Amount-User-Notifications
+ * @apiGroup Users
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+usersRouter.get('/:id/amount_notifications', controller.amountNotifications);
+
+/**
  * @api {put} /api/users/:id/invite_notified Mark an invite notification as seen by the invited user
  * @apiName Set-Invitation-As-Seen
  * @apiGroup Users
@@ -170,3 +183,28 @@ usersRouter.get('/:id/notifications', controller.getNotifications);
  *     }
  */
 usersRouter.put('/:id/invite_notified', controller.inviteNotified);
+
+/**
+ * @api {post} /api/users/:id/edit Update user's information
+ * @apiName Edit-user
+ * @apiGroup Users
+ *
+ * @apiParam {String} email Email of the user.
+ * @apiParam {String} password Password that will be associated to the email.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while checking register permissions'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'The given email does not have permission to register, please contact the administration'
+ *     }
+ */
+usersRouter.post('/:id/edit', controller.updateProfile);

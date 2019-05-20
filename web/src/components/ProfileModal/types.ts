@@ -26,38 +26,37 @@ export type SelectorStateCreator<T> = {
   create(items: T[]): ISelectorState<T>;
 };
 
-export type RequestChallenge = {
-  type: 'question' | 'options' | 'post' | 'comment';
-  title: string;
-  about: string;
-  dateStart: string;
-  dateEnd: string;
-  post: string;
-  question: string;
-  correctAnswer: string;
-  options: string[];
-  prize: string;
-  prizePoints: string;
+export type Request = {
+  avatar?: File;
+  email: string;
+  first_name: string;
+  home_town: string;
+  last_name: string;
+  loading: boolean;
+  old_password: string;
+  password: string;
+  confirm_password: string;
+  university: string;
+  work: string;
+  work_field: string;
 };
 
-export type StepChallenge = 'type' | 'info';
+export type Step = 'profile' | 'avatar';
 
 export type Props = {
   id: string;
   className?: string;
-  step: StepChallenge;
+  step: Step;
   error?: string | null;
   pending: boolean;
-  options?: string[];
-  posts?: any[];
-  request: RequestChallenge;
+  request: Request;
   shortnamePrefix?: string;
   autoFocus: boolean;
   maxGroupSize: number;
   isPublicGroupEnabled: boolean;
   onClose: () => any;
-  onSubmit: (request: RequestChallenge) => any;
-  onStepChange: (step: StepChallenge) => any;
-  onRequestChange: (request: RequestChallenge) => any;
+  onSubmit: (request: Request) => any;
+  onStepChange: (step: Step) => any;
+  onRequestChange: (request: Request) => any;
   isMaxGroupSizeVisible: boolean;
 };
