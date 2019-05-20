@@ -734,10 +734,10 @@ class Talk extends React.Component<IProps, IState> {
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
-        {this.renderInvite()}
-        {this.renderChallenge()}
-        {this.renderEditTalk()}
-        {this.renderArchiveTalk()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderInvite()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderChallenge()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderEditTalk()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderArchiveTalk()}
         <button onClick={this.handleHideTalk} disabled={this.state.archived}>
           <i className="fas fa-trash" />
           {hideBtnText}
