@@ -4,6 +4,7 @@ import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
 import Post from '../components/Post/Post';
 import { apiSubscription } from '../utils/apiSubscription';
 import { apiGetUserInteractions } from '../utils/apiUserInteractions';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
@@ -33,7 +34,8 @@ type State = {
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
-  public id: number; // Id of the profile's user
+  private id: number; // Id of the profile's user
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -121,17 +123,19 @@ class Profile extends React.Component<IProps, State> {
                 </fieldset>
               </div>
 
-              <div className="mx-5 my-4">
-                <div className="buttonSubscribe">
-                  <button
-                    id="subscribeBtn"
-                    onClick={this.handleUserSubscription}
-                  >
-                    <i className={subscribeIcon} />
-                    <span>{subscribeBtnText}</span>
-                  </button>
+              {!this.auth.isLoggedInUser(this.id) && (
+                <div className="mx-5 my-4">
+                  <div className="buttonSubscribe">
+                    <button
+                      id="subscribeBtn"
+                      onClick={this.handleUserSubscription}
+                    >
+                      <i className={subscribeIcon} />
+                      <span>{subscribeBtnText}</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </aside>
           </div>
           <div id="bottom-div" className="w-100 mt-5">
