@@ -728,18 +728,30 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private getAdminButtons() {
-    const isArchived = this.state.archived;
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_talk[this.context]
       : dictionary.hide_talk[this.context];
-    const isArchivedBtn = this.state.archived
-      ? dictionary.unarchive_talk[this.context]
-      : dictionary.archive_talk[this.context];
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
+        {this.renderInvite()}
+        {this.renderChallenge()}
+        {this.renderEditTalk()}
+        {this.renderArchiveTalk()}
+        <button onClick={this.handleHideTalk} disabled={this.state.archived}>
+          <i className="fas fa-trash" />
+          {hideBtnText}
+        </button>
+        {this.getHiddenInfo()}
+      </div>
+    );
+  }
+
+  private renderInvite() {
+    return (
+      <>
         <button
-          disabled={isArchived}
+          disabled={this.state.archived}
           data-toggle="modal"
           data-target={`#invite_talk_modal_${this.id}`}
         >
@@ -748,10 +760,17 @@ class Talk extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal talkId={this.id} />
+      </>
+    );
+  }
+
+  private renderChallenge() {
+    return (
+      <>
         <button
           type="button"
           onClick={this.handleCreateChallenge}
-          disabled={isArchived}
+          disabled={this.state.archived}
         >
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
@@ -773,131 +792,11 @@ class Talk extends React.Component<IProps, IState> {
             posts={this.state.posts}
           />
         ) : null}
-        {this.editForm()}
-        <button
-          type="button"
-          onClick={() => {
-            this.archiveTalk();
-          }}
-        >
-          <i className="fas fa-archive" />
-          {isArchivedBtn}
-        </button>
-        <button onClick={this.handleHideTalk} disabled={isArchived}>
-          <i className="fas fa-trash" />
-          {hideBtnText}
-        </button>
-        {this.getHiddenInfo()}
-      </div>
+      </>
     );
   }
 
-  private handleCreateChallenge = (event: MouseEvent): void => {
-    event.preventDefault();
-    this.setState({ isChallengeModalOpen: true });
-  };
-
-  private getJoinButton() {
-    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
-    let buttonText = this.state.userParticipation
-      ? dictionary.leave_talk[this.context]
-      : dictionary.join_talk[this.context];
-
-    if (!this.state.userCanJoin) {
-      buttonClass = 'cannot_join';
-      buttonText = dictionary.no_access_talk[this.context];
-    }
-    // TODO: METER EFEITOS AO CARREGAR
-    return (
-      <button
-        className={`join_button ${buttonClass}`}
-        onClick={
-          this.state.userParticipation
-            ? this.handleLeaveTalk
-            : this.handleJoinTalk
-        }
-        disabled={!this.state.userCanJoin}
-      >
-        {buttonText}
-      </button>
-    );
-  }
-
-  private getVisibilityIcon(v: string): IconDefinition {
-    switch (v) {
-      case 'public':
-        return faGlobeAfrica;
-      case 'followers':
-        return faUserFriends;
-      case 'private':
-        return faLock;
-      default:
-        return faQuestion;
-    }
-  }
-
-  private handleChallengeClick(challenge: number | undefined) {
-    if (challenge) {
-      this.setState({
-        clickedChallenge: challenge
-      } as IState);
-    }
-  }
-
-  private getChallenges() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
-
-    const challenges: any[] = [];
-    if (this.state.challenges.length > 0) {
-      challenges.push(
-        <ChallengeCarousel
-          key={'challenges_' + this.id}
-          id={this.id}
-          challenges={this.state.challenges}
-          userId={this.props.user.id}
-          handleChallengeClick={this.handleChallengeClick}
-        />
-      );
-    } else {
-      challenges.push(
-        <div key={'no_challenges'}>
-          {' '}
-          {dictionary.no_challenges[this.context]}{' '}
-        </div>
-      );
-    }
-
-    return (
-      <div key={'challenges_points'}>
-        <div key={'points_div_' + this.id} className="challenges">
-          <div key={'points_ins_div_' + this.id} className="p-3">
-            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h5>
-                {dictionary.my_points[this.context]}{' '}
-                <small>{this.state.points}</small>
-              </h5>
-            </div>
-          </div>
-        </div>
-        <div key={'challenges_div_' + this.id} className="challenges">
-          <div key={'challenges_ins_div_' + this.id} className="p-3">
-            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h4>
-                {dictionary.challenge_conference[this.context]}{' '}
-                <i className="fas fa-puzzle-piece" />
-              </h4>
-              <br />
-              {challenges}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  private editForm = () => {
+  private renderEditTalk() {
     const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
@@ -1005,7 +904,129 @@ class Talk extends React.Component<IProps, IState> {
         </Modal>
       </>
     );
+  }
+
+  private renderArchiveTalk() {
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_talk[this.context]
+      : dictionary.archive_talk[this.context];
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          this.archiveTalk();
+        }}
+      >
+        <i className="fas fa-archive" />
+        {isArchivedBtn}
+      </button>
+    );
+  }
+
+  private handleCreateChallenge = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isChallengeModalOpen: true });
   };
+
+  private getJoinButton() {
+    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
+    let buttonText = this.state.userParticipation
+      ? dictionary.leave_talk[this.context]
+      : dictionary.join_talk[this.context];
+
+    if (!this.state.userCanJoin) {
+      buttonClass = 'cannot_join';
+      buttonText = dictionary.no_access_talk[this.context];
+    }
+    // TODO: METER EFEITOS AO CARREGAR
+    return (
+      <button
+        className={`join_button ${buttonClass}`}
+        onClick={
+          this.state.userParticipation
+            ? this.handleLeaveTalk
+            : this.handleJoinTalk
+        }
+        disabled={!this.state.userCanJoin}
+      >
+        {buttonText}
+      </button>
+    );
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case 'public':
+        return faGlobeAfrica;
+      case 'followers':
+        return faUserFriends;
+      case 'private':
+        return faLock;
+      default:
+        return faQuestion;
+    }
+  }
+
+  private handleChallengeClick(challenge: number | undefined) {
+    if (challenge) {
+      this.setState({
+        clickedChallenge: challenge
+      } as IState);
+    }
+  }
+
+  private getChallenges() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
+    const challenges: any[] = [];
+    if (this.state.challenges.length > 0) {
+      challenges.push(
+        <ChallengeCarousel
+          key={'challenges_' + this.id}
+          id={this.id}
+          challenges={this.state.challenges}
+          userId={this.props.user.id}
+          handleChallengeClick={this.handleChallengeClick}
+        />
+      );
+    } else {
+      challenges.push(
+        <div key={'no_challenges'}>
+          {' '}
+          {dictionary.no_challenges[this.context]}{' '}
+        </div>
+      );
+    }
+
+    return (
+      <div key={'challenges_points'}>
+        <div key={'points_div_' + this.id} className="challenges">
+          <div key={'points_ins_div_' + this.id} className="p-3">
+            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h5>
+                {dictionary.my_points[this.context]}{' '}
+                <small>{this.state.points}</small>
+              </h5>
+            </div>
+          </div>
+        </div>
+        <div key={'challenges_div_' + this.id} className="challenges">
+          <div key={'challenges_ins_div_' + this.id} className="p-3">
+            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.challenge_conference[this.context]}{' '}
+                <i className="fas fa-puzzle-piece" />
+              </h4>
+              <br />
+              {challenges}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   private handleEditSubmission = () => {
     const editFields = this.state.editFields;
