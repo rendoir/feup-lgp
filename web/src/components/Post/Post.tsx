@@ -502,14 +502,17 @@ class Post extends Component<Props, IState> {
 
       currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
     }
-
+    console.log(currentComments);
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
+          id={comment.id}
           postID={comment.post}
-          title={comment.id}
-          author={comment.first_name + ' ' + comment.last_name}
+          author={{
+            id: comment.author_id,
+            name: comment.first_name + ' ' + comment.last_name
+          }}
           text={comment.comment}
           secondLevel={false}
         />
