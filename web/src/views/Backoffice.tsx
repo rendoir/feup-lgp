@@ -213,7 +213,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       addAdminSuccess: success,
       showTurnAdminAlert: true
     });
-    window.location.reload();
+    setTimeout('window.location.reload()', 2000);
   }
 
   private onRemoveAdminResponse(success: boolean) {
@@ -221,7 +221,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       removeAdminSuccess: success,
       showExpelAdminAlert: true
     });
-    window.location.reload();
+    setTimeout('window.location.reload()', 2000);
   }
 
   private onBanUserResponse(success: boolean) {
@@ -229,7 +229,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       banUserSuccess: success,
       showBanUserAlert: true
     });
-    window.location.reload();
+    setTimeout('window.location.reload()', 2000);
   }
 
   private onUnbanUserResponse(success: boolean) {
@@ -237,7 +237,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       showUnbanUserAlert: true,
       unbanUserSuccess: success
     });
-    window.location.reload();
+    setTimeout('window.location.reload()', 2000);
   }
 
   private getTurnAdminAlert() {
