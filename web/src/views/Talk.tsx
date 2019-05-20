@@ -36,6 +36,7 @@ import {
   apiUserJoinTalk,
   apiUserLeaveTalk
 } from '../utils/apiTalk';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
@@ -118,10 +119,11 @@ interface IState {
 class Talk extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public id: number;
-  public ownerId: number | undefined;
-  public ownerName: string | undefined;
-  public tags: string[];
+  private id: number;
+  private ownerId: number | undefined;
+  private ownerName: string | undefined;
+  private tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -200,170 +202,14 @@ class Talk extends React.Component<IProps, IState> {
     this.handleLeaveTalk = this.handleLeaveTalk.bind(this);
   }
 
-  public componentDidMount() {
-    this.apiGetTalk();
+  public async componentDidMount() {
+    await this.apiGetTalk();
     if (this.props.user.id === this.ownerId || !this.state.isHidden) {
       this.getPossibleTags();
       this.apiGetUserCanJoin();
       this.apiGetUserParticipation();
       this.apiGetPointsOfUserTalk();
     }
-  }
-
-  public async handleJoinTalk() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: true,
-      waitingUserJoinLeave: true
-    });
-
-    const joinSuccess = await apiUserJoinTalk(this.id);
-    this.setState({
-      userParticipation: joinSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public async handleLeaveTalk() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: false,
-      waitingUserJoinLeave: true
-    });
-
-    const leaveSuccess = await apiUserLeaveTalk(this.id);
-    this.setState({
-      userParticipation: !leaveSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public apiGetPointsOfUserTalk() {
-    axiosInstance
-      .get(`/talk/${this.id}/user/${this.props.user.id}/points`)
-      .then(res => {
-        this.setState({ points: res.data.points });
-      })
-      .catch(() =>
-        console.log('Failed to get points of user in the conference')
-      );
-  }
-
-  public apiGetTalk() {
-    axiosInstance
-      .get(`/talk/${this.id}`)
-      .then(res => {
-        const talk = res.data.talk;
-        const postsComing = res.data;
-
-        const challengesConf = res.data.challenges;
-
-        if (talk.privacy === 'closed') {
-          this.setState({
-            isHidden: true
-          });
-        }
-
-        this.ownerId = talk.user_id;
-        this.ownerName = `${talk.first_name} ${talk.last_name}`;
-
-        const reqChalCopy = this.state.requestChallenge;
-        if (postsComing.posts.length > 0) {
-          reqChalCopy.post = postsComing.posts[0].id;
-        }
-
-        this.setState({
-          archived: talk.archived,
-          challenges: challengesConf,
-          conf_id: talk.conference,
-          dateEnd: talk.dateend,
-          dateStart: talk.datestart,
-          description: talk.about,
-          editFields: {
-            dateEnd: talk.dateend,
-            dateStart: talk.datestart,
-            description: talk.about,
-            hasLiveStream: talk.livestream_url !== '',
-            livestreamUrl: talk.livestream_url,
-            place: talk.local,
-            title: talk.title
-          },
-          hasLiveStream: talk.livestream_url !== '',
-          livestreamUrl: talk.livestream_url,
-          place: talk.local,
-          posts: postsComing.posts,
-          privacy: talk.privacy,
-          requestChallenge: reqChalCopy,
-          title: talk.title
-        });
-      })
-      .catch(() => console.log('Failed to get talk info'));
-  }
-
-  public handleHideTalk() {
-    let privacyState = 'closed';
-
-    if (this.state.isHidden) {
-      privacyState = 'public';
-      this.setState({
-        isHidden: false
-      });
-    } else {
-      privacyState = 'closed';
-      this.setState({
-        isHidden: true
-      });
-    }
-
-    const postUrl = `/talk/${this.props.match.params.id}/change_privacy`;
-
-    axiosInstance
-      .post(postUrl, {
-        id: this.props.match.params.id,
-        privacy: privacyState
-      })
-      .then(() => {
-        console.log('Talk hidden...');
-      })
-      .catch(() => console.log('Failed to update privacy'));
-  }
-
-  public apiSetArchived() {
-    axiosInstance
-      .post(`/talk/${this.id}/archive`)
-      .then()
-      .catch(() => console.log('Failed to archive talk'));
-
-    this.setState({
-      archived: true
-    });
-  }
-
-  public apiSetUnarchived() {
-    axiosInstance
-      .delete(`/talk/${this.id}/archive`)
-      .then()
-      .catch(() => console.log('Failed to unarchive talk'));
-
-    this.setState({
-      archived: false
-    });
-  }
-
-  public async apiGetUserCanJoin() {
-    const canJoin: boolean = await apiCheckUserCanJoinTalk(this.id);
-    this.setState({ userCanJoin: canJoin });
-  }
-
-  public async apiGetUserParticipation() {
-    const participant: boolean = await apiCheckUserTalkParticipation(this.id);
-    this.setState({ userParticipation: participant });
   }
 
   public render() {
@@ -387,7 +233,10 @@ class Talk extends React.Component<IProps, IState> {
           <div className="container my-5">
             <div className="conf_side">
               <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
+              {(this.auth.isLoggedInUser(this.ownerId) ||
+                this.auth.isAdmin()) && (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              )}
             </div>
           </div>
         </div>
@@ -448,7 +297,163 @@ class Talk extends React.Component<IProps, IState> {
     }
   }
 
-  public getHiddenInfo() {
+  private async handleJoinTalk() {
+    if (this.state.waitingUserJoinLeave) {
+      return;
+    }
+
+    this.setState({
+      userParticipation: true,
+      waitingUserJoinLeave: true
+    });
+
+    const joinSuccess = await apiUserJoinTalk(this.id);
+    this.setState({
+      userParticipation: joinSuccess,
+      waitingUserJoinLeave: false
+    });
+  }
+
+  private async handleLeaveTalk() {
+    if (this.state.waitingUserJoinLeave) {
+      return;
+    }
+
+    this.setState({
+      userParticipation: false,
+      waitingUserJoinLeave: true
+    });
+
+    const leaveSuccess = await apiUserLeaveTalk(this.id);
+    this.setState({
+      userParticipation: !leaveSuccess,
+      waitingUserJoinLeave: false
+    });
+  }
+
+  private apiGetPointsOfUserTalk() {
+    axiosInstance
+      .get(`/talk/${this.id}/user/${this.props.user.id}/points`)
+      .then(res => {
+        this.setState({ points: res.data.points });
+      })
+      .catch(() =>
+        console.log('Failed to get points of user in the conference')
+      );
+  }
+
+  private async apiGetTalk() {
+    try {
+      const res = await axiosInstance.get(`/talk/${this.id}`);
+      const talk = res.data.talk;
+      const posts = res.data.posts;
+
+      const challengesConf = res.data.challenges;
+
+      if (talk.privacy === 'closed') {
+        this.setState({
+          isHidden: true
+        });
+      }
+
+      this.ownerId = talk.user_id;
+      this.ownerName = `${talk.first_name} ${talk.last_name}`;
+
+      const reqChalCopy = this.state.requestChallenge;
+      if (posts.length > 0) {
+        reqChalCopy.post = posts[0].id;
+      }
+
+      this.setState({
+        archived: talk.archived,
+        challenges: challengesConf,
+        conf_id: talk.conference,
+        dateEnd: talk.dateend,
+        dateStart: talk.datestart,
+        description: talk.about,
+        editFields: {
+          dateEnd: talk.dateend,
+          dateStart: talk.datestart,
+          description: talk.about,
+          hasLiveStream: talk.livestream_url !== '',
+          livestreamUrl: talk.livestream_url,
+          place: talk.local,
+          title: talk.title
+        },
+        hasLiveStream: talk.livestream_url !== '',
+        livestreamUrl: talk.livestream_url,
+        place: talk.local,
+        posts,
+        privacy: talk.privacy,
+        requestChallenge: reqChalCopy,
+        title: talk.title
+      });
+    } catch (e) {
+      console.log('Failed to get talk info');
+    }
+  }
+
+  private handleHideTalk() {
+    let privacyState = 'closed';
+
+    if (this.state.isHidden) {
+      privacyState = 'public';
+      this.setState({
+        isHidden: false
+      });
+    } else {
+      privacyState = 'closed';
+      this.setState({
+        isHidden: true
+      });
+    }
+
+    const postUrl = `/talk/${this.props.match.params.id}/change_privacy`;
+
+    axiosInstance
+      .post(postUrl, {
+        id: this.props.match.params.id,
+        privacy: privacyState
+      })
+      .then(() => {
+        console.log('Talk hidden...');
+      })
+      .catch(() => console.log('Failed to update privacy'));
+  }
+
+  private apiSetArchived() {
+    axiosInstance
+      .post(`/talk/${this.id}/archive`)
+      .then()
+      .catch(() => console.log('Failed to archive talk'));
+
+    this.setState({
+      archived: true
+    });
+  }
+
+  private apiSetUnarchived() {
+    axiosInstance
+      .delete(`/talk/${this.id}/archive`)
+      .then()
+      .catch(() => console.log('Failed to unarchive talk'));
+
+    this.setState({
+      archived: false
+    });
+  }
+
+  private async apiGetUserCanJoin() {
+    const canJoin: boolean = await apiCheckUserCanJoinTalk(this.id);
+    this.setState({ userCanJoin: canJoin });
+  }
+
+  private async apiGetUserParticipation() {
+    const participant: boolean = await apiCheckUserTalkParticipation(this.id);
+    this.setState({ userParticipation: participant });
+  }
+
+  private getHiddenInfo() {
     if (this.state.isHidden) {
       return (
         <div id="hidden_info">
@@ -458,7 +463,7 @@ class Talk extends React.Component<IProps, IState> {
     }
   }
 
-  public getDropdownButtons() {
+  private getDropdownButtons() {
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_talk[this.context]
       : dictionary.hide_talk[this.context];
