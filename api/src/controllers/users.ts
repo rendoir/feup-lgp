@@ -257,23 +257,27 @@ export async function getNotifications(req, res) {
     const userId = req.user.id;
     try {
       const unseenInvitesQuery = await query({
-        text: `SELECT DISTINCT invites.id, invite_subject_id,
-                (CASE WHEN invite_type = 'talk' THEN talks.title ELSE posts.title END) as title, invite_type, date_invited
-                FROM invites, talks, posts
-                WHERE (
-                        (invite_type = 'talk' AND talks.id = invite_subject_id) OR
-                        (invite_type = 'post' AND posts.id = invite_subject_id)
-                    ) AND
-                    invited_user = $1 AND
-                    invites.user_notified = FALSE
-                ORDER BY date_invited DESC`,
-            values: [userId],
-        });
-
+        text: `SELECT * FROM retrieve_user_notifications($1)`,
+        values: [userId],
+      });
       res.status(200).send({ notifications: unseenInvitesQuery.rows });
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user notifications'));
+    }
+}
+
+export async function amountNotifications(req, res) {
+    const userId = req.user.id;
+    try {
+      const amountNotificationsQuery = await query({
+        text: `SELECT COUNT(*) FROM retrieve_user_notifications($1)`,
+        values: [userId],
+      });
+      res.status(200).send({ amountNotifications: amountNotificationsQuery.rows[0].count });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user notifications'));
     }
 }
 

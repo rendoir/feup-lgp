@@ -1,15 +1,15 @@
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from '../../utils/axiosInstance';
 
 // - Import react components
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./Challenge.module.css";
+import styles from './Challenge.module.css';
 
-import InputNext from "../InputNext/InputNext";
+import InputNext from '../InputNext/InputNext';
 
 // - Import utils
-import { dictionary, LanguageContext } from "../../utils/language";
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   talkID: number;
@@ -40,10 +40,10 @@ class QuestionAnswer extends Component<Props, State> {
     super(props);
 
     this.state = {
-      correctAnswer: "",
+      correctAnswer: '',
       isCorrect: undefined,
-      question: "",
-      value: ""
+      question: '',
+      value: ''
     };
 
     this.handleSolveChallenge = this.handleSolveChallenge.bind(this);
@@ -51,18 +51,18 @@ class QuestionAnswer extends Component<Props, State> {
 
   public componentDidMount() {
     const content = this.props.content;
-    let question = "";
-    let correctAnswer = "";
+    let question = '';
+    let correctAnswer = '';
 
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < content.length; i++) {
-      if (content[i].startsWith("Question: ")) {
-        question = content[i].split("Question: ")[1];
-        if (!question.includes("?")) {
-          question += " ?";
+      if (content[i].startsWith('Question: ')) {
+        question = content[i].split('Question: ')[1];
+        if (!question.includes('?')) {
+          question += ' ?';
         }
-      } else if (content[i].startsWith("CorrectAnswer: ")) {
-        correctAnswer = content[i].split("CorrectAnswer: ")[1];
+      } else if (content[i].startsWith('CorrectAnswer: ')) {
+        correctAnswer = content[i].split('CorrectAnswer: ')[1];
       }
     }
 
@@ -72,9 +72,9 @@ class QuestionAnswer extends Component<Props, State> {
   public apiSolvedState(question: string, correctAnswer: string) {
     let getUrl = `${location.protocol}//${location.hostname}`;
     getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     getUrl += `/talk/${this.props.talkID}/challenge/solvedState`;
 
     axiosInstance
@@ -86,7 +86,7 @@ class QuestionAnswer extends Component<Props, State> {
         }
       })
       .then(res => {
-        let value = "";
+        let value = '';
         let isCorrect: boolean | undefined;
 
         if (res.data.state.length > 0) {
@@ -97,7 +97,7 @@ class QuestionAnswer extends Component<Props, State> {
         this.setState({ question, correctAnswer, isCorrect, value });
       })
       .catch(() => {
-        console.log("Failed to get state of challenge");
+        console.log('Failed to get state of challenge');
         this.setState({ question, correctAnswer });
       });
   }
@@ -107,7 +107,7 @@ class QuestionAnswer extends Component<Props, State> {
       <div className="card">
         <div className="card-header d-flex flex-row">
           <div
-            key={"Challenge_" + this.props.id + "_title"}
+            key={'Challenge_' + this.props.id + '_title'}
             className="mr-auto"
           >
             {this.props.title}
@@ -118,7 +118,7 @@ class QuestionAnswer extends Component<Props, State> {
         </div>
         <div className="card-body">
           {this.parseContent()}
-          <hr key={"Hr_Challenge_" + this.props.id} />
+          <hr key={'Hr_Challenge_' + this.props.id} />
           {this.parsePrize()}
         </div>
         <div className={`card-footer ${styles.card_footer}`}>
@@ -138,11 +138,11 @@ class QuestionAnswer extends Component<Props, State> {
   }
 
   public parsePrize() {
-    let prize = "";
+    let prize = '';
 
     if (
-      this.props.prize.includes("points") ||
-      this.props.prize.includes("Points")
+      this.props.prize.includes('points') ||
+      this.props.prize.includes('Points')
     ) {
       prize = `${dictionary.win[this.context]} ${this.props.pointsPrize} ${
         dictionary.points[this.context]
@@ -152,9 +152,9 @@ class QuestionAnswer extends Component<Props, State> {
     }
 
     return (
-      <p key={"Prize_Challenge_" + this.props.id} className="card-text">
-        {" "}
-        {prize}{" "}
+      <p key={'Prize_Challenge_' + this.props.id} className="card-text">
+        {' '}
+        {prize}{' '}
       </p>
     );
   }
@@ -196,7 +196,7 @@ class QuestionAnswer extends Component<Props, State> {
 
   public handleSolveChallenge() {
     if (
-      this.state.value === "" ||
+      this.state.value === '' ||
       this.state.value === dictionary.write_answer[this.context]
     ) {
       return;
@@ -214,9 +214,9 @@ class QuestionAnswer extends Component<Props, State> {
   public apiSolveChallenge(completion: boolean) {
     let postUrl = `${location.protocol}//${location.hostname}`;
     postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
+        : '/api';
     postUrl += `/talk/${this.props.talkID}/challenge/solve`;
 
     axiosInstance
@@ -228,10 +228,10 @@ class QuestionAnswer extends Component<Props, State> {
         headers: {}
       })
       .then(res => {
-        console.log("Challenge solved - reloading page...");
+        console.log('Challenge solved - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 }
 

@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./AdminFunctionsModal.css";
+import './AdminFunctionsModal.css';
 
-import { getApiURL } from "../../utils/apiURL";
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { getApiURL } from '../../utils/apiURL';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   onResponse: (success: boolean) => void;
@@ -23,7 +23,7 @@ class AddAdminModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL("/admin"), body)
+      .post(getApiURL('/admin'), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -32,7 +32,7 @@ class AddAdminModal extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      admin_email: ""
+      admin_email: ''
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -102,7 +102,7 @@ class AddAdminModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL("/admin"), body)
+      .post(getApiURL('/admin'), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

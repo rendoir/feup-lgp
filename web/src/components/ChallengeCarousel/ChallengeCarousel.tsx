@@ -1,11 +1,11 @@
 // - Import react components
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 // - Import styles
-import styles from "./ChallengeCarousel.module.css";
+import styles from './ChallengeCarousel.module.css';
 
 // - Import app components
-import Challenge from "../Challenge/Challenge";
+import Challenge from '../Challenge/Challenge';
 
 export type Props = {
   id: number;
@@ -35,16 +35,16 @@ class ChallengeCarousel extends Component<Props, State> {
     for (let i = 0; i < this.props.challenges.length; i++) {
       items.push(
         <li
-          key={"li_" + this.props.id + "_" + i}
-          data-target={"#challengeCarousel" + this.props.id}
+          key={'li_' + this.props.id + '_' + i}
+          data-target={'#challengeCarousel' + this.props.id}
           data-slide-to={i}
-          className={i ? "" : "active"}
+          className={i ? '' : 'active'}
         />
       );
       challenges.push(
         <div
-          key={"div_" + this.props.id + "_" + i}
-          className={"carousel-item " + (i ? "" : "active")}
+          key={'div_' + this.props.id + '_' + i}
+          className={'carousel-item ' + (i ? '' : 'active')}
         >
           <div
             className="post_content_media"
@@ -72,7 +72,7 @@ class ChallengeCarousel extends Component<Props, State> {
 
     return (
       <div
-        id={"challengeCarousel" + this.props.id}
+        id={'challengeCarousel' + this.props.id}
         className="carousel slide"
         data-ride="carousel"
         data-interval="false"
@@ -80,7 +80,7 @@ class ChallengeCarousel extends Component<Props, State> {
         <div className="carousel-inner challenge">{challenges}</div>
         <a
           className={`carousel-control-prev ${styles.carousel_control_prev}`}
-          href={"#challengeCarousel" + this.props.id}
+          href={'#challengeCarousel' + this.props.id}
           role="button"
           data-slide="prev"
         >
@@ -89,7 +89,7 @@ class ChallengeCarousel extends Component<Props, State> {
         </a>
         <a
           className={`carousel-control-next ${styles.carousel_control_next}`}
-          href={"#challengeCarousel" + this.props.id}
+          href={'#challengeCarousel' + this.props.id}
           role="button"
           data-slide="next"
         >

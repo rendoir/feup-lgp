@@ -316,6 +316,44 @@ RETURNS TABLE(uninvited_subscriber BIGINT) AS $$
         follower NOT IN (SELECT * FROM retrieve_post_invited_or_subscribed_users(_post_id));
 $$ LANGUAGE SQL;
 
+/* Utils functions fetching notifications (administration and user profile) */
+-- USER INVITE NOTIFICATIONS
+CREATE OR REPLACE FUNCTION retrieve_user_notifications(_user_id BIGINT)
+RETURNS TABLE(id BIGINT, invite_subject_id BIGINT, title TEXT, invite_type invite_type_enum, date_invited TIMESTAMP) AS $$
+	SELECT DISTINCT invites.id, invite_subject_id,
+    (CASE WHEN invite_type = 'talk' THEN talks.title ELSE posts.title END) as title, invite_type, date_invited
+        FROM invites, talks, posts
+        WHERE (
+                (invite_type = 'talk' AND talks.id = invite_subject_id) OR
+                (invite_type = 'post' AND posts.id = invite_subject_id)
+            ) AND
+            invited_user = _user_id AND
+            invites.user_notified = FALSE
+        ORDER BY date_invited DESC;
+$$ LANGUAGE SQL;
+-- ADMIN REPORT NOTIFICATIONS (ALL ADMINS RECEIVE THE SAME NOTIFICATIONS)
+CREATE OR REPLACE FUNCTION retrieve_admin_notifications()
+RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_type_enum,
+                reported_user_id BIGINT, reported_user_email TEXT, reported_user_first_name TEXT, reported_user_last_name TEXT, reports_amount BIGINT) AS $$
+	SELECT content_id, 
+            (CASE WHEN content_type = 'post' THEN posts.title ELSE comments.comment END) as content_description, 
+            content_type,
+            users.id,
+            users.email,
+            users.first_name,
+            users.last_name,
+            COUNT(DISTINCT content_reports.id) as reports_amount
+        FROM content_reports, posts, comments, users
+        WHERE admin_review = FALSE AND
+            (
+                (content_type = 'post' AND posts.id = content_id AND users.id = posts.author) OR
+                (content_type = 'comment' AND comments.id = content_id AND users.id = comments.author)
+            )
+        GROUP BY content_id, content_description, content_type, users.id
+        ORDER BY reports_amount desc;
+$$ LANGUAGE SQL;
+
+
 /**
 *
 * INSERTS
@@ -373,7 +411,7 @@ INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES 
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2018-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user 3', 'public', '2018-12-03');
-INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', '2018-12-02');
+INSERT INTO posts (author, title, content, date_created) VALUES (1, 'Very big Admin post title, so big it gets multiple lines to be able to output it, omg still not enough, really need more characters please I beg you', 'This is a post done by the admin', '2018-12-02');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'followers', '2018-12-01');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', 'public', '2018-12-23');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'public', '2018-12-21');
@@ -410,6 +448,8 @@ UPDATE posts SET search_tokens = to_tsvector(title || ' ' || content);
 
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'post', 'Insulted my son');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'post', 'Chauvinist content');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (2, 3, 'post', 'Because yes');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (3, 3, 'post', 'Bery much disrespect');
 
 INSERT INTO comments (author, post, comment) VALUES (1, 1, 'This is a comment done by the admin');
 INSERT INTO comments (author, post, comment) VALUES (2, 2, 'This is a comment done by a mere user following the admin');
@@ -433,6 +473,7 @@ INSERT INTO comments (author, post, comment) VALUES (2, 9, 'This is a comment do
 INSERT INTO comments (author, post, comment) VALUES (1, 10, 'This is a comment done by the admin');
 
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 2, 'comment', 'Insults my family');
+INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (2, 2, 'comment', 'I dont like it');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 3, 'comment', 'Says hitler did nothing wrong');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 12, 'comment', 'Insults my dog');
 INSERT INTO content_reports (reporter, content_id, content_type, description) VALUES (1, 13, 'comment', 'Insults my mom');

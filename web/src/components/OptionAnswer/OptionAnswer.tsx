@@ -1,8 +1,8 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
-import classNames from "classnames";
-import React, { MouseEvent, PureComponent } from "react";
-import Icon from "../Icon/Icon";
-import styles from "./OptionAnswer.module.css";
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
+import classNames from 'classnames';
+import React, { MouseEvent, PureComponent } from 'react';
+import Icon from '../Icon/Icon';
+import styles from './OptionAnswer.module.css';
 
 export type Props = {
   id: string;
@@ -31,8 +31,8 @@ class OptionAnswer extends PureComponent<Props> {
           <p className={`mb-1 ${styles.option}`} key={id}>
             {value}
           </p>
-          <a href={"#"} onClick={this.handleRemove}>
-            <Icon icon={faTimes} size={"2x"} className={styles.icon} />
+          <a href={'#'} onClick={this.handleRemove}>
+            <Icon icon={faTimes} size={'2x'} className={styles.icon} />
           </a>
         </div>
       </div>

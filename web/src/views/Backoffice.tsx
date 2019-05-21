@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axiosInstance from '../utils/axiosInstance';
 
 import AddAdminModal from '../components/AdminFunctionsModal/AddAdminModal';
 import BanUserModal from '../components/AdminFunctionsModal/BanUserModal';
@@ -7,11 +6,17 @@ import RemoveAdminModal from '../components/AdminFunctionsModal/RemoveAdminModal
 import UnbanUserModal from '../components/AdminFunctionsModal/UnbanUserModal';
 import { BackofficeNotification } from '../components/BackofficeNotification/BackofficeNotification';
 import { BackofficeUserCard } from '../components/BackofficeUserCard/BackofficeUserCard';
+
+import { apiGetReportNotificationsInfo } from '../utils/apiReport';
 import AuthHelperMethods from '../utils/AuthHelperMethods';
+import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
 
 type BackofficeState = {
+  fetchingNotifications: boolean;
+  notifications: any[];
+  notificationsAmount: number;
   addAdminSuccess: boolean;
   banUserSuccess: boolean;
   removeAdminSuccess: boolean;
@@ -26,17 +31,18 @@ type BackofficeState = {
   usersTypeSearch: string;
 };
 
-const PUBLICATION_NOTIFICATION = 'publication';
-const COMMENT_NOTIFICATION = 'comment';
-
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
 
   constructor(props: any) {
     super(props);
+
     this.state = {
       addAdminSuccess: false,
       banUserSuccess: false,
+      fetchingNotifications: true,
+      notifications: [],
+      notificationsAmount: 0,
       removeAdminSuccess: false,
       search: '',
       showBanUserAlert: false,
@@ -44,10 +50,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       showTurnAdminAlert: false,
       showUnbanUserAlert: false,
       unbanUserSuccess: false,
-      usersAreaActive: true,
+      usersAreaActive: false,
       usersSearchResult: [],
       usersTypeSearch: 'all'
     };
+
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
@@ -60,11 +67,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     this.handleUserCardUnban = this.handleUserCardUnban.bind(this);
     this.handleUserCardTurnAdmin = this.handleUserCardTurnAdmin.bind(this);
     this.handleUserCardExpelAdmin = this.handleUserCardExpelAdmin.bind(this);
-    // Notification button handlers
-    this.handleNotifUserBan = this.handleNotifUserBan.bind(this);
-    this.handleNotifContentDelete = this.handleNotifContentDelete.bind(this);
-    this.handleNotifIgnore = this.handleNotifIgnore.bind(this);
-
     // Search users button handlers
     this.submitUserSearch = this.submitUserSearch.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -75,6 +77,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   public componentDidMount() {
     this.apiSubmitSearch();
+    this.apiGetNotifications();
   }
 
   public render() {
@@ -105,7 +108,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 onClick={this.handleNotifArea}
               >
                 {dictionary.notifications[this.context]}{' '}
-                <span className="badge badge-light">4</span>
+                <span className="badge badge-light">
+                  {this.state.notificationsAmount}
+                </span>
               </a>
               <a
                 id="add_admin"
@@ -152,6 +157,16 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     );
   }
 
+  private async apiGetNotifications() {
+    const notifications = await apiGetReportNotificationsInfo();
+    const notificationsAmount = notifications ? notifications.length : 0;
+    this.setState({
+      fetchingNotifications: false,
+      notifications,
+      notificationsAmount
+    });
+  }
+
   private handleUsersArea() {
     this.setState({
       usersAreaActive: true
@@ -178,18 +193,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleUserCardExpelAdmin(email: string) {
     RemoveAdminModal.OnExpelAdmin(email, this.onRemoveAdminResponse);
-  }
-
-  private handleNotifUserBan() {
-    console.log('BAN NOTIFICATION');
-  }
-
-  private handleNotifContentDelete() {
-    console.log('DELETE CONTENT NOTIFICATION');
-  }
-
-  private handleNotifIgnore() {
-    console.log('IGNORE NOTIFICATION');
   }
 
   private getAddAdminModal() {
@@ -513,58 +516,40 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private getNotifications() {
+    if (this.state.fetchingNotifications) {
+      return null;
+    } else if (!this.state.notifications) {
+      return <div>{dictionary.error_notifications[this.context]}</div>;
+    } else if (this.state.notifications.length === 0) {
+      return (
+        <div id="no-notifications">
+          {dictionary.no_notifications[this.context]}
+        </div>
+      );
+    }
+
+    const notificationList = this.state.notifications.map(notif => {
+      return (
+        <BackofficeNotification
+          key={notif.content_id + notif.content_type}
+          contentId={notif.content_id}
+          content={notif.content_description}
+          contentType={notif.content_type}
+          reportedUserId={notif.reported_user_id}
+          reportedUserEmail={notif.reported_user_email}
+          reporterUserFirstName={notif.reported_user_first_name}
+          reporterUserLastName={notif.reported_user_last_name}
+          reportsAmount={notif.reports_amount}
+        />
+      );
+    });
+
     return (
       <div
         id="backoffice_notifications_area"
         className="col-12 col-md-9 mt-2 mt-md-0"
       >
-        {/* Notification list */}
-        {/* Comment report notification (one line) */}
-        <BackofficeNotification
-          id={1}
-          username="Alberta Fernandes"
-          notificationType={COMMENT_NOTIFICATION}
-          content="You are all useless"
-          contentId={1}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Comment report notification (Multiple lines) */}
-        <BackofficeNotification
-          id={2}
-          username="Alberta Fernandes"
-          notificationType={COMMENT_NOTIFICATION}
-          content="Very big comment that takes more than one line, look so many characters, surely it has more than one row"
-          contentId={2}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Publication report notification (one line) */}
-        <BackofficeNotification
-          id={3}
-          username="Alberta Fernandes"
-          notificationType={PUBLICATION_NOTIFICATION}
-          content="The benefits of anti-vaxx on newborns"
-          contentId={3}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
-        {/* Publication report notification (multiple line) */}
-        <BackofficeNotification
-          id={4}
-          username="Alberta Fernandes"
-          notificationType={PUBLICATION_NOTIFICATION}
-          content="Very big publication title that takes multiple lines, with
-          useless text just to get to the third row, look how useless these
-          characters that are being typed are, now we got there"
-          contentId={4}
-          banUserHandler={this.handleNotifUserBan}
-          deleteContentHandler={this.handleNotifContentDelete}
-          ignoreHandler={this.handleNotifIgnore}
-        />
+        {notificationList}
       </div>
     );
   }

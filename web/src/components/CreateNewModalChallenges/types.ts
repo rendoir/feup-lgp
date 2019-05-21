@@ -1,5 +1,5 @@
-import { List, OrderedSet } from "immutable";
-import { PeerInfo } from "../../utils/types";
+import { List, OrderedSet } from 'immutable';
+import { PeerInfo } from '../../utils/types';
 
 export interface ISelectorState<T> {
   hasQuery(): boolean;
@@ -27,7 +27,7 @@ export type SelectorStateCreator<T> = {
 };
 
 export type RequestChallenge = {
-  type: "question" | "options" | "post" | "comment";
+  type: 'question' | 'options' | 'post' | 'comment';
   title: string;
   about: string;
   dateStart: string;
@@ -40,7 +40,7 @@ export type RequestChallenge = {
   prizePoints: string;
 };
 
-export type StepChallenge = "type" | "info";
+export type StepChallenge = 'type' | 'info';
 
 export type Props = {
   id: string;
