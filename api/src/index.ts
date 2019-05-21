@@ -38,6 +38,7 @@ import {
     feedRouter,
     loginRouter,
     postRouter,
+    productsRouter,
     searchRouter,
     tagsRouter,
     talkRouter,
@@ -79,6 +80,7 @@ app.use('/talk', talkRouter);
 app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
 app.use('/conference', conferenceRouter);
+app.use('/products', productsRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });

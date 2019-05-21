@@ -9,3 +9,4 @@ export * from './search';
 export * from './tags';
 export * from './challenge';
 export * from './conference';
+export * from './products';
