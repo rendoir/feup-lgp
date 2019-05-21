@@ -8,7 +8,7 @@ export async function getFeed(req, res) {
     try {
         const result = await query({
             text: `(SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
+                        p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
@@ -16,11 +16,11 @@ export async function getFeed(req, res) {
                                 OR (author IN (SELECT followed FROM follows WHERE follower = $1)
                                     AND p.visibility IN ('public', 'followers')))
                             AND p.talk IS null
-                        ORDER BY date_created DESC
+                        ORDER BY date DESC
                         LIMIT 80)
                     UNION
                     (SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
+                        p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
@@ -28,9 +28,9 @@ export async function getFeed(req, res) {
                             AND p.talk IS null
                             AND author != $1
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
-                        ORDER BY date_created DESC
+                        ORDER BY date DESC
                         LIMIT 20)
-                    ORDER BY date_created DESC
+                    ORDER BY date DESC
                     LIMIT $2`,
             values: [userId, limit],
         });
@@ -109,11 +109,30 @@ export async function getFeed(req, res) {
                         ORDER BY c.dateStart ASC
                         LIMIT 5`,
         });
+        const talks = await query({
+           text: `SELECT t.id, t.title, t.dateEnd
+                  FROM talks t
+                    INNER JOIN talk_participants tp ON t.id = tp.talk
+                  WHERE (
+                    tp.participant_user = $1
+                    AND (
+                        t.author = $1
+                        OR t.author IN (SELECT followed FROM follows WHERE follower = $1)
+                    )
+                    AND t.privacy IN ('public', 'followers')
+                    AND t.dateEnd::timestamp with time zone > NOW()
+                  )
+                  ORDER BY t.dateStart ASC
+                  LIMIT 10
+           `,
+           values: [userId],
+        });
         res.send({
             conferences: conferences.rows,
+            following: following.rows,
             posts: result.rows,
             size: totalSize.rows[0].count,
-            following: following.rows,
+            talks: talks.rows,
         });
     } catch (error) {
         res.status(500).send({
@@ -128,8 +147,8 @@ export async function getPosts(req, res) {
     const userId = req.user.id;
     try {
         const result = await query({
-            text: `(SELECT p.id, first_name, last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
+            text: `(SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+                        p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
@@ -137,11 +156,11 @@ export async function getPosts(req, res) {
                                 OR (author IN (SELECT followed FROM follows WHERE follower = $1)
                                     AND p.visibility IN ('public', 'followers')))
                             AND p.talk IS null
-                        ORDER BY date_created DESC
+                        ORDER BY date DESC
                         LIMIT 80)
                     UNION
-                    (SELECT p.id, first_name, last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, p.talk, users.id AS user_id
+                    (SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+                        p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
                         WHERE
@@ -149,9 +168,9 @@ export async function getPosts(req, res) {
                             AND p.talk IS null
                             AND author != $1
                             AND author NOT IN (SELECT followed FROM follows WHERE follower = $1)
-                        ORDER BY date_created DESC
+                        ORDER BY date DESC
                         LIMIT 20)
-                    ORDER BY date_created DESC
+                    ORDER BY date DESC
                     LIMIT $2
                     OFFSET $3`,
             values: [userId, limit, offset],

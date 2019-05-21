@@ -5,7 +5,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 import Post from '../components/Post/Post';
-import styles from '../styles/Conference.module.css';
+import styles from '../styles/Feed.module.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
@@ -23,6 +23,7 @@ type State = {
   isLoading: boolean;
   itemsPerPage: number;
   posts: any[];
+  talks: any[];
 };
 
 class Feed extends React.Component<Props, State> {
@@ -40,7 +41,8 @@ class Feed extends React.Component<Props, State> {
       hasMore: true,
       isLoading: true,
       itemsPerPage: 10,
-      posts: []
+      posts: [],
+      talks: []
     };
 
     this.dateOptions = {
@@ -76,12 +78,15 @@ class Feed extends React.Component<Props, State> {
     const { error, isLoading, hasMore } = this.state;
 
     return (
-      <div id="Feed" className="container-fluid row mt-3 ml-0 mr-0">
-        <div className={'col-lg-3'}>
+      <div className="container-fluid row mt-3 ml-0 mr-0">
+        <div className={classNames('col-lg-3 order-lg-1', styles.cardsLeft)}>
           {this.renderFollowedUsersCard()}
           {this.renderConferencesCard()}
         </div>
-        <div className={'col-lg-6'}>
+        <div className={classNames('col-lg-3 order-lg-3', styles.cardsRight)}>
+          {this.renderJoinedTalksCard()}
+        </div>
+        <div className={classNames('col-lg-6 order-lg-2', styles.posts)}>
           {this.renderPosts()}
           {error ? this.renderErrorAlert() : null}
           {isLoading ? this.renderLoadingIcon() : null}
@@ -105,7 +110,8 @@ class Feed extends React.Component<Props, State> {
             following: res.data.following,
             hasMore: this.state.posts.length < Number(res.data.size),
             isLoading: false,
-            posts: res.data.posts
+            posts: res.data.posts,
+            talks: res.data.talks
           });
         })
         .catch(error => {
@@ -150,7 +156,10 @@ class Feed extends React.Component<Props, State> {
         key={post.id}
         id={post.id}
         title={post.title}
-        date={post.date}
+        date={new Date(post.date).toLocaleString(
+          dictionary.date_format[this.context],
+          this.dateOptions
+        )}
         author={post.author}
         content={post.content}
         visibility={post.visibility}
@@ -178,9 +187,9 @@ class Feed extends React.Component<Props, State> {
     const following = this.state.following;
 
     return (
-      <Card className={'col-lg-12 mb-3 p-0'}>
+      <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
         <Card.Header className={styles.header}>
-          <Card.Title>People I follow</Card.Title>
+          <Card.Title className={'mb-0'}>People I follow</Card.Title>
         </Card.Header>
         <Card.Body>
           <ListGroup variant={'flush'}>
@@ -208,13 +217,13 @@ class Feed extends React.Component<Props, State> {
     const conferences = this.state.conferences;
     const cardHeaderClassName = classNames(
       styles.header,
-      'd-flex flex-fow justify-content-between'
+      'd-flex flex-fow justify-content-between align-items-center'
     );
 
     return (
-      <Card className={'col-lg-12 mb-3 p-0'}>
+      <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
         <Card.Header className={cardHeaderClassName}>
-          <Card.Title>Upcoming conferences</Card.Title>
+          <Card.Title className={'mb-0'}>Upcoming conferences</Card.Title>
           <Card.Link
             href={'/conferences'}
             className={'text-dark'}
@@ -249,7 +258,47 @@ class Feed extends React.Component<Props, State> {
                 );
               })
             ) : (
-              <Card.Subtitle>You don't follow any user</Card.Subtitle>
+              <Card.Subtitle>No upcoming conferences</Card.Subtitle>
+            )}
+          </ListGroup>
+        </Card.Body>
+      </Card>
+    );
+  };
+
+  private renderJoinedTalksCard = () => {
+    const talks = this.state.talks;
+
+    return (
+      <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
+        <Card.Header className={styles.header}>
+          <Card.Title className={'mb-0'}>Joined Talks</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <ListGroup variant={'flush'}>
+            {talks.length > 0 ? (
+              talks.map(talk => {
+                const dateEnd = new Date(talk.dateend).toLocaleDateString(
+                  dictionary.date_format[this.context],
+                  this.dateOptions
+                );
+
+                return (
+                  <ListGroup.Item
+                    key={talk.id}
+                    action={true}
+                    href={`/talk/${talk.id}`}
+                    className={styles.link}
+                  >
+                    {talk.title}
+                    <Card.Subtitle className={'mt-2 text-dark'}>
+                      {dictionary.ending_date[this.context]}: {dateEnd}
+                    </Card.Subtitle>
+                  </ListGroup.Item>
+                );
+              })
+            ) : (
+              <Card.Subtitle>You haven't joined any talk</Card.Subtitle>
             )}
           </ListGroup>
         </Card.Body>
