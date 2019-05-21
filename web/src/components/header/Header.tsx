@@ -53,6 +53,7 @@ type State = {
     livestream: string;
     switcher: string;
   };
+  userFirstName;
   adminNotifications: number;
   userNotifications: number;
 };
@@ -88,6 +89,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       },
       search: '',
       step: 'type',
+      userFirstName: 'User',
       userNotifications: 0
     };
 
@@ -96,6 +98,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   public componentDidMount(): void {
     if (this.auth.loggedIn()) {
+      this.apiGetUserName();
       this.getPossibleTags();
       this.getUserNotificationAmount();
       this.getAdminNotificationAmount();
@@ -164,6 +167,18 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     );
   }
 
+  private apiGetUserName() {
+    const userID = this.auth.getUserPayload().id;
+    axiosInstance
+      .get(`/users/${userID}`)
+      .then(res => {
+        this.setState({
+          userFirstName: res.data.user.first_name
+        });
+      })
+      .catch(() => console.log('Failed to get user'));
+  }
+
   private getNotificationIcon(type: string = 'user') {
     const href = type === 'admin' ? '/admin' : '/notifications';
     const icon = type === 'admin' ? faExclamationCircle : faBell;
@@ -207,7 +222,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           title={
             <div style={{ display: 'inline-block' }} className={styles.link}>
               <Icon icon={faUserMd} size={'lg'} className={styles.icon} />{' '}
-              {dictionary.user_dropdown[this.context]}
+              {this.state.userFirstName}
             </div>
           }
           id="header_user_dropdown"

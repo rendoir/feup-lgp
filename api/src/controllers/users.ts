@@ -75,6 +75,22 @@ export async function getUser(req, res) {
     }
 }
 
+export async function getUserName(req, res) {
+    const id = req.params.id;
+    try {
+        const user = await query({
+            text: `SELECT first_name
+                    FROM users
+                    WHERE id = $1
+                    `,
+            values: [id],
+        });
+        res.send({ user: user.rows[0] });
+    } catch (e) {
+        console.log('Error getting user name. Error: ' + e.message);
+    }
+}
+
 export async function getUserUserInteractions(req, res) {
     const userId = req.user.id;
     const targetUser = req.params.id;
