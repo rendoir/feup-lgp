@@ -31,7 +31,11 @@ class Invite extends React.Component<{}, IState> {
     axiosInstance
       .post(inviteUrl, { email: webmail })
       .catch(() => console.log('Failed to send mail'));
-    this.setState({ email: '' });
+    if (!/.+@.+\.[A-Za-z]+$/.test(this.state.email)) {
+      this.setState({ email: 'Invalid Email Insert Another' });
+    } else {
+      this.setState({ email: 'Invite Sent' });
+    }
   }
 
   public handleChange(event) {
@@ -48,7 +52,7 @@ class Invite extends React.Component<{}, IState> {
         <label>
           {dictionary.send_email[this.context]}
           <input
-            type="text"
+            type="email"
             value={this.state.email}
             onChange={this.handleChange}
           />
