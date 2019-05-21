@@ -165,10 +165,10 @@ export async function getConference(req, res) {
               `,
       values: [id, user],
     });
-    if (conference === null) {
-      res.status(400).send(
-        new Error('Talk either does not exists or you do not have the required permissions'),
-      );
+    if (conference.rows.length === 0) {
+      res.status(400).send({
+        message: 'Talk either does not exists or you do not have the required permissions',
+      });
       return;
     }
     const talksResult = await query({
@@ -189,11 +189,6 @@ export async function getConference(req, res) {
             LIMIT 10 `,
       values: [id],
     });
-
-    if (talksResult == null) {
-      res.status(400).send(new Error(`Conference either does not exist or you do not have the required permissions.`));
-      return;
-    }
 
     const result = {
       conference: conference.rows[0],

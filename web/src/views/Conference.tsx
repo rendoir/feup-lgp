@@ -167,7 +167,7 @@ class Conference extends PureComponent<Props, State> {
           title: conference.title
         });
       })
-      .catch(() => console.log('Failed to get conference info'));
+      .catch(error => console.log(error.response.data.message));
   }
 
   public render() {
@@ -222,7 +222,7 @@ class Conference extends PureComponent<Props, State> {
               <Avatar image={''} title={this.state.title} /> &nbsp;
               <strong>{this.state.title}</strong>
             </div>
-            {this.renderEditForm()}
+            {this.ownerId === this.props.user.id ? this.renderEditForm() : null}
           </div>
         </Card.Header>
         <Card.Body>
@@ -259,7 +259,7 @@ class Conference extends PureComponent<Props, State> {
           }
         >
           <h2>{dictionary.talks[this.context]}</h2>
-          {this.renderTalkForm()}
+          {this.ownerId === this.props.user.id ? this.renderTalkForm() : null}
         </div>
         <hr />
         <div>
