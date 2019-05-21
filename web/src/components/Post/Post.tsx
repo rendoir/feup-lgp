@@ -299,7 +299,10 @@ class Post extends Component<Props, IState> {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
-    if (!this.state.postRated) {
+    if (
+      !this.state.postRated &&
+      this.auth.getUserPayload().id !== this.props.user_id
+    ) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handlePostRate}>

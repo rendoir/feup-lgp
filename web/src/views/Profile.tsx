@@ -395,7 +395,7 @@ class Profile extends React.Component<IProps, State> {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
 
-    if (!this.state.userRated) {
+    if (!this.state.userRated && this.auth.getUserPayload().id !== this.id) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handleUserRate}>
