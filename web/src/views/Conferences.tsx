@@ -3,8 +3,6 @@ import React, { PureComponent } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import CardGroup from 'react-bootstrap/CardGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
-import SplitButton from 'react-bootstrap/SplitButton';
 import { Avatar } from '../components';
 import styles from '../styles/Conference.module.css';
 import axiosInstance from '../utils/axiosInstance';

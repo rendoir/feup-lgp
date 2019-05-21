@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
-import Post from "../components/Post/Post";
-import axiosInstance from "../utils/axiosInstance";
-import withAuth from "../utils/withAuth";
+import Post from '../components/Post/Post';
+import axiosInstance from '../utils/axiosInstance';
+import withAuth from '../utils/withAuth';
 
 interface IProps {
   match: {
@@ -31,12 +31,12 @@ class PostView extends React.Component<IProps, IState> {
       files: [],
       id: 1,
       post: {
-        author: "1",
-        content: "",
-        date_created: "",
-        date_updated: "",
-        id: "",
-        title: ""
+        author: '1',
+        content: '',
+        date_created: '',
+        date_updated: '',
+        id: '',
+        title: ''
       },
       tags: []
     };
@@ -56,14 +56,12 @@ class PostView extends React.Component<IProps, IState> {
       .then(res => {
         this.setState({
           comments: res.data.comments,
-          fetchingInfo: false,
-          files: res.data.files,
           id: res.data.post.id,
           post: res.data.post,
           tags: res.data.tags
         });
       })
-      .catch(() => console.log("Failed to get post info"));
+      .catch(() => console.log('Failed to get post info'));
   }
 
   public date() {
@@ -75,14 +73,10 @@ class PostView extends React.Component<IProps, IState> {
   }
 
   public processDate(dateToProcess: string) {
-    return dateToProcess.split("T")[0];
+    return dateToProcess.split('T')[0];
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
-      return null;
-    }
-
     return (
       <div className="container my-5">
         <div className="w-75 mx-auto">
@@ -90,7 +84,7 @@ class PostView extends React.Component<IProps, IState> {
             id={Number(this.state.post.id)}
             title={this.state.post.title}
             author={
-              this.state.post.first_name + " " + this.state.post.last_name
+              this.state.post.first_name + ' ' + this.state.post.last_name
             }
             date={this.date()}
             content={this.state.post.content}
