@@ -189,7 +189,9 @@ class Feed extends React.Component<Props, State> {
     return (
       <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
         <Card.Header className={styles.header}>
-          <Card.Title className={'mb-0'}>People I follow</Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.followers[this.context]}
+          </Card.Title>
         </Card.Header>
         <Card.Body>
           <ListGroup variant={'flush'}>
@@ -205,7 +207,9 @@ class Feed extends React.Component<Props, State> {
                 </ListGroup.Item>
               ))
             ) : (
-              <Card.Subtitle>You don't follow any user</Card.Subtitle>
+              <Card.Subtitle>
+                {dictionary.following[this.context]}
+              </Card.Subtitle>
             )}
           </ListGroup>
         </Card.Body>
@@ -223,13 +227,15 @@ class Feed extends React.Component<Props, State> {
     return (
       <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
         <Card.Header className={cardHeaderClassName}>
-          <Card.Title className={'mb-0'}>Upcoming conferences</Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.upcoming_conferences[this.context]}
+          </Card.Title>
           <Card.Link
             href={'/conferences'}
             className={'text-dark'}
             style={{ textDecoration: 'underline' }}
           >
-            + view more
+            + {dictionary.view_more[this.context]}
           </Card.Link>
         </Card.Header>
         <Card.Body>
@@ -258,7 +264,9 @@ class Feed extends React.Component<Props, State> {
                 );
               })
             ) : (
-              <Card.Subtitle>No upcoming conferences</Card.Subtitle>
+              <Card.Subtitle>
+                {dictionary.no_upcoming_conferences[this.context]}
+              </Card.Subtitle>
             )}
           </ListGroup>
         </Card.Body>
@@ -272,7 +280,9 @@ class Feed extends React.Component<Props, State> {
     return (
       <Card className={classNames('col-lg-12 mb-3 p-0', styles.border)}>
         <Card.Header className={styles.header}>
-          <Card.Title className={'mb-0'}>Joined Talks</Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.joined_talks[this.context]}
+          </Card.Title>
         </Card.Header>
         <Card.Body>
           <ListGroup variant={'flush'}>
@@ -298,7 +308,9 @@ class Feed extends React.Component<Props, State> {
                 );
               })
             ) : (
-              <Card.Subtitle>You haven't joined any talk</Card.Subtitle>
+              <Card.Subtitle>
+                {dictionary.no_joined_talks[this.context]}
+              </Card.Subtitle>
             )}
           </ListGroup>
         </Card.Body>

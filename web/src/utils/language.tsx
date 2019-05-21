@@ -31,6 +31,15 @@ export let dictionary: Dictionary = {
     PT: ' Voltar para a conferência',
     EN: ' Return to conference'
   },
+  upcoming_conferences: {
+    PT: 'Proximas conferencias',
+    EN: 'Upcoming conferences'
+  },
+  no_upcoming_conferences: {
+    PT: 'Não há conferencias próximas',
+    EN: 'There is no upcoming conferences'
+  },
+  view_more: { PT: 'Ver mais', EN: 'View more' },
   like_action: { PT: 'Gostar', EN: 'Like' },
   dislike_action: { PT: 'Não gostar', EN: 'Dislike' },
   comment_action: { PT: 'Comentar', EN: 'Comment' },
@@ -98,6 +107,11 @@ export let dictionary: Dictionary = {
   invite_users: { PT: 'Convidar utilizadores', EN: 'Invite users' },
   leave_talk: { PT: 'Sair da palestra', EN: 'Leave talk' },
   join_talk: { PT: 'Entrar na palestra', EN: 'Join talk' },
+  joined_talks: { PT: 'Palestras participantes', EN: 'Joined talks' },
+  no_joined_talks: {
+    PT: 'Você não participa de nenhuma palestra',
+    EN: 'You have not joined any talk'
+  },
   no_access_talk: {
     PT: 'Não tem permissões para aceder a esta palestra',
     EN: "You don't have permissions to access this talk"
