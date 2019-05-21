@@ -138,7 +138,11 @@ class Conference extends PureComponent<Props, State> {
 
   public getConference() {
     axiosInstance
-      .get(`/conference/${this.id}`)
+      .get(`/conference/${this.id}`, {
+        params: {
+          user: this.props.user.id
+        }
+      })
       .then(res => {
         const conference = res.data.conference;
         this.ownerId = conference.user_id;

@@ -70,7 +70,7 @@ class Conferences extends PureComponent<Props, State> {
     axiosInstance
       .get('/conference/', {
         params: {
-          user: this.props.user
+          user: this.props.user.id
         }
       })
       .then(res => {

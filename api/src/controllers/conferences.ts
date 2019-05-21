@@ -142,7 +142,7 @@ export function editConference(req, res) {
 
 export async function getConference(req, res) {
   const id = req.params.id;
-  const user = 2;
+  const user = req.query.user;
   try {
     /**
      * talk must be owned by user
@@ -208,7 +208,7 @@ export async function getConference(req, res) {
 }
 
 export async function getAllConferences(req, res) {
-  const user = req.body.user;
+  const user = req.query.user;
   try {
     const conferences = await query({
       text: `
