@@ -17,6 +17,7 @@ import * as controller from '../controllers/admin';
  * @apiGroup Admin
  *
  * @apiParam {String} email Email to whitelist.
+ * @apiParam {String} userLevel The permissions this user should have.
  *
  * @apiSuccess {String} email Email added to the whitelist
  * @apiSuccessExample Success-Response:
@@ -56,8 +57,8 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
  * @apiGroup Admin
  *
  * @apiSuccess {String} email           The email of the account.
- * @apiSuccess {String} dateCreated     The date in which the account was whitelisted.
- * @apiSuccess {String} isActive        yes if the account has been activated, false otherwise.
+ * @apiSuccess {String} date_created     The date in which the account was whitelisted.
+ * @apiSuccess {String} isactive        yes if the account has been activated, false otherwise.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -65,8 +66,8 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
  *      [
  *          {
  *          email: 'a@gmail.com',
- *          dateCreated: '18/05/2018',
- *          isActive: yes
+ *          date_created: '18/05/2018',
+ *          isactive: yes
  *          }
  *      ]
  *     }
