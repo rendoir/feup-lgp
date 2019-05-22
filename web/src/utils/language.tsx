@@ -21,6 +21,7 @@ export let dictionary: Dictionary = {
   shop: { PT: 'Loja', EN: 'Shop' },
   search: { PT: 'Procurar', EN: 'Search' },
   new: { PT: 'Novo', EN: 'New' },
+  click: { PT: 'Clique', EN: 'Click' },
   user_dropdown: { PT: 'Utilizador', EN: 'User' },
   profile: { PT: 'Perfil', EN: 'Profile' },
   talks: { PT: 'Palestras', EN: 'Talks' },
@@ -92,13 +93,16 @@ export let dictionary: Dictionary = {
     EN: 'This talk is closed!'
   },
   reopen_talk: { PT: 'Abrir palestra', EN: 'Open talk' },
+  open: { PT: 'Aberta', EN: 'Open' },
   hide_talk: { PT: 'Esconder palestra', EN: 'Hide talk' },
+  hidden: { PT: 'Escondida', EN: 'Hidden' },
   report_talk: { PT: 'Reportar palestra', EN: 'Report talk' },
   archive_talk: { PT: 'Arquivar palestra', EN: 'Archive talk' },
   unarchive_talk: {
     PT: 'Desarquivar conferência',
     EN: 'Unarchive conference'
   },
+  archived: { PT: 'Arquivada', EN: 'Archived' },
   start_livestream_talk: {
     PT: 'Começar transmissão em direto',
     EN: 'Start livestream'
@@ -106,6 +110,11 @@ export let dictionary: Dictionary = {
   create_challenge_talk: { PT: 'Criar desafio', EN: 'Create challenge' },
   invite_users: { PT: 'Convidar utilizadores', EN: 'Invite users' },
   leave_talk: { PT: 'Sair da palestra', EN: 'Leave talk' },
+  user_not_joined: {
+    PT: 'Você não participa dessa palestra',
+    EN: 'You have not joined this talk'
+  },
+  to_join: { PT: 'para participar', EN: 'to join' },
   join_talk: { PT: 'Entrar na palestra', EN: 'Join talk' },
   joined_talks: { PT: 'Palestras participantes', EN: 'Joined talks' },
   no_joined_talks: {
@@ -236,6 +245,7 @@ export let dictionary: Dictionary = {
   tags: { PT: 'Categorias', EN: 'Tags' },
   files: { PT: 'Ficheiros', EN: 'Files' },
   post_cap: { PT: 'Publicação', EN: 'Post' },
+  posts_cap: { PT: 'Publicações', EN: 'Posts' },
   post_description: {
     PT: 'Publicações são o mecanismo básico de partilha de conhecimento',
     EN: 'Post are the basic mechanism used to share knowledge.'

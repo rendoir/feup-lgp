@@ -111,7 +111,7 @@ talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribers
 talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
 
 /**
- * @api {post} /api/talk/:id/add_participant Add user to talk participants
+ * @api {post} /api/talk/:id/join Add user to talk participants
  * @apiName Add-talk-Participant
  * @apiGroup talk
  *
@@ -125,10 +125,10 @@ talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.post('/:id/add_participant', controller.addParticipantUser);
+talkRouter.post('/:id/join', controller.joinTalk);
 
 /**
- * @api {delete} /api/talk/:id/remove_participant Remove a user participation in a talk
+ * @api {delete} /api/talk/:id/leave Remove a user participation in a talk
  * @apiName Remove-talk-Attendance-Intention
  * @apiGroup talk
  *
@@ -142,7 +142,7 @@ talkRouter.post('/:id/add_participant', controller.addParticipantUser);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
+talkRouter.delete('/:id/leave', controller.leaveTalk);
 
 /**
  * @api {get} /api/talk/:id/check_participant Check if a user is participating in a talk
