@@ -19,14 +19,24 @@ const admin = {
     password: 'adminadmin',
 };
 
-const users = [{
-    email: 'user1@lgp.com',
-    first_name: 'my',
-    last_name: 'user',
-    jwt: null,
-    hashedPassword: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
-    password: 'umlemelhorquecertascoisas96',
-}];
+const users = [
+    {
+        email: 'user1@lgp.com',
+        first_name: 'my',
+        last_name: 'user',
+        jwt: null,
+        hashedPassword: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+        password: 'umlemelhorquecertascoisas96',
+    },
+    {
+        email: 'user2@lgp.com',
+        first_name: 'your',
+        last_name: 'user',
+        jwt: null,
+        hashedPassword: 'dontmatter',
+        password: 'cantlogin',
+    }
+];
 
 const publicPost = {
     author: -1,
@@ -99,10 +109,10 @@ async function cleanDb() {
 }
 
 async function insertUsers() {
-    let values = "";
+    let values = "VALUES ";
 
     users.forEach(user => {
-        values += `VALUES ('${user.email}', '${user.hashedPassword}', '${user.first_name}', '${user.last_name}'), `;
+        values += `('${user.email}', '${user.hashedPassword}', '${user.first_name}', '${user.last_name}'), `;
     });
     values = values.substring(0, values.length-2);
 
@@ -134,8 +144,8 @@ before(function(done) {
     .catch(err => console.log(err));
 });
 
-describe('Admin login', () => {
-    it('Should be successful', (done) => {
+describe('Admin tests', () => {
+    it('Login should be successful', (done) => {
         request(app)
             .post('/login')
             .send({
@@ -150,8 +160,244 @@ describe('Admin login', () => {
                 admin.jwt = res.body.token;
                 done();
             })
-    })
-})
+    });
+
+    it('Should get all users', (done) => {
+        request(app)
+            .get('/admin/users')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body[0]).to.have.property('email');
+                expect(res.body[0]).to.have.property('date_created');
+                expect(res.body[0]).to.have.property('isactive');
+                done();
+            })
+    });
+
+    describe('Ban/unban user', () => {
+/*
+        it('Should not ban unexisting user (400)', (done) => {
+            request(app)
+                .post('/admin/ban')
+                .send({
+                    email: 'notanemail'
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should ban user', (done) => {
+            request(app)
+                .post('/admin/ban')
+                .send({
+                    email: users[0].email
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+*/
+        it('Should unban (200)', (done) => {
+            request(app)
+                .post('/admin/user')
+                .send({ email: users[0].email })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not unban unexistent user 400', (done) => {
+            request(app)
+                .post('/admin/user')
+                .send({ email: "notanemail" })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+    });
+
+    describe('Whitelist tests', () => {
+        it('Shouldnn\'t add bad email to the whitelist', (done) => {
+            request(app)
+                .post('/admin/users')
+                .send({
+                    email: 'aa',
+                    userLevel: 'user',
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body).to.have.property('message');
+                    done();
+                })
+        });
+
+        it('Should add user to the whitelist', (done) => {
+            request(app)
+                .post('/admin/users')
+                .send({
+                    email: 'camachocosta@amadora.pt',
+                    userLevel: 'user',
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body).to.have.property('email');
+                    done();
+                })
+        });
+
+        it('Should remove user from the whitelist', (done) => {
+            request(app)
+                .delete('/admin/users')
+                .send({
+                    email: 'camachocosta@amadora.pt',
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+    });
+
+    describe('Add Admin', () => {
+        it('Should add the user as admin', (done) => {
+            request(app)
+                .post('/admin')
+                .send({
+                    email: users[0].email,
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+    
+        it('Should not add the user as admin (no permissions)', (done) => {
+            request(app)
+                .post('/admin')
+                .send({
+                    email: "nopermissions@lgp.com",
+                })
+                .expect(401)
+                .end((err, res) => {
+                    done();
+                });
+        });
+    
+        it('Should not add the user as admin (no user found)', (done) => {
+            request(app)
+                .post('/admin')
+                .send({
+                    email: "nouserfound@lgp.com",
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                });
+        });
+    });
+});
+
+describe('User tests', () => {
+    describe('Register tests', () => {
+        it('Cannot register already registered user', (done) => {
+            request(app)
+                .post('/users')
+                .send({
+                    email: users[0].email,
+                    password: 'Lepassword1',
+                    first_name: 'frstnm',
+                    last_name: 'lstnm',
+                    work: 'wrk',
+                    work_field: 'wrkfld',
+                    home_town: 'hmtwn',
+                    university: 'uni'
+                })
+                .set('authorization', 'Bearer user')
+                .expect(401)
+                .end((err, res) => {
+                    done();
+                });
+        });
+
+        it('Registers new user', (done) => {
+            request(app)
+                .post('/users')
+                .send({
+                    email: 'newuser@lgp.com',
+                    password: 'Lepassword1',
+                    first_name: 'frstnm',
+                    last_name: 'lstnm',
+                    work: 'wrk',
+                    work_field: 'wrkfld',
+                    home_town: 'hmtwn',
+                    university: 'uni'
+                })
+                .set('authorization', 'Bearer user')
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+/*
+        it('New user can log in', (done) => {
+            request(app)
+                .post('/login')
+                .send({
+                    email: 'newuser@lgp.com',
+                    password: 'Lepassword1'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+*/
+    });
+/*
+    let userId = -1;
+    describe('User interactions', () => {
+        it('Get profile', (done) => {
+            request(app)
+            .get(`/users/${userId}`)
+            .send({
+                id: userId
+            })
+            .set('authorization', 'Bearer xyz')
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+        });
+    });
+    */
+});
 
 describe('Responds with error 404', () => {
     it('Should return an unauthorized response state', (done) => {
@@ -264,40 +510,14 @@ describe('Post', () => {
     })
 });
 
-describe('Add Admin', () => {
-    it('Should add the user as admin', (done) => {
+describe('Login tests', () => {
+    it('Should not log if credentials don\'t exist' , (done) => {
         request(app)
-            .post('/admin')
+            .post('/login')
             .send({
-                email: users[0].email,
+                email: 'made_up@email.com',
+                password: 'madeUPpassword',
             })
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            });
-    });
-
-    it('Should not add the user as admin (no permissions)', (done) => {
-        request(app)
-            .post('/admin')
-            .send({
-                email: "nopermissions@lgp.com",
-            })
-            .expect(401)
-            .end((err, res) => {
-                done();
-            });
-    });
-
-    it('Should not add the user as admin (no user found)', (done) => {
-        request(app)
-            .post('/admin')
-            .send({
-                email: "nouserfound@lgp.com",
-            })
-            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(400)
             .end((err, res) => {
                 done();
