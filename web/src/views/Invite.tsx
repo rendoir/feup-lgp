@@ -7,6 +7,8 @@ import withAuth from '../utils/withAuth';
 
 interface IState {
   email: string;
+  error: boolean;
+  sent: boolean;
 }
 
 class Invite extends React.Component<{}, IState> {
@@ -15,7 +17,9 @@ class Invite extends React.Component<{}, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      email: ' '
+      email: ' ',
+      error: false,
+      sent: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,15 +35,21 @@ class Invite extends React.Component<{}, IState> {
     axiosInstance
       .post(inviteUrl, { email: webmail })
       .catch(() => console.log('Failed to send mail'));
-    if (!/.+@.+\.[A-Za-z]+$/.test(this.state.email)) {
-      this.setState({ email: 'Invalid Email Insert Another' });
+    if (this.state.error) {
+      this.setState({ email: '' });
+      this.setState({ sent: false });
     } else {
-      this.setState({ email: 'Invite Sent' });
+      this.setState({ email: '' });
+      this.setState({ sent: true });
     }
   }
 
   public handleChange(event) {
-    this.setState({ email: event.target.value });
+    if (!/.+@.+\.[A-Za-z]+$/.test(this.state.email)) {
+      this.setState({ email: event.target.value, error: true, sent: false });
+    } else {
+      this.setState({ email: event.target.value, error: false });
+    }
   }
 
   public handleSubmit(event) {
@@ -52,10 +62,22 @@ class Invite extends React.Component<{}, IState> {
         <label>
           {dictionary.send_email[this.context]}
           <input
-            type="invite"
+            type={'email'}
             value={this.state.email}
             onChange={this.handleChange}
           />
+          {this.state.error ? (
+            <small className={'text-danger'}>
+              {this.state.error}
+              {dictionary.invite_email_error[this.context]}
+            </small>
+          ) : null}
+          {this.state.sent ? (
+            <small className={'sucesso'}>
+              {this.state.sent}
+              {dictionary.invite_sucess[this.context]}
+            </small>
+          ) : null}
         </label>
         <button
           className="btn btn-primary"
