@@ -231,3 +231,9 @@ export async function getAllConferences(req, res) {
     res.status(500).send(new Error('Error retrieving Conferences'));
   }
 }
+
+export async function getConferenceShop(req, res) {
+  res.send({
+    message: 'YOU INVOKED GETCONFERENCESHOP METHOD!',
+  });
+}

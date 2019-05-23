@@ -13,6 +13,7 @@ import {
 import Backoffice from './Backoffice';
 import Conference from './Conference';
 import Conferences from './Conferences';
+import ConferenceShop from './ConferenceShop';
 import ErrorBoundary from './ErrorBoundary';
 import Feed from './Feed';
 import Landing from './Landing';
@@ -54,6 +55,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/landing" component={Landing} />
                 <Route path="/search" component={SearchResults} />
                 <Route path="/talk/:id" component={Talk} />
+                <Route path="/conference/:id/shop" component={ConferenceShop} />
                 <Route path="/conference/:id" component={Conference} />
                 <Route path="/conferences/" component={Conferences} />
                 <Route path="/notifications" component={Notifications} />

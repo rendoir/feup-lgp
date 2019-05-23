@@ -76,3 +76,5 @@ conferenceRouter.post('/', controller.createConference);
  *     }
  */
 conferenceRouter.put('/:id', controller.editConference);
+
+conferenceRouter.get('/:id/shop', controller.getConferenceShop);

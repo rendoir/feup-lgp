@@ -19,6 +19,7 @@ export let dictionary: Dictionary = {
   by: { PT: 'por', EN: 'by' },
   home: { PT: 'Início', EN: 'Home' },
   shop: { PT: 'Loja', EN: 'Shop' },
+  conference_shop: { PT: 'Loja da conferencia', EN: 'Conference shop' },
   search: { PT: 'Procurar', EN: 'Search' },
   new: { PT: 'Novo', EN: 'New' },
   click: { PT: 'Clique', EN: 'Click' },

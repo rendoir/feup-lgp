@@ -1,4 +1,5 @@
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
@@ -29,6 +30,7 @@ type State = {
   dateEnd: string;
   isHidden: boolean;
   privacy: string;
+  points: number;
   postModalOpen: boolean;
   request: {
     title: string;
@@ -115,6 +117,7 @@ class Conference extends PureComponent<Props, State> {
       },
       isHidden: false,
       place: '',
+      points: 0,
       postModalOpen: false,
       privacy: '',
       request: {
@@ -194,7 +197,10 @@ class Conference extends PureComponent<Props, State> {
       return (
         <div id="Conference" className="container-fluid w-100 my-5">
           <div className={'d-flex flex-row flex-wrap'}>
-            <div className={'col-lg-4 mb-3'}>{this.renderConferenceCard()}</div>
+            <div className={'col-lg-4 mb-3'}>
+              {this.renderConferenceCard()}
+              {this.renderStoreCard()}
+            </div>
             <div className={'col-lg-8'}>{this.renderTalks()}</div>
           </div>
         </div>
@@ -213,7 +219,7 @@ class Conference extends PureComponent<Props, State> {
     );
 
     return (
-      <Card>
+      <Card className={'mb-3'}>
         <Card.Header>
           <div
             className={'d-flex justify-content-between align-items-center mb-1'}
@@ -244,6 +250,35 @@ class Conference extends PureComponent<Props, State> {
             {dateEnd}
           </div>
         </Card.Body>
+      </Card>
+    );
+  };
+
+  private renderStoreCard = () => {
+    return (
+      <Card>
+        <Card.Header
+          className={classNames(
+            'd-flex flex-row justify-content-between align-items-center',
+            styles.header
+          )}
+        >
+          <Card.Title className={'mb-0'}>
+            {dictionary.conference_shop[this.context]}
+          </Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.points[this.context]}: {this.state.points}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>CAROUSEL WITH FEATURED PRODUCTS</Card.Body>
+        <Card.Footer>
+          <a
+            href={`/conference/${this.id}/shop`}
+            className={classNames('float-right', styles.link)}
+          >
+            + {dictionary.view_more[this.context]}
+          </a>
+        </Card.Footer>
       </Card>
     );
   };
