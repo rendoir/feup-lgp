@@ -1,3 +1,5 @@
+import { query } from '../db/db';
+
 export async function getProduct(req, res, conferenceId = null) {
     res.send(null);
 }

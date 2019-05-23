@@ -212,17 +212,14 @@ export async function getProduct(req, res) {
   shop.getProduct(req, res, req.params.conf_id);
 }
 
-// TODO: Check user permissions.
 export async function createProduct(req, res) {
   shop.createProduct(req, res, req.params.conf_id);
 }
 
-// TODO: Check user permissions.
 export async function updateProduct(req, res) {
   shop.updateProduct(req, res, req.params.conf_id);
 }
 
-// TODO: Check user permissions.
 export async function deleteProduct(req, res) {
   shop.deleteProduct(req, res, req.params.conf_id);
 }
