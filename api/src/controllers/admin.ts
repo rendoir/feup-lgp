@@ -10,7 +10,9 @@ export function getAllUsers(req, res) {
             delete x.pass;
         }
         res.send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: `An error ocurred while gettting users` });
     });
@@ -27,7 +29,9 @@ export function addUserToWhiteList(req, res) {
         values: [req.body.email, null, req.body.userLevel],
     }).then((result) => {
         res.status(200).json(result.rows[0]);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while inserting user email' });
     });
@@ -39,7 +43,9 @@ export function deleteUserFromWhiteList(req, res) {
         text: 'DELETE FROM users WHERE email = $1', values: [req.query.email],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while deleting user' });
     });
@@ -56,7 +62,9 @@ export async function getReportNotifications(req, res) {
         text: 'SELECT * FROM retrieve_admin_notifications()',
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
     });
@@ -98,7 +106,9 @@ export async function getReportReasons(req, res) {
         values: [req.body.content_id, req.body.content_type],
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report reasons' });
     });
@@ -118,7 +128,9 @@ export async function ignoreContentReports(req, res) {
         values: [req.body.content_id, req.body.content_type],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while ignoring reports' });
     });
@@ -135,7 +147,9 @@ export async function addAdmin(req, res) {
             if (result.rowCount > 0) {
                 res.status(200).send();
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while adding admin' });
         });
@@ -153,7 +167,9 @@ export async function banUser(req, res) {
             if (result.rowCount > 0) {
                 res.status(200).send();
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while banning a user' });
         });
@@ -171,7 +187,9 @@ export async function makeUser(req, res) {
             if (result.rowCount > 0) {
                 res.status(200).send();
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while changing to a user' });
         });
@@ -185,7 +203,9 @@ async function isAdmin(userId): Promise<boolean> {
             values: [userId],
         });
         return result.rowCount > 0;
-    } catch (error) {
+    } catch (error)
+    /* istanbul ignore next */
+    {
         console.error(error);
         return false;
     }
