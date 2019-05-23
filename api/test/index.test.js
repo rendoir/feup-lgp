@@ -401,7 +401,7 @@ describe('Admin tests', () => {
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
-                });
+                })
         });
     });
 });
