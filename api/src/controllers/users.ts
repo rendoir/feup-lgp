@@ -13,11 +13,20 @@ export function register(req, res) {
         const hash = crypto.createHash('sha256');
         hash.update(req.body.password);
         const hashedPassword = hash.digest('hex');
-
+        let firstName = req.body.first_name;
+        let lastName = req.body.last_name;
+        if (firstName === '' && lastName === '') {
+            firstName = 'gNet';
+            lastName = 'User';
+        } else if (firstName === '') {
+            firstName = ' ';
+        } else if (lastName === '') {
+            lastName = ' ';
+        }
         query({
             text: `INSERT INTO users (email, pass, first_name, last_name, work, work_field, home_town, university)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            values: [req.body.email, hashedPassword, req.body.first_name, req.body.last_name,
+            values: [req.body.email, hashedPassword, firstName, lastName,
             req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
         }).catch((error) => {
