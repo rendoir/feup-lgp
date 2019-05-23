@@ -160,6 +160,9 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         <Nav.Link href={'/shop'} className={styles.link}>
           {dictionary.shop[this.context]}
         </Nav.Link>
+        <Nav.Link href={'/conferences'} className={styles.link}>
+          {dictionary.conferences[this.context]}
+        </Nav.Link>
       </Nav>
     );
   }

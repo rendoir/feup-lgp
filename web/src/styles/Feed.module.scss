@@ -1,0 +1,71 @@
+@import './variables';
+
+.cardsLeft {
+	position: fixed;
+	top: 10%;
+	left: 0;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.cardsRight {
+	position: fixed;
+	top: 10%;
+	right: 0;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.posts {
+	position: relative;
+	left: 25%;
+	margin-top: 1em;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.header {
+	background-color: tint($color-primary, 50%);
+}
+
+.border {
+	border-color: $color-primary;
+}
+
+.link {
+	color: $color-primary;
+}
+
+.breadcrumbLink {
+	color: shade($color-primary, 10%);
+
+	&:hover {
+		color: shade($color-primary, 50%);
+	}
+}
+
+.button {
+	color: $white;
+	background-color: $color-primary;
+	border-color: $color-primary;
+
+	&:hover,
+	&:active {
+		background-color: shade($color-primary, 10%) !important;
+		border-color: $color-primary;
+	}
+
+  &:disabled {
+    background-color: $greyish;
+
+    &:hover {
+      background-color: shade($greyish, 30%) !important;
+    }
+  }
+}

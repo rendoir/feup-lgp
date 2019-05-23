@@ -1,684 +1,97 @@
-import { MouseEvent } from 'react';
-import * as React from 'react';
+import classNames from 'classnames';
+import React, { PureComponent } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import { Avatar, Button, Icon, InputNext } from '../components';
-
-import ChallengeCarousel from '../components/ChallengeCarousel/ChallengeCarousel';
-import Chat from '../components/Chat/Chat';
-import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
-import Livestream from '../components/Livestream/Livestream';
-import InviteModal from '../components/PostModal/InviteModal';
-
-import styles from '../components/Post/Post.module.css';
-import '../styles/Talk.css';
-
-import {
-  faGlobeAfrica,
-  faLock,
-  faQuestion,
-  faUserFriends,
-  IconDefinition
-} from '@fortawesome/free-solid-svg-icons';
-import CreateNewModal from '../components/CreateNewModal/CreateNewModal';
-import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
-
-import { Request, Step } from '../components/CreateNewModal/types';
-import {
-  RequestChallenge,
-  StepChallenge
-} from '../components/CreateNewModalChallenges/types';
-import Switcher from '../components/Switcher/Switcher';
-
-// - Import utils
-import {
-  apiCheckUserCanJoinTalk,
-  apiCheckUserTalkParticipation,
-  apiUserJoinTalk,
-  apiUserLeaveTalk
-} from '../utils/apiTalk';
+import { Avatar } from '../components';
+import Post from '../components/Post/Post';
+import styles from '../styles/Feed.module.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
 
-interface IProps {
+export type Props = {
   match: {
     params: {
       id: number;
     };
   };
   user: any;
-}
+};
 
-interface IState {
-  editFormOpen: boolean;
+export type State = {
+  challenges: any[];
+  challengeFields: {
+    answer: string;
+    correctAnswer: string;
+    dateEnd: string;
+    dateStart: string;
+    description: string;
+    options: string[];
+    points: number;
+    question: string;
+    title: string;
+    type: 'MCQ' | 'POST' | 'CMT';
+  };
+  challengeFormOpen: boolean;
   editFields: {
+    title: string;
+    dateEnd: string;
+    dateStart: string;
+    description: string;
+    livestreamURL: string;
+    local: string;
+  };
+  editFormOpen: boolean;
+  hasLivestream: boolean;
+  inviteModalOpen: boolean;
+  isArchived: boolean;
+  isHidden: boolean;
+  joined: boolean;
+  postFields: {
+    title: string;
+    description: string;
+    privacy: string;
+    files: {
+      images: File[];
+      videos: File[];
+      documents: File[];
+    };
+    tags: string[];
+  };
+  postFormOpen: boolean;
+  posts: any[];
+  talk: {
+    title: string;
     description: string;
     dateStart: string;
     dateEnd: string;
-    hasLiveStream: boolean;
-    livestreamUrl: string;
-    place: string;
-    title: string;
-  };
-  archived: boolean;
-  challenges: any[];
-  clickedChallenge: number | undefined;
-  conf_id: number;
-  step: Step;
-  stepChallenge: StepChallenge;
-  hasLiveStream: boolean;
-  livestreamUrl: string;
-  posts: any[];
-  title: string;
-  description: string;
-  place: string;
-  dateStart: string;
-  dateEnd: string;
-  points: number;
-  userCanJoin: boolean;
-  userParticipation: boolean;
-  waitingUserJoinLeave: boolean;
-  isChallengeModalOpen: boolean;
-  isHidden: boolean;
-  privacy: string;
-  postModalOpen: boolean;
-  request: {
-    type: 'post' | 'talk' | 'conference';
-    title: string;
-    about: string;
-    avatar?: File;
-    privacy: string;
-    files: {
-      docs: File[];
-      videos: File[];
-      images: File[];
-    };
-    tags: string[];
-    dateStart: string;
-    dateEnd: string;
+    livestreamURL: string;
     local: string;
-    livestream: string;
-    switcher: string;
   };
-  requestChallenge: {
-    type: 'post' | 'options' | 'question' | 'comment';
-    title: string;
-    about: string;
-    dateStart: string;
-    dateEnd: string;
-    post: string;
-    question: string;
-    correctAnswer: string;
-    options: string[];
-    prize: string;
-    prizePoints: string;
-  };
-}
+  userPoints: number;
+};
 
-class Talk extends React.Component<IProps, IState> {
+class Talk extends PureComponent<Props, State> {
   public static contextType = LanguageContext;
+  private readonly id: number;
+  private readonly dateOptions: object;
+  private readonly postDateOptions: object;
+  private conferenceId: number | undefined;
+  private conferenceTitle: string | undefined;
+  private ownerId: number | undefined;
+  private ownerName: string | undefined;
+  private privacy: string;
 
-  public id: number;
-  public ownerId: number | undefined;
-  public ownerName: string | undefined;
-  public tags: string[];
-
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
-    this.id = this.props.match.params.id;
-    this.tags = [];
-    this.state = {
-      archived: false,
-      challenges: [],
-      clickedChallenge: undefined,
-      conf_id: 0,
-      dateEnd: '',
-      dateStart: '',
-      description: '',
-      editFields: {
-        dateEnd: '',
-        dateStart: '',
-        description: '',
-        hasLiveStream: false,
-        livestreamUrl: '',
-        place: '',
-        title: ''
-      },
-      editFormOpen: false,
-      hasLiveStream: true,
-      isChallengeModalOpen: false,
-      isHidden: false,
-      livestreamUrl: '',
-      place: '',
-      points: 0,
-      postModalOpen: false,
-      posts: [],
-      privacy: '',
-      request: {
-        about: '',
-        avatar: undefined,
-        dateEnd: '',
-        dateStart: '',
-        files: {
-          docs: [],
-          images: [],
-          videos: []
-        },
-        livestream: '',
-        local: '',
-        privacy: 'public',
-        switcher: 'false',
-        tags: [],
-        title: '',
-        type: 'post'
-      },
-      requestChallenge: {
-        about: '',
-        correctAnswer: '',
-        dateEnd: '',
-        dateStart: '',
-        options: [],
-        post: '',
-        prize: '',
-        prizePoints: '',
-        question: '',
-        title: '',
-        type: 'question'
-      },
-      step: 'type',
-      stepChallenge: 'type',
-      title: '',
-      userCanJoin: false,
-      userParticipation: false,
-      waitingUserJoinLeave: false
-    };
 
-    this.handleHideTalk = this.handleHideTalk.bind(this);
-    this.getHiddenInfo = this.getHiddenInfo.bind(this);
-    this.handleChallengeClick = this.handleChallengeClick.bind(this);
-    this.handleJoinTalk = this.handleJoinTalk.bind(this);
-    this.handleLeaveTalk = this.handleLeaveTalk.bind(this);
-  }
-
-  public componentDidMount() {
-    this.apiGetTalk();
-    if (this.props.user.id === this.ownerId || !this.state.isHidden) {
-      this.getPossibleTags();
-      this.apiGetUserCanJoin();
-      this.apiGetUserParticipation();
-      this.apiGetPointsOfUserTalk();
-    }
-  }
-
-  public async handleJoinTalk() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: true,
-      waitingUserJoinLeave: true
-    });
-
-    const joinSuccess = await apiUserJoinTalk(this.id);
-    this.setState({
-      userParticipation: joinSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public async handleLeaveTalk() {
-    if (this.state.waitingUserJoinLeave) {
-      return;
-    }
-
-    this.setState({
-      userParticipation: false,
-      waitingUserJoinLeave: true
-    });
-
-    const leaveSuccess = await apiUserLeaveTalk(this.id);
-    this.setState({
-      userParticipation: !leaveSuccess,
-      waitingUserJoinLeave: false
-    });
-  }
-
-  public apiGetPointsOfUserTalk() {
-    axiosInstance
-      .get(`/talk/${this.id}/user/${this.props.user.id}/points`)
-      .then(res => {
-        this.setState({ points: res.data.points });
-      })
-      .catch(() =>
-        console.log('Failed to get points of user in the conference')
-      );
-  }
-
-  public apiGetTalk() {
-    axiosInstance
-      .get(`/talk/${this.id}`)
-      .then(res => {
-        const talk = res.data.talk;
-        const postsComing = res.data;
-
-        const challengesConf = res.data.challenges;
-
-        if (talk.privacy === 'closed') {
-          this.setState({
-            isHidden: true
-          });
-        }
-
-        this.ownerId = talk.user_id;
-        this.ownerName = `${talk.first_name} ${talk.last_name}`;
-
-        const reqChalCopy = this.state.requestChallenge;
-        if (postsComing.posts.length > 0) {
-          reqChalCopy.post = postsComing.posts[0].id;
-        }
-
-        this.setState({
-          archived: talk.archived,
-          challenges: challengesConf,
-          conf_id: talk.conference,
-          dateEnd: talk.dateend,
-          dateStart: talk.datestart,
-          description: talk.about,
-          editFields: {
-            dateEnd: talk.dateend,
-            dateStart: talk.datestart,
-            description: talk.about,
-            hasLiveStream: talk.livestream_url !== '',
-            livestreamUrl: talk.livestream_url,
-            place: talk.local,
-            title: talk.title
-          },
-          hasLiveStream: talk.livestream_url !== '',
-          livestreamUrl: talk.livestream_url,
-          place: talk.local,
-          posts: postsComing.posts,
-          privacy: talk.privacy,
-          requestChallenge: reqChalCopy,
-          title: talk.title
-        });
-      })
-      .catch(() => console.log('Failed to get talk info'));
-  }
-
-  public handleHideTalk() {
-    let privacyState = 'closed';
-
-    if (this.state.isHidden) {
-      privacyState = 'public';
-      this.setState({
-        isHidden: false
-      });
-    } else {
-      privacyState = 'closed';
-      this.setState({
-        isHidden: true
-      });
-    }
-
-    const postUrl = `/talk/${this.props.match.params.id}/change_privacy`;
-
-    axiosInstance
-      .post(postUrl, {
-        id: this.props.match.params.id,
-        privacy: privacyState
-      })
-      .then(() => {
-        console.log('Talk hidden...');
-      })
-      .catch(() => console.log('Failed to update privacy'));
-  }
-
-  public apiSetArchived() {
-    axiosInstance
-      .post(`/talk/${this.id}/archive`)
-      .then()
-      .catch(() => console.log('Failed to archive talk'));
-
-    this.setState({
-      archived: true
-    });
-  }
-
-  public apiSetUnarchived() {
-    axiosInstance
-      .delete(`/talk/${this.id}/archive`)
-      .then()
-      .catch(() => console.log('Failed to unarchive talk'));
-
-    this.setState({
-      archived: false
-    });
-  }
-
-  public async apiGetUserCanJoin() {
-    const canJoin: boolean = await apiCheckUserCanJoinTalk(this.id);
-    this.setState({ userCanJoin: canJoin });
-  }
-
-  public async apiGetUserParticipation() {
-    const participant: boolean = await apiCheckUserTalkParticipation(this.id);
-    this.setState({ userParticipation: participant });
-  }
-
-  public render() {
-    const isArchived = this.state.archived;
-    if (this.state.isHidden && this.props.user.id !== this.ownerId) {
-      return (
-        <div id="Talk" className="my-5">
-          <div className="container my-5">
-            <button className="return_conf">
-              <i className="fas fa-undo" />
-              <a href={'/conference/' + this.state.conf_id}>
-                {dictionary.return_conference[this.context]}
-              </a>
-            </button>
-            <h4>
-              {dictionary.title[this.context]}: {this.state.title}
-            </h4>
-            <h5>{dictionary.closed_talk[this.context]}</h5>
-          </div>
-
-          <div className="container my-5">
-            <div className="conf_side">
-              <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div id="Talk" className="my-5">
-          <div className="container my-5">
-            <button className="return_conf">
-              <i className="fas fa-undo" />
-              <a href={'/conference/' + this.state.conf_id}>
-                {dictionary.return_conference[this.context]}
-              </a>
-            </button>
-            <h4>{this.state.title}</h4>
-            <p>{this.state.description}</p>
-          </div>
-          {this.state.hasLiveStream &&
-            this.state.userParticipation &&
-            this.state.userCanJoin &&
-            this.renderStream()}
-          <div className="container my-5">
-            <div className="conf_side">
-              {this.getJoinButton()}
-              <div className="p-3">{this.getDetails()}</div>
-              {this.ownerId === this.props.user.id ? (
-                <div className="p-3">{this.getAdminButtons()}</div>
-              ) : null}
-              {this.getChallenges()}
-            </div>
-            <div className="conf_posts">
-              {this.state.postModalOpen ? (
-                <CreateNewModal
-                  pending={false}
-                  onSubmit={this.handleSubmit}
-                  onStepChange={step => this.setState({ step })}
-                  maxGroupSize={5}
-                  request={this.state.request}
-                  onRequestChange={request => this.setState({ request })}
-                  onClose={this.resetState}
-                  autoFocus={false}
-                  step={'postConf'}
-                  tags={this.tags}
-                />
-              ) : null}
-              <button
-                className="create"
-                onClick={this.createConfPost}
-                hidden={isArchived}
-              >
-                {dictionary.create_post[this.context]}
-              </button>
-              <InfiniteScroll requestUrl={`/talk/${this.id}`} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-  }
-
-  public getHiddenInfo() {
-    if (this.state.isHidden) {
-      return (
-        <div id="hidden_info">
-          <b>{dictionary.closed_talk[this.context]}</b>
-        </div>
-      );
-    }
-  }
-
-  public getDropdownButtons() {
-    const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_talk[this.context]
-      : dictionary.hide_talk[this.context];
-
-    const reportButton = (
-      <button
-        key={0}
-        className={`dropdown-item ${styles.report_content}`}
-        type="button"
-        data-toggle="modal"
-        // data-target={`#report_post_modal_${this.props.id}`}
-        // onClick={this.handleTalkReport}
-        // disabled={this.state.userReport}
-      >
-        {dictionary.report_talk[this.context]}
-      </button>
-    );
-    const deleteButton = (
-      <button
-        key={1}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        onClick={this.handleHideTalk}
-        // data-target={`#delete_talk_modal${this.props.id}`}
-      >
-        {hideBtnText}
-      </button>
-    );
-    const archiveButton = (
-      <button
-        key={2}
-        className="dropdown-item"
-        type="button"
-        data-toggle="modal"
-        // data-target={`#archive_talk_modal${this.props.id}`}
-      >
-        {dictionary.archive_talk[this.context]}
-      </button>
-    );
-    return [reportButton, deleteButton, archiveButton];
-  }
-
-  private returnToConf() {
-    window.location.href = '/conference/' + this.state.conf_id;
-  }
-
-  private createConfPost = (event: MouseEvent) => {
-    event.preventDefault();
-    this.setState({ postModalOpen: true });
-  };
-
-  private handleSubmit = (request: Request) => {
-    if (request.type === 'post') {
-      const formData = new FormData();
-      request.files.images.forEach((file, idx) =>
-        formData.append('images[' + idx + ']', file)
-      );
-      request.files.videos.forEach((file, idx) =>
-        formData.append('videos[' + idx + ']', file)
-      );
-      request.files.docs.forEach((file, idx) =>
-        formData.append('docs[' + idx + ']', file)
-      );
-      request.tags.forEach((tag, i) => formData.append('tags[' + i + ']', tag));
-
-      formData.append('text', request.about);
-      formData.append('title', request.title);
-      formData.append('visibility', request.privacy);
-      formData.append('talk', this.id + '');
-
-      axiosInstance
-        .post('/post', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then(() => {
-          console.log('Post created - reloading page...');
-          window.location.reload();
-          this.resetState();
-        })
-        .catch(() => console.log('Failed to create post'));
-    }
-  };
-
-  private handleSubmitChallenge = (request: RequestChallenge) => {
-    let url = `${location.protocol}//${location.hostname}`;
-    url +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : '/api';
-
-    const formData = new FormData();
-
-    formData.append('type', request.type);
-    formData.append('title', request.title);
-    formData.append('text', request.about);
-    formData.append('dateEnd', request.dateEnd);
-    formData.append('dateStart', request.dateStart);
-    formData.append('prize', request.prize);
-    formData.append('prizePoints', request.prizePoints);
-    formData.append('question', request.question);
-
-    let correctAns = '';
-
-    if (request.type === 'options') {
-      correctAns = request.options[Number(request.correctAnswer)];
-    } else {
-      correctAns = request.correctAnswer;
-    }
-
-    formData.append('correctAnswer', correctAns);
-
-    request.options.forEach((opt, i) =>
-      formData.append('options[' + i + ']', opt)
-    );
-
-    formData.append('post', request.post);
-    formData.append('talk_id', String(this.id));
-
-    url += `/talk/${this.id}/challenge/create`;
-    axiosInstance
-      .post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      .then(res => {
-        console.log('Challenge created - reloading page...');
-        window.location.reload();
-        this.resetState();
-      })
-      .catch(() => console.log('Failed to create post'));
-  };
-
-  private getPossibleTags = (): void => {
-    axiosInstance
-      .get('/tags')
-      .then(res => {
-        res.data.forEach(tag => {
-          this.tags.push(tag.name);
-        });
-      })
-      .catch(() => console.log('Failed to get tags'));
-  };
-
-  private resetState = () => {
-    this.setState({
-      postModalOpen: false,
-      request: {
-        about: '',
-        avatar: undefined,
-        dateEnd: '',
-        dateStart: '',
-        files: {
-          docs: [],
-          images: [],
-          videos: []
-        },
-        livestream: '',
-        local: '',
-        privacy: 'public',
-        shortname: '',
-        switcher: 'false',
-        tags: [],
-        title: '',
-        type: 'post'
-      },
-      step: 'type'
-    });
-  };
-
-  private resetStateChallenge = () => {
-    this.setState({
-      isChallengeModalOpen: false,
-      requestChallenge: {
-        about: '',
-        correctAnswer: '',
-        dateEnd: '',
-        dateStart: '',
-        options: [],
-        post: '',
-        prize: '',
-        prizePoints: '',
-        question: '',
-        title: '',
-        type: 'question'
-      },
-      stepChallenge: 'type'
-    });
-  };
-
-  private renderStream() {
-    return (
-      <div className="conf_head w-100">
-        <div className="live_wrap">
-          <div className="live_container">
-            <Livestream src={this.state.livestreamUrl} />
-          </div>
-        </div>
-        <div className="chat_wrap">
-          <div className="chat_container">
-            <Chat />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  private archiveTalk() {
-    if (!this.state.archived) {
-      this.apiSetArchived();
-    } else {
-      this.apiSetUnarchived();
-    }
-  }
-
-  private getDetails() {
-    const dateOptions = {
+    this.dateOptions = {
       day: '2-digit',
       hour: 'numeric',
       minute: 'numeric',
@@ -686,314 +99,456 @@ class Talk extends React.Component<IProps, IState> {
       weekday: 'long',
       year: 'numeric'
     };
-    const dateStart = new Date(this.state.dateStart).toLocaleDateString(
-      dictionary.date_format[this.context],
-      dateOptions
-    );
-    const dateEnd = new Date(this.state.dateEnd).toLocaleDateString(
-      dictionary.date_format[this.context],
-      dateOptions
-    );
+    this.postDateOptions = {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    };
+    this.id = this.props.match.params.id;
+    this.privacy = 'public';
 
-    return (
-      <ul className="p-0 m-0">
-        <Avatar
-          title={this.ownerName}
-          placeholder="empty"
-          size={30}
-          image="https://picsum.photos/200/200?image=52"
-        />
-        <a className={styles.post_author} href={'/user/' + this.ownerId}>
-          {' '}
-          {this.ownerName}
-        </a>
-        <Icon icon={this.getVisibilityIcon(this.state.privacy)} size="lg" />
-        <li>
-          <i className="fas fa-map-marker-alt" /> {this.state.place}
-        </li>
-        <li>
-          <i className="fas fa-hourglass-start" /> {dateStart}
-        </li>
-        <li>
-          <i className="fas fa-hourglass-end" /> {dateEnd}
-        </li>
-      </ul>
-    );
+    this.state = {
+      challengeFields: {
+        answer: '',
+        correctAnswer: '',
+        dateEnd: '',
+        dateStart: '',
+        description: '',
+        options: [],
+        points: 0,
+        question: '',
+        title: '',
+        type: 'MCQ'
+      },
+      challengeFormOpen: false,
+      challenges: [],
+      editFields: {
+        dateEnd: '',
+        dateStart: '',
+        description: '',
+        livestreamURL: '',
+        local: '',
+        title: ''
+      },
+      editFormOpen: false,
+      hasLivestream: false,
+      inviteModalOpen: false,
+      isArchived: false,
+      isHidden: false,
+      joined: false,
+      postFields: {
+        description: '',
+        files: {
+          documents: [],
+          images: [],
+          videos: []
+        },
+        privacy: '',
+        tags: [],
+        title: ''
+      },
+      postFormOpen: false,
+      posts: [],
+      talk: {
+        dateEnd: '',
+        dateStart: '',
+        description: '',
+        livestreamURL: '',
+        local: '',
+        title: ''
+      },
+      userPoints: 0
+    };
   }
 
-  private getAdminButtons() {
-    const isArchived = this.state.archived;
-    const hideBtnText = this.state.isHidden
-      ? dictionary.reopen_talk[this.context]
-      : dictionary.hide_talk[this.context];
-    const isArchivedBtn = this.state.archived
-      ? dictionary.unarchive_talk[this.context]
-      : dictionary.archive_talk[this.context];
+  public componentWillMount(): void {
+    this.apiGetTalk();
+  }
+
+  public render() {
     return (
-      <div id="conf-admin-buttons" className="p-0 m-0">
-        <h6>{dictionary.administrator[this.context]}</h6>
-        <button
-          disabled={isArchived}
-          data-toggle="modal"
-          data-target={`#invite_talk_modal_${this.id}`}
-        >
-          <i className="fas fa-envelope" />
-          {dictionary.invite_users[this.context]}
-        </button>
-        {/* Invite Users */}
-        <InviteModal talkId={this.id} />
-        <button
-          type="button"
-          onClick={this.handleCreateChallenge}
-          disabled={isArchived}
-        >
-          <i className="fas fa-puzzle-piece" />
-          {dictionary.create_challenge_talk[this.context]}
-        </button>
-        {/* Challenge Create Modal */}
-        {this.state.isChallengeModalOpen ? (
-          <CreateNewModalChallenge
-            pending={false}
-            onSubmit={this.handleSubmitChallenge}
-            onStepChange={step => this.setState({ stepChallenge: step })}
-            maxGroupSize={10}
-            request={this.state.requestChallenge}
-            onRequestChange={request =>
-              this.setState({ requestChallenge: request })
-            }
-            onClose={this.resetStateChallenge}
-            autoFocus={false}
-            step={this.state.stepChallenge}
-            posts={this.state.posts}
-          />
-        ) : null}
-        {this.editForm()}
-        <button
-          type="button"
-          onClick={() => {
-            this.archiveTalk();
-          }}
-        >
-          <i className="fas fa-archive" />
-          {isArchivedBtn}
-        </button>
-        <button onClick={this.handleHideTalk} disabled={isArchived}>
-          <i className="fas fa-trash" />
-          {hideBtnText}
-        </button>
-        {this.getHiddenInfo()}
+      <div className={'container-fluid mt-3 col-lg-12'}>
+        <div className={'row'}>{this.renderBreadcrumb()}</div>
+        <div className={'row'}>
+          <div className={'col-lg-3'}>
+            {this.renderInfoCard()}
+            {this.renderAdminCard()}
+            {this.renderChallengesCard()}
+          </div>
+          <div className={'col-lg-9'}>
+            {this.state.joined ? (
+              <div className={'row'}>
+                <div className={'col-lg-7'}>{this.renderPosts()}</div>
+                <div className={'col-lg-5'}>
+                  {this.state.hasLivestream ? this.renderLivestream() : null}
+                  {this.renderChat()}
+                </div>
+              </div>
+            ) : (
+              <div>{this.renderJoinAlert()}</div>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
 
-  private handleCreateChallenge = (event: MouseEvent): void => {
-    event.preventDefault();
-    this.setState({ isChallengeModalOpen: true });
+  private apiGetTalk = () => {
+    axiosInstance
+      .get(`/talk/${this.id}`)
+      .then(res => {
+        console.log(res);
+        const talk = res.data.talk;
+        const posts = res.data.posts;
+        const challenges = res.data.challenges;
+        const joined = res.data.isParticipating;
+
+        this.conferenceId = talk.conference_id;
+        this.conferenceTitle = talk.conference_title;
+        this.ownerId = talk.user_id;
+        this.ownerName = talk.user_name;
+        this.privacy = talk.privacy;
+
+        this.setState({
+          challenges,
+          hasLivestream: talk.livestream_url !== '',
+          isArchived: talk.archived,
+          isHidden: talk.privacy === 'closed',
+          joined,
+          posts,
+          talk: {
+            dateEnd: talk.dateend,
+            dateStart: talk.datestart,
+            description: talk.about,
+            livestreamURL: talk.livestream_url,
+            local: talk.local,
+            title: talk.title
+          }
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+      });
   };
 
-  private getJoinButton() {
-    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
-    let buttonText = this.state.userParticipation
-      ? dictionary.leave_talk[this.context]
-      : dictionary.join_talk[this.context];
+  /* Components */
 
-    if (!this.state.userCanJoin) {
-      buttonClass = 'cannot_join';
-      buttonText = dictionary.no_access_talk[this.context];
-    }
-    // TODO: METER EFEITOS AO CARREGAR
+  private renderJoinAlert = () => {
     return (
-      <button
-        className={`join_button ${buttonClass}`}
-        onClick={
-          this.state.userParticipation
-            ? this.handleLeaveTalk
-            : this.handleJoinTalk
-        }
-        disabled={!this.state.userCanJoin}
-      >
-        {buttonText}
-      </button>
+      <Alert variant={'danger'}>
+        <p>{dictionary.user_not_joined[this.context]}.</p>
+      </Alert>
     );
-  }
+  };
 
-  private getVisibilityIcon(v: string): IconDefinition {
-    switch (v) {
-      case 'public':
-        return faGlobeAfrica;
-      case 'followers':
-        return faUserFriends;
-      case 'private':
-        return faLock;
-      default:
-        return faQuestion;
-    }
-  }
+  private renderJoin = () => {
+    const handleJoin = () => {
+      this.state.joined
+        ? axiosInstance
+            .delete(`/talk/${this.id}/leave`)
+            .then(() => {
+              this.setState({
+                joined: false
+              });
+            })
+            .catch(error => {
+              console.log(error.response.data.message);
+            })
+        : axiosInstance
+            .post(`/talk/${this.id}/join`)
+            .then(() => {
+              this.setState({
+                joined: true
+              });
+            })
+            .catch(error => {
+              console.log(error.response.data.message);
+            });
+    };
 
-  private handleChallengeClick(challenge: number | undefined) {
-    if (challenge) {
-      this.setState({
-        clickedChallenge: challenge
-      } as IState);
-    }
-  }
+    return (
+      <Button
+        onClick={handleJoin}
+        className={'w-100'}
+        variant={this.state.joined ? 'danger' : 'success'}
+      >
+        {this.state.joined
+          ? dictionary.leave_talk[this.context]
+          : dictionary.join_talk[this.context]}
+      </Button>
+    );
+  };
 
-  private getChallenges() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
+  private renderBreadcrumb = () => {
+    return (
+      <nav aria-label={'breadcrumb'} className={'col-lg-12'}>
+        <ol className={classNames('breadcrumb', styles.header)}>
+          <li className={'breadcrumb-item'}>
+            <a href={'/'} className={styles.breadcrumbLink}>
+              {dictionary.home[this.context]}
+            </a>
+          </li>
+          <li className={'breadcrumb-item'}>
+            <a href={'/conferences'} className={styles.breadcrumbLink}>
+              {dictionary.conferences[this.context]}
+            </a>
+          </li>
+          <li className={'breadcrumb-item'}>
+            <a
+              href={`/conference/${this.conferenceId}`}
+              className={styles.breadcrumbLink}
+            >
+              {this.conferenceTitle}
+            </a>
+          </li>
+          <li className={'breadcrumb-item active'} aria-current={'page'}>
+            {this.state.talk.title}
+          </li>
+        </ol>
+      </nav>
+    );
+  };
 
-    const challenges: any[] = [];
-    if (this.state.challenges.length > 0) {
-      challenges.push(
-        <ChallengeCarousel
-          key={'challenges_' + this.id}
-          id={this.id}
-          challenges={this.state.challenges}
-          userId={this.props.user.id}
-          handleChallengeClick={this.handleChallengeClick}
-        />
+  private renderInfoCard = () => {
+    const talk = this.state.talk;
+    const dateStart = new Date(talk.dateStart).toLocaleDateString(
+      dictionary.date_format[this.context],
+      this.dateOptions
+    );
+    const dateEnd = new Date(talk.dateEnd).toLocaleDateString(
+      dictionary.date_format[this.context],
+      this.dateOptions
+    );
+
+    return (
+      <Card className={classNames('mb-3', styles.border)}>
+        <Card.Header className={styles.header}>
+          <div
+            className={'d-flex justify-content-between align-items-center mb-1'}
+          >
+            <div className={'d-flex align-items-center'}>
+              <Avatar image={''} title={talk.title} /> &nbsp;
+              <strong>{talk.title}</strong>
+            </div>
+            {this.renderTalkStatus()}
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <Card.Text>{talk.description}</Card.Text>
+          <hr />
+          <div>
+            <strong>{dictionary.talk_local[this.context]}</strong>
+            <br />
+            {talk.local}
+            <br />
+            <br />
+            <strong>{dictionary.date_start[this.context]}</strong>
+            <br />
+            {dateStart}
+            <br />
+            <br />
+            <strong>{dictionary.date_end[this.context]}</strong>
+            <br />
+            {dateEnd}
+          </div>
+        </Card.Body>
+        <Card.Footer>{this.renderJoin()}</Card.Footer>
+      </Card>
+    );
+  };
+
+  private renderAdminCard = () => {
+    return (
+      <Card className={classNames('mb-3', styles.border)}>
+        <Card.Header className={styles.header}>
+          <Card.Title className={'mb-0'}>
+            {dictionary.admin_area[this.context]}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <ListGroup variant={'flush'}>
+            {this.renderInviteForm()}
+            {this.renderChallengeForm()}
+            {this.renderEditForm()}
+            {this.renderArchiveForm()}
+            {this.renderHideForm()}
+          </ListGroup>
+        </Card.Body>
+      </Card>
+    );
+  };
+
+  private renderTalkStatus = () => {
+    if (this.state.isArchived) {
+      return (
+        <Card.Subtitle className={'text-info mb-0'}>
+          {dictionary.archived[this.context]}
+        </Card.Subtitle>
+      );
+    } else if (this.state.isHidden) {
+      return (
+        <Card.Subtitle className={'text-danger mb-0'}>
+          {dictionary.hidden[this.context]}
+        </Card.Subtitle>
       );
     } else {
-      challenges.push(
-        <div key={'no_challenges'}>
-          {' '}
-          {dictionary.no_challenges[this.context]}{' '}
-        </div>
+      return (
+        <Card.Subtitle className={'text-success mb-0'}>
+          {dictionary.open[this.context]}
+        </Card.Subtitle>
       );
     }
+  };
+
+  private renderChallengesCard = () => {
+    return (
+      <Card className={classNames('mb-3', styles.border)}>
+        <Card.Header
+          className={classNames(
+            'd-flex flex-row justify-content-between align-items-center',
+            styles.header
+          )}
+        >
+          <Card.Title className={'mb-0'}>
+            {dictionary.challenge_conference[this.context]}
+          </Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.points[this.context]}: {this.state.userPoints}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>CHALLENGES</Card.Body>
+      </Card>
+    );
+  };
+
+  private renderPosts = () => {
+    const posts = this.state.posts;
 
     return (
-      <div key={'challenges_points'}>
-        <div key={'points_div_' + this.id} className="challenges">
-          <div key={'points_ins_div_' + this.id} className="p-3">
-            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h5>
-                {dictionary.my_points[this.context]}{' '}
-                <small>{this.state.points}</small>
-              </h5>
-            </div>
-          </div>
+      <div>
+        <div className={'mb-3'}>
+          <Card
+            className={
+              'p-3 d-flex flex-row justify-content-between align-items-center'
+            }
+          >
+            <Card.Title className={'mb-0'}>
+              {dictionary.posts_cap[this.context]}
+            </Card.Title>
+            {this.renderPostForm()}
+          </Card>
         </div>
-        <div key={'challenges_div_' + this.id} className="challenges">
-          <div key={'challenges_ins_div_' + this.id} className="p-3">
-            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h4>
-                {dictionary.challenge_conference[this.context]}{' '}
-                <i className="fas fa-puzzle-piece" />
-              </h4>
-              <br />
-              {challenges}
-            </div>
-          </div>
-        </div>
+        {posts.map(post => (
+          <Post
+            key={post.id}
+            id={post.id}
+            title={post.title}
+            date={new Date(post.date).toLocaleDateString(
+              dictionary.date_format[this.context],
+              this.postDateOptions
+            )}
+            author={post.author}
+            content={post.content}
+            visibility={post.visibility}
+            comments={post.comments}
+            tags={post.tags}
+            user_id={post.user_id}
+            files={post.files}
+          />
+        ))}
       </div>
     );
-  }
+  };
 
-  private editForm = () => {
-    const editFields = this.state.editFields;
-    const handleHide = () =>
-      this.setState({
-        editFields: {
-          dateEnd: this.state.dateEnd,
-          dateStart: this.state.dateStart,
-          description: this.state.description,
-          hasLiveStream: this.state.hasLiveStream,
-          livestreamUrl: this.state.livestreamUrl,
-          place: this.state.place,
-          title: this.state.title
-        },
-        editFormOpen: false
-      });
-    const handleShow = event => {
-      event.preventDefault();
-      this.setState({ editFormOpen: true });
-    };
-    const handleChange = (name, value) =>
-      this.setState({
-        editFields: {
-          ...this.state.editFields,
-          [name]: value
-        }
-      });
+  private renderLivestream = () => {
+    return (
+      <div className={'embed-responsive embed-responsive-16by9 mb-3'}>
+        <iframe
+          id={'livestream'}
+          className={'embed-responsive-item'}
+          src={this.state.talk.livestreamURL}
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen={true}
+        />
+      </div>
+    );
+  };
+
+  private renderChat = () => {
+    return (
+      <Card className={classNames('mb-3', styles.border)}>
+        <Card.Header className={styles.header}>Chat</Card.Header>
+        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'} />
+        <Card.Footer className={'row m-0 p-1'}>
+          <div className={'col-9 m-0 p-0'}>
+            <textarea
+              className={'w-100'}
+              rows={3}
+              maxLength={300}
+              minLength={1}
+            />
+          </div>
+          <div
+            className={'col-3 d-flex justify-content-center align-items-center'}
+          >
+            <Button className={classNames('w-100 h-50', styles.button)}>
+              <i className={'fas fa-paper-plane mr-2'} />
+              Send
+            </Button>
+          </div>
+        </Card.Footer>
+      </Card>
+    );
+  };
+
+  /* Forms */
+
+  private renderInviteForm = () => {
+    const handleOpen = () => this.setState({ inviteModalOpen: true });
+    const handleHide = () => this.setState({ inviteModalOpen: false });
 
     return (
       <>
-        <button disabled={this.state.archived} onClick={handleShow}>
-          <i className="fas fa-pen" />
-          {dictionary.edit_talk[this.context]}
-        </button>
+        <ListGroup.Item onClick={handleOpen}>
+          <i className={'fas fa-envelope mr-2'} />
+          {dictionary.invite_users[this.context]}
+        </ListGroup.Item>
 
-        <Modal show={this.state.editFormOpen} onHide={handleHide}>
+        <Modal
+          centered={true}
+          show={this.state.inviteModalOpen}
+          onHide={handleHide}
+        >
           <Modal.Header closeButton={true}>
-            <Modal.Title>{dictionary.edit_talk[this.context]}</Modal.Title>
+            <Modal.Title>
+              {dictionary.invite_users_to[this.context]}{' '}
+              {dictionary.talk[this.context]}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'title'}
-              value={editFields.title}
-              label={dictionary.title[this.context]}
-              placeholder={dictionary.insert_title[this.context]}
-            />
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'description'}
-              value={editFields.description}
-              label={dictionary.description[this.context]}
-              type={'textarea'}
-              rows={5}
-              maxLength={3000}
-              placeholder={dictionary.description_placeholder[this.context]}
-            />
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'place'}
-              value={editFields.place}
-              label={dictionary.talk_local[this.context]}
-            />
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'dateStart'}
-              value={editFields.dateStart}
-              label={dictionary.date_start[this.context]}
-              type={'datetime-local'}
-            />
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'dateEnd'}
-              value={editFields.dateEnd}
-              label={dictionary.date_end[this.context]}
-              type={'datetime-local'}
-            />
-            <div className={'mb-3'}>
-              <label htmlFor={'hasLivrestream'}>Enable Livrestream</label>
-              <Switcher
-                id={'hasLiveStream'}
-                name={'livestreamSwitcher'}
-                onChange={(value, event) =>
-                  handleChange(event.target.id, value)
-                }
-                label={editFields.hasLiveStream ? 'Enabled' : 'Disabled'}
-                value={editFields.hasLiveStream}
-              />
-            </div>
-            <InputNext
-              onChange={(value, event) => handleChange(event.target.id, value)}
-              id={'livestreamUrl'}
-              value={editFields.livestreamUrl}
-              label={dictionary.livestream_url[this.context]}
-              type={'url'}
-              disabled={!editFields.hasLiveStream}
-            />
+            <Form>
+              <Form.Group controlId={'invite_user'}>
+                <Form.Label>{dictionary.email[this.context]}</Form.Label>
+                <Form.Control
+                  type={'email'}
+                  className={styles.border}
+                  placeholder={'Enter email'}
+                />
+              </Form.Group>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.handleEditSubmission} theme={'success'}>
-              Save
-            </Button>
-            <Button onClick={handleHide} theme={'danger'}>
+            <Button variant={'danger'} onClick={handleHide}>
               Cancel
+            </Button>
+            <Button
+              type={'submit'}
+              className={styles.button}
+              onClick={this.handleInviteSubmission}
+              form={'invite_user'}
+            >
+              Invite
             </Button>
           </Modal.Footer>
         </Modal>
@@ -1001,33 +556,346 @@ class Talk extends React.Component<IProps, IState> {
     );
   };
 
-  private handleEditSubmission = () => {
-    const editFields = this.state.editFields;
-    axiosInstance
-      .put(`/talk/${this.id}`, {
-        about: editFields.description,
-        dateEnd: editFields.dateEnd,
-        dateStart: editFields.dateStart,
-        livestreamUrl: editFields.hasLiveStream ? editFields.livestreamUrl : '',
-        local: editFields.place,
-        title: editFields.title
-      })
-      .then(() => {
-        this.setState({
-          ...this.state,
-          ...editFields,
-          editFields: {
-            ...editFields,
-            livestreamUrl: editFields.hasLiveStream
-              ? editFields.livestreamUrl
-              : ''
-          },
-          editFormOpen: false
-        });
-      })
-      .catch(err => {
-        console.log(err);
+  private handleInviteSubmission = () => {
+    console.log(
+      'USER INVITED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
+
+  private renderChallengeForm = () => {
+    const handleOpen = () => this.setState({ challengeFormOpen: true });
+    const handleClose = () => {
+      this.setState({
+        challengeFields: {
+          answer: '',
+          correctAnswer: '',
+          dateEnd: '',
+          dateStart: '',
+          description: '',
+          options: [],
+          points: 0,
+          question: '',
+          title: '',
+          type: 'MCQ'
+        },
+        challengeFormOpen: false
       });
+    };
+    const handleSelect = event => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          type: event.target.value
+        }
+      });
+    };
+    const handleChange = event => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          answer: event.target.value
+        }
+      });
+    };
+    const handleAddOptionsByKeyPress = event => {
+      if (event.key === 'Enter') {
+        const answer = this.state.challengeFields.answer.trim();
+        const options = this.state.challengeFields.options;
+
+        if (options.length >= 5 || answer.length === 0) {
+          return;
+        }
+
+        if (!options.includes(answer)) {
+          options.push(answer);
+        }
+
+        this.setState({
+          challengeFields: {
+            ...this.state.challengeFields,
+            answer: '',
+            options
+          }
+        });
+      }
+    };
+    const handleAddOptionsByButtonPress = () => {
+      const answer = this.state.challengeFields.answer.trim();
+      const options = this.state.challengeFields.options;
+
+      if (options.length >= 5 || answer.length === 0) {
+        return;
+      }
+
+      if (!options.includes(answer)) {
+        options.push(answer);
+      }
+
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          answer: '',
+          options
+        }
+      });
+    };
+    const handleRemoveOptions = (event, value) => {
+      event.preventDefault();
+      let options = this.state.challengeFields.options;
+      options = options.filter(option => option !== value);
+
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          options
+        }
+      });
+    };
+
+    return (
+      <>
+        <ListGroup.Item onClick={handleOpen}>
+          <i className={'fas fa-puzzle-piece mr-2'} />
+          {dictionary.create_challenge_talk[this.context]}
+        </ListGroup.Item>
+
+        <Modal
+          centered={true}
+          show={this.state.challengeFormOpen}
+          onHide={handleClose}
+        >
+          <Modal.Header closeButton={true}>
+            <Modal.Title>{dictionary.new_challenge[this.context]}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form id={'create_challenge'}>
+              <Form.Group controlId={'create_challenge.title'}>
+                <Form.Label>{dictionary.title[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.challenge_title[this.context]}
+                  className={styles.border}
+                  required={true}
+                />
+              </Form.Group>
+              <Form.Group controlId={'create_challenge.description'}>
+                <Form.Label>{dictionary.description[this.context]}</Form.Label>
+                <Form.Control
+                  as={'textarea'}
+                  rows={5}
+                  placeholder={
+                    dictionary.chal_description_placeholder[this.context]
+                  }
+                  className={styles.border}
+                  required={true}
+                />
+              </Form.Group>
+              <Form.Group controlId={'create_challenge.type'}>
+                <Form.Label>
+                  {dictionary.challenge_type[this.context]}
+                </Form.Label>
+                <Form.Control
+                  as={'select'}
+                  className={styles.border}
+                  value={this.state.challengeFields.type}
+                  onChange={handleSelect}
+                  required={true}
+                >
+                  <option value={'MCQ'}>
+                    {dictionary.mult_choice_question[this.context]}
+                  </option>
+                  <option value={'POST'}>
+                    {dictionary.post_create[this.context]}
+                  </option>
+                  <option value={'CMT'}>
+                    {dictionary.comment_post[this.context]}
+                  </option>
+                </Form.Control>
+                {this.state.challengeFields.type === 'MCQ' ? (
+                  <>
+                    <small className={'text-muted'}>
+                      {dictionary.mult_choice_question_desc[this.context]}
+                    </small>
+                    <Form.Group
+                      controlId={'create_challenge.question'}
+                      className={'mt-3'}
+                    >
+                      <Form.Label>
+                        {dictionary.question[this.context]}
+                      </Form.Label>
+                      <Form.Control type={'text'} className={styles.border} />
+                    </Form.Group>
+                    <Form.Group controlId={'create_challenge.answers'}>
+                      <Form.Label>
+                        {dictionary.options[this.context]}
+                      </Form.Label>
+                      <InputGroup>
+                        <FormControl
+                          type={'text'}
+                          value={this.state.challengeFields.answer}
+                          onChange={handleChange}
+                          onKeyUp={handleAddOptionsByKeyPress}
+                          className={styles.border}
+                        />
+                        <InputGroup.Append>
+                          <Button
+                            className={styles.button}
+                            onClick={handleAddOptionsByButtonPress}
+                            disabled={
+                              this.state.challengeFields.options.length >= 5
+                            }
+                          >
+                            Add
+                          </Button>
+                        </InputGroup.Append>
+                      </InputGroup>
+                    </Form.Group>
+                    <ListGroup>
+                      {this.state.challengeFields.options.map(
+                        (option, index) => (
+                          <ListGroup.Item
+                            key={index}
+                            className={
+                              'd-flex flex-row justify-content-between align-items-center'
+                            }
+                          >
+                            ({index + 1}) {option}
+                            <a
+                              href={'#'}
+                              onClick={event =>
+                                handleRemoveOptions(event, option)
+                              }
+                              className={'text-danger'}
+                            >
+                              <i className={'fas fa-times'} />
+                            </a>
+                          </ListGroup.Item>
+                        )
+                      )}
+                    </ListGroup>
+                  </>
+                ) : null}
+                {this.state.challengeFields.type === 'POST' ? (
+                  <small className={'text-muted'}>
+                    {dictionary.post_create_desc[this.context]}
+                  </small>
+                ) : null}
+                {this.state.challengeFields.type === 'CMT' ? (
+                  <>
+                    <small className={'text-muted'}>
+                      {dictionary.comment_post_desc[this.context]}
+                    </small>
+                    <Form.Group
+                      controlId={'create_challenge.question'}
+                      className={'mt-3'}
+                    >
+                      <Form.Label>
+                        {dictionary.post_to_com[this.context]}
+                      </Form.Label>
+                      <Form.Control as={'select'} className={styles.border}>
+                        {this.state.posts.map(post => {
+                          return (
+                            <option key={post.id} value={post.title}>
+                              {post.title}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </Form.Group>
+                  </>
+                ) : null}
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>{dictionary.points[this.context]}</Form.Label>
+                <Form.Control
+                  type={'number'}
+                  min={0}
+                  className={styles.border}
+                  required={true}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleClose} variant={'danger'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button
+              onClick={this.handleChallengeSubmission}
+              className={styles.button}
+              form={'create_challenge'}
+            >
+              {dictionary.create[this.context]}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  };
+
+  private handleChallengeSubmission = () => {
+    console.log(
+      'CHALLENGE SUBMITTED - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
+
+  private renderEditForm = () => {
+    return (
+      <ListGroup.Item>
+        <i className={'fas fa-pen mr-2'} />
+        {dictionary.edit_talk[this.context]}
+      </ListGroup.Item>
+    );
+  };
+
+  private handleEditSubmission = () => {
+    console.log(
+      'EDIT FORM SUBMITTED - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!!'
+    );
+  };
+
+  private renderArchiveForm = () => {
+    return (
+      <ListGroup.Item>
+        <i className={'fas fa-archive mr-2'} />
+        {this.state.isArchived
+          ? dictionary.unarchive_talk[this.context]
+          : dictionary.archive_talk[this.context]}
+      </ListGroup.Item>
+    );
+  };
+
+  private handleArchiveSubmission = () => {
+    console.log(
+      'TALK ARCHIVED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
+
+  private renderHideForm = () => {
+    return (
+      <ListGroup.Item>
+        <i className={'fas fa-trash mr-2'} />
+        {this.state.isHidden
+          ? dictionary.reopen_talk[this.context]
+          : dictionary.hide_talk[this.context]}
+      </ListGroup.Item>
+    );
+  };
+
+  private handleHideSubmission = () => {
+    console.log(
+      'TALK HIDDEN! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
+
+  private renderPostForm = () => {
+    return <i className={'fas fa-plus'} />;
+  };
+
+  private handlePostSubmission = () => {
+    console.log(
+      'POST CREATED IN TALK - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
   };
 }
 

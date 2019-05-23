@@ -16,10 +16,13 @@ type Dictionary = {
 /* tslint:disable:object-literal-sort-keys */
 export let dictionary: Dictionary = {
   of: { PT: 'de', EN: 'of' },
+  by: { PT: 'por', EN: 'by' },
   home: { PT: 'Início', EN: 'Home' },
   shop: { PT: 'Loja', EN: 'Shop' },
+  conference_shop: { PT: 'Loja da conferencia', EN: 'Conference shop' },
   search: { PT: 'Procurar', EN: 'Search' },
   new: { PT: 'Novo', EN: 'New' },
+  click: { PT: 'Clique', EN: 'Click' },
   user_dropdown: { PT: 'Utilizador', EN: 'User' },
   profile: { PT: 'Perfil', EN: 'Profile' },
   talks: { PT: 'Palestras', EN: 'Talks' },
@@ -30,6 +33,15 @@ export let dictionary: Dictionary = {
     PT: ' Voltar para a conferência',
     EN: ' Return to conference'
   },
+  upcoming_conferences: {
+    PT: 'Proximas conferencias',
+    EN: 'Upcoming conferences'
+  },
+  no_upcoming_conferences: {
+    PT: 'Não há conferencias próximas',
+    EN: 'There is no upcoming conferences'
+  },
+  view_more: { PT: 'Ver mais', EN: 'View more' },
   like_action: { PT: 'Gostar', EN: 'Like' },
   dislike_action: { PT: 'Não gostar', EN: 'Dislike' },
   comment_action: { PT: 'Comentar', EN: 'Comment' },
@@ -51,6 +63,7 @@ export let dictionary: Dictionary = {
   edit_comment: { PT: 'Editar comentário', EN: 'Edit comment' },
   delete_comment: { PT: 'Apagar comentário', EN: 'Delete comment' },
   save: { PT: 'Gravar', EN: 'Save' },
+  create: { PT: 'Criar', EN: 'Create' },
   cancel: { PT: 'Cancelar', EN: 'Cancel' },
   confirm_delete: {
     PT:
@@ -82,13 +95,16 @@ export let dictionary: Dictionary = {
     EN: 'This talk is closed!'
   },
   reopen_talk: { PT: 'Abrir palestra', EN: 'Open talk' },
+  open: { PT: 'Aberta', EN: 'Open' },
   hide_talk: { PT: 'Esconder palestra', EN: 'Hide talk' },
+  hidden: { PT: 'Escondida', EN: 'Hidden' },
   report_talk: { PT: 'Reportar palestra', EN: 'Report talk' },
   archive_talk: { PT: 'Arquivar palestra', EN: 'Archive talk' },
   unarchive_talk: {
     PT: 'Desarquivar conferência',
     EN: 'Unarchive conference'
   },
+  archived: { PT: 'Arquivada', EN: 'Archived' },
   start_livestream_talk: {
     PT: 'Começar transmissão em direto',
     EN: 'Start livestream'
@@ -96,7 +112,17 @@ export let dictionary: Dictionary = {
   create_challenge_talk: { PT: 'Criar desafio', EN: 'Create challenge' },
   invite_users: { PT: 'Convidar utilizadores', EN: 'Invite users' },
   leave_talk: { PT: 'Sair da palestra', EN: 'Leave talk' },
+  user_not_joined: {
+    PT: 'Você não participa dessa palestra',
+    EN: 'You have not joined this talk'
+  },
+  to_join: { PT: 'para participar', EN: 'to join' },
   join_talk: { PT: 'Entrar na palestra', EN: 'Join talk' },
+  joined_talks: { PT: 'Palestras participantes', EN: 'Joined talks' },
+  no_joined_talks: {
+    PT: 'Você não participa de nenhuma palestra',
+    EN: 'You have not joined any talk'
+  },
   no_access_talk: {
     PT: 'Não tem permissões para aceder a esta palestra',
     EN: "You don't have permissions to access this talk"
@@ -207,6 +233,8 @@ export let dictionary: Dictionary = {
   dates: { PT: 'Datas', EN: 'Dates' },
   date_start: { PT: 'Início', EN: 'Start' },
   date_end: { PT: 'Fim', EN: 'End' },
+  starting_date: { PT: 'Data de inicio', EN: 'Starting date' },
+  ending_date: { PT: 'Data de termino', EN: 'Ending date' },
   date_format: {
     PT: 'pt-PT',
     EN: 'en-US'
@@ -219,6 +247,7 @@ export let dictionary: Dictionary = {
   tags: { PT: 'Categorias', EN: 'Tags' },
   files: { PT: 'Ficheiros', EN: 'Files' },
   post_cap: { PT: 'Publicação', EN: 'Post' },
+  posts_cap: { PT: 'Publicações', EN: 'Posts' },
   post_description: {
     PT: 'Publicações são o mecanismo básico de partilha de conhecimento',
     EN: 'Post are the basic mechanism used to share knowledge.'
@@ -356,8 +385,8 @@ export let dictionary: Dictionary = {
       'serve to invite conference participants to answer a question to win something.'
   },
   mult_choice_question: {
-    PT: 'Desafios de Questão de Escolha Múltipla',
-    EN: 'Multiple Choice Question Challenges'
+    PT: 'Questão de Escolha Múltipla',
+    EN: 'Multiple Choice Question'
   },
   mult_choice_question_desc: {
     PT:
@@ -366,8 +395,8 @@ export let dictionary: Dictionary = {
       'serve to invite conference participants to answer a question with multiple choice options, to win something.'
   },
   post_create: {
-    PT: 'Desafios de Publicar na conferência',
-    EN: 'Post on Conference Challenges'
+    PT: 'Publicar na conferência',
+    EN: 'Post on Conference'
   },
   post_create_desc: {
     PT:
@@ -375,8 +404,8 @@ export let dictionary: Dictionary = {
     EN: 'serve to invite conference participants to write posts on conference.'
   },
   comment_post: {
-    PT: 'Desafios de Comentar uma Publicação',
-    EN: 'Comment on a Post Challenges'
+    PT: 'Comentar uma Publicação',
+    EN: 'Comment on a Post'
   },
   comment_post_desc: {
     PT:
@@ -395,6 +424,10 @@ export let dictionary: Dictionary = {
   chal_description_placeholder: {
     PT: 'Escreva uma breve descrição do desafio.',
     EN: 'Write a brief description of the challenge.'
+  },
+  challenge_type: {
+    PT: 'Tipo do desafio',
+    EN: 'Challenge type'
   },
   prize: {
     PT: 'Prémio',
@@ -521,7 +554,8 @@ export let dictionary: Dictionary = {
     PT: 'Não foi possível desbanir o utilizador',
     EN: 'Error unbanning user'
   },
-  empty: { PT: '', EN: '' }
+  empty: { PT: '', EN: '' },
+  orderBy: { PT: 'Ordenar por', EN: 'Order by' }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

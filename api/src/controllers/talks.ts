@@ -233,29 +233,33 @@ export async function getUninvitedUsersInfo(req, res) {
   }
 }
 
-export function addParticipantUser(req, res) {
-  const userId = req.user.id; // logged user
+export async function joinTalk(req, res) {
+  const user = req.user.id;
+  const talk = req.params.id;
   query({
-      text: `INSERT INTO talk_participants (participant_user, talk) VALUES ($1, $2)`,
-      values: [userId, req.params.id],
+    text: 'INSERT INTO talk_participants (talk, participant_user) VALUES ($1, $2)',
+    values: [talk, user],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while adding participant to talk' });
+  }).catch(() => {
+    res.status(400).send({
+      message: 'An error occurred while adding participant to talk',
+    });
   });
 }
 
-export function removeParticipantUser(req, res) {
-  const userId = req.user.id; // logged user
+export async function leaveTalk(req, res) {
+  const user = req.user.id;
+  const talk = req.params.id;
   query({
-      text: `DELETE FROM talk_participants WHERE participant_user = $1 AND talk = $2`,
-      values: [userId, req.params.id],
+    text: 'DELETE FROM talk_participants WHERE talk = $1 AND participant_user = $2',
+    values: [talk, user],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while removing participant from talk' });
+  }).catch(() => {
+    res.status(400).send({
+      message: 'An error occurred while removing participant from talk',
+    });
   });
 }
 
@@ -317,10 +321,11 @@ export async function gettalk(req, res) {
      */
     const talk = await query({
       text: `
-              SELECT t.id, a.id as user_id, a.first_name, a.last_name, t.title, t.conference,
-              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived
+              SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name, t.title, t.conference as conference_id,
+              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, c.title as conference_title
               FROM talks t
               INNER JOIN users a ON t.author = a.id
+              INNER JOIN conferences c ON t.conference = c.id
               WHERE t.id = $1
                 AND (t.author = $2
                     OR t.privacy = 'public'
@@ -332,41 +337,47 @@ export async function gettalk(req, res) {
             `,
       values: [id, userId],
     });
-    if (talk === null) {
-      res.status(400).send(
-        new Error('talk either does not exists or you do not have the required permissions'),
-      );
+    if (talk.rows.length === 0) {
+      res.status(400).send({
+        message: 'talk either does not exists or you do not have the required permissions',
+      });
       return;
     }
-    const challengesResult = await query ({
+    const isParticipating = await query({
+      text: `
+              SELECT id
+              FROM talk_participants
+              WHERE talk = $1
+                AND participant_user = $2
+      `,
+      values: [id, userId],
+    });
+
+    const challenges = await query ({
       text: `SELECT id, title, dateStart, dateEnd, prize, points_prize, challengeType, content
                     FROM challenges
 					          WHERE talk = $1
                     ORDER BY dateStart DESC`,
       values: [id],
     });
-    const postsResult = await query({
-      text: `SELECT p.id, first_name, last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, users.id AS user_id
+    const posts = await query({
+      text: `SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+                        p.visibility, p.date_created as date, p.date_updated, users.id AS user_id
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
 					WHERE p.talk = $1
-                    ORDER BY p.date_created DESC
+                    ORDER BY date DESC
                     LIMIT $2
                     OFFSET $3`,
       values: [id, limit, offset],
     });
-    if (postsResult == null) {
-      res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
-      return;
-    }
     const totalSize = await query({
       text: `SELECT COUNT(id)
               FROM posts
               WHERE talk = $1`,
       values: [id],
     });
-    for (const post of postsResult.rows) {
+    for (const post of posts.rows) {
       const comment = await query({
         text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
                         FROM posts p
@@ -379,7 +390,7 @@ export async function gettalk(req, res) {
                         ORDER BY c.date_updated ASC`,
         values: [post.id],
       });
-      const tagsPost = await query({
+      const tags = await query({
         text: `SELECT t.name
                         FROM tags t
                         INNER JOIN posts_tags pt
@@ -397,19 +408,21 @@ export async function gettalk(req, res) {
         values: [post.id],
       });
       post.comments = comment.rows;
-      post.tags = tagsPost.rows;
+      post.tags = tags.rows;
       post.files = files.rows;
     }
     const result = {
-      challenges: challengesResult.rows,
+      challenges: challenges.rows,
       talk: talk.rows[0],
-      posts: postsResult.rows,
+      posts: posts.rows,
       size: totalSize.rows[0].count,
+      isParticipating: isParticipating.rows.length > 0,
     };
     res.send(result);
   } catch (error) {
-    console.log(error);
-    res.status(500).send(new Error('Error retrieving talk'));
+    res.status(500).send({
+      message: 'Error retrieving talk',
+    });
   }
 }
 
