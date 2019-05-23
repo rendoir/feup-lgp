@@ -38,6 +38,8 @@ const users = [
     }
 ];
 
+let userjwt = null;
+
 const publicPost = {
     author: -1,
     title: 'Test Title 1',
@@ -144,6 +146,70 @@ before(function(done) {
     .catch(err => console.log(err));
 });
 
+describe('Register tests', () => {
+    it('Registers new user', (done) => {
+        request(app)
+        .post('/users')
+        .send({
+            email: 'newuser@lgp.com',
+            password: 'Lepassword1',
+            first_name: 'frstnm',
+            last_name: 'lstnm',
+            work: 'wrk',
+            work_field: 'wrkfld',
+            home_town: 'hmtwn',
+            university: 'uni'
+        })
+        .set('authorization', 'Bearer user')
+        .expect(200)
+        .end((err, res) => {
+            expect(err).to.be.null;
+            done();
+        });
+    });
+
+    it('Registers new user', (done) => {
+        request(app)
+        .post('/users')
+        .send({
+            email: 'baduser@lgp.com',
+            password: 'Yoldpass420',
+            first_name: 'frstnma',
+            last_name: 'lstnma',
+            work: 'wrka',
+            work_field: 'wrkflda',
+            home_town: 'hmtwna',
+            university: 'unia'
+        })
+        .set('authorization', 'Bearer user')
+        .expect(200)
+        .end((err, res) => {
+            expect(err).to.be.null;
+            done();
+        });
+    });
+    
+    it('Cannot register already registered user', (done) => {
+        request(app)
+        .post('/users')
+        .send({
+            email: users[0].email,
+            password: 'Lepassword1',
+            first_name: 'frstnm',
+            last_name: 'lstnm',
+            work: 'wrk',
+            work_field: 'wrkfld',
+            home_town: 'hmtwn',
+            university: 'uni'
+        })
+        .set('authorization', 'Bearer user')
+        .expect(401)
+        .end((err, res) => {
+            done();
+        });
+    });
+});
+
 describe('Admin tests', () => {
     it('Login should be successful', (done) => {
         request(app)
@@ -181,29 +247,29 @@ describe('Admin tests', () => {
 /*
         it('Should not ban unexisting user (400)', (done) => {
             request(app)
-                .post('/admin/ban')
-                .send({
-                    email: 'notanemail'
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(400)
-                .end((err, res) => {
-                    done();
-                })
+            .post('/admin/ban')
+            .send({
+                email: 'notanemail'
+            })
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(400)
+            .end((err, res) => {
+                done();
+            })
         });
-
+        
         it('Should ban user', (done) => {
             request(app)
-                .post('/admin/ban')
-                .send({
-                    email: users[0].email
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                })
+            .post('/admin/ban')
+            .send({
+                email: 'baduser@lgp.com'
+            })
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
         });
 */
         it('Should unban (200)', (done) => {
@@ -294,18 +360,6 @@ describe('Admin tests', () => {
                 });
         });
     
-        it('Should not add the user as admin (no permissions)', (done) => {
-            request(app)
-                .post('/admin')
-                .send({
-                    email: "nopermissions@lgp.com",
-                })
-                .expect(401)
-                .end((err, res) => {
-                    done();
-                });
-        });
-    
         it('Should not add the user as admin (no user found)', (done) => {
             request(app)
                 .post('/admin')
@@ -318,85 +372,154 @@ describe('Admin tests', () => {
                     done();
                 });
         });
+
+        it('Should remove admin (200)', (done) => {
+            request(app)
+                .post('/admin/user')
+                .send({ email: users[0].email })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
     });
 });
 
 describe('User tests', () => {
-    describe('Register tests', () => {
-        it('Cannot register already registered user', (done) => {
+    it('New user can log in', (done) => {
+        request(app)
+            .post('/login')
+            .send({
+                email: 'newuser@lgp.com',
+                password: 'Lepassword1'
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.token).to.be.string;
+                userjwt = res.body.token;
+                done();
+            });
+    });
+
+    it('Should not allow user to ban', (done) => {
+        request(app)
+        .post('/admin/ban')
+        .send({
+            email: 'dontmatternotadmin'
+        })
+        .set('authorization', 'Bearer ' + userjwt)
+        .expect(401)
+        .end((err, res) => {
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.message).to.have.string(`You do not have permissions to ban a user`);
+            done();
+        })
+    });
+    
+    it('Should not alow user to add admin permissions', (done) => {
+        request(app)
+            .post('/admin')
+            .send({
+                email: "nopermissions@lgp.com",
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(401)
+            .end((err, res) => {
+                done();
+            });
+    });
+
+    it('Should not allow user to unban/unadmin', (done) => {
+        request(app)
+            .post('/admin/user')
+            .send({ email: users[0].email })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(401)
+            .end((err, res) => {
+                done();
+            })
+    });
+
+    let userId = 5;
+    describe('User interactions', () => {
+        it('Get user interactions', (done) => {
             request(app)
-                .post('/users')
+                .post(`/users/${userId}/user_interactions`)
                 .send({
-                    email: users[0].email,
-                    password: 'Lepassword1',
-                    first_name: 'frstnm',
-                    last_name: 'lstnm',
-                    work: 'wrk',
-                    work_field: 'wrkfld',
-                    home_town: 'hmtwn',
-                    university: 'uni'
+                    observer: 8,
+                    id: userId
                 })
-                .set('authorization', 'Bearer user')
-                .expect(401)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
                 .end((err, res) => {
+                    expect(err).to.be.null;
                     done();
                 });
         });
 
-        it('Registers new user', (done) => {
+        it('Subscribe to another user', (done) => {
             request(app)
-                .post('/users')
+                .post(`/users/${userId}/subscription`)
                 .send({
-                    email: 'newuser@lgp.com',
-                    password: 'Lepassword1',
-                    first_name: 'frstnm',
-                    last_name: 'lstnm',
-                    work: 'wrk',
-                    work_field: 'wrkfld',
-                    home_town: 'hmtwn',
-                    university: 'uni'
+                    id: userId
                 })
-                .set('authorization', 'Bearer user')
+                .set('authorization', 'Bearer ' + userjwt)
                 .expect(200)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
                 });
         });
-/*
-        it('New user can log in', (done) => {
+        /*
+        it('Rate a user', (done) => {
             request(app)
-                .post('/login')
+                .post(`/users/${userId}/rate`)
                 .send({
-                    email: 'newuser@lgp.com',
-                    password: 'Lepassword1'
+                    rate: 4,
+                    id: userId
                 })
+                .set('authorization', 'Bearer ' + userjwt)
                 .expect(200)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
                 });
         });
-*/
-    });
-/*
-    let userId = -1;
-    describe('User interactions', () => {
+
         it('Get profile', (done) => {
             request(app)
-            .get(`/users/${userId}`)
-            .send({
-                id: userId
-            })
-            .set('authorization', 'Bearer xyz')
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            });
+                .get(`/users/${userId}`)
+                .send({
+                    id: userId
+                })
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
         });
+
+        it('Get notifications', (done) => {
+            request(app)
+                .get(`/users/${userId}/notifications`)
+                .send({
+                    id: userId
+                })
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+        */
+        
     });
-    */
 });
 
 describe('Responds with error 404', () => {

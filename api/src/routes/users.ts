@@ -142,7 +142,7 @@ usersRouter.post('/:id/subscription', controller.subscribeUser);
 usersRouter.delete('/:id/subscription', controller.unsubscribeUser);
 
 /**
- * @api {post} /api/users/rate Rate a user
+ * @api {post} /api/users/:id/rate Rate a user
  * @apiName Rate-User
  * @apiGroup Users
  *
@@ -164,6 +164,10 @@ usersRouter.post('/:id/rate', controller.rate);
  *
  * @apiParam {number}   id  This id can be set to any value, since it will not be used. It's in the URL due to route problems.
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
