@@ -62,6 +62,7 @@ export let dictionary: Dictionary = {
   edit_comment: { PT: 'Editar comentário', EN: 'Edit comment' },
   delete_comment: { PT: 'Apagar comentário', EN: 'Delete comment' },
   save: { PT: 'Gravar', EN: 'Save' },
+  create: { PT: 'Criar', EN: 'Create' },
   cancel: { PT: 'Cancelar', EN: 'Cancel' },
   confirm_delete: {
     PT:
@@ -383,8 +384,8 @@ export let dictionary: Dictionary = {
       'serve to invite conference participants to answer a question to win something.'
   },
   mult_choice_question: {
-    PT: 'Desafios de Questão de Escolha Múltipla',
-    EN: 'Multiple Choice Question Challenges'
+    PT: 'Questão de Escolha Múltipla',
+    EN: 'Multiple Choice Question'
   },
   mult_choice_question_desc: {
     PT:
@@ -393,8 +394,8 @@ export let dictionary: Dictionary = {
       'serve to invite conference participants to answer a question with multiple choice options, to win something.'
   },
   post_create: {
-    PT: 'Desafios de Publicar na conferência',
-    EN: 'Post on Conference Challenges'
+    PT: 'Publicar na conferência',
+    EN: 'Post on Conference'
   },
   post_create_desc: {
     PT:
@@ -402,8 +403,8 @@ export let dictionary: Dictionary = {
     EN: 'serve to invite conference participants to write posts on conference.'
   },
   comment_post: {
-    PT: 'Desafios de Comentar uma Publicação',
-    EN: 'Comment on a Post Challenges'
+    PT: 'Comentar uma Publicação',
+    EN: 'Comment on a Post'
   },
   comment_post_desc: {
     PT:
@@ -422,6 +423,10 @@ export let dictionary: Dictionary = {
   chal_description_placeholder: {
     PT: 'Escreva uma breve descrição do desafio.',
     EN: 'Write a brief description of the challenge.'
+  },
+  challenge_type: {
+    PT: 'Tipo do desafio',
+    EN: 'Challenge type'
   },
   prize: {
     PT: 'Prémio',

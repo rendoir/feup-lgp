@@ -504,7 +504,11 @@ class Talk extends PureComponent<Props, State> {
           {dictionary.invite_users[this.context]}
         </ListGroup.Item>
 
-        <Modal show={this.state.inviteModalOpen} onHide={handleHide}>
+        <Modal
+          centered={true}
+          show={this.state.inviteModalOpen}
+          onHide={handleHide}
+        >
           <Modal.Header closeButton={true}>
             <Modal.Title>
               {dictionary.invite_users_to[this.context]}{' '}
@@ -544,11 +548,140 @@ class Talk extends PureComponent<Props, State> {
   private handleInviteSubmission = () => {};
 
   private renderChallengeForm = () => {
+    const handleOpen = () => this.setState({ challengeFormOpen: true });
+    const handleClose = () => this.setState({ challengeFormOpen: false });
+    const handleSelect = event => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          type: event.target.value
+        }
+      });
+    };
+
     return (
-      <ListGroup.Item>
-        <i className={'fas fa-puzzle-piece mr-2'} />
-        {dictionary.create_challenge_talk[this.context]}
-      </ListGroup.Item>
+      <>
+        <ListGroup.Item onClick={handleOpen}>
+          <i className={'fas fa-puzzle-piece mr-2'} />
+          {dictionary.create_challenge_talk[this.context]}
+        </ListGroup.Item>
+
+        <Modal
+          centered={true}
+          show={this.state.challengeFormOpen}
+          onHide={handleClose}
+        >
+          <Modal.Header>
+            <Modal.Title>{dictionary.new_challenge[this.context]}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId={'create_challenge.title'}>
+                <Form.Label>{dictionary.title[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.challenge_title[this.context]}
+                  className={styles.border}
+                />
+              </Form.Group>
+              <Form.Group controlId={'create_challenge.description'}>
+                <Form.Label>{dictionary.description[this.context]}</Form.Label>
+                <Form.Control
+                  as={'textarea'}
+                  rows={5}
+                  placeholder={
+                    dictionary.chal_description_placeholder[this.context]
+                  }
+                  className={styles.border}
+                />
+              </Form.Group>
+              <Form.Group controlId={'create_challenge.type'}>
+                <Form.Label>
+                  {dictionary.challenge_type[this.context]}
+                </Form.Label>
+                <Form.Control
+                  as={'select'}
+                  className={styles.border}
+                  value={this.state.challengeFields.type}
+                  onChange={handleSelect}
+                >
+                  <option value={'MCQ'}>
+                    {dictionary.mult_choice_question[this.context]}
+                  </option>
+                  <option value={'POST'}>
+                    {dictionary.post_create[this.context]}
+                  </option>
+                  <option value={'CMT'}>
+                    {dictionary.comment_post[this.context]}
+                  </option>
+                </Form.Control>
+                {this.state.challengeFields.type === 'MCQ' ? (
+                  <>
+                    <small className={'text-muted'}>
+                      {dictionary.mult_choice_question_desc[this.context]}
+                    </small>
+                    <Form.Group
+                      controlId={'create_challenge.question'}
+                      className={'mt-3'}
+                    >
+                      <Form.Label>
+                        {dictionary.question[this.context]}
+                      </Form.Label>
+                      <Form.Control type={'text'} className={styles.border} />
+                    </Form.Group>
+                    <Form.Group controlId={'create_challenge.answers'}>
+                      <Form.Label>
+                        {dictionary.options[this.context]}
+                      </Form.Label>
+                      <Form.Control type={'text'} />
+                    </Form.Group>
+                  </>
+                ) : null}
+                {this.state.challengeFields.type === 'POST' ? (
+                  <small className={'text-muted'}>
+                    {dictionary.post_create_desc[this.context]}
+                  </small>
+                ) : null}
+                {this.state.challengeFields.type === 'CMT' ? (
+                  <>
+                    <small className={'text-muted'}>
+                      {dictionary.comment_post_desc[this.context]}
+                    </small>
+                    <Form.Group
+                      controlId={'create_challenge.question'}
+                      className={'mt-3'}
+                    >
+                      <Form.Label>
+                        {dictionary.post_to_com[this.context]}
+                      </Form.Label>
+                      <Form.Control as={'select'} className={styles.border}>
+                        {this.state.posts.map(post => {
+                          return (
+                            <option key={post.id} value={post.title}>
+                              {post.title}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </Form.Group>
+                  </>
+                ) : null}
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleClose} variant={'danger'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button
+              onClick={this.handleChallengeSubmission}
+              className={styles.button}
+            >
+              {dictionary.create[this.context]}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   };
 

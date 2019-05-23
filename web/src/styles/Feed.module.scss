@@ -55,8 +55,9 @@
 	background-color: $color-primary;
 	border-color: $color-primary;
 
-	&:hover {
-		background-color: shade($color-primary, 10%);
+	&:hover,
+	&:active {
+		background-color: shade($color-primary, 10%) !important;
 		border-color: $color-primary;
 	}
 }
