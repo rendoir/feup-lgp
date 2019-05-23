@@ -1,11 +1,42 @@
-import * as React from "react";
-import Button from "../components/Button/Button";
-import "../styles/Shop.css";
-import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
+import * as React from 'react';
+import Button from '../components/Button/Button';
+import Product from '../components/Product/Product';
+import '../styles/Shop.css';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
+import Post from '../components/Post/Post';
 
-class Shop extends React.Component {
+type Props = {
+  user: any;
+};
+
+type State = {
+  conferenceID: number | undefined;
+  error: boolean;
+  errorMessage: string;
+  isLoading: boolean;
+  products: any[];
+};
+
+class Shop extends React.Component<Props, State> {
   public static contextType = LanguageContext;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      conferenceID: undefined,
+      error: false,
+      errorMessage: '',
+      isLoading: true,
+      products: []
+    };
+  }
+
+  public componentWillMount() {
+    this.apiGetProducts();
+  }
 
   public render() {
     return (
@@ -37,7 +68,7 @@ class Shop extends React.Component {
                     className="form-control btn btn-secondary my-2 my-sm-0 fas fa-search"
                     type="submit"
                   >
-                    {" "}
+                    {' '}
                   </button>
                 </form>
               </div>
@@ -56,13 +87,13 @@ class Shop extends React.Component {
                   data-slide-to="0"
                   className="active"
                 >
-                  {" "}
+                  {' '}
                 </li>
                 <li data-target="#carouselExampleIndicators" data-slide-to="1">
-                  {" "}
+                  {' '}
                 </li>
                 <li data-target="#carouselExampleIndicators" data-slide-to="2">
-                  {" "}
+                  {' '}
                 </li>
               </ol>
               <div className="carousel-inner" role="listbox">
@@ -91,15 +122,16 @@ class Shop extends React.Component {
             </div>
 
             <div className="row">
+              {this.renderProducts()}
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -108,392 +140,7 @@ class Shop extends React.Component {
                     <h5>10 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!{" "}
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Two</a>
-                    </h4>
-                    <h5>149 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur! Lorem ipsum dolor sit amet.
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Three</a>
-                    </h4>
-                    <h5>58 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Four</a>
-                    </h4>
-                    <h5>94 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Five</a>
-                    </h4>
-                    <h5>45 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur! Lorem ipsum dolor sit amet.
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Six</a>
-                    </h4>
-                    <h5>8 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Seven</a>
-                    </h4>
-                    <h5>82 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Eight</a>
-                    </h4>
-                    <h5>85 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Nine</a>
-                    </h4>
-                    <h5>46 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Ten</a>
-                    </h4>
-                    <h5>43 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Eleven</a>
-                    </h4>
-                    <h5>543 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {" "}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{" "}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item Twelve</a>
-                    </h4>
-                    <h5>666 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!
+                      Amet numquam aspernatur!{' '}
                     </p>
                   </div>
                   <div className="card-footer">
@@ -516,6 +163,45 @@ class Shop extends React.Component {
       </div>
     );
   }
+
+  private apiGetProducts = () => {
+    this.setState({ isLoading: true }, () => {
+      axiosInstance
+        .get('/shop/', {
+          params: {
+            conferenceId: null
+          }
+        })
+        .then(res => {
+          this.setState({
+            isLoading: false,
+            products: res.data.products
+          });
+        })
+        .catch(error => {
+          this.setState({
+            error: true,
+            errorMessage: error.response.data.message,
+            isLoading: false
+          });
+        });
+    });
+  };
+
+  private renderProducts = () => {
+    return this.state.products.map(product => (
+      <Product
+        key={product.id}
+        id={product.id}
+        name={product.name}
+        date={new Date(product.date).toLocaleString(
+          dictionary.date_format[this.context]
+        )}
+        points={product.points}
+        stock={product.stock}
+      />
+    ));
+  };
 }
 
 export default withAuth(Shop);

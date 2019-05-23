@@ -178,7 +178,7 @@ export async function makeUser(req, res) {
     } else { res.status(401).send({ message: 'You do not have permissions to change to a user' }); }
 }
 
-async function isAdmin(userId): Promise<boolean> {
+export async function isAdmin(userId): Promise<boolean> {
     try {
         const result = await query({
             text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,

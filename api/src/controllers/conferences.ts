@@ -233,10 +233,8 @@ export async function getAllConferences(req, res) {
   }
 }
 
-export async function getConferenceShop(req, res) {
-  res.send({
-    message: 'YOU INVOKED GETCONFERENCESHOP METHOD!',
-  });
+export async function getProducts(req, res) {
+  shop.getProduct(req, res, req.params.conf_id);
 }
 
 export async function getProduct(req, res) {
