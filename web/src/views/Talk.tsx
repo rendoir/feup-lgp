@@ -403,9 +403,17 @@ class Talk extends PureComponent<Props, State> {
   private renderChallengesCard = () => {
     return (
       <Card className={classNames('mb-3', styles.border)}>
-        <Card.Header className={styles.header}>
+        <Card.Header
+          className={classNames(
+            'd-flex flex-row justify-content-between align-items-center',
+            styles.header
+          )}
+        >
           <Card.Title className={'mb-0'}>
             {dictionary.challenge_conference[this.context]}
+          </Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
         <Card.Body>CHALLENGES</Card.Body>
@@ -548,7 +556,11 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  private handleInviteSubmission = () => {};
+  private handleInviteSubmission = () => {
+    console.log(
+      'USER INVITED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
 
   private renderChallengeForm = () => {
     const handleOpen = () => this.setState({ challengeFormOpen: true });
@@ -821,7 +833,11 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  private handleChallengeSubmission = () => {};
+  private handleChallengeSubmission = () => {
+    console.log(
+      'CHALLENGE SUBMITTED - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
 
   private renderEditForm = () => {
     return (
@@ -832,7 +848,11 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  private handleEditSubmission = () => {};
+  private handleEditSubmission = () => {
+    console.log(
+      'EDIT FORM SUBMITTED - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!!'
+    );
+  };
 
   private renderArchiveForm = () => {
     return (
@@ -845,7 +865,11 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  private handleArchiveSubmission = () => {};
+  private handleArchiveSubmission = () => {
+    console.log(
+      'TALK ARCHIVED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
 
   private renderHideForm = () => {
     return (
@@ -858,13 +882,21 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  private handleHideSubmission = () => {};
+  private handleHideSubmission = () => {
+    console.log(
+      'TALK HIDDEN! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
 
   private renderPostForm = () => {
     return <i className={'fas fa-plus'} />;
   };
 
-  private handlePostSubmission = () => {};
+  private handlePostSubmission = () => {
+    console.log(
+      'POST CREATED IN TALK - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    );
+  };
 }
 
 export default withAuth(Talk);
