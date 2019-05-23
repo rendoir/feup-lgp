@@ -60,4 +60,12 @@
 		background-color: shade($color-primary, 10%) !important;
 		border-color: $color-primary;
 	}
+
+  &:disabled {
+    background-color: $greyish;
+
+    &:hover {
+      background-color: shade($greyish, 30%) !important;
+    }
+  }
 }

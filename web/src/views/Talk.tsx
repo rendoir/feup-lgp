@@ -4,11 +4,12 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import { Avatar } from '../components';
 import Post from '../components/Post/Post';
-import InviteModal from '../components/PostModal/InviteModal';
 import styles from '../styles/Feed.module.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -26,15 +27,16 @@ export type Props = {
 export type State = {
   challenges: any[];
   challengeFields: {
-    type: 'MCQ' | 'POST' | 'CMT';
-    title: string;
-    description: string;
-    dateStart: string;
-    dateEnd: string;
-    question: string;
-    answers: string | string[];
+    answer: string;
     correctAnswer: string;
+    dateEnd: string;
+    dateStart: string;
+    description: string;
+    options: string[];
     points: number;
+    question: string;
+    title: string;
+    type: 'MCQ' | 'POST' | 'CMT';
   };
   challengeFormOpen: boolean;
   editFields: {
@@ -107,11 +109,12 @@ class Talk extends PureComponent<Props, State> {
 
     this.state = {
       challengeFields: {
-        answers: '',
+        answer: '',
         correctAnswer: '',
         dateEnd: '',
         dateStart: '',
         description: '',
+        options: [],
         points: 0,
         question: '',
         title: '',
@@ -549,12 +552,90 @@ class Talk extends PureComponent<Props, State> {
 
   private renderChallengeForm = () => {
     const handleOpen = () => this.setState({ challengeFormOpen: true });
-    const handleClose = () => this.setState({ challengeFormOpen: false });
+    const handleClose = () => {
+      this.setState({
+        challengeFields: {
+          answer: '',
+          correctAnswer: '',
+          dateEnd: '',
+          dateStart: '',
+          description: '',
+          options: [],
+          points: 0,
+          question: '',
+          title: '',
+          type: 'MCQ'
+        },
+        challengeFormOpen: false
+      });
+    };
     const handleSelect = event => {
       this.setState({
         challengeFields: {
           ...this.state.challengeFields,
           type: event.target.value
+        }
+      });
+    };
+    const handleChange = event => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          answer: event.target.value
+        }
+      });
+    };
+    const handleAddOptionsByKeyPress = event => {
+      if (event.key === 'Enter') {
+        const answer = this.state.challengeFields.answer.trim();
+        const options = this.state.challengeFields.options;
+
+        if (options.length >= 5 || answer.length === 0) {
+          return;
+        }
+
+        if (!options.includes(answer)) {
+          options.push(answer);
+        }
+
+        this.setState({
+          challengeFields: {
+            ...this.state.challengeFields,
+            answer: '',
+            options
+          }
+        });
+      }
+    };
+    const handleAddOptionsByButtonPress = () => {
+      const answer = this.state.challengeFields.answer.trim();
+      const options = this.state.challengeFields.options;
+
+      if (options.length >= 5 || answer.length === 0) {
+        return;
+      }
+
+      if (!options.includes(answer)) {
+        options.push(answer);
+      }
+
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          answer: '',
+          options
+        }
+      });
+    };
+    const handleRemoveOptions = (event, value) => {
+      event.preventDefault();
+      let options = this.state.challengeFields.options;
+      options = options.filter(option => option !== value);
+
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          options
         }
       });
     };
@@ -571,17 +652,18 @@ class Talk extends PureComponent<Props, State> {
           show={this.state.challengeFormOpen}
           onHide={handleClose}
         >
-          <Modal.Header>
+          <Modal.Header closeButton={true}>
             <Modal.Title>{dictionary.new_challenge[this.context]}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
+            <Form id={'create_challenge'}>
               <Form.Group controlId={'create_challenge.title'}>
                 <Form.Label>{dictionary.title[this.context]}</Form.Label>
                 <Form.Control
                   type={'text'}
                   placeholder={dictionary.challenge_title[this.context]}
                   className={styles.border}
+                  required={true}
                 />
               </Form.Group>
               <Form.Group controlId={'create_challenge.description'}>
@@ -593,6 +675,7 @@ class Talk extends PureComponent<Props, State> {
                     dictionary.chal_description_placeholder[this.context]
                   }
                   className={styles.border}
+                  required={true}
                 />
               </Form.Group>
               <Form.Group controlId={'create_challenge.type'}>
@@ -604,6 +687,7 @@ class Talk extends PureComponent<Props, State> {
                   className={styles.border}
                   value={this.state.challengeFields.type}
                   onChange={handleSelect}
+                  required={true}
                 >
                   <option value={'MCQ'}>
                     {dictionary.mult_choice_question[this.context]}
@@ -633,8 +717,50 @@ class Talk extends PureComponent<Props, State> {
                       <Form.Label>
                         {dictionary.options[this.context]}
                       </Form.Label>
-                      <Form.Control type={'text'} />
+                      <InputGroup>
+                        <FormControl
+                          type={'text'}
+                          value={this.state.challengeFields.answer}
+                          onChange={handleChange}
+                          onKeyUp={handleAddOptionsByKeyPress}
+                          className={styles.border}
+                        />
+                        <InputGroup.Append>
+                          <Button
+                            className={styles.button}
+                            onClick={handleAddOptionsByButtonPress}
+                            disabled={
+                              this.state.challengeFields.options.length >= 5
+                            }
+                          >
+                            Add
+                          </Button>
+                        </InputGroup.Append>
+                      </InputGroup>
                     </Form.Group>
+                    <ListGroup>
+                      {this.state.challengeFields.options.map(
+                        (option, index) => (
+                          <ListGroup.Item
+                            key={index}
+                            className={
+                              'd-flex flex-row justify-content-between align-items-center'
+                            }
+                          >
+                            ({index + 1}) {option}
+                            <a
+                              href={'#'}
+                              onClick={event =>
+                                handleRemoveOptions(event, option)
+                              }
+                              className={'text-danger'}
+                            >
+                              <i className={'fas fa-times'} />
+                            </a>
+                          </ListGroup.Item>
+                        )
+                      )}
+                    </ListGroup>
                   </>
                 ) : null}
                 {this.state.challengeFields.type === 'POST' ? (
@@ -667,6 +793,15 @@ class Talk extends PureComponent<Props, State> {
                   </>
                 ) : null}
               </Form.Group>
+              <Form.Group>
+                <Form.Label>{dictionary.points[this.context]}</Form.Label>
+                <Form.Control
+                  type={'number'}
+                  min={0}
+                  className={styles.border}
+                  required={true}
+                />
+              </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -676,6 +811,7 @@ class Talk extends PureComponent<Props, State> {
             <Button
               onClick={this.handleChallengeSubmission}
               className={styles.button}
+              form={'create_challenge'}
             >
               {dictionary.create[this.context]}
             </Button>
