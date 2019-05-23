@@ -62,10 +62,10 @@ conferenceRouter.post('/', controller.createConference);
  */
 conferenceRouter.put('/:id', controller.editConference);
 
-conferenceRouter.get('/products/:id', controller.getProduct);
+conferenceRouter.get('/:conf_id/products/:prod_id', controller.getProduct);
 
-conferenceRouter.post('/products', controller.createProduct);
+conferenceRouter.post('/:conf_id/products', controller.createProduct);
 
-conferenceRouter.put('/products/:id', controller.updateProduct);
+conferenceRouter.put('/:conf_id/products/:prod_id', controller.updateProduct);
 
-conferenceRouter.delete('/products/:id', controller.deleteProduct);
+conferenceRouter.delete('/:conf_id/products/:prod_id', controller.deleteProduct);

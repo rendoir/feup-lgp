@@ -11,7 +11,7 @@ import * as express_session from 'express-session';
 import * as http from 'http';
 import * as morgan from 'morgan';
 import * as socketIo from 'socket.io';
-import { jwtMiddleware } from './_helpers/jwt';
+import { jwtMiddleware } from './helpers/jwt';
 
 // let privateKey; let certificate;
 

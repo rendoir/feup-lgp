@@ -1,23 +1,20 @@
-import { query } from '../db/db';
+import * as shop from './shop';
 
 export async function getProduct(req, res) {
-    res.send(null);
+    shop.getProduct(req, res);
 }
 
 // TODO: Check user permissions.
 export async function createProduct(req, res) {
-    const userId = req.user.id;
-    res.send(null);
+    shop.createProduct(req, res);
 }
 
 // TODO: Check user permissions.
 export async function updateProduct(req, res) {
-    const userId = req.user.id;
-    res.send(null);
+    shop.updateProduct(req, res);
 }
 
 // TODO: Check user permissions.
 export async function deleteProduct(req, res) {
-    const userId = req.user.id;
-    res.send(null);
+    shop.deleteProduct(req, res);
 }
