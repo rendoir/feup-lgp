@@ -1,8 +1,8 @@
-import React from "react";
-import Avatar from "../Avatar/Avatar";
+import React from 'react';
 
-import { dictionary, LanguageContext } from "../../utils/language";
-import "./TalkCard.scss";
+import { dictionary, LanguageContext } from '../../utils/language';
+import Avatar from '../Avatar/Avatar';
+import './TalkCard.scss';
 
 type Props = {
   id: number;
@@ -23,7 +23,7 @@ class TalkCard extends React.Component<Props> {
   public render() {
     return (
       <div id="talk-card-comp" className="card mb-2">
-        <a href={"/talk/" + this.props.id}>
+        <a href={'/talk/' + this.props.id}>
           <div className="card-body col-md d-flex align-items-center">
             <Avatar
               title={this.props.title}
@@ -35,7 +35,7 @@ class TalkCard extends React.Component<Props> {
               <li className="noDot ml-3 username">{this.props.title}</li>
               <li className="noDot ml-3 about">{this.props.about}</li>
               <li className="noDot ml-3 about">
-                {dictionary.start_at[this.context] + " " + this.props.datestart}
+                {dictionary.start_at[this.context] + ' ' + this.props.datestart}
               </li>
             </ul>
           </div>

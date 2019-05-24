@@ -1,11 +1,11 @@
-import * as React from "react";
-import LoginForm from "../components/LoginForm/LoginForm";
-import RegisterForm from "../components/RegisterForm/RegisterForm";
-import { dictionary, LanguageContext } from "../utils/language";
-import withoutAuth from "../utils/withoutAuth";
+import * as React from 'react';
 
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import LoginForm from '../components/LoginForm/LoginForm';
+import RegisterForm from '../components/RegisterForm/RegisterForm';
+import { dictionary, LanguageContext } from '../utils/language';
+import withoutAuth from '../utils/withoutAuth';
 
 class Landing extends React.Component {
   public static contextType = LanguageContext;

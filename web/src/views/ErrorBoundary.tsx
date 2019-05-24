@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { dictionary, LanguageContext } from "../utils/language";
+import React, { Component } from 'react';
+import { dictionary, LanguageContext } from '../utils/language';
 
 type Props = {};
 type State = {
@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="error-boundary">
           <h2>{dictionary.unknown_error[this.context]}</h2>
-          <p style={{ whiteSpace: "pre-wrap" }}>
+          <p style={{ whiteSpace: 'pre-wrap' }}>
             {this.state.error && this.state.error.toString()}
             {this.state.errorInfo.componentStack}
           </p>

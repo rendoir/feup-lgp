@@ -1,5 +1,4 @@
-import { List, OrderedSet } from "immutable";
-import { PeerInfo } from "../../utils/types";
+import { List, OrderedSet } from 'immutable';
 
 export interface ISelectorState<T> {
   hasQuery(): boolean;
@@ -27,7 +26,7 @@ export type SelectorStateCreator<T> = {
 };
 
 export type Request = {
-  type: "post" | "talk" | "conference";
+  type: 'post' | 'talk' | 'conference';
   title: string;
   about: string;
   avatar?: File;
@@ -45,7 +44,7 @@ export type Request = {
   livestream: string;
 };
 
-export type Step = "type" | "info" | "avatar" | "postConf" | "talkConf";
+export type Step = 'type' | 'info' | 'avatar' | 'postConf' | 'talkConf';
 
 export type Props = {
   id: string;

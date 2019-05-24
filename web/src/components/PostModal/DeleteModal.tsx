@@ -1,19 +1,12 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./PostModal.css";
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
-import Avatar from "../Avatar/Avatar";
-import Button from "../Button/Button";
+import './PostModal.css';
 
-import { checkPropTypes } from "prop-types";
-import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
-
-const CREATE_MODE = "Create";
-const DELETE_MODE = "Delete";
+const CREATE_MODE = 'Create';
+const DELETE_MODE = 'Delete';
 
 interface IProps {
   /* The following attributes are only required for post deletion */
@@ -47,8 +40,8 @@ class DeleteModal extends Component<IProps, IState> {
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
       redirect: false,
-      text: props.text || "",
-      title: props.title || ""
+      text: props.text || '',
+      title: props.title || ''
     };
 
     // Post manipulation handlers
@@ -61,8 +54,8 @@ class DeleteModal extends Component<IProps, IState> {
     axiosInstance
       .delete(`/post/${this.props.id}`)
       .then(res => {
-        console.log("Post deleted - reloading page");
-        if (window.location.pathname === "/post/" + this.props.id) {
+        console.log('Post deleted - reloading page');
+        if (window.location.pathname === '/post/' + this.props.id) {
           this.setState({
             redirect: true
           });
@@ -71,7 +64,7 @@ class DeleteModal extends Component<IProps, IState> {
           window.location.reload();
         }
       })
-      .catch(() => console.log("Failed to delete post"));
+      .catch(() => console.log('Failed to delete post'));
   }
 
   public handlePostDeletion() {
@@ -80,14 +73,14 @@ class DeleteModal extends Component<IProps, IState> {
 
   public renderRedirect() {
     if (this.state.redirect) {
-      window.location.href = "/";
+      window.location.href = '/';
     }
   }
 
   public handleInputChange(event: any) {
     const field = event.target.name;
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     const partialState: any = {};
@@ -96,15 +89,15 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public handleRedirect() {
-    if (window.location.pathname === "/post/" + this.props.id) {
+    if (window.location.pathname === '/post/' + this.props.id) {
       this.renderRedirect();
     }
   }

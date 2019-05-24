@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from './axiosInstance';
 
 export async function apiSubscription(
   apiGroup: string,
@@ -6,7 +6,7 @@ export async function apiSubscription(
   subjectId: number
 ) {
   const apiUrl = `/${apiGroup}/${subjectId}/subscription`;
-  return method === "post"
+  return method === 'post'
     ? axiosInstance.post(apiUrl)
     : axiosInstance.delete(apiUrl);
 }

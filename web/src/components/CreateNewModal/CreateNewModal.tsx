@@ -1,24 +1,24 @@
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import React, { ChangeEvent, MouseEvent, PureComponent } from "react";
-import { dictionary, LanguageContext } from "../../utils/language";
-import Button from "../Button/Button";
-import HotKeys from "../HotKeys/HotKeys";
-import IconButton from "../IconButton/IconButton";
-import ImageEdit from "../ImageEdit/ImageEdit";
-import { HTMLAbstractInputElement } from "../InputNext/InputNext";
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { ChangeEvent, MouseEvent, PureComponent } from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
+import Button from '../Button/Button';
+import HotKeys from '../HotKeys/HotKeys';
+import IconButton from '../IconButton/IconButton';
+import ImageEdit from '../ImageEdit/ImageEdit';
+import { HTMLAbstractInputElement } from '../InputNext/InputNext';
 import {
   ModalBody,
   ModalClose,
   ModalFooter,
   ModalHeader,
   ModalProvider
-} from "../Modal/index";
-import Modal from "../Modal/Modal";
-import CreateGroupInfoForm from "./CreateGroupInfoForm";
-import CreateGroupTypeForm from "./CreateGroupTypeForm";
-import styles from "./CreateNewModal.module.css";
-import { Props } from "./types";
+} from '../Modal/index';
+import Modal from '../Modal/Modal';
+import CreateGroupInfoForm from './CreateGroupInfoForm';
+import CreateGroupTypeForm from './CreateGroupTypeForm';
+import styles from './CreateNewModal.module.css';
+import { Props } from './types';
 
 type CreateNewModalState = {
   isPublic: boolean;
@@ -28,7 +28,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   public static contextType = LanguageContext;
 
   public static defaultProps = {
-    id: "create_new_modal",
+    id: 'create_new_modal',
     isMaxGroupSizeVisible: false,
     isPublicGroupEnabled: true
   };
@@ -54,16 +54,16 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   private handlePrevStepClick = (): void => {
     const { step } = this.props;
 
-    if (step === "info") {
-      this.props.onStepChange("type");
+    if (step === 'info') {
+      this.props.onStepChange('type');
     }
   };
 
   private handleNextStepClick = (): void => {
     const { step } = this.props;
 
-    if (step === "type") {
-      this.props.onStepChange("info");
+    if (step === 'type') {
+      this.props.onStepChange('info');
     }
   };
 
@@ -79,7 +79,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       ...this.props.request,
       avatar
     });
-    this.props.onStepChange("info");
+    this.props.onStepChange('info');
   };
 
   private handleAvatarRemove = (): void => {
@@ -94,7 +94,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
       ...this.props.request,
       avatar
     });
-    this.props.onStepChange("avatar");
+    this.props.onStepChange('avatar');
   };
 
   private handleSubmit = (event?: MouseEvent): void => {
@@ -108,11 +108,11 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
   };
 
   private handleCancelAvatarEdit = (): void => {
-    this.props.onStepChange("info");
+    this.props.onStepChange('info');
   };
 
   private handleHotKey = (hotKey: string, event: KeyboardEvent): void => {
-    if (hotKey === "Enter") {
+    if (hotKey === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
 
@@ -130,9 +130,9 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     const docs: File[] = [];
 
     Array.from(files).forEach(file => {
-      if (file.type.startsWith("image")) {
+      if (file.type.startsWith('image')) {
         images.push(file);
-      } else if (file.type.startsWith("video")) {
+      } else if (file.type.startsWith('video')) {
         videos.push(file);
       } else {
         docs.push(file);
@@ -215,8 +215,8 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
             wide={true}
             form={id}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleNextStepClick}
           >
@@ -235,12 +235,12 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
         <ModalHeader className={styles.header} withBorder={true}>
           <IconButton
             glyph={faArrowLeft}
-            size={"small"}
-            iconSize={"lg"}
+            size={'small'}
+            iconSize={'lg'}
             className={styles.back}
             onClick={this.handlePrevStepClick}
           />
-          {dictionary.new_f[this.context]}{" "}
+          {dictionary.new_f[this.context]}{' '}
           {dictionary[request.type][this.context]}
           <ModalClose
             pending={this.props.pending}
@@ -277,8 +277,8 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <Button
             wide={true}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleSubmit}
           >
@@ -315,7 +315,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <ModalBody className={styles.body}>
             <ImageEdit
               image={avatar}
-              type={"circle"}
+              type={'circle'}
               size={250}
               height={400}
               onSubmit={this.handleAvatarChange}
@@ -332,15 +332,15 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     const { step } = this.props;
 
     switch (step) {
-      case "type":
+      case 'type':
         return this.renderTypeStep();
-      case "info":
+      case 'info':
         return this.renderInfoStep();
-      case "avatar":
+      case 'avatar':
         return this.renderAvatarStep();
-      case "postConf":
+      case 'postConf':
         return this.renderConfPostStep();
-      case "talkConf":
+      case 'talkConf':
         return this.renderConfTalkStep();
       default:
         return null;
@@ -352,7 +352,7 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
     return (
       <div className={styles.wrapper}>
         <ModalHeader className={styles.header} withBorder={true}>
-          {dictionary.new_f[this.context]}{" "}
+          {dictionary.new_f[this.context]}{' '}
           {dictionary[request.type][this.context]}
           <ModalClose
             pending={this.props.pending}
@@ -389,8 +389,8 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <Button
             wide={true}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleSubmit}
           >
@@ -437,8 +437,8 @@ class CreateNewModal extends PureComponent<Props, CreateNewModalState> {
           <Button
             wide={true}
             id={`${id}_step_${step}_submit_button`}
-            type={"submit"}
-            theme={"success"}
+            type={'submit'}
+            theme={'success'}
             rounded={false}
             onClick={this.handleSubmit}
           >

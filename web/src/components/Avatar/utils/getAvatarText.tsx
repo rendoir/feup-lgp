@@ -1,4 +1,4 @@
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty } from 'lodash';
 
 function isEmoji(text: string): boolean {
   const pattern = /^[\uD83C-\uDBFF\uDC00-\uDFFF]+$/;
@@ -8,10 +8,10 @@ function isEmoji(text: string): boolean {
 function getAvatarText(title: string): string {
   if (title && title.length) {
     if (isEmoji(title)) {
-      return "#";
+      return '#';
     }
 
-    const titleArray = filter(title.trim().split(" "), element => {
+    const titleArray = filter(title.trim().split(' '), element => {
       if (isEmoji(element)) {
         return false;
       }
@@ -24,7 +24,7 @@ function getAvatarText(title: string): string {
       return `${titleArray[0][0]}${titleArray[1][0]}`;
     }
   }
-  return "#";
+  return '#';
 }
 
 export default getAvatarText;

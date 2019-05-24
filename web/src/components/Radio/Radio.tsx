@@ -1,7 +1,7 @@
-import classNames from "classnames";
-import React, { ChangeEvent, PureComponent, ReactNode } from "react";
-import styles from "./Radio.module.css";
-import { RadioGroupContext, RadioGroupContextType } from "./RadioGroupContext";
+import classNames from 'classnames';
+import React, { ChangeEvent, PureComponent, ReactNode } from 'react';
+import styles from './Radio.module.css';
+import { RadioGroupContext, RadioGroupContextType } from './RadioGroupContext';
 
 export type RadioProps = {
   className?: string;
@@ -44,7 +44,7 @@ class Radio extends PureComponent<RadioProps> {
                 id={id}
                 name={radioGroup.name}
                 className={styles.input}
-                type={"radio"}
+                type={'radio'}
                 tabIndex={tabIndex}
                 value={value}
                 autoFocus={htmlAutoFocus}

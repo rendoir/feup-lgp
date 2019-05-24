@@ -1,6 +1,6 @@
-import classNames from "classnames";
-import React, { Component } from "react";
-import styles from "./Input.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import styles from './Input.module.css';
 
 type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -17,14 +17,14 @@ export type Props = {
   id: string;
   /** input type attribute */
   type:
-    | "text"
-    | "number"
-    | "email"
-    | "search"
-    | "tel"
-    | "url"
-    | "password"
-    | "textarea";
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'password'
+    | 'textarea';
   /** input value attribute */
   value: string | number;
   /** input name attribute */
@@ -42,7 +42,7 @@ export type Props = {
   /** input hint */
   hint?: string;
   /** input status */
-  status: "normal" | "success" | "error" | "warning";
+  status: 'normal' | 'success' | 'error' | 'warning';
   /** input autoFocus */
   autoFocus?: boolean;
   /** input tabIndex attribute */
@@ -66,9 +66,9 @@ export type State = {
 
 class Input extends Component<Props, State> {
   public static defaultProps = {
-    spellcheck: "false",
-    status: "normal",
-    type: "text"
+    spellcheck: 'false',
+    status: 'normal',
+    type: 'text'
   };
   private input?: HTMLInputElement | HTMLTextAreaElement;
 
@@ -242,14 +242,14 @@ class Input extends Component<Props, State> {
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onFocus: this.handleFocus,
-      placeholder: placeholder ? placeholder : "",
+      placeholder: placeholder ? placeholder : '',
       ref: this.setInput,
       tabIndex,
       type,
       value
     };
 
-    if (type === "textarea") {
+    if (type === 'textarea') {
       return (
         <textarea {...props} spellCheck={spellcheck} tabIndex={tabIndex} />
       );

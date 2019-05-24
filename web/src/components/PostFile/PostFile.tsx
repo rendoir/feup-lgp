@@ -1,12 +1,9 @@
 // - Import react components
-import React, { Component } from "react";
-
-// - Import styles
-import styles from "../Post/Post.module.css";
-
+import React, { Component } from 'react';
 // - Import app components
-import axiosInstance from "../../utils/axiosInstance";
-import Post from "../Post/Post";
+import axiosInstance from '../../utils/axiosInstance';
+// - Import styles
+import styles from '../Post/Post.module.css';
 
 type MyFile = {
   name: string;
@@ -64,11 +61,11 @@ class PostFile extends Component<Props, State> {
 
   public getSize(size: number) {
     if (size < 1024) {
-      return size + " B";
+      return size + ' B';
     } else if (size < 1048576) {
-      return (size / 1024).toFixed(2) + " KB";
+      return (size / 1024).toFixed(2) + ' KB';
     } else {
-      return (size / 1048576).toFixed(2) + " MB";
+      return (size / 1048576).toFixed(2) + ' MB';
     }
   }
 
@@ -102,17 +99,17 @@ class PostFile extends Component<Props, State> {
 
     axiosInstance
       .get(downloadURL, {
-        responseType: "blob"
+        responseType: 'blob'
       })
       .then(res => {
         const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
-        link.setAttribute("download", this.props.file.name);
+        link.setAttribute('download', this.props.file.name);
         document.body.appendChild(link);
         link.click();
       })
-      .catch(() => console.log("Failed to download file"));
+      .catch(() => console.log('Failed to download file'));
   }
 }
 
