@@ -49,7 +49,16 @@ CREATE TABLE users (
     university TEXT,
     work TEXT,
     work_field TEXT,
-    permissions permission_level_enum NOT NULL DEFAULT 'user'
+    permissions permission_level_enum NOT NULL DEFAULT 'user',
+    points BIGINT NOT NULL DEFAULT 0 CONSTRAINT user_points_constraint CHECK (points >= 0)
+    /* açoes que dao pontos:
+    - dar rate em posts (5 pontos)
+    - dar like em comentarios (1 ponto - pouco para nao spammar muitos likes)
+    - criar post (100 pontos)
+    - criar comentario (20 pontos)
+    - receber rate num post meu (rate 3 - 5 pontos | rate 4 - 15 pontos | rate 5 - 30 pontos)
+    - receber like num comentario meu (5 pontos)
+    */
 );
 
 CREATE TABLE follows (
@@ -264,7 +273,7 @@ CREATE FUNCTION join_talk_if_permitted() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN
     IF NOT user_can_join_talk(NEW.talk, NEW.participant_user) THEN
-      RAISE EXCEPTION 'cannot join talk without permission'; 
+      RAISE EXCEPTION 'cannot join talk without permission';
    END IF;
 
    RETURN NEW;
