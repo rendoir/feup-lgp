@@ -3,7 +3,8 @@ import {
   faClinicMedical,
   faExclamationCircle,
   faPlus,
-  faUserMd
+  faUserMd,
+  faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import React, { MouseEvent, PureComponent } from 'react';
 import Nav from 'react-bootstrap/Nav';
@@ -117,6 +118,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           {this.auth.loggedIn() && this.renderLinks()}
           {this.auth.loggedIn() && <SearchSimpleForm />}
           {this.renderLanguageSelector()}
+          {this.renderInvite()}
           {this.auth.loggedIn() && this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
@@ -137,6 +139,14 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           onChange={this.props.onLanguageChange}
         />
       </div>
+    );
+  }
+
+  private renderInvite() {
+    return (
+      <Navbar.Brand href={'/invite'} className={styles.logo}>
+        <Icon icon={faUserPlus} size={'lg'} className={styles.icon} />
+      </Navbar.Brand>
     );
   }
 
