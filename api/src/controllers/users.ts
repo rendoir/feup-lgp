@@ -29,14 +29,13 @@ export function register(req, res) {
             values: [req.body.email, hashedPassword, firstName, lastName,
             req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
+            res.status(200).send();
         }).catch(
             /* istanbul ignore next */
             (error) => {
             console.log('\n\nERROR:', error);
             res.status(500).send({ message: 'An error occured while registering a new user' });
         });
-        res.status(200).send();
-
     }).catch(
         /* istanbul ignore next */
         (error) => {
