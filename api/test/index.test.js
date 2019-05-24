@@ -312,11 +312,8 @@ describe('Admin tests', () => {
         });
     });
 
-    describe('Report tests', () => {
-    });
-
-    describe('Whitelist tests', () => {
-        it('Shouldn\'t add bad email to the whitelist', (done) => {
+    describe('Report tests', () => {/*
+        it('Should not allow non admin users to get report notifications', (done) => {
             request(app)
                 .post('/admin/users')
                 .send({
@@ -329,8 +326,8 @@ describe('Admin tests', () => {
                     expect(res.body).to.be.instanceOf(Object);
                     expect(res.body).to.have.property('message');
                     done();
-                });
-        });
+                })
+        });*/
 
         it('Should add user to the whitelist', (done) => {
             request(app)
@@ -1795,56 +1792,6 @@ describe('Feed tests', () => {
             .get('/feed/get_stuff')
             .send({
                 userId: userId
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-});
-
-describe('Tag tests', () => {
-    it('Should return all tags' , (done) => {
-        request(app)
-            .get('/tags')
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            });
-    });
-});
-
-describe('Feed tests', () => {
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/feed')
-            .send({
-                offset: 10,
-                limit: 10,
-                userId: 6
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('posts');
-                expect(res.body).to.have.property('size');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/feed/get_stuff')
-            .send({
-                userId: 6
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
