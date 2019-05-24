@@ -29,15 +29,19 @@ export function register(req, res) {
             values: [req.body.email, hashedPassword, firstName, lastName,
             req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error occured while registering a new user' });
+            res.status(500).send({ message: 'An error occured while registering a new user' });
         });
         res.status(200).send();
 
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while checking register permissions' });
+        res.status(500).send({ message: 'An error ocurred while checking register permissions' });
     });
 }
 
@@ -79,8 +83,9 @@ export async function getUser(req, res) {
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */ {
         console.log('Error getting user info. Error: ' + e.message);
+        res.status(500).send({ message: 'An error ocurred while getting user' });
     }
 }
 
@@ -143,7 +148,7 @@ export async function getUserUserInteractions(req, res) {
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user-user interactions'));
     }
@@ -156,7 +161,9 @@ export function subscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while subscribing user' });
     });
@@ -169,7 +176,9 @@ export function unsubscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while unsubscribing user' });
     });

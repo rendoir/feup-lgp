@@ -37,10 +37,9 @@ export async function createPost(req, res) {
             saveTags(req, res, post.id);
             res.send({ id: post.id });
         }
-    } catch (error) {
-        res.status(400).send({
-            message: 'An error ocurred while creating a post. Error: ' + error,
-        });
+    } catch (error) /* istanbul ignore next */ {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while creating a post' });
     }
 }
 
@@ -64,7 +63,9 @@ export function editPost(req, res) {
         editFiles(req, res);
         saveTags(req, res, req.params.id);
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while editing a post' });
     });
@@ -82,7 +83,9 @@ export function deletePost(req, res) {
     }).then(() => {
         deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while deleting a post' });
     });
@@ -163,7 +166,7 @@ export async function getPost(req, res) {
             files: files.rows,
         };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
     }
@@ -211,7 +214,7 @@ export async function getPostUserInteractions(req, res) {
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post-user interactions'));
     }
@@ -226,7 +229,9 @@ export function subscribePost(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while subscribing post' });
     });
@@ -239,7 +244,9 @@ export function unsubscribePost(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while unsubscribing post' });
     });
@@ -301,7 +308,9 @@ export async function reportPost(req, res) {
         values: [userId, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while reporting a post' });
     });
@@ -320,7 +329,7 @@ export async function checkPostUserReport(req, res) {
 
         const result = { report: Boolean(reportQuery.rows[0]) };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send({ message: 'Error retrieving post report' });
     }
@@ -504,7 +513,9 @@ export async function inviteUser(req, res) {
         values: [req.body.invited_user, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while inviting user to conference' });
     });
@@ -521,7 +532,9 @@ export function inviteSubscribers(req, res) {
         values: [req.params.id, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while inviting subscribers to conference' });
     });
@@ -535,7 +548,7 @@ export async function amountSubscribersUninvited(req, res) {
             values: [req.params.id, userId],
         });
         res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving uninvited subscribers count in post'));
     }
@@ -551,7 +564,7 @@ export async function getUninvitedUsersInfo(req, res) {
             values: [req.params.id, userId],
         });
         res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post uninvited users info'));
     }
