@@ -1844,7 +1844,7 @@ describe('Feed tests', () => {
         request(app)
             .get('/feed/get_stuff')
             .send({
-                userId: 6
+                userId: userId
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
