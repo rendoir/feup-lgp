@@ -166,14 +166,18 @@ export async function banUser(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
+            } else { 
+                res.status(400).send({ message: 'The email does not belong to a user' }); 
+            }
         }).catch(
             /* istanbul ignore next */
             (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while banning a user' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to ban a user' }); }
+    } else { 
+        res.status(401).send({ message: 'You do not have permissions to ban a user' });
+    }
 }
 
 export async function makeUser(req, res) {
