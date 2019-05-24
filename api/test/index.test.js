@@ -244,7 +244,6 @@ describe('Admin tests', () => {
     });
 
     describe('Ban/unban user', () => {
-/*
         it('Should not ban unexisting user (400)', (done) => {
             request(app)
             .post('/admin/ban')
@@ -260,18 +259,31 @@ describe('Admin tests', () => {
         
         it('Should ban user', (done) => {
             request(app)
-            .post('/admin/ban')
-            .send({
-                email: 'baduser@lgp.com'
-            })
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            })
+                .post('/admin/ban')
+                .send({
+                    email: 'baduser@lgp.com'
+                })
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
         });
-*/
+
+        it('Should not allow banned user to login', (done) => {
+            request(app)
+                .post('/login')
+                .send({
+                    email: 'baduser@lgp.com',
+                    password: 'Yoldpass420',
+                })
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                });
+        });
+
         it('Should unban (200)', (done) => {
             request(app)
                 .post('/admin/user')
@@ -444,7 +456,7 @@ describe('User tests', () => {
             })
     });
 
-    let userId = 5;
+    let userId = 6;
     describe('User interactions', () => {
         it('Get user interactions', (done) => {
             request(app)
@@ -474,12 +486,11 @@ describe('User tests', () => {
                     done();
                 });
         });
-        /*
-        it('Rate a user', (done) => {
+
+        it('Unsubscribe from another user', (done) => {
             request(app)
-                .post(`/users/${userId}/rate`)
+                .delete(`/users/${userId}/subscription`)
                 .send({
-                    rate: 4,
                     id: userId
                 })
                 .set('authorization', 'Bearer ' + userjwt)
@@ -489,7 +500,22 @@ describe('User tests', () => {
                     done();
                 });
         });
-
+/*
+        it('Rate a user', (done) => {
+            request(app)
+                .post(`/users/${userId}/rate`)
+                .send({
+                    rate: 4,
+                    id: userId
+                })
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+*/
         it('Get profile', (done) => {
             request(app)
                 .get(`/users/${userId}`)
@@ -517,8 +543,6 @@ describe('User tests', () => {
                     done();
                 });
         });
-        */
-        
     });
 });
 
@@ -554,6 +578,24 @@ describe('Root GET', () => {
 describe('Post', () => {
     let postId = -1;
 
+    it('Should not submit an empty post', (done) => {
+        request(app)
+            .post('/post')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                author: publicPost.author,
+                title: '',
+                text: '',
+                visibility: publicPost.visibility
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.message).to.have.string(`An error ocurred while creating a new post: Invalid post.`);
+                done();
+            })
+    })
+
     it('Should submit a new public post', (done) => {
         request(app)
             .post('/post')
@@ -583,6 +625,24 @@ describe('Post', () => {
             });
     })
 
+    it('Should not edit if title is empty', (done) => {
+        request(app)
+            .put(`/post/${postId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                author: editedPublicPost.author,
+                title: '',
+                text: '',
+                visibility: editedPublicPost.visibility,
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
+                done();
+            });
+    })
+
     it('Should edit the submitted post', (done) => {
         request(app)
             .put(`/post/${postId}`)
@@ -591,6 +651,155 @@ describe('Post', () => {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should get user-post interaction', (done) => {
+        request(app)
+            .post(`/post/${postId}/user_interactions`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                id: postId
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should subscribe user to post', (done) => {
+        request(app)
+            .post(`/post/${postId}/subscription`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                id: postId
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should unsubscribe user to post', (done) => {
+        request(app)
+            .delete(`/post/${postId}/subscription`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                id: postId
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should not report a post without a reason', (done) => {
+        request(app)
+            .post(`/post/${postId}/report`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                post: postId,
+                reason: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(res.body).to.be.instanceOf(Object);
+                expect(res.body.message).to.have.string(`An error ocurred while creating a new post report`);
+                done();
+            });
+    })
+
+    it('Should report a post', (done) => {
+        request(app)
+            .post(`/post/${postId}/report`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                post: postId,
+                reason: 'i hate different oppinions'
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('report');
+                expect(res.body.report === true);
+                done();
+            });
+    })
+/*
+    it('Should check post report', (done) => {
+        request(app)
+            .post(`/post/${postId}/check_report`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                post: postId
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('report');
+                done();
+            });
+    })
+*/
+    it('Should invite user', (done) => {
+        request(app)
+            .post(`/post/${postId}/invite`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                post: postId,
+                invited_user: 6
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should invite subscribers', (done) => {
+        request(app)
+            .post(`/post/${postId}/invite_subscribers`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                post: postId,
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    })
+
+    it('Should return amount of subscribers uninvited', (done) => {
+        request(app)
+            .post(`/post/${postId}/amount_uninvited_subscribers`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                post: postId,
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('amountUninvitedSubscribers');
+                done();
+            });
+    })
+
+    it('Should return information about uninvited users', (done) => {
+        request(app)
+            .post(`/post/${postId}/uninvited_users_info`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                post: postId,
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('uninvitedUsers');
                 done();
             });
     })
@@ -647,3 +856,77 @@ describe('Login tests', () => {
             });
     });
 });
+
+describe('Tag tests', () => {
+    it('Should return all tags' , (done) => {
+        request(app)
+            .get('/tags')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+});
+
+describe('Feed tests', () => {
+    it('Should get feed' , (done) => {
+        request(app)
+            .get('/feed')
+            .send({
+                offset: 10,
+                limit: 10,
+                userId: 6
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('posts');
+                expect(res.body).to.have.property('size');
+                expect(res.body).to.have.property('following');
+                done();
+            });
+    });
+
+    it('Should get feed' , (done) => {
+        request(app)
+            .get('/feed/get_stuff')
+            .send({
+                userId: 6
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('conferences');
+                expect(res.body).to.have.property('following');
+                done();
+            });
+    });
+});
+/*
+describe('Search tests', () => {
+    it('Should get feed' , (done) => {
+        request(app)
+            .get('/search')
+            .send({
+                k: 'word',
+                t: 'post',
+                di: 5,
+                df: 5,
+                0: 10
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('conferences');
+                expect(res.body).to.have.property('following');
+                done();
+            });
+    });
+
+});
+*/

@@ -105,7 +105,7 @@ export async function getFeed(req, res) {
             size: totalSize.rows[0].count,
             following: following.rows,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving feed'));
     }
@@ -137,7 +137,7 @@ export async function getFeedStuff(req, res) {
             conferences: conferences.rows,
             following: following.rows,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving feed '));
     }

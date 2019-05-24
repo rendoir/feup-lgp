@@ -15,6 +15,12 @@ export const searchRouter = Router();
  * @apiParam {Date}     df      (F)inal (D)ate of resource creation
  * @apiParam {Number}   o  Results offset
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      posts: posts.rows,
+ *      size: size.rows[0].count,
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

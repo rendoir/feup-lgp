@@ -12,10 +12,17 @@ export const feedRouter = Router();
  * @apiParam {number}   limit        Limit of the posts appearing
  * @apiParam {number}   userId       ID of the logged user
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      posts: result.rows,
+ *      size: totalSize.rows[0].count,
+ *      following: following.rows,
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'Error getting the feed'
+ *      message: 'Error retrieving feed'
  *     }
  */
 feedRouter.get('/', controller.getFeed);
@@ -27,6 +34,12 @@ feedRouter.get('/', controller.getFeed);
  *
  * @apiParam {number}   userId       ID of the logged user
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      conferences: conferences.rows,
+ *      following: following.rows,
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

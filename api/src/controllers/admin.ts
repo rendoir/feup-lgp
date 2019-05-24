@@ -161,7 +161,7 @@ export async function banUser(req, res) {
 
     if (isRequesterAdmin) {
         query({
-            text: 'UPDATE users SET permissions = \'banned\' WHERE email = $1',
+            text: `UPDATE users SET permissions = 'banned' WHERE email = $1`,
             values: [req.body.email],
         }).then((result) => {
             if (result.rowCount > 0) {
@@ -203,9 +203,7 @@ async function isAdmin(userId): Promise<boolean> {
             values: [userId],
         });
         return result.rowCount > 0;
-    } catch (error)
-    /* istanbul ignore next */
-    {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         return false;
     }
