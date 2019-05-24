@@ -69,22 +69,23 @@ export async function getProductExchangeNotifications(req, res) {
 }
 
 export async function getReportNotifications(req, res) {
-    if (!await isAdmin(req.user.id)) {
-        console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');
-        res.status(403).send({ message: 'An error ocurred fetching report notifications: You are not an admin.' });
-        return;
+    const isRequesterAdmin = await isAdmin(req.user.id);
+
+    if (isRequesterAdmin) {
+        query({
+            text: 'SELECT * FROM retrieve_admin_notifications()',
+        }).then((result) => {
+            res.status(200).send(result.rows);
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
+            console.log('\n\nERROR:', error);
+            res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
+        });
+    } else { 
+        res.status(401).send({ message: 'You do not have permissions to add an admin' });
     }
 
-    query({
-        text: 'SELECT * FROM retrieve_admin_notifications()',
-    }).then((result) => {
-        res.status(200).send(result.rows);
-    }).catch(
-        /* istanbul ignore next */
-        (error) => {
-        console.log('\n\nERROR:', error);
-        res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
-    });
 }
 
 export async function amountReportNotifications(req, res) {
@@ -183,38 +184,25 @@ export async function addAdmin(req, res) {
 }
 
 export async function banUser(req, res) {
-    console.log('1');
     const isRequesterAdmin = await isAdmin(req.user.id);
-    console.log('2');
-
-    const users = await query({
-        text: 'SELECT * FROM users',
-    });
-    console.log(users);
 
     if (isRequesterAdmin) {
-        console.log('if');
         query({
             text: `UPDATE users SET permissions = 'banned' WHERE email = $1`,
             values: [req.body.email],
         }).then((result) => {
-            console.log('3');
             if (result.rowCount > 0) {
-                console.log('4');
                 res.status(200).send();
             } else { 
-                console.log('The email does not belong to a user');
-                res.status(400).send({ message: 'The email does not belong to a user' });
+                res.status(400).send({ message: 'The email does not belong to a user' }); 
             }
         }).catch(
             /* istanbul ignore next */
             (error) => {
-                console.log(error);
-                res.status(500).send({ message: 'An error ocurred while banning a user' });
-            }
-        );
+            console.log(error);
+            res.status(500).send({ message: 'An error ocurred while banning a user' });
+        });
     } else { 
-        console.log('else');
         res.status(401).send({ message: 'You do not have permissions to ban a user' });
     }
 }
