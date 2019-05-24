@@ -188,24 +188,14 @@ export async function addAdmin(req, res) {
 }
 
 export async function banUser(req, res) {
-    console.log('1');
     const isRequesterAdmin = await isAdmin(req.user.id);
-    console.log('2');
-
-    const users = await query({
-        text: 'SELECT * FROM users',
-    });
-    console.log(users);
 
     if (isRequesterAdmin) {
-        console.log('if');
         query({
             text: `UPDATE users SET permissions = 'banned' WHERE email = $1`,
             values: [req.body.email],
         }).then((result) => {
-            console.log('3');
             if (result.rowCount > 0) {
-                console.log('4');
                 res.status(200).send();
             } else {
                 res.status(400).send({ message: 'The email does not belong to a user' });
