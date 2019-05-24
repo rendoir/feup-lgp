@@ -54,10 +54,12 @@ CREATE TABLE users (
     /* açoes que dao pontos:
     - dar rate em posts (5 pontos)
     - dar like em comentarios (1 ponto - pouco para nao spammar muitos likes)
+    - dar rate num user (3 pontos)
     - criar post (100 pontos)
     - criar comentario (20 pontos)
     - receber rate num post meu (rate 3 - 5 pontos | rate 4 - 15 pontos | rate 5 - 30 pontos)
     - receber like num comentario meu (5 pontos)
+    - receber rate no meu perfil (rate 3 - 3 pontos | rate 4 - 9 pontos | rate 5 - 18 pontos)
     */
 );
 
@@ -217,6 +219,7 @@ CREATE TABLE user_challenge (
     PRIMARY KEY(challenged, challenge)
 );
 
+/* award points on TALKS */
 CREATE FUNCTION update_points_user() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN
@@ -361,6 +364,121 @@ RETURNS TABLE(content_id BIGINT, content_description TEXT, content_type content_
         GROUP BY content_id, content_description, content_type, users.id
         ORDER BY reports_amount desc;
 $$ LANGUAGE SQL;
+
+/* award points to users for GENERAL shop */
+CREATE OR REPLACE FUNCTION give_points_to_user(_user_id BIGINT, _points_amount NUMERIC)
+RETURNS void AS $$
+	UPDATE users SET points = points + _points_amount
+        WHERE id = _user_id;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION give_points_to_post_author(_post_id BIGINT, _points_amount NUMERIC)
+RETURNS void AS $$
+	UPDATE users SET points = points + _points_amount
+        WHERE id IN (SELECT author FROM posts WHERE posts.id = _post_id);
+$$ LANGUAGE SQL;
+/**
+*
+* triggers to award GENERAL points for actions
+*
+*/
+-- USER RATING
+CREATE FUNCTION award_points_on_user_rate() RETURNS trigger AS $$
+    DECLARE
+        RATE_USER_POINTS CONSTANT NUMERIC := 3;
+        RECEIVE_3_RATE_USER_POINTS CONSTANT NUMERIC := 3;
+        RECEIVE_4_RATE_USER_POINTS CONSTANT NUMERIC := 9;
+        RECEIVE_5_RATE_USER_POINTS CONSTANT NUMERIC := 18;
+    BEGIN
+        PERFORM give_points_to_user(NEW.evaluator, RATE_USER_POINTS);
+
+        CASE WHEN NEW.rate = 3 THEN PERFORM give_points_to_user(NEW.target_user, RECEIVE_3_RATE_USER_POINTS);
+            WHEN NEW.rate = 4 THEN PERFORM give_points_to_user(NEW.target_user, RECEIVE_4_RATE_USER_POINTS);
+            WHEN NEW.rate = 5 THEN PERFORM give_points_to_user(NEW.target_user, RECEIVE_5_RATE_USER_POINTS);
+            ELSE NULL;
+        END CASE;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER award_points_for_user_rate
+    AFTER INSERT ON users_rates
+    FOR EACH ROW
+EXECUTE PROCEDURE award_points_on_user_rate();
+-- POST RATING
+CREATE FUNCTION award_points_on_post_rate() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    RATE_POST_POINTS CONSTANT NUMERIC := 5;
+    RECEIVE_3_RATE_POST_POINTS CONSTANT NUMERIC := 3;
+    RECEIVE_4_RATE_POST_POINTS CONSTANT NUMERIC := 15;
+    RECEIVE_5_RATE_POST_POINTS CONSTANT NUMERIC := 30;
+BEGIN
+    PERFORM give_points_to_user(NEW.evaluator, RATE_POST_POINTS);
+
+    CASE WHEN NEW.rate = 3 THEN PERFORM give_points_to_post_author(NEW.post, RECEIVE_3_RATE_POST_POINTS);
+        WHEN NEW.rate = 4 THEN PERFORM give_points_to_post_author(NEW.post, RECEIVE_4_RATE_POST_POINTS);
+        WHEN NEW.rate = 5 THEN PERFORM give_points_to_post_author(NEW.post, RECEIVE_5_RATE_POST_POINTS);
+        ELSE NULL;
+    END CASE;
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER award_points_for_post_rate
+    AFTER INSERT ON posts_rates
+    FOR EACH ROW
+EXECUTE PROCEDURE award_points_on_post_rate();
+-- COMMENT LIKE
+CREATE FUNCTION award_points_on_comment_like() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    LIKE_COMMENT_POINTS CONSTANT NUMERIC := 1;
+    RECEIVE_LIKE_COMMENT_POINTS CONSTANT NUMERIC := 5;
+BEGIN
+    PERFORM give_points_to_user(NEW.author, LIKE_COMMENT_POINTS);
+
+    UPDATE users SET points = points + RECEIVE_LIKE_COMMENT_POINTS
+        WHERE id IN (SELECT author FROM comments WHERE comments.id = NEW.comment);
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER award_points_for_comment_like
+    AFTER INSERT ON likes_a_comment
+    FOR EACH ROW
+EXECUTE PROCEDURE award_points_on_comment_like();
+-- POST CREATION
+CREATE FUNCTION award_points_on_post_creation() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    CREATE_POST_POINTS CONSTANT NUMERIC := 100;
+BEGIN
+    PERFORM give_points_to_user(NEW.author, CREATE_POST_POINTS);
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER award_points_for_post_creation
+    AFTER INSERT ON posts
+    FOR EACH ROW
+EXECUTE PROCEDURE award_points_on_post_creation();
+-- COMMENT CREATION
+CREATE FUNCTION award_points_on_comment_creation() RETURNS trigger
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    CREATE_COMMENT_POINTS CONSTANT NUMERIC := 20;
+BEGIN
+    PERFORM give_points_to_user(NEW.author, CREATE_COMMENT_POINTS);
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER award_points_for_comment_creation
+    AFTER INSERT ON comments
+    FOR EACH ROW
+EXECUTE PROCEDURE award_points_on_comment_creation();
+
 
 
 /**
