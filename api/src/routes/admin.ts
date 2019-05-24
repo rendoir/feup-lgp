@@ -84,6 +84,15 @@ adminRouter.get('/users', controller.getAllUsers);
  * @apiName Get-Report-Notifications
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *      message: 'An error ocurred fetching report notifications: You are not an admin.'
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
