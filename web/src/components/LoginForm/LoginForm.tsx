@@ -3,9 +3,12 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import { dictionary, LanguageContext } from '../../utils/language';
 
+import styles from './LoginForm.module.scss';
+
 type State = {
   email: string;
   password: string;
+  wrongCredentials: boolean;
 };
 
 class LoginForm extends React.Component<RouteComponentProps, State> {
@@ -16,7 +19,8 @@ class LoginForm extends React.Component<RouteComponentProps, State> {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      wrongCredentials: false
     };
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -44,6 +48,12 @@ class LoginForm extends React.Component<RouteComponentProps, State> {
             onChange={this.handleInputChange}
             placeholder={dictionary.password[this.context]}
           />
+          <p
+            id={styles.wrongLogin}
+            className={(this.state.wrongCredentials ? '' : 'd-none') + ' pt-1'}
+          >
+            {dictionary.wrong_credentials[this.context]}
+          </p>
         </div>
         <div className="mt-3 text-center">
           <button type="submit" className="btn btn-primary">
@@ -63,6 +73,7 @@ class LoginForm extends React.Component<RouteComponentProps, State> {
         this.props.history.push('/');
       })
       .catch(err => {
+        this.setState({ wrongCredentials: true });
         console.error(err);
       });
   }

@@ -16,6 +16,7 @@ import styles from '../styles/Feed.module.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 
 export type Props = {
   match: {
@@ -115,6 +116,7 @@ class Talk extends PureComponent<Props, State> {
     question: string;
     title: string;
   };
+  private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
@@ -1588,6 +1590,128 @@ class Talk extends PureComponent<Props, State> {
       </>
     );
   };
+
+  private renderArchiveTalk() {
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_talk[this.context]
+      : dictionary.archive_talk[this.context];
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          this.archiveTalk();
+        }}
+      >
+        <i className="fas fa-archive" />
+        {isArchivedBtn}
+      </button>
+    );
+  }
+
+  private handleCreateChallenge = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isChallengeModalOpen: true });
+  };
+
+  private getJoinButton() {
+    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
+    let buttonText = this.state.userParticipation
+      ? dictionary.leave_talk[this.context]
+      : dictionary.join_talk[this.context];
+
+    if (!this.state.userCanJoin) {
+      buttonClass = 'cannot_join';
+      buttonText = dictionary.no_access_talk[this.context];
+    }
+    // TODO: METER EFEITOS AO CARREGAR
+    return (
+      <button
+        className={`join_button ${buttonClass}`}
+        onClick={
+          this.state.userParticipation
+            ? this.handleLeaveTalk
+            : this.handleJoinTalk
+        }
+        disabled={!this.state.userCanJoin}
+      >
+        {buttonText}
+      </button>
+    );
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case 'public':
+        return faGlobeAfrica;
+      case 'followers':
+        return faUserFriends;
+      case 'private':
+        return faLock;
+      default:
+        return faQuestion;
+    }
+  }
+
+  private handleChallengeClick(challenge: number | undefined) {
+    if (challenge) {
+      this.setState({
+        clickedChallenge: challenge
+      } as IState);
+    }
+  }
+
+  private getChallenges() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
+    const challenges: any[] = [];
+    if (this.state.challenges.length > 0) {
+      challenges.push(
+        <ChallengeCarousel
+          key={'challenges_' + this.id}
+          id={this.id}
+          challenges={this.state.challenges}
+          userId={this.props.user.id}
+          handleChallengeClick={this.handleChallengeClick}
+        />
+      );
+    } else {
+      challenges.push(
+        <div key={'no_challenges'}>
+          {' '}
+          {dictionary.no_challenges[this.context]}{' '}
+        </div>
+      );
+    }
+
+    return (
+      <div key={'challenges_points'}>
+        <div key={'points_div_' + this.id} className="challenges">
+          <div key={'points_ins_div_' + this.id} className="p-3">
+            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h5>
+                {dictionary.my_points[this.context]}{' '}
+                <small>{this.state.points}</small>
+              </h5>
+            </div>
+          </div>
+        </div>
+        <div key={'challenges_div_' + this.id} className="challenges">
+          <div key={'challenges_ins_div_' + this.id} className="p-3">
+            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.challenge_conference[this.context]}{' '}
+                <i className="fas fa-puzzle-piece" />
+              </h4>
+              <br />
+              {challenges}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   private handleEditSubmission = () => {
     let error = false;

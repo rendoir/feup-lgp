@@ -16,6 +16,7 @@ import Conferences from './Conferences';
 import ConferenceShop from './ConferenceShop';
 import ErrorBoundary from './ErrorBoundary';
 import Feed from './Feed';
+import Invite from './Invite';
 import Landing from './Landing';
 import Notifications from './Notifications';
 import PostView from './PostView';
@@ -59,6 +60,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/conference/:id" component={Conference} />
                 <Route path="/conferences/" component={Conferences} />
                 <Route path="/notifications" component={Notifications} />
+                <Route path="/invite" component={Invite} />
                 <Route component={Feed} /> {/* default */}
               </Switch>
             </ErrorBoundary>

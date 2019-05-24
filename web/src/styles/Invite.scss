@@ -1,0 +1,33 @@
+@import "colors";
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+
+
+.col-centered{
+    float: none;
+	margin: 0 auto;
+	width: 40%;
+	padding-top: 250px;
+}
+
+.sucesso{
+	color: green;
+}
+
+input[type=email], select, textarea{
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	resize: vertical;
+  }
+  
+  @media screen and (max-width: 1000px) {
+	.col-centered{
+		float: none;
+		margin: 0 auto;
+		padding-top: 10px;
+		width: 100%;
+	}
+}

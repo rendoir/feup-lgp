@@ -82,6 +82,8 @@ interface IState {
 class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
 
+  private auth = new AuthHelperMethods();
+
   constructor(props: Props) {
     super(props);
 
@@ -297,7 +299,10 @@ class Post extends Component<Props, IState> {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
-    if (!this.state.postRated) {
+    if (
+      !this.state.postRated &&
+      this.auth.getUserPayload().id !== this.props.user_id
+    ) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handlePostRate}>
@@ -500,14 +505,17 @@ class Post extends Component<Props, IState> {
 
       currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
     }
-
+    console.log(currentComments);
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
+          id={comment.id}
           postID={comment.post}
-          title={comment.id}
-          author={comment.first_name + ' ' + comment.last_name}
+          author={{
+            id: comment.author_id,
+            name: comment.first_name + ' ' + comment.last_name
+          }}
           text={comment.comment}
           secondLevel={false}
         />
@@ -717,12 +725,16 @@ class Post extends Component<Props, IState> {
         {dictionary.delete_post[this.context]}
       </button>
     );
-    const dropdownButtons = [
-      inviteButton,
-      reportButton,
-      editButton,
-      deleteButton
-    ];
+
+    const dropdownButtons = [inviteButton, reportButton];
+
+    if (this.auth.isLoggedInUser(this.props.user_id)) {
+      dropdownButtons.push(editButton);
+    }
+    if (this.auth.isLoggedInUser(this.props.user_id) || this.auth.isAdmin()) {
+      dropdownButtons.push(deleteButton);
+    }
+
     return dropdownButtons;
   }
 

@@ -62,9 +62,18 @@ export default class AuthHelperMethods {
   };
 
   getUserPayload = () => {
-    // Using jwt-decode npm package to decode the token
-    let answer = this.getToken() ? decode(this.getToken()) : null;
-    return answer;
+    const payload = this.getToken() ? decode(this.getToken()) : null;
+    return payload;
+  };
+
+  isAdmin = () => {
+    const payload = this.getUserPayload();
+    return payload && payload.permission === 'admin';
+  };
+
+  isLoggedInUser = id => {
+    const payload = this.getUserPayload();
+    return payload && payload.id === id;
   };
 
   fetch = (url, options) => {
