@@ -378,6 +378,7 @@ INSERT INTO users (email, pass, first_name, last_name, bio, home_town, universit
 INSERT INTO users (email, pass, first_name, last_name, bio, university, work, permissions) VALUES ('user1@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'User', 'Doe','ICBAS', 'ICBAS', 'Surgeon', 'user');
 INSERT INTO users (email, pass, first_name, last_name, bio, permissions) VALUES ('user2@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'John', 'User', 'FMUC', 'user');
 INSERT INTO users (email, pass, first_name, last_name, bio, home_town, work_field, permissions) VALUES ('user3@gmail.com','e172c5654dbc12d78ce1850a4f7956ba6e5a3d2ac40f0925fc6d691ebb54f6bf', 'Michael', 'Meyers', 'ICBAS', 'Portalegre', 'Cardiology', 'user');
+INSERT INTO users (email, pass, first_name, last_name, bio, home_town, university, work, work_field, permissions) VALUES ('admin2@gmail.com','d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892', 'Second', 'Admin', 'Sou doutor, adeus', 'Rio de Dezembro', 'FMUP', 'Hospital S. Joao', 'Cardiology', 'admin');
 
 /** 
 * USERS FOLLOWING USERS
