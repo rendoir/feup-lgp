@@ -116,12 +116,14 @@ export async function getFeedStuff(req, res) {
     const userId = req.user.id;
     try {
         const following = await query({
-            text: `SELECT a.id, a.first_name, a.last_name, p.date_created
+            text: `SELECT a.id, a.first_name, a.last_name
                         FROM users a
-                        INNER JOIN follows f ON a.id=f.followed
-                        INNER JOIN posts p ON a.id = p.author
-                        WHERE f.follower=$1 AND p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
-                        ORDER BY p.date_created DESC
+                            INNER JOIN follows f ON a.id=f.followed
+                            LEFT JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1
+                            AND (p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                                OR p.date_created IS NULL)
+                        ORDER BY p.date_created DESC NULLS LAST
                         LIMIT 15`,
             values: [userId],
         });

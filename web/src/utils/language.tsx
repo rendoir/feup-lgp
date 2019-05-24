@@ -299,6 +299,11 @@ export let dictionary: Dictionary = {
     PT: 'Convide utilizadores para a sua',
     EN: 'Invite users to your'
   },
+  invite_sucess: { PT: 'Convite enviado com sucesso', EN: 'Invitation Sent' },
+  invite_email_error: {
+    PT: 'Por favor insira um email correto',
+    EN: 'Enter a valid email address'
+  },
   done: { PT: 'Concluído', EN: 'Done' },
   report_reason: { PT: 'Razão de reportar', EN: 'Report reason' },
   report_reason_required: {
@@ -520,6 +525,10 @@ export let dictionary: Dictionary = {
   error_unban_user: {
     PT: 'Não foi possível desbanir o utilizador',
     EN: 'Error unbanning user'
+  },
+  send_email: {
+    PT: 'Insira o email da pessoa que deseja convidar para a plataforma:',
+    EN: 'Enter the email of the person you want to invite to the platform:'
   },
   empty: { PT: '', EN: '' }
 };
