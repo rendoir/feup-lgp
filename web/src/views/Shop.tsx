@@ -1,11 +1,15 @@
 import * as React from 'react';
 import Button from '../components/Button/Button';
 import Product from '../components/Product/Product';
+import AddProductModal from '../components/ProductModal/AddProductModal';
 import '../styles/Shop.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
 import Post from '../components/Post/Post';
+import InviteModal from '../components/PostModal/InviteModal';
+import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
+import AddAdminModal from '../components/AdminFunctionsModal/AddAdminModal';
 
 type Props = {
   user: any;
@@ -17,11 +21,13 @@ type Props = {
 };
 
 type State = {
+  addProductSuccess: boolean;
   conferenceID: number | undefined;
   error: boolean;
   errorMessage: string;
   isLoading: boolean;
   products: any[];
+  showAddProductAlert: boolean;
 };
 
 class Shop extends React.Component<Props, State> {
@@ -31,11 +37,13 @@ class Shop extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      addProductSuccess: true,
       conferenceID: undefined,
       error: false,
       errorMessage: '',
       isLoading: true,
-      products: []
+      products: [],
+      showAddProductAlert: true
     };
   }
 
@@ -78,6 +86,7 @@ class Shop extends React.Component<Props, State> {
                 </form>
               </div>
             </div>
+            {this.getAdminButtons()}
           </div>
 
           <div id="products-carousel" className="col-lg-9">
@@ -179,6 +188,58 @@ class Shop extends React.Component<Props, State> {
       />
     ));
   };
+
+  private getAdminButtons() {
+    return (
+      <div className="mb-4">
+        <h1 className="my-4" />
+        <div className="card h-100">
+          <div className="p-3">
+            <div id="shop-admin-buttons" className="p-0 m-0">
+              <h6>{dictionary.administrator[this.context]}</h6>
+              <button
+                id="add_product"
+                data-toggle="modal"
+                data-target={`#add_product_modal`}
+              >
+                <i className="fas fa-cart-plus" />
+                {dictionary.add_product[this.context]}
+              </button>
+              <button
+                id="edit_product"
+                data-toggle="modal"
+                data-target={`#add_product_modal`}
+              >
+                <i className="fas fa-shopping-cart" />
+                {dictionary.edit_product[this.context]}
+              </button>
+              <button
+                id="remove_product"
+                data-toggle="modal"
+                data-target={`#add_product_modal`}
+              >
+                <i className="fas fa-cart-arrow-down" />
+                {dictionary.remove_product[this.context]}
+              </button>
+            </div>
+          </div>
+        </div>
+        {this.getAddProductModal()}
+      </div>
+    );
+  }
+
+  private onAddProductResponse(success: boolean) {
+    this.setState({
+      addProductSuccess: success,
+      showAddProductAlert: true
+    });
+    setTimeout('window.location.reload()', 2000);
+  }
+
+  private getAddProductModal() {
+    return <AddProductModal onResponse={this.onAddProductResponse} />;
+  }
 }
 
 export default withAuth(Shop);
