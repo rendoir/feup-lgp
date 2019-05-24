@@ -257,10 +257,10 @@ describe('Admin tests', () => {
         it('Should ban user', (done) => {
             request(app)
                 .post('/admin/ban')
+                .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     email: 'baduser@lgp.com'
                 })
-                .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
                 .end((err, res) => {
                     expect(err).to.be.null;
