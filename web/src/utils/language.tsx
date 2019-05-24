@@ -244,6 +244,8 @@ export let dictionary: Dictionary = {
     PT: 'URL da transmissão em direto (Embed Link)',
     EN: 'Livestream URL (Embed Link)'
   },
+  enabled: { PT: 'Abilitado', EN: 'Enabled' },
+  disabled: { PT: 'Desabilitado', EN: 'Disabled' },
   tags: { PT: 'Categorias', EN: 'Tags' },
   files: { PT: 'Ficheiros', EN: 'Files' },
   post_cap: { PT: 'Publicação', EN: 'Post' },

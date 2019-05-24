@@ -91,7 +91,7 @@ export function editTalk(req, res) {
     });
     return;
   }
-  if (!data.about.trim()) {
+  if (!data.description.trim()) {
     console.log('\n\nError: talk about cannot be empty');
     res.status(400).send({
       message: `An error occurred while updating talk #${talk}: ` +
@@ -125,27 +125,24 @@ export function editTalk(req, res) {
   }
 
   query({
-    text: 'UPDATE talks ' +
-      'SET (title, about, local, datestart, dateend, livestream_url) = ($2, $3, $4, $5, $6, $7) ' +
-      'WHERE id = $1 ' +
-      'RETURNING id',
+    text: `UPDATE talks
+           SET (title, about, local, datestart, dateend, livestream_url) =
+               ($2, $3, $4, $5, $6, $7)
+           WHERE id = $1`,
     values: [
       talk,
       data.title,
-      data.about,
+      data.description,
       data.local,
       data.dateStart,
       data.dateEnd,
-      data.livestreamUrl,
+      data.livestreamURL,
     ],
   })
-    .then((response) => {
-      res.send({
-        id: response.rows[0].id,
-      });
+    .then(() => {
+      res.status(200).send();
     })
     .catch((error) => {
-      console.log(`Error: ${error}`);
       res.status(400).send({
         message: `An error occurred while updating a talk. Error: ${error.toString()}`,
       });
