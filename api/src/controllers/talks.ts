@@ -354,7 +354,7 @@ export async function gettalk(req, res) {
     });
 
     const challenges = await query ({
-      text: `SELECT id, title, dateStart, dateEnd, prize, points_prize, challengeType, content
+      text: `SELECT id, title, dateStart, dateEnd, points, challengeType, content
                     FROM challenges
 					          WHERE talk = $1
                     ORDER BY dateStart DESC`,

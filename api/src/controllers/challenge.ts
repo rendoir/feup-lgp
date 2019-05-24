@@ -17,29 +17,23 @@ export async function createChallenge(req, res) {
 
     const content = [];
 
-    if (req.body.text !== '') {
-        content.push('Description: ' + req.body.text);
+    if (req.body.description !== '') {
+        content.push('Description: ' + req.body.description);
     }
 
     let type = '';
     let points = 0;
 
-    if (!isNaN(Number(req.body.prizePoints))) {
-        points = Number(req.body.prizePoints);
+    if (!isNaN(Number(req.body.points))) {
+        points = Number(req.body.points);
     }
 
     switch (req.body.type) {
-        case 'post': {
+        case 'POST': {
             type = 'create_post';
             break;
         }
-        case 'question': {
-            type = 'answer_question';
-            content.push('Question: ' + req.body.question);
-            content.push('CorrectAnswer: ' + req.body.correctAnswer);
-            break;
-        }
-        case 'options': {
+        case 'MCQ': {
             type = 'question_options';
             content.push('Question: ' + req.body.question);
             content.push('CorrectAnswer: ' + req.body.correctAnswer);
@@ -50,7 +44,7 @@ export async function createChallenge(req, res) {
             }
             break;
         }
-        case 'comment': {
+        case 'CMT': {
             type = 'comment_post';
             content.push('PostToComment: ' + req.body.post);
             break;
@@ -61,13 +55,12 @@ export async function createChallenge(req, res) {
 
     query({
         text: `INSERT INTO challenges
-                (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                (title, dateStart, dateEnd, points, challengeType, content, talk)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         values: [
             req.body.title,
             req.body.dateStart,
             req.body.dateEnd,
-            req.body.prize,
             points,
             type,
             content,
@@ -77,7 +70,7 @@ export async function createChallenge(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while adding a challenge to a conference' });
+        res.status(400).send({ message: 'An error occurred while adding a challenge to a conference' });
     });
 }
 

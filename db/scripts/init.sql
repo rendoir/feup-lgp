@@ -193,8 +193,7 @@ CREATE TABLE challenges (
     title TEXT NOT NULL,
     dateStart TEXT NOT NULL,
     dateEnd TEXT,
-    prize TEXT,
-    points_prize BIGINT DEFAULT 0,
+    points BIGINT DEFAULT 0,
     challengeType challenge_type_enum NOT NULL,
     content TEXT ARRAY NOT NULL,
     talk BIGINT REFERENCES talks ON DELETE CASCADE
@@ -212,7 +211,7 @@ CREATE FUNCTION update_points_user() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN
     IF NEW.complete IS TRUE THEN
-        UPDATE talk_participants SET points = points + (SELECT points_prize FROM challenges WHERE id = NEW.challenge) WHERE participant_user = NEW.challenged;
+        UPDATE talk_participants SET points = points + (SELECT points FROM challenges WHERE id = NEW.challenge) WHERE participant_user = NEW.challenged;
     END IF;
     RETURN NEW;
 END$$;
@@ -732,7 +731,7 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 /**
 * CHALLENGES
 */
-INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Options 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'question_options','{"Question: What is the title of this conference","CorrectAnswer: User talk 2", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}',3);
-INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Question 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'answer_question','{"Question: What is the title of this conference","CorrectAnswer: User talk 2"}',3);
-INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Comment Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'comment_post','{"PostToComment: 25"}',3);
-INSERT INTO challenges (title, dateStart, dateEnd, prize, points_prize, challengeType, content, talk) VALUES ('Challenge Create Post 1','2019-05-05 23:00','2019-05-05 23:59','points',10,'create_post','{"Description: Create a Post in this talk where you explain why it is so important for you!"}',3);
+INSERT INTO challenges (title, dateStart, dateEnd, points, challengeType, content, talk) VALUES ('Challenge Options 1','2019-05-05 23:00','2019-05-05 23:59',10,'question_options','{"Question: What is the title of this conference","CorrectAnswer: User talk 2", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}',3);
+INSERT INTO challenges (title, dateStart, dateEnd, points, challengeType, content, talk) VALUES ('Challenge Question 1','2019-05-05 23:00','2019-05-05 23:59',10,'answer_question','{"Question: What is the title of this conference","CorrectAnswer: User talk 2"}',3);
+INSERT INTO challenges (title, dateStart, dateEnd, points, challengeType, content, talk) VALUES ('Challenge Comment Post 1','2019-05-05 23:00','2019-05-05 23:59',10,'comment_post','{"PostToComment: 25"}',3);
+INSERT INTO challenges (title, dateStart, dateEnd, points, challengeType, content, talk) VALUES ('Challenge Create Post 1','2019-05-05 23:00','2019-05-05 23:59',10,'create_post','{"Description: Create a Post in this talk where you explain why it is so important for you!"}',3);

@@ -48,6 +48,19 @@ export type State = {
     local: string;
   };
   editFormOpen: boolean;
+  error: {
+    answer: boolean;
+    correctAnswer: boolean;
+    dateEnd: boolean;
+    dateStart: boolean;
+    description: boolean;
+    local: boolean;
+    options: boolean;
+    points: boolean;
+    question: boolean;
+    tags: boolean;
+    title: boolean;
+  };
   hasLivestream: boolean;
   inviteModalOpen: boolean;
   isArchived: boolean;
@@ -87,6 +100,18 @@ class Talk extends PureComponent<Props, State> {
   private ownerId: number | undefined;
   private ownerName: string | undefined;
   private privacy: string;
+  private errorMessages: {
+    answer: string;
+    correctAnswer: string;
+    dateEnd: string;
+    dateStart: string;
+    description: string;
+    local: string;
+    options: string;
+    points: string;
+    question: string;
+    title: string;
+  };
 
   constructor(props: Props) {
     super(props);
@@ -106,6 +131,19 @@ class Talk extends PureComponent<Props, State> {
     };
     this.id = this.props.match.params.id;
     this.privacy = 'public';
+
+    this.errorMessages = {
+      answer: '',
+      correctAnswer: '',
+      dateEnd: '',
+      dateStart: '',
+      description: '',
+      local: '',
+      options: '',
+      points: '',
+      question: '',
+      title: ''
+    };
 
     this.state = {
       challengeFields: {
@@ -131,6 +169,19 @@ class Talk extends PureComponent<Props, State> {
         title: ''
       },
       editFormOpen: false,
+      error: {
+        answer: false,
+        correctAnswer: false,
+        dateEnd: false,
+        dateStart: false,
+        description: false,
+        local: false,
+        options: false,
+        points: false,
+        question: false,
+        tags: false,
+        title: false
+      },
       hasLivestream: false,
       inviteModalOpen: false,
       isArchived: false,
@@ -416,7 +467,7 @@ class Talk extends PureComponent<Props, State> {
             {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
-        <Card.Body>CHALLENGES</Card.Body>
+        <Card.Body>CHALLENGES. {this.state.challenges.length}</Card.Body>
       </Card>
     );
   };
@@ -578,22 +629,41 @@ class Talk extends PureComponent<Props, State> {
           title: '',
           type: 'MCQ'
         },
-        challengeFormOpen: false
-      });
-    };
-    const handleSelect = event => {
-      this.setState({
-        challengeFields: {
-          ...this.state.challengeFields,
-          type: event.target.value
+        challengeFormOpen: false,
+        error: {
+          answer: false,
+          correctAnswer: false,
+          dateEnd: false,
+          dateStart: false,
+          description: false,
+          local: false,
+          options: false,
+          points: false,
+          question: false,
+          tags: false,
+          title: false
         }
       });
+      this.errorMessages = {
+        answer: '',
+        correctAnswer: '',
+        dateEnd: '',
+        dateStart: '',
+        description: '',
+        local: '',
+        options: '',
+        points: '',
+        question: '',
+        title: ''
+      };
     };
     const handleChange = event => {
+      console.log(event.target.name);
+
       this.setState({
         challengeFields: {
           ...this.state.challengeFields,
-          answer: event.target.value
+          [event.target.name]: event.target.value
         }
       });
     };
@@ -641,15 +711,294 @@ class Talk extends PureComponent<Props, State> {
     };
     const handleRemoveOptions = (event, value) => {
       event.preventDefault();
+      event.stopPropagation();
       let options = this.state.challengeFields.options;
       options = options.filter(option => option !== value);
+      let correctAnswer = this.state.challengeFields.correctAnswer;
+      correctAnswer = correctAnswer === value ? '' : correctAnswer;
 
       this.setState({
         challengeFields: {
           ...this.state.challengeFields,
+          correctAnswer,
           options
         }
       });
+    };
+    const handleSelectCorrectAnswer = option => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          correctAnswer: option
+        }
+      });
+    };
+
+    const renderTitleField = () => {
+      return (
+        <Form.Group controlId={'create_challenge.title'}>
+          <Form.Label>{dictionary.title[this.context]}</Form.Label>
+          <Form.Control
+            type={'text'}
+            placeholder={dictionary.challenge_title[this.context]}
+            className={styles.border}
+            value={this.state.challengeFields.title}
+            name={'title'}
+            onChange={handleChange}
+            required={true}
+          />
+          {this.state.error.title ? (
+            <Form.Text className={'text-danger'}>
+              {this.errorMessages.title}
+            </Form.Text>
+          ) : null}
+        </Form.Group>
+      );
+    };
+    const renderDescriptionField = () => {
+      return (
+        <Form.Group controlId={'create_challenge.description'}>
+          <Form.Label>{dictionary.description[this.context]}</Form.Label>
+          <Form.Control
+            as={'textarea'}
+            rows={5}
+            placeholder={dictionary.chal_description_placeholder[this.context]}
+            value={this.state.challengeFields.description}
+            name={'description'}
+            onChange={handleChange}
+            className={styles.border}
+            required={true}
+          />
+          {this.state.error.description ? (
+            <Form.Text className={'text-danger'}>
+              {this.errorMessages.description}
+            </Form.Text>
+          ) : null}
+        </Form.Group>
+      );
+    };
+    const renderDatesFields = () => {
+      return (
+        <>
+          <Form.Group>
+            <Form.Label>{dictionary.starting_date[this.context]}</Form.Label>
+            <Form.Control
+              type={'datetime-local'}
+              value={this.state.challengeFields.dateStart}
+              name={'dateStart'}
+              onChange={handleChange}
+              className={styles.border}
+              required={true}
+            />
+            {this.state.error.dateStart ? (
+              <Form.Text className={'text-danger'}>
+                {this.errorMessages.dateStart}
+              </Form.Text>
+            ) : null}
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>{dictionary.ending_date[this.context]}</Form.Label>
+            <Form.Control
+              type={'datetime-local'}
+              value={this.state.challengeFields.dateEnd}
+              name={'dateEnd'}
+              onChange={handleChange}
+              className={styles.border}
+              required={true}
+            />
+            {this.state.error.dateEnd ? (
+              <Form.Text className={'text-danger'}>
+                {this.errorMessages.dateEnd}
+              </Form.Text>
+            ) : null}
+          </Form.Group>
+        </>
+      );
+    };
+    const renderOptionsField = () => {
+      return (
+        <>
+          <Form.Group controlId={'create_challenge.answers'}>
+            <Form.Label>{dictionary.options[this.context]}</Form.Label>
+            <InputGroup>
+              <FormControl
+                type={'text'}
+                value={this.state.challengeFields.answer}
+                name={'answer'}
+                onChange={handleChange}
+                onKeyUp={handleAddOptionsByKeyPress}
+                className={styles.border}
+              />
+              <InputGroup.Append>
+                <Button
+                  className={styles.button}
+                  onClick={handleAddOptionsByButtonPress}
+                  disabled={this.state.challengeFields.options.length >= 5}
+                >
+                  Add
+                </Button>
+              </InputGroup.Append>
+            </InputGroup>
+            {this.state.error.options ? (
+              <Form.Text className={'text-danger'}>
+                {this.errorMessages.options}
+              </Form.Text>
+            ) : null}
+          </Form.Group>
+          <ListGroup>
+            {this.state.challengeFields.options.map((option, index) => (
+              <ListGroup.Item
+                key={index}
+                className={`d-flex flex-row
+                    justify-content-between
+                    align-items-center
+                    ${
+                      option === this.state.challengeFields.correctAnswer
+                        ? styles.header
+                        : ''
+                    }
+                    `}
+                onClick={() => handleSelectCorrectAnswer(option)}
+              >
+                ({index + 1}) {option}
+                <a
+                  href={'#'}
+                  onClick={event => handleRemoveOptions(event, option)}
+                  className={'text-danger'}
+                >
+                  <i className={'fas fa-times'} />
+                </a>
+              </ListGroup.Item>
+            ))}
+            {this.state.challengeFields.options.length > 0 ? (
+              <small className={'text-muted'}>
+                Click on an option to set it as the correct answer
+              </small>
+            ) : null}
+            {this.state.error.correctAnswer ? (
+              <Form.Text className={'text-danger'}>
+                {this.errorMessages.correctAnswer}
+              </Form.Text>
+            ) : null}
+          </ListGroup>
+        </>
+      );
+    };
+    const renderMCQFields = () => {
+      return (
+        <>
+          <small className={'text-muted'}>
+            {dictionary.mult_choice_question_desc[this.context]}
+          </small>
+          <Form.Group
+            controlId={'create_challenge.question'}
+            className={'mt-3'}
+          >
+            <Form.Label>{dictionary.question[this.context]}</Form.Label>
+            <Form.Control
+              type={'text'}
+              className={styles.border}
+              value={this.state.challengeFields.question}
+              name={'question'}
+              onChange={handleChange}
+            />
+            {this.state.error.question ? (
+              <Form.Text className={'text-danger'}>
+                {this.errorMessages.question}
+              </Form.Text>
+            ) : null}
+          </Form.Group>
+          {renderOptionsField()}
+        </>
+      );
+    };
+    const renderPOSTFields = () => {
+      return (
+        <small className={'text-muted'}>
+          {dictionary.post_create_desc[this.context]}
+        </small>
+      );
+    };
+    const renderCMTFields = () => {
+      return (
+        <>
+          <small className={'text-muted'}>
+            {dictionary.comment_post_desc[this.context]}
+          </small>
+          <Form.Group
+            controlId={'create_challenge.question'}
+            className={'mt-3'}
+          >
+            <Form.Label>{dictionary.post_to_com[this.context]}</Form.Label>
+            <Form.Control
+              as={'select'}
+              className={styles.border}
+              value={this.state.challengeFields.answer}
+              name={'answer'}
+              onChange={handleChange}
+            >
+              {this.state.posts.map(post => {
+                return (
+                  <option key={post.id} value={post.title}>
+                    {post.title}
+                  </option>
+                );
+              })}
+            </Form.Control>
+          </Form.Group>
+        </>
+      );
+    };
+    const renderTypeFields = () => {
+      return (
+        <Form.Group controlId={'create_challenge.type'}>
+          <Form.Label>{dictionary.challenge_type[this.context]}</Form.Label>
+          <Form.Control
+            as={'select'}
+            className={styles.border}
+            value={this.state.challengeFields.type}
+            name={'type'}
+            onChange={handleChange}
+            required={true}
+          >
+            <option value={'MCQ'}>
+              {dictionary.mult_choice_question[this.context]}
+            </option>
+            <option value={'POST'}>
+              {dictionary.post_create[this.context]}
+            </option>
+            <option value={'CMT'}>
+              {dictionary.comment_post[this.context]}
+            </option>
+          </Form.Control>
+          {this.state.challengeFields.type === 'MCQ' ? renderMCQFields() : null}
+          {this.state.challengeFields.type === 'POST'
+            ? renderPOSTFields()
+            : null}
+          {this.state.challengeFields.type === 'CMT' ? renderCMTFields() : null}
+        </Form.Group>
+      );
+    };
+    const renderPointsField = () => {
+      return (
+        <Form.Group>
+          <Form.Label>{dictionary.points[this.context]}</Form.Label>
+          <Form.Control
+            type={'number'}
+            min={0}
+            value={this.state.challengeFields.points.toString()}
+            name={'points'}
+            onChange={handleChange}
+            className={styles.border}
+            required={true}
+          />
+          {this.state.error.points ? (
+            <Form.Text className={'text-danger'}>
+              {this.errorMessages.points}
+            </Form.Text>
+          ) : null}
+        </Form.Group>
+      );
     };
 
     return (
@@ -669,151 +1018,11 @@ class Talk extends PureComponent<Props, State> {
           </Modal.Header>
           <Modal.Body>
             <Form id={'create_challenge'}>
-              <Form.Group controlId={'create_challenge.title'}>
-                <Form.Label>{dictionary.title[this.context]}</Form.Label>
-                <Form.Control
-                  type={'text'}
-                  placeholder={dictionary.challenge_title[this.context]}
-                  className={styles.border}
-                  required={true}
-                />
-              </Form.Group>
-              <Form.Group controlId={'create_challenge.description'}>
-                <Form.Label>{dictionary.description[this.context]}</Form.Label>
-                <Form.Control
-                  as={'textarea'}
-                  rows={5}
-                  placeholder={
-                    dictionary.chal_description_placeholder[this.context]
-                  }
-                  className={styles.border}
-                  required={true}
-                />
-              </Form.Group>
-              <Form.Group controlId={'create_challenge.type'}>
-                <Form.Label>
-                  {dictionary.challenge_type[this.context]}
-                </Form.Label>
-                <Form.Control
-                  as={'select'}
-                  className={styles.border}
-                  value={this.state.challengeFields.type}
-                  onChange={handleSelect}
-                  required={true}
-                >
-                  <option value={'MCQ'}>
-                    {dictionary.mult_choice_question[this.context]}
-                  </option>
-                  <option value={'POST'}>
-                    {dictionary.post_create[this.context]}
-                  </option>
-                  <option value={'CMT'}>
-                    {dictionary.comment_post[this.context]}
-                  </option>
-                </Form.Control>
-                {this.state.challengeFields.type === 'MCQ' ? (
-                  <>
-                    <small className={'text-muted'}>
-                      {dictionary.mult_choice_question_desc[this.context]}
-                    </small>
-                    <Form.Group
-                      controlId={'create_challenge.question'}
-                      className={'mt-3'}
-                    >
-                      <Form.Label>
-                        {dictionary.question[this.context]}
-                      </Form.Label>
-                      <Form.Control type={'text'} className={styles.border} />
-                    </Form.Group>
-                    <Form.Group controlId={'create_challenge.answers'}>
-                      <Form.Label>
-                        {dictionary.options[this.context]}
-                      </Form.Label>
-                      <InputGroup>
-                        <FormControl
-                          type={'text'}
-                          value={this.state.challengeFields.answer}
-                          onChange={handleChange}
-                          onKeyUp={handleAddOptionsByKeyPress}
-                          className={styles.border}
-                        />
-                        <InputGroup.Append>
-                          <Button
-                            className={styles.button}
-                            onClick={handleAddOptionsByButtonPress}
-                            disabled={
-                              this.state.challengeFields.options.length >= 5
-                            }
-                          >
-                            Add
-                          </Button>
-                        </InputGroup.Append>
-                      </InputGroup>
-                    </Form.Group>
-                    <ListGroup>
-                      {this.state.challengeFields.options.map(
-                        (option, index) => (
-                          <ListGroup.Item
-                            key={index}
-                            className={
-                              'd-flex flex-row justify-content-between align-items-center'
-                            }
-                          >
-                            ({index + 1}) {option}
-                            <a
-                              href={'#'}
-                              onClick={event =>
-                                handleRemoveOptions(event, option)
-                              }
-                              className={'text-danger'}
-                            >
-                              <i className={'fas fa-times'} />
-                            </a>
-                          </ListGroup.Item>
-                        )
-                      )}
-                    </ListGroup>
-                  </>
-                ) : null}
-                {this.state.challengeFields.type === 'POST' ? (
-                  <small className={'text-muted'}>
-                    {dictionary.post_create_desc[this.context]}
-                  </small>
-                ) : null}
-                {this.state.challengeFields.type === 'CMT' ? (
-                  <>
-                    <small className={'text-muted'}>
-                      {dictionary.comment_post_desc[this.context]}
-                    </small>
-                    <Form.Group
-                      controlId={'create_challenge.question'}
-                      className={'mt-3'}
-                    >
-                      <Form.Label>
-                        {dictionary.post_to_com[this.context]}
-                      </Form.Label>
-                      <Form.Control as={'select'} className={styles.border}>
-                        {this.state.posts.map(post => {
-                          return (
-                            <option key={post.id} value={post.title}>
-                              {post.title}
-                            </option>
-                          );
-                        })}
-                      </Form.Control>
-                    </Form.Group>
-                  </>
-                ) : null}
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>{dictionary.points[this.context]}</Form.Label>
-                <Form.Control
-                  type={'number'}
-                  min={0}
-                  className={styles.border}
-                  required={true}
-                />
-              </Form.Group>
+              {renderTitleField()}
+              {renderDescriptionField()}
+              {renderDatesFields()}
+              {renderTypeFields()}
+              {renderPointsField()}
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -834,9 +1043,216 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private handleChallengeSubmission = () => {
-    console.log(
-      'CHALLENGE SUBMITTED - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    let error = false;
+    const fields = this.state.challengeFields;
+
+    Object.keys(fields).map(key => {
+      if (key !== 'options') {
+        fields[key] = fields[key].toString().trim();
+      } else {
+        fields[key] = fields[key].map(value => value.toString().trim());
+      }
+    });
+
+    if (fields.title.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: true
+        }
+      });
+      this.errorMessages.title = 'Field title can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: false
+        }
+      });
+      this.errorMessages.title = '';
+    }
+    if (fields.description.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: true
+        }
+      });
+      this.errorMessages.description = 'Field description can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: false
+        }
+      });
+      this.errorMessages.description = '';
+    }
+    if (fields.dateStart.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: true
+        }
+      });
+      this.errorMessages.dateStart = 'Field date start can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: false
+        }
+      });
+      this.errorMessages.dateStart = '';
+    }
+    if (fields.dateEnd.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateEnd: true
+        }
+      });
+      this.errorMessages.dateEnd = 'Field date end can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateEnd: false
+        }
+      });
+      this.errorMessages.dateEnd = '';
+    }
+    if (fields.type === 'MCQ' && fields.question.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          question: true
+        }
+      });
+      this.errorMessages.question = 'Field question can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          question: false
+        }
+      });
+      this.errorMessages.question = '';
+    }
+    if (fields.type === 'MCQ' && fields.options.length <= 1) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          options: true
+        }
+      });
+      this.errorMessages.options =
+        'Field options must have at least two values!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          options: false
+        }
+      });
+      this.errorMessages.options = '';
+    }
+    if (fields.type === 'MCQ' && fields.correctAnswer.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          correctAnswer: true
+        }
+      });
+      this.errorMessages.correctAnswer =
+        'Field correct answer can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          correctAnswer: false
+        }
+      });
+      this.errorMessages.correctAnswer = '';
+    }
+    if (fields.points < 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          points: true
+        }
+      });
+      this.errorMessages.points = 'Field points can not be smaller than 0!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          points: false
+        }
+      });
+      this.errorMessages.points = '';
+    }
+
+    Object.entries(this.state.challengeFields).forEach(entry => {
+      if (entry[1].toString().length > 0) {
+        if (!this.validateInput(entry[0], entry[1])) {
+          error = true;
+        }
+      }
+    });
+
+    if (error) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('type', fields.type);
+    formData.append('title', fields.title);
+    formData.append('description', fields.description);
+    formData.append('dateEnd', fields.dateEnd);
+    formData.append('dateStart', fields.dateStart);
+    formData.append('points', fields.points.toString());
+    formData.append('question', fields.question);
+    formData.append('correctAnswer', fields.correctAnswer);
+    fields.options.forEach((option, index) =>
+      formData.append(`options[${index}]`, option)
     );
+    formData.append('post', fields.answer);
+    formData.append('talk_id', this.id.toString());
+
+    axiosInstance
+      .post(`/talk/${this.id}/challenge/create`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
+        this.setState({
+          challengeFields: {
+            answer: '',
+            correctAnswer: '',
+            dateEnd: '',
+            dateStart: '',
+            description: '',
+            options: [],
+            points: 0,
+            question: '',
+            title: '',
+            type: 'MCQ'
+          },
+          challengeFormOpen: false,
+          challenges: [...this.state.challenges, this.state.challengeFields]
+        });
+      })
+      .catch(err => console.log(err.response.data.message));
   };
 
   private renderEditForm = () => {
@@ -896,6 +1312,81 @@ class Talk extends PureComponent<Props, State> {
     console.log(
       'POST CREATED IN TALK - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
     );
+  };
+
+  private validateInput = (type, value) => {
+    let re;
+
+    switch (type) {
+      case 'answer':
+        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        break;
+      case 'correctAnswer':
+        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        break;
+      case 'dateEnd':
+        re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        break;
+      case 'dateStart':
+        re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        break;
+      case 'description':
+        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        break;
+      case 'local':
+        re = /^([\w\u00C0-\u017F]+[ \-,.\w\u00C0-\u017F]*){2,}$/;
+        break;
+      case 'options':
+        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        break;
+      case 'points':
+        re = /^\d{1,2}$/;
+        break;
+      case 'question':
+        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        break;
+      case 'tags':
+        re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
+        break;
+      case 'title':
+        re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
+        break;
+      case 'type':
+        re = /^(MCQ|POST|CMT)$/;
+    }
+
+    if (type === 'options') {
+      for (const option of value) {
+        if (!re.test(option)) {
+          this.setState({
+            error: {
+              ...this.state.error,
+              [type]: true
+            }
+          });
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (!re.test(value.toString())) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          [type]: true
+        }
+      });
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          [type]: false
+        }
+      });
+      return true;
+    }
   };
 }
 
