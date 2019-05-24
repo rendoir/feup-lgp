@@ -37,9 +37,7 @@ async function isRevoked(req, payload, done) {
 
         // continue
         done(null, false);
-    } catch (error)
-    /* istanbul ignore next */
-    {
+    } catch (error) /* istanbul ignore next */ {
         console.log(error);
         return done(error, false);
     }

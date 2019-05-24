@@ -30,9 +30,7 @@ export async function login(req, res, next) {
             token,
         };
         res.status(200).send(body);
-    } catch (error) 
-    /* istanbul ignore next */
-    {
+    } catch (error) /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while attempting to login' });
     }
