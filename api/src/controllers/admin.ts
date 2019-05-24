@@ -65,7 +65,7 @@ export async function getReportNotifications(req, res) {
             console.log('\n\nERROR:', error);
             res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
         });
-    } else { 
+    } else {
         res.status(401).send({ message: 'You do not have permissions to add an admin' });
     }
 
@@ -167,8 +167,8 @@ export async function banUser(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { 
-                res.status(400).send({ message: 'The email does not belong to a user' }); 
+            } else {
+                res.status(400).send({ message: 'The email does not belong to a user' });
             }
         }).catch(
             /* istanbul ignore next */
@@ -176,7 +176,7 @@ export async function banUser(req, res) {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while banning a user' });
         });
-    } else { 
+    } else {
         res.status(401).send({ message: 'You do not have permissions to ban a user' });
     }
 }
