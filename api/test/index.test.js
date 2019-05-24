@@ -364,46 +364,121 @@ describe('Admin tests', () => {
         });
     });
 
-    describe('Add Admin', () => {
-        it('Should add the user as admin', (done) => {
-            request(app)
-                .post('/admin')
-                .send({
-                    email: users[0].email,
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                });
-        });
-    
-        it('Should not add the user as admin (no user found)', (done) => {
-            request(app)
-                .post('/admin')
-                .send({
-                    email: "nouserfound@lgp.com",
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(400)
-                .end((err, res) => {
-                    done();
-                });
-        });
+    // describe('Report tests', () => {
+    //     it('Should not allow non admin users to get report notifications', (done) => {
+    //         request(app)
+    //             .get('/admin/notifications')
+    //             .set('authorization', 'Bearer ' + userjwt)
+    //             .expect(401)
+    //             .end((err, res) => {
+    //                 expect(res.body).to.be.instanceOf(Object);
+    //                 expect(res.body[0]).to.have.property('message');
+    //                 expect(res.body.message).to.have.string(`You do not have permissions to add an admin`);
+    //                 done();
+    //             })
+    //     });
 
-        it('Should remove admin (200)', (done) => {
-            request(app)
-                .post('/admin/user')
-                .send({ email: users[0].email })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                })
-        });
-    });
+    //     it('Should get notifications for admin', (done) => {
+    //         request(app)
+    //             .get('/admin/notifications')
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(200)
+    //             .end((err, res) => {
+    //                 expect(err).to.be.null;
+    //                 done();
+    //             })
+    //     });
+    // });
+
+    // describe('Whitelist tests', () => {
+    //     it('Shouldn\'t add bad email to the whitelist', (done) => {
+    //         request(app)
+    //             .post('/admin/users')
+    //             .send({
+    //                 email: 'aa',
+    //                 userLevel: 'user',
+    //             })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(400)
+    //             .end((err, res) => {
+    //                 expect(res.body).to.be.instanceOf(Object);
+    //                 expect(res.body).to.have.property('message');
+    //                 done();
+    //             })
+    //     });
+
+    //     it('Should add user to the whitelist', (done) => {
+    //         request(app)
+    //             .post('/admin/users')
+    //             .send({
+    //                 email: 'camachocosta@amadora.pt',
+    //                 userLevel: 'user',
+    //             })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(200)
+    //             .end((err, res) => {
+    //                 expect(err).to.be.null;
+    //                 expect(res.body).to.be.instanceOf(Object);
+    //                 expect(res.body).to.have.property('email');
+    //                 done();
+    //             })
+    //     });
+
+    //     it('Should remove user from the whitelist', (done) => {
+    //         request(app)
+    //             .delete('/admin/users')
+    //             .send({
+    //                 email: 'camachocosta@amadora.pt',
+    //             })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(200)
+    //             .end((err, res) => {
+    //                 expect(err).to.be.null;
+    //                 done();
+    //             })
+    //     });
+    // });
+
+    // describe('Add Admin', () => {
+    //     it('Should add the user as admin', (done) => {
+    //         request(app)
+    //             .post('/admin')
+    //             .send({
+    //                 email: users[0].email,
+    //             })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(200)
+    //             .end((err, res) => {
+    //                 expect(err).to.be.null;
+    //                 done();
+    //             });
+    //     });
+    
+    //     it('Should not add the user as admin (no user found)', (done) => {
+    //         request(app)
+    //             .post('/admin')
+    //             .send({
+    //                 email: "nouserfound@lgp.com",
+    //             })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(400)
+    //             .end((err, res) => {
+    //                 done();
+    //             });
+    //     });
+
+    //     it('Should remove admin (200)', (done) => {
+    //         request(app)
+    //             .post('/admin/user')
+    //             .send({ email: users[0].email })
+    //             .set('authorization', 'Bearer ' + admin.jwt)
+    //             .expect(200)
+    //             .end((err, res) => {
+    //                 expect(err).to.be.null;
+    //                 done();
+    //             })
+    //     });
+    // });
 });
 
 describe('User tests', () => {
