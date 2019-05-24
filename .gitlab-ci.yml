@@ -4,7 +4,7 @@ services:
 
 stages:
   - build
-  - lint
+  # - lint
   - test
   - release
   # - deploy
@@ -27,16 +27,16 @@ variables:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
-build_web:
-  stage: build
-  script:
-    - mkdir -p web/docker
-    - cd web
-    # - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
-    # - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
-    # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
-    - docker image build -t $WEB_PRE_IMAGE .
-    - docker push $WEB_PRE_IMAGE
+# build_web:
+#   stage: build
+#   script:
+#     - mkdir -p web/docker
+#     - cd web
+#     # - echo "$SITE_CRT" | tr -d '\r' > docker/site.crt
+#     # - echo "$SITE_KEY" | tr -d '\r' > docker/site.key
+#     # - echo "$NGINX_CONF" | tr -d '\r' > docker/nginx.conf
+#     - docker image build -t $WEB_PRE_IMAGE .
+#     - docker push $WEB_PRE_IMAGE
 
 build_api:
   stage: build
@@ -80,15 +80,15 @@ build_api_tests:
 #     - docker image build -t $E2E_TEST_IMAGE .
 #     - docker push $E2E_TEST_IMAGE
 
-test_web_linter:
-  stage: lint
-  script:
-    - cd web && npm install && npm run lint
+# test_web_linter:
+#   stage: lint
+#   script:
+#     - cd web && npm install && npm run lint
 
-test_api_linter:
-  stage: lint
-  script:
-    - cd api && npm install && npm run lint
+# test_api_linter:
+#   stage: lint
+#   script:
+#     - cd api && npm install && npm run lint
 
 # web_integration_tests:
 #   stage: test
