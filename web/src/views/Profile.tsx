@@ -6,15 +6,12 @@ import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
 import Post from '../components/Post/Post';
 import { apiSubscription } from '../utils/apiSubscription';
 import { apiGetUserInteractions } from '../utils/apiUserInteractions';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
-
-import AuthHelperMethods from '../utils/AuthHelperMethods';
 import withAuth from '../utils/withAuth';
 
 import ProfileModal from '../components/ProfileModal/ProfileModal';
-
-import { isNull } from 'util';
 
 import { Request, Step } from '../components/ProfileModal/types';
 
@@ -59,7 +56,7 @@ type State = {
 class Profile extends React.Component<IProps, State> {
   public static contextType = LanguageContext;
 
-  public id: number; // Id of the profile's user
+  private id: number; // Id of the profile's user
   private auth = new AuthHelperMethods();
 
   constructor(props: any) {
@@ -164,17 +161,19 @@ class Profile extends React.Component<IProps, State> {
                 </fieldset>
               </div>
 
-              <div className="mx-5 my-4">
-                <div className="buttonSubscribe">
-                  <button
-                    id="subscribeBtn"
-                    onClick={this.handleUserSubscription}
-                  >
-                    <i className={subscribeIcon} />
-                    <span>{subscribeBtnText}</span>
-                  </button>
+              {!this.auth.isLoggedInUser(this.id) && (
+                <div className="mx-5 my-4">
+                  <div className="buttonSubscribe">
+                    <button
+                      id="subscribeBtn"
+                      onClick={this.handleUserSubscription}
+                    >
+                      <i className={subscribeIcon} />
+                      <span>{subscribeBtnText}</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </aside>
           </div>
           <div id="bottom-div" className="w-100 mt-5">
@@ -225,12 +224,10 @@ class Profile extends React.Component<IProps, State> {
         old_password: '',
         password: '',
         university: this.state.user.university,
-        work: isNull(this.state.user.work_field)
-          ? ''
-          : this.state.user.work_field,
-        work_field: isNull(this.state.user.work_field)
-          ? ''
-          : this.state.user.work_field
+        work:
+          this.state.user.work_field == null ? '' : this.state.user.work_field,
+        work_field:
+          this.state.user.work_field == null ? '' : this.state.user.work_field
       },
       step: 'profile'
     });
@@ -398,7 +395,7 @@ class Profile extends React.Component<IProps, State> {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
 
-    if (!this.state.userRated) {
+    if (!this.state.userRated && this.auth.getUserPayload().id !== this.id) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handleUserRate}>

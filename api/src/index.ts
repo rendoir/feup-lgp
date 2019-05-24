@@ -36,6 +36,7 @@ import {
     commentRouter,
     conferenceRouter,
     feedRouter,
+    inviteRouter,
     loginRouter,
     postRouter,
     productsRouter,
@@ -46,7 +47,9 @@ import {
 } from './routes/routes';
 // Create a new Express application.
 export const app = express();
+import cors = require('cors');
 
+app.use(cors());
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(morgan('combined'));
@@ -81,6 +84,7 @@ app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
 app.use('/conference', conferenceRouter);
 app.use('/products', productsRouter);
+app.use('/invite', inviteRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });

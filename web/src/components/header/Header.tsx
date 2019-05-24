@@ -3,7 +3,8 @@ import {
   faClinicMedical,
   faExclamationCircle,
   faPlus,
-  faUserMd
+  faUserMd,
+  faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import React, { MouseEvent, PureComponent } from 'react';
 import Nav from 'react-bootstrap/Nav';
@@ -53,6 +54,7 @@ type State = {
     livestream: string;
     switcher: string;
   };
+  userFirstName;
   adminNotifications: number;
   userNotifications: number;
 };
@@ -88,6 +90,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       },
       search: '',
       step: 'type',
+      userFirstName: 'User',
       userNotifications: 0
     };
 
@@ -96,6 +99,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   public componentDidMount(): void {
     if (this.auth.loggedIn()) {
+      this.apiGetUserName();
       this.getPossibleTags();
       this.getUserNotificationAmount();
       this.getAdminNotificationAmount();
@@ -117,6 +121,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           {this.auth.loggedIn() && this.renderLinks()}
           {this.auth.loggedIn() && <SearchSimpleForm />}
           {this.renderLanguageSelector()}
+          {this.renderInvite()}
           {this.auth.loggedIn() && this.renderButtons()}
         </Navbar.Collapse>
       </Navbar>
@@ -137,6 +142,14 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           onChange={this.props.onLanguageChange}
         />
       </div>
+    );
+  }
+
+  private renderInvite() {
+    return (
+      <Navbar.Brand href={'/invite'} className={styles.logo}>
+        <Icon icon={faUserPlus} size={'lg'} className={styles.icon} />
+      </Navbar.Brand>
     );
   }
 
@@ -162,6 +175,18 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         </Nav.Link>
       </Nav>
     );
+  }
+
+  private apiGetUserName() {
+    const userID = this.auth.getUserPayload().id;
+    axiosInstance
+      .get(`/users/${userID}`)
+      .then(res => {
+        this.setState({
+          userFirstName: res.data.user.first_name
+        });
+      })
+      .catch(() => console.log('Failed to get user'));
   }
 
   private getNotificationIcon(type: string = 'user') {
@@ -207,7 +232,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           title={
             <div style={{ display: 'inline-block' }} className={styles.link}>
               <Icon icon={faUserMd} size={'lg'} className={styles.icon} />{' '}
-              {dictionary.user_dropdown[this.context]}
+              {this.state.userFirstName}
             </div>
           }
           id="header_user_dropdown"

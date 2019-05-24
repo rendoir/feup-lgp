@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from './axiosInstance';
 
 // - Verify if a given user has reported a given content (Returns true if user has already reported that content, false if he hasn't)
 
@@ -31,7 +31,7 @@ export async function apiReportPost(postId: number, reason: string) {
   const body = { reason };
   axiosInstance
     .post(apiURL, body)
-    .catch(() => console.log("Failed to report post"));
+    .catch(() => console.log('Failed to report post'));
 }
 
 export async function apiReportComment(commentId: number, reason: string) {
@@ -39,7 +39,7 @@ export async function apiReportComment(commentId: number, reason: string) {
   const body = { reason };
   axiosInstance
     .post(apiURL, body)
-    .catch(() => console.log("Failed to report comment"));
+    .catch(() => console.log('Failed to report comment'));
 }
 
 // - Fetch report notifications for admin
@@ -111,11 +111,11 @@ export async function apiDeleteContent(
   reportedContentType: string
 ): Promise<boolean> {
   const apiURL =
-    reportedContentType === "comment"
+    reportedContentType === 'comment'
       ? `/post/1/comment/${reportedContentId}`
       : `/post/${reportedContentId}`;
   const body =
-    reportedContentType === "comment"
+    reportedContentType === 'comment'
       ? {
           data: {
             id: reportedContentId

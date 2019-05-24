@@ -107,6 +107,8 @@ export let dictionary: Dictionary = {
   password: { PT: 'Palavra passe', EN: 'Password' },
   new_password: { PT: 'Nova palavra passe', EN: 'New Password' },
   old_password: { PT: 'Palavra passe atual', EN: 'Current Password' },
+  wrong_credentials: { PT: 'Credenciais erradas', EN: 'Wrong credentials' },
+  email_exists: { PT: 'Este email já existe', EN: 'Email already exists' },
   notifications: { PT: 'Notificações', EN: 'Notifications' },
   no_notifications: {
     PT: 'Não tem notificações',
@@ -298,6 +300,11 @@ export let dictionary: Dictionary = {
   invite_users_to: {
     PT: 'Convide utilizadores para a sua',
     EN: 'Invite users to your'
+  },
+  invite_sucess: { PT: 'Convite enviado com sucesso', EN: 'Invitation Sent' },
+  invite_email_error: {
+    PT: 'Por favor insira um email correto',
+    EN: 'Enter a valid email address'
   },
   done: { PT: 'Concluído', EN: 'Done' },
   report_reason: { PT: 'Razão de reportar', EN: 'Report reason' },
@@ -520,6 +527,10 @@ export let dictionary: Dictionary = {
   error_unban_user: {
     PT: 'Não foi possível desbanir o utilizador',
     EN: 'Error unbanning user'
+  },
+  send_email: {
+    PT: 'Insira o email da pessoa que deseja convidar para a plataforma:',
+    EN: 'Enter the email of the person you want to invite to the platform:'
   },
   empty: { PT: '', EN: '' }
 };

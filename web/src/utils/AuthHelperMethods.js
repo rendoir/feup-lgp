@@ -1,14 +1,14 @@
 // Source: https://medium.com/@romanchvalbo/how-i-set-up-react-and-node-with-json-web-token-for-authentication-259ec1a90352
 
-import decode from "jwt-decode";
-import { getApiURL } from "./apiURL";
+import decode from 'jwt-decode';
+import { getApiURL } from './apiURL';
 
 export default class AuthHelperMethods {
   login = async (email, password) => {
     try {
       // Get a token from api server using the fetch api
       const res = await this.fetch(getApiURL(`/login`), {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({
           email,
           password
@@ -30,7 +30,7 @@ export default class AuthHelperMethods {
 
   isAdmin = () => {
     const user = this.getUserPayload(); // Getting token from localstorage
-    return this.loggedIn() && user && user.permission === "admin";
+    return this.loggedIn() && user && user.permission === 'admin';
   };
 
   isTokenExpired = token => {
@@ -41,42 +41,51 @@ export default class AuthHelperMethods {
         return true;
       } else return false;
     } catch (err) {
-      console.log("expired check failed! Line 42: AuthService.js");
+      console.log('expired check failed! Line 42: AuthService.js');
       return false;
     }
   };
 
   setToken = idToken => {
     // Saves user token to localStorage
-    localStorage.setItem("id_token", idToken);
+    localStorage.setItem('id_token', idToken);
   };
 
   getToken = () => {
     // Retrieves the user token from localStorage
-    return localStorage.getItem("id_token");
+    return localStorage.getItem('id_token');
   };
 
   logout = () => {
     // Clear user token and profile data from localStorage
-    localStorage.removeItem("id_token");
+    localStorage.removeItem('id_token');
   };
 
   getUserPayload = () => {
-    // Using jwt-decode npm package to decode the token
-    let answer = this.getToken() ? decode(this.getToken()) : null;
-    return answer;
+    const payload = this.getToken() ? decode(this.getToken()) : null;
+    return payload;
+  };
+
+  isAdmin = () => {
+    const payload = this.getUserPayload();
+    return payload && payload.permission === 'admin';
+  };
+
+  isLoggedInUser = id => {
+    const payload = this.getUserPayload();
+    return payload && payload.id === id;
   };
 
   fetch = (url, options) => {
     // performs api calls sending the required authentication headers
     const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json"
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     };
     // Setting Authorization header
     // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
     if (this.loggedIn()) {
-      headers["Authorization"] = "Bearer " + this.getToken();
+      headers['Authorization'] = 'Bearer ' + this.getToken();
     }
 
     return fetch(url, {
@@ -88,7 +97,7 @@ export default class AuthHelperMethods {
   };
 
   getAuthHeader = () => {
-    return "Bearer " + this.getToken();
+    return 'Bearer ' + this.getToken();
   };
 
   _checkStatus = response => {

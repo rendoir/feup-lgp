@@ -36,6 +36,7 @@ import {
   apiUserJoinTalk,
   apiUserLeaveTalk
 } from '../utils/apiTalk';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
@@ -118,10 +119,11 @@ interface IState {
 class Talk extends React.Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public id: number;
-  public ownerId: number | undefined;
-  public ownerName: string | undefined;
-  public tags: string[];
+  private id: number;
+  private ownerId: number | undefined;
+  private ownerName: string | undefined;
+  private tags: string[];
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -200,8 +202,8 @@ class Talk extends React.Component<IProps, IState> {
     this.handleLeaveTalk = this.handleLeaveTalk.bind(this);
   }
 
-  public componentDidMount() {
-    this.apiGetTalk();
+  public async componentDidMount() {
+    await this.apiGetTalk();
     if (this.props.user.id === this.ownerId || !this.state.isHidden) {
       this.getPossibleTags();
       this.apiGetUserCanJoin();
@@ -210,7 +212,92 @@ class Talk extends React.Component<IProps, IState> {
     }
   }
 
-  public async handleJoinTalk() {
+  public render() {
+    if (this.state.isHidden && this.props.user.id === this.ownerId) {
+      return (
+        <div id="Talk" className="my-5">
+          <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={'/conference/' + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
+            <h4>
+              {dictionary.title[this.context]}: {this.state.title}
+            </h4>
+            <h5>{dictionary.closed_talk[this.context]}</h5>
+          </div>
+
+          <div className="container my-5">
+            <div className="conf_side">
+              <div className="p-3">{this.getDetails()}</div>
+              {(this.auth.isLoggedInUser(this.ownerId) ||
+                this.auth.isAdmin()) && (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div id="Talk" className="my-5">
+          <div className="container my-5">
+            <button className="return_conf">
+              <i className="fas fa-undo" />
+              <a href={'/conference/' + this.state.conf_id}>
+                {dictionary.return_conference[this.context]}
+              </a>
+            </button>
+            <h4>{this.state.title}</h4>
+            <p>{this.state.description}</p>
+          </div>
+          {this.state.hasLiveStream &&
+            this.state.userParticipation &&
+            this.state.userCanJoin &&
+            this.renderStream()}
+          <div className="container my-5">
+            <div className="conf_side">
+              {this.getJoinButton()}
+              <div className="p-3">{this.getDetails()}</div>
+              {(this.auth.isLoggedInUser(this.ownerId) ||
+                this.auth.isAdmin()) && (
+                <div className="p-3">{this.getAdminButtons()}</div>
+              )}
+              {this.getChallenges()}
+            </div>
+            <div className="conf_posts">
+              {this.state.postModalOpen ? (
+                <CreateNewModal
+                  pending={false}
+                  onSubmit={this.handleSubmit}
+                  onStepChange={step => this.setState({ step })}
+                  maxGroupSize={5}
+                  request={this.state.request}
+                  onRequestChange={request => this.setState({ request })}
+                  onClose={this.resetState}
+                  autoFocus={false}
+                  step={'postConf'}
+                  tags={this.tags}
+                />
+              ) : null}
+              <button
+                className="create"
+                onClick={this.createConfPost}
+                hidden={this.state.archived}
+              >
+                {dictionary.create_post[this.context]}
+              </button>
+              <InfiniteScroll requestUrl={`/talk/${this.id}`} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  private async handleJoinTalk() {
     if (this.state.waitingUserJoinLeave) {
       return;
     }
@@ -227,7 +314,7 @@ class Talk extends React.Component<IProps, IState> {
     });
   }
 
-  public async handleLeaveTalk() {
+  private async handleLeaveTalk() {
     if (this.state.waitingUserJoinLeave) {
       return;
     }
@@ -244,7 +331,7 @@ class Talk extends React.Component<IProps, IState> {
     });
   }
 
-  public apiGetPointsOfUserTalk() {
+  private apiGetPointsOfUserTalk() {
     axiosInstance
       .get(`/talk/${this.id}/user/${this.props.user.id}/points`)
       .then(res => {
@@ -255,58 +342,58 @@ class Talk extends React.Component<IProps, IState> {
       );
   }
 
-  public apiGetTalk() {
-    axiosInstance
-      .get(`/talk/${this.id}`)
-      .then(res => {
-        const talk = res.data.talk;
-        const postsComing = res.data;
+  private async apiGetTalk() {
+    try {
+      const res = await axiosInstance.get(`/talk/${this.id}`);
+      const talk = res.data.talk;
+      const posts = res.data.posts;
 
-        const challengesConf = res.data.challenges;
+      const challengesConf = res.data.challenges;
 
-        if (talk.privacy === 'closed') {
-          this.setState({
-            isHidden: true
-          });
-        }
-
-        this.ownerId = talk.user_id;
-        this.ownerName = `${talk.first_name} ${talk.last_name}`;
-
-        const reqChalCopy = this.state.requestChallenge;
-        if (postsComing.posts.length > 0) {
-          reqChalCopy.post = postsComing.posts[0].id;
-        }
-
+      if (talk.privacy === 'closed') {
         this.setState({
-          archived: talk.archived,
-          challenges: challengesConf,
-          conf_id: talk.conference,
+          isHidden: true
+        });
+      }
+
+      this.ownerId = talk.user_id;
+      this.ownerName = `${talk.first_name} ${talk.last_name}`;
+
+      const reqChalCopy = this.state.requestChallenge;
+      if (posts.length > 0) {
+        reqChalCopy.post = posts[0].id;
+      }
+
+      this.setState({
+        archived: talk.archived,
+        challenges: challengesConf,
+        conf_id: talk.conference,
+        dateEnd: talk.dateend,
+        dateStart: talk.datestart,
+        description: talk.about,
+        editFields: {
           dateEnd: talk.dateend,
           dateStart: talk.datestart,
           description: talk.about,
-          editFields: {
-            dateEnd: talk.dateend,
-            dateStart: talk.datestart,
-            description: talk.about,
-            hasLiveStream: talk.livestream_url !== '',
-            livestreamUrl: talk.livestream_url,
-            place: talk.local,
-            title: talk.title
-          },
           hasLiveStream: talk.livestream_url !== '',
           livestreamUrl: talk.livestream_url,
           place: talk.local,
-          posts: postsComing.posts,
-          privacy: talk.privacy,
-          requestChallenge: reqChalCopy,
           title: talk.title
-        });
-      })
-      .catch(() => console.log('Failed to get talk info'));
+        },
+        hasLiveStream: talk.livestream_url !== '',
+        livestreamUrl: talk.livestream_url,
+        place: talk.local,
+        posts,
+        privacy: talk.privacy,
+        requestChallenge: reqChalCopy,
+        title: talk.title
+      });
+    } catch (e) {
+      console.log('Failed to get talk info');
+    }
   }
 
-  public handleHideTalk() {
+  private handleHideTalk() {
     let privacyState = 'closed';
 
     if (this.state.isHidden) {
@@ -334,7 +421,7 @@ class Talk extends React.Component<IProps, IState> {
       .catch(() => console.log('Failed to update privacy'));
   }
 
-  public apiSetArchived() {
+  private apiSetArchived() {
     axiosInstance
       .post(`/talk/${this.id}/archive`)
       .then()
@@ -345,7 +432,7 @@ class Talk extends React.Component<IProps, IState> {
     });
   }
 
-  public apiSetUnarchived() {
+  private apiSetUnarchived() {
     axiosInstance
       .delete(`/talk/${this.id}/archive`)
       .then()
@@ -356,99 +443,17 @@ class Talk extends React.Component<IProps, IState> {
     });
   }
 
-  public async apiGetUserCanJoin() {
+  private async apiGetUserCanJoin() {
     const canJoin: boolean = await apiCheckUserCanJoinTalk(this.id);
     this.setState({ userCanJoin: canJoin });
   }
 
-  public async apiGetUserParticipation() {
+  private async apiGetUserParticipation() {
     const participant: boolean = await apiCheckUserTalkParticipation(this.id);
     this.setState({ userParticipation: participant });
   }
 
-  public render() {
-    const isArchived = this.state.archived;
-    if (this.state.isHidden && this.props.user.id !== this.ownerId) {
-      return (
-        <div id="Talk" className="my-5">
-          <div className="container my-5">
-            <button className="return_conf">
-              <i className="fas fa-undo" />
-              <a href={'/conference/' + this.state.conf_id}>
-                {dictionary.return_conference[this.context]}
-              </a>
-            </button>
-            <h4>
-              {dictionary.title[this.context]}: {this.state.title}
-            </h4>
-            <h5>{dictionary.closed_talk[this.context]}</h5>
-          </div>
-
-          <div className="container my-5">
-            <div className="conf_side">
-              <div className="p-3">{this.getDetails()}</div>
-              <div className="p-3">{this.getAdminButtons()}</div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div id="Talk" className="my-5">
-          <div className="container my-5">
-            <button className="return_conf">
-              <i className="fas fa-undo" />
-              <a href={'/conference/' + this.state.conf_id}>
-                {dictionary.return_conference[this.context]}
-              </a>
-            </button>
-            <h4>{this.state.title}</h4>
-            <p>{this.state.description}</p>
-          </div>
-          {this.state.hasLiveStream &&
-            this.state.userParticipation &&
-            this.state.userCanJoin &&
-            this.renderStream()}
-          <div className="container my-5">
-            <div className="conf_side">
-              {this.getJoinButton()}
-              <div className="p-3">{this.getDetails()}</div>
-              {this.ownerId === this.props.user.id ? (
-                <div className="p-3">{this.getAdminButtons()}</div>
-              ) : null}
-              {this.getChallenges()}
-            </div>
-            <div className="conf_posts">
-              {this.state.postModalOpen ? (
-                <CreateNewModal
-                  pending={false}
-                  onSubmit={this.handleSubmit}
-                  onStepChange={step => this.setState({ step })}
-                  maxGroupSize={5}
-                  request={this.state.request}
-                  onRequestChange={request => this.setState({ request })}
-                  onClose={this.resetState}
-                  autoFocus={false}
-                  step={'postConf'}
-                  tags={this.tags}
-                />
-              ) : null}
-              <button
-                className="create"
-                onClick={this.createConfPost}
-                hidden={isArchived}
-              >
-                {dictionary.create_post[this.context]}
-              </button>
-              <InfiniteScroll requestUrl={`/talk/${this.id}`} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-  }
-
-  public getHiddenInfo() {
+  private getHiddenInfo() {
     if (this.state.isHidden) {
       return (
         <div id="hidden_info">
@@ -458,7 +463,7 @@ class Talk extends React.Component<IProps, IState> {
     }
   }
 
-  public getDropdownButtons() {
+  private getDropdownButtons() {
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_talk[this.context]
       : dictionary.hide_talk[this.context];
@@ -722,18 +727,30 @@ class Talk extends React.Component<IProps, IState> {
   }
 
   private getAdminButtons() {
-    const isArchived = this.state.archived;
     const hideBtnText = this.state.isHidden
       ? dictionary.reopen_talk[this.context]
       : dictionary.hide_talk[this.context];
-    const isArchivedBtn = this.state.archived
-      ? dictionary.unarchive_talk[this.context]
-      : dictionary.archive_talk[this.context];
     return (
       <div id="conf-admin-buttons" className="p-0 m-0">
         <h6>{dictionary.administrator[this.context]}</h6>
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderInvite()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderChallenge()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderEditTalk()}
+        {this.auth.isLoggedInUser(this.ownerId) && this.renderArchiveTalk()}
+        <button onClick={this.handleHideTalk} disabled={this.state.archived}>
+          <i className="fas fa-trash" />
+          {hideBtnText}
+        </button>
+        {this.getHiddenInfo()}
+      </div>
+    );
+  }
+
+  private renderInvite() {
+    return (
+      <>
         <button
-          disabled={isArchived}
+          disabled={this.state.archived}
           data-toggle="modal"
           data-target={`#invite_talk_modal_${this.id}`}
         >
@@ -742,10 +759,17 @@ class Talk extends React.Component<IProps, IState> {
         </button>
         {/* Invite Users */}
         <InviteModal talkId={this.id} />
+      </>
+    );
+  }
+
+  private renderChallenge() {
+    return (
+      <>
         <button
           type="button"
           onClick={this.handleCreateChallenge}
-          disabled={isArchived}
+          disabled={this.state.archived}
         >
           <i className="fas fa-puzzle-piece" />
           {dictionary.create_challenge_talk[this.context]}
@@ -767,131 +791,11 @@ class Talk extends React.Component<IProps, IState> {
             posts={this.state.posts}
           />
         ) : null}
-        {this.editForm()}
-        <button
-          type="button"
-          onClick={() => {
-            this.archiveTalk();
-          }}
-        >
-          <i className="fas fa-archive" />
-          {isArchivedBtn}
-        </button>
-        <button onClick={this.handleHideTalk} disabled={isArchived}>
-          <i className="fas fa-trash" />
-          {hideBtnText}
-        </button>
-        {this.getHiddenInfo()}
-      </div>
+      </>
     );
   }
 
-  private handleCreateChallenge = (event: MouseEvent): void => {
-    event.preventDefault();
-    this.setState({ isChallengeModalOpen: true });
-  };
-
-  private getJoinButton() {
-    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
-    let buttonText = this.state.userParticipation
-      ? dictionary.leave_talk[this.context]
-      : dictionary.join_talk[this.context];
-
-    if (!this.state.userCanJoin) {
-      buttonClass = 'cannot_join';
-      buttonText = dictionary.no_access_talk[this.context];
-    }
-    // TODO: METER EFEITOS AO CARREGAR
-    return (
-      <button
-        className={`join_button ${buttonClass}`}
-        onClick={
-          this.state.userParticipation
-            ? this.handleLeaveTalk
-            : this.handleJoinTalk
-        }
-        disabled={!this.state.userCanJoin}
-      >
-        {buttonText}
-      </button>
-    );
-  }
-
-  private getVisibilityIcon(v: string): IconDefinition {
-    switch (v) {
-      case 'public':
-        return faGlobeAfrica;
-      case 'followers':
-        return faUserFriends;
-      case 'private':
-        return faLock;
-      default:
-        return faQuestion;
-    }
-  }
-
-  private handleChallengeClick(challenge: number | undefined) {
-    if (challenge) {
-      this.setState({
-        clickedChallenge: challenge
-      } as IState);
-    }
-  }
-
-  private getChallenges() {
-    if (!this.state.userParticipation || !this.state.userCanJoin) {
-      return;
-    }
-
-    const challenges: any[] = [];
-    if (this.state.challenges.length > 0) {
-      challenges.push(
-        <ChallengeCarousel
-          key={'challenges_' + this.id}
-          id={this.id}
-          challenges={this.state.challenges}
-          userId={this.props.user.id}
-          handleChallengeClick={this.handleChallengeClick}
-        />
-      );
-    } else {
-      challenges.push(
-        <div key={'no_challenges'}>
-          {' '}
-          {dictionary.no_challenges[this.context]}{' '}
-        </div>
-      );
-    }
-
-    return (
-      <div key={'challenges_points'}>
-        <div key={'points_div_' + this.id} className="challenges">
-          <div key={'points_ins_div_' + this.id} className="p-3">
-            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h5>
-                {dictionary.my_points[this.context]}{' '}
-                <small>{this.state.points}</small>
-              </h5>
-            </div>
-          </div>
-        </div>
-        <div key={'challenges_div_' + this.id} className="challenges">
-          <div key={'challenges_ins_div_' + this.id} className="p-3">
-            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
-              <h4>
-                {dictionary.challenge_conference[this.context]}{' '}
-                <i className="fas fa-puzzle-piece" />
-              </h4>
-              <br />
-              {challenges}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  private editForm = () => {
+  private renderEditTalk() {
     const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
@@ -999,7 +903,129 @@ class Talk extends React.Component<IProps, IState> {
         </Modal>
       </>
     );
+  }
+
+  private renderArchiveTalk() {
+    const isArchivedBtn = this.state.archived
+      ? dictionary.unarchive_talk[this.context]
+      : dictionary.archive_talk[this.context];
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          this.archiveTalk();
+        }}
+      >
+        <i className="fas fa-archive" />
+        {isArchivedBtn}
+      </button>
+    );
+  }
+
+  private handleCreateChallenge = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isChallengeModalOpen: true });
   };
+
+  private getJoinButton() {
+    let buttonClass = this.state.userParticipation ? 'leave' : 'join';
+    let buttonText = this.state.userParticipation
+      ? dictionary.leave_talk[this.context]
+      : dictionary.join_talk[this.context];
+
+    if (!this.state.userCanJoin) {
+      buttonClass = 'cannot_join';
+      buttonText = dictionary.no_access_talk[this.context];
+    }
+    // TODO: METER EFEITOS AO CARREGAR
+    return (
+      <button
+        className={`join_button ${buttonClass}`}
+        onClick={
+          this.state.userParticipation
+            ? this.handleLeaveTalk
+            : this.handleJoinTalk
+        }
+        disabled={!this.state.userCanJoin}
+      >
+        {buttonText}
+      </button>
+    );
+  }
+
+  private getVisibilityIcon(v: string): IconDefinition {
+    switch (v) {
+      case 'public':
+        return faGlobeAfrica;
+      case 'followers':
+        return faUserFriends;
+      case 'private':
+        return faLock;
+      default:
+        return faQuestion;
+    }
+  }
+
+  private handleChallengeClick(challenge: number | undefined) {
+    if (challenge) {
+      this.setState({
+        clickedChallenge: challenge
+      } as IState);
+    }
+  }
+
+  private getChallenges() {
+    if (!this.state.userParticipation || !this.state.userCanJoin) {
+      return;
+    }
+
+    const challenges: any[] = [];
+    if (this.state.challenges.length > 0) {
+      challenges.push(
+        <ChallengeCarousel
+          key={'challenges_' + this.id}
+          id={this.id}
+          challenges={this.state.challenges}
+          userId={this.props.user.id}
+          handleChallengeClick={this.handleChallengeClick}
+        />
+      );
+    } else {
+      challenges.push(
+        <div key={'no_challenges'}>
+          {' '}
+          {dictionary.no_challenges[this.context]}{' '}
+        </div>
+      );
+    }
+
+    return (
+      <div key={'challenges_points'}>
+        <div key={'points_div_' + this.id} className="challenges">
+          <div key={'points_ins_div_' + this.id} className="p-3">
+            <div key={'points_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h5>
+                {dictionary.my_points[this.context]}{' '}
+                <small>{this.state.points}</small>
+              </h5>
+            </div>
+          </div>
+        </div>
+        <div key={'challenges_div_' + this.id} className="challenges">
+          <div key={'challenges_ins_div_' + this.id} className="p-3">
+            <div key={'challenges_ins_ins_div_' + this.id} className="p-0 m-0">
+              <h4>
+                {dictionary.challenge_conference[this.context]}{' '}
+                <i className="fas fa-puzzle-piece" />
+              </h4>
+              <br />
+              {challenges}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   private handleEditSubmission = () => {
     const editFields = this.state.editFields;
