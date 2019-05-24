@@ -1,8 +1,6 @@
-import * as fs from 'fs';
-import * as request from 'request-promise';
-// import * as Twitter from 'twitter';
+import { query } from "../db/db";
 
-import {query} from '../db/db';
+// import * as Twitter from 'twitter';
 
 export async function createChallenge(req, res) {
 
@@ -15,14 +13,11 @@ export async function createChallenge(req, res) {
         return;
     }
 
-    const content = [];
-
-    if (req.body.description !== '') {
-        content.push('Description: ' + req.body.description);
-    }
-
+    let answers = null;
     let type = '';
     let points = 0;
+    let question = null;
+    let post = null;
 
     if (!isNaN(Number(req.body.points))) {
         points = Number(req.body.points);
@@ -35,18 +30,19 @@ export async function createChallenge(req, res) {
         }
         case 'MCQ': {
             type = 'question_options';
-            content.push('Question: ' + req.body.question);
-            content.push('CorrectAnswer: ' + req.body.correctAnswer);
+            question = req.body.question;
+            answers = [];
+            answers.push('CorrectAnswer: ' + req.body.correctAnswer);
             for (const key in req.body) {
                 if (key.includes('options[')) {
-                    content.push('Answer: ' + req.body[key]);
+                    answers.push('Answer: ' + req.body[key]);
                 }
             }
             break;
         }
         case 'CMT': {
             type = 'comment_post';
-            content.push('PostToComment: ' + req.body.post);
+            post = Number(req.body.post);
             break;
         }
         default:
@@ -55,18 +51,21 @@ export async function createChallenge(req, res) {
 
     query({
         text: `INSERT INTO challenges
-                (title, dateStart, dateEnd, points, challengeType, content, talk)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                (title, description, dateStart, dateEnd, points, challengeType, question, answers, post, talk)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         values: [
             req.body.title,
+            req.body.description,
             req.body.dateStart,
             req.body.dateEnd,
             points,
             type,
-            content,
+            question,
+            answers,
+            post,
             Number(req.body.talk_id),
         ],
-    }).then((result) => {
+    }).then(() => {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
@@ -90,7 +89,7 @@ export function solveChallenge(req, res) {
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while adding a challenge to a conference' });
+        res.status(400).send({ message: 'Could not update challenge state. Error: ' + error });
     });
 }
 

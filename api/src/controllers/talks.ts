@@ -1,4 +1,4 @@
-import { query } from '../db/db';
+import { query } from "../db/db";
 
 export function createTalk(req, res) {
   if (!req.body.title.trim()) {
@@ -354,12 +354,49 @@ export async function gettalk(req, res) {
     });
 
     const challenges = await query ({
-      text: `SELECT id, title, dateStart, dateEnd, points, challengeType, content
-                    FROM challenges
-					          WHERE talk = $1
-                    ORDER BY dateStart DESC`,
+      text: `SELECT *
+              FROM challenges
+              WHERE talk = $1
+              ORDER BY dateStart DESC`,
       values: [id],
     });
+    for (const challenge of challenges.rows) {
+      const isAnswered = await query({
+        text: `SELECT uc.answer, uc.complete
+              FROM user_challenge uc
+              INNER JOIN challenges c ON c.id = uc.challenge
+              INNER JOIN talks t ON t.id = c.talk
+              WHERE (
+                t.id = $1
+                AND uc.challenged = $2
+                AND uc.challenge = $3
+              )
+              `,
+        values: [id, userId, challenge.id],
+      });
+      if (isAnswered.rows.length > 0) {
+        challenge.isComplete = true;
+        challenge.userAnswer = isAnswered.rows[0].answer;
+        challenge.isCorrect = isAnswered.rows[0].complete;
+      } else {
+        challenge.isComplete = false;
+        challenge.userAnswer = null;
+        challenge.isCorrect = null;
+      }
+      if (challenge.challengetype === 'question_options') {
+        const answers = challenge.answers;
+        challenge.options = [];
+        answers.forEach((answer) => {
+          const aux = answer.split(': ');
+          if (aux[0] === 'CorrectAnswer') {
+            challenge.correctAnswer = aux[1];
+          } else {
+            challenge.options.push(aux[1]);
+          }
+          delete challenge.answers;
+        });
+      }
+    }
     const posts = await query({
       text: `SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, users.id AS user_id
