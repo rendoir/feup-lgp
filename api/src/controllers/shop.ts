@@ -2,7 +2,7 @@ import { query } from '../db/db';
 import { isAdmin } from './admin';
 
 export async function getProducts(req, res) {
-    let conferenceId = req.params.conferenceId;
+    let conferenceId = req.params.id;
     const userId = req.user.id;
     try {
         let result;
@@ -12,8 +12,7 @@ export async function getProducts(req, res) {
                         FROM products
                         WHERE 
                             conference IS null
-                        ORDER BY date DESC
-                        LIMIT 2`,
+                        ORDER BY date DESC`,
             });
         } else {
             result = await query({
@@ -21,8 +20,7 @@ export async function getProducts(req, res) {
                         FROM products
                         WHERE 
                             conference = $1
-                        ORDER BY date DESC
-                        LIMIT 2`,
+                        ORDER BY date DESC`,
                 values: [conferenceId],
             });
         }

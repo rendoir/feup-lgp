@@ -56,7 +56,7 @@ class App extends React.Component<{}, State> {
                 <Route path="/landing" component={Landing} />
                 <Route path="/search" component={SearchResults} />
                 <Route path="/talk/:id" component={Talk} />
-                <Route path="/conference/:id/shop" component={ConferenceShop} />
+                <Route path="/conference/:id/shop" component={Shop} />
                 <Route path="/conference/:id" component={Conference} />
                 <Route path="/conferences/" component={Conferences} />
                 <Route path="/notifications" component={Notifications} />

@@ -124,6 +124,18 @@ export async function ignoreContentReports(req, res) {
     });
 }
 
+
+export async function isUserAdmin(req, res) {
+    const isRequesterAdmin = await isAdmin(req.params.id);
+
+    if (isRequesterAdmin) {
+        res.send(true);
+    }
+    else {
+        res.send(false);
+    }
+}
+
 export async function addAdmin(req, res) {
     const isRequesterAdmin = await isAdmin(req.user.id);
 

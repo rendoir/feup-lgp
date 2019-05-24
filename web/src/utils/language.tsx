@@ -190,6 +190,7 @@ export let dictionary: Dictionary = {
   search_users: { PT: 'Utilizadores', EN: 'Users' },
   shop_you_have: { PT: 'Tem', EN: 'You have' },
   shop_points: { PT: 'pontos', EN: 'points' },
+  shop_stock: { PT: 'Em stock: ', EN: 'In stock: ' },
   shop_search_points: { PT: 'Procurar produtos', EN: 'Search products' },
   shop_exchange: { PT: 'Trocar', EN: 'Exchange' },
   tag_placeholder: {

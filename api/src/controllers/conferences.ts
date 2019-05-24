@@ -234,7 +234,7 @@ export async function getAllConferences(req, res) {
 }
 
 export async function getProducts(req, res) {
-  shop.getProduct(req, res, req.params.conf_id);
+  shop.getProducts(req, res);
 }
 
 export async function getProduct(req, res) {

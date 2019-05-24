@@ -9,6 +9,11 @@ import Post from '../components/Post/Post';
 
 type Props = {
   user: any;
+  match: {
+    params: {
+      id: number;
+    };
+  };
 };
 
 type State = {
@@ -121,43 +126,7 @@ class Shop extends React.Component<Props, State> {
               </div>
             </div>
 
-            <div className="row">
-              {this.renderProducts()}
-              <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-                <div className="card h-100">
-                  <a href="#">
-                    {' '}
-                    <img
-                      className="card-img-top"
-                      src="http://placehold.it/700x400"
-                      alt=""
-                    />{' '}
-                  </a>
-                  <div className="card-body">
-                    <h4 className="card-title">
-                      <a href="#">Item One</a>
-                    </h4>
-                    <h5>10 {dictionary.shop_points[this.context]}</h5>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!{' '}
-                    </p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="">
-                      <Button
-                        theme="primary"
-                        view="outline"
-                        size="small"
-                        wide={true}
-                      >
-                        {dictionary.shop_exchange[this.context]}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div className="row">{this.renderProducts()}</div>
           </div>
         </div>
       </div>
@@ -165,11 +134,19 @@ class Shop extends React.Component<Props, State> {
   }
 
   private apiGetProducts = () => {
+    let conferenceId, url;
+    if (this.props.match.params.id === undefined) {
+      conferenceId = null;
+      url = '/shop/';
+    } else {
+      conferenceId = this.props.match.params.id;
+      url = `/conference/${this.props.match.params.id}/shop/`;
+    }
     this.setState({ isLoading: true }, () => {
       axiosInstance
-        .get('/shop/', {
+        .get(url, {
           params: {
-            conferenceId: null
+            conferenceId: conferenceId
           }
         })
         .then(res => {

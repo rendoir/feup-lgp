@@ -47,7 +47,10 @@ class Product extends Component<Props, IState> {
             <h5>
               {this.props.points} {dictionary.shop_points[this.context]}
             </h5>
-            <p className="card-text">{this.props.stock}</p>
+            <p className="card-text">
+              {dictionary.shop_stock[this.context]}
+              {this.props.stock}
+            </p>
           </div>
           <div className="card-footer">
             <div className="">
