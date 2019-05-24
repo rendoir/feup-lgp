@@ -13,7 +13,6 @@ interface IState {
 
 class Invite extends React.Component<{}, IState> {
   public static contextType = LanguageContext;
-  public webmail = 'joaorreis@gmail.com';
   constructor(props) {
     super(props);
     this.state = {

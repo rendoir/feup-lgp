@@ -6,8 +6,8 @@ export async function sendMail(req) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'lgpgrupo3gltt@gmail.com',
-        pass: 'abcd@1234',
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
     // send mail with defined transport object
