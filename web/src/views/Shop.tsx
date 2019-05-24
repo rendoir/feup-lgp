@@ -10,6 +10,9 @@ import Post from '../components/Post/Post';
 import InviteModal from '../components/PostModal/InviteModal';
 import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
 import AddAdminModal from '../components/AdminFunctionsModal/AddAdminModal';
+import { getApiURL } from '../utils/apiURL';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 
 type Props = {
   user: any;
@@ -23,6 +26,7 @@ type Props = {
 type State = {
   addProductSuccess: boolean;
   conferenceID: number | undefined;
+  conferenceOwner: number | undefined;
   error: boolean;
   errorMessage: string;
   isLoading: boolean;
@@ -32,6 +36,7 @@ type State = {
 
 class Shop extends React.Component<Props, State> {
   public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
@@ -39,6 +44,7 @@ class Shop extends React.Component<Props, State> {
     this.state = {
       addProductSuccess: true,
       conferenceID: undefined,
+      conferenceOwner: undefined,
       error: false,
       errorMessage: '',
       isLoading: true,
@@ -49,6 +55,7 @@ class Shop extends React.Component<Props, State> {
 
   public componentWillMount() {
     this.apiGetProducts();
+    this.apiGetConfOwner();
   }
 
   public render() {
@@ -167,11 +174,26 @@ class Shop extends React.Component<Props, State> {
         .catch(error => {
           this.setState({
             error: true,
-            errorMessage: error.response.data.message,
             isLoading: false
           });
         });
     });
+  };
+
+  private apiGetConfOwner = () => {
+    axiosInstance
+      .get(`/conference/${this.props.match.params.id}`, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(res => {
+        const conference = res.data.conference;
+        this.setState({
+          conferenceOwner: conference.user_id
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
   };
 
   private renderProducts = () => {
@@ -190,43 +212,65 @@ class Shop extends React.Component<Props, State> {
   };
 
   private getAdminButtons() {
-    return (
-      <div className="mb-4">
-        <h1 className="my-4" />
-        <div className="card h-100">
-          <div className="p-3">
-            <div id="shop-admin-buttons" className="p-0 m-0">
-              <h6>{dictionary.administrator[this.context]}</h6>
-              <button
-                id="add_product"
-                data-toggle="modal"
-                data-target={`#add_product_modal`}
-              >
-                <i className="fas fa-cart-plus" />
-                {dictionary.add_product[this.context]}
-              </button>
-              <button
-                id="edit_product"
-                data-toggle="modal"
-                data-target={`#add_product_modal`}
-              >
-                <i className="fas fa-shopping-cart" />
-                {dictionary.edit_product[this.context]}
-              </button>
-              <button
-                id="remove_product"
-                data-toggle="modal"
-                data-target={`#add_product_modal`}
-              >
-                <i className="fas fa-cart-arrow-down" />
-                {dictionary.remove_product[this.context]}
-              </button>
+    let isAdmin,
+      permissions = false;
+
+    axiosInstance
+      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .then(res => {
+        isAdmin = res.data;
+      })
+      .catch(error => console.log('Failed to check if isAdmin. ' + error));
+
+    if (this.props.match.params.id === undefined) {
+      if (isAdmin) {
+        permissions = true;
+      }
+    } else {
+      if (this.auth.getUserPayload().id === this.state.conferenceOwner) {
+        permissions = true;
+      }
+    }
+
+    if (permissions) {
+      return (
+        <div className="mb-4">
+          <h1 className="my-4" />
+          <div className="card h-100">
+            <div className="p-3">
+              <div id="shop-admin-buttons" className="p-0 m-0">
+                <h6>{dictionary.administrator[this.context]}</h6>
+                <button
+                  id="add_product"
+                  data-toggle="modal"
+                  data-target={`#add_product_modal`}
+                >
+                  <i className="fas fa-cart-plus" />
+                  {dictionary.add_product[this.context]}
+                </button>
+                <button
+                  id="edit_product"
+                  data-toggle="modal"
+                  data-target={`#add_product_modal`}
+                >
+                  <i className="fas fa-shopping-cart" />
+                  {dictionary.edit_product[this.context]}
+                </button>
+                <button
+                  id="remove_product"
+                  data-toggle="modal"
+                  data-target={`#add_product_modal`}
+                >
+                  <i className="fas fa-cart-arrow-down" />
+                  {dictionary.remove_product[this.context]}
+                </button>
+              </div>
             </div>
           </div>
+          {this.getAddProductModal()}
         </div>
-        {this.getAddProductModal()}
-      </div>
-    );
+      );
+    }
   }
 
   private onAddProductResponse(success: boolean) {
@@ -238,7 +282,7 @@ class Shop extends React.Component<Props, State> {
   }
 
   private getAddProductModal() {
-    return <AddProductModal onResponse={this.onAddProductResponse} />;
+    return <AddProductModal conference_id={this.props.match.params.id} />;
   }
 }
 

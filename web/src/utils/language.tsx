@@ -565,9 +565,9 @@ export let dictionary: Dictionary = {
     EN: 'Enter the email of the person you want to invite to the platform:'
   },
   orderBy: { PT: 'Ordenar por', EN: 'Order by' },
-  add_product: { PT: 'Adicionar produto', EN: 'Add product' },
-  edit_product: { PT: 'Editar produto', EN: 'Edit product' },
-  remove_product: { PT: 'Remover produto', EN: 'Remove product' },
+  add_product: { PT: ' Adicionar produto', EN: ' Add product' },
+  edit_product: { PT: ' Editar produto', EN: ' Edit product' },
+  remove_product: { PT: ' Remover produto', EN: ' Remove product' },
   insert_product_name: { PT: 'Nome do produto', EN: 'Product name' },
   insert_product_points: { PT: 'Pontos do produto', EN: 'Product points' },
   insert_product_stock: { PT: 'Stock do produto', EN: 'Product stock' },

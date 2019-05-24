@@ -242,7 +242,7 @@ export async function getProduct(req, res) {
 }
 
 export async function createProduct(req, res) {
-  shop.createProduct(req, res, req.params.conf_id);
+  shop.createProduct(req, res);
 }
 
 export async function updateProduct(req, res) {

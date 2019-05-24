@@ -49,18 +49,33 @@ export async function getProduct(req, res, conferenceId = null) {
     }
 }
 
-export async function createProduct(req, res, conferenceId = null) {
+export async function createProduct(req, res) {
+    let conferenceId = req.params.conf_id;
     const userId = req.user.id;
     if(isAdmin(userId)){
-        query({
-            text: 'INSERT INTO products (name, stock, points, conference) VALUES ($1, $2, $3, $4)',
-            values: [req.body.name, req.body.stock, req.body.points, conferenceId],
-        }).then((result) => {
-            res.status(200).send();
-        }).catch((error) => {
-            console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error ocurred while adding a new product' });
-        });
+        let result;
+        if (conferenceId === undefined) {
+            query({
+                text: `INSERT INTO products (name, stock, points) VALUES ($1, $2, $3)`,
+                values: [req.body.name, req.body.stock, req.body.points],
+            }).then((result) => {
+                res.status(200).send();
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error ocurred while adding a new product' });
+            });
+        } else {
+            console.log("yo ", req.body);
+            query({
+                text: `INSERT INTO products (name, stock, points, conference) VALUES ($1, $2, $3, $4)`,
+                values: [req.body.name, req.body.stock, req.body.points, conferenceId],
+            }).then((result) => {
+                res.status(200).send();
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error ocurred while adding a new product' });
+            });
+        }
     }
 }
 
