@@ -215,6 +215,7 @@ CREATE TABLE products (
     name TEXT NOT NULL,
     stock INT NOT NULL,
     points INT NOT NULL,
+    image TEXT,
     date_created TIMESTAMP DEFAULT NOW(),
     conference BIGINT DEFAULT NULL REFERENCES conferences ON DELETE CASCADE
 );
@@ -751,12 +752,12 @@ INSERT INTO challenges (title, description, dateStart, dateEnd, points, challeng
 /**
 * PRODUCTS
 */
-INSERT INTO products (name, stock, points, date_created) VALUES ('Product 1', 31, 30, '2019-05-05 23:00');
-INSERT INTO products (name, stock, points, date_created) VALUES ('Product 2', 42, 40, '2019-05-09 23:00');
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 1', 31, 30, '2019-05-05 23:00', 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 2', 42, 40, '2019-05-09 23:00', 'https://a2.vnda.com.br/1200x/pedeapoio/2019/02/28/20196-estetoscopio-littmann-master-cardiology-brass-finish-ref-2175-1781.jpg?1551371775');
 INSERT INTO products (name, stock, points, date_created) VALUES ('Product 3', 3, 100, '2019-05-23 22:00');
 INSERT INTO products (name, stock, points, date_created) VALUES ('Product 4', 1, 300, '2019-05-15 23:00');
-INSERT INTO products (name, stock, points, date_created) VALUES ('Product 5', 12, 95, '2019-04-20 23:00');
-INSERT INTO products (name, stock, points, date_created, conference) VALUES ('Product 6', 40, 4, '2019-04-20 23:00', 1);
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 5', 12, 95, '2019-04-20 23:00', 'https://cdn.shopify.com/s/files/1/1217/7182/products/product-image-153801932_752ae95c-0406-41c7-b4c8-3a65b4494e24_800x.jpg?v=1549070825');
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 6', 40, 4, '2019-04-20 23:00', 1, 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');
 INSERT INTO products (name, stock, points, date_created, conference) VALUES ('Product 7', 5, 255, '2019-05-20 23:00', 1);
-INSERT INTO products (name, stock, points, date_created, conference) VALUES ('Product 8', 4, 53, '2019-05-02 23:00', 1);
-INSERT INTO products (name, stock, points, date_created, conference) VALUES ('Product 9', 12, 44, '2019-04-07 23:00', 2);
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 8', 4, 53, '2019-05-02 23:00', 1, 'https://cdn.shopify.com/s/files/1/1217/7182/products/product-image-153801932_752ae95c-0406-41c7-b4c8-3a65b4494e24_800x.jpg?v=1549070825');
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 9', 12, 44, '2019-04-07 23:00', 2, 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');

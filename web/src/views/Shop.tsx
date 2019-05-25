@@ -203,6 +203,7 @@ class Shop extends React.Component<Props, State> {
         )}
         points={product.points}
         stock={product.stock}
+        image={product.image}
         conferenceId={this.state.conferenceID}
         conferenceOwner={this.state.conferenceOwner}
         user={this.props.user}

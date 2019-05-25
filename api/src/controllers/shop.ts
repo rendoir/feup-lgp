@@ -8,7 +8,7 @@ export async function getProducts(req, res) {
         let result;
         if (conferenceId === undefined) {
             result = await query({
-                text: `SELECT id, name, stock, points, date_created as date, conference
+                text: `SELECT id, name, stock, points, date_created as date, image, conference
                         FROM products
                         WHERE 
                             conference IS null
@@ -16,7 +16,7 @@ export async function getProducts(req, res) {
             });
         } else {
             result = await query({
-                text: `SELECT id, name, stock, points, date_created as date, conference
+                text: `SELECT id, name, stock, points, date_created as date, image, conference
                         FROM products
                         WHERE 
                             conference = $1

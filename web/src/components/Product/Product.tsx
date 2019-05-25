@@ -14,6 +14,7 @@ export type Props = {
   date: string;
   stock: number;
   points: number;
+  image: string;
   conferenceId: number | undefined;
   conferenceOwner: number | undefined;
   user: any;
@@ -32,17 +33,21 @@ class Product extends Component<Props, IState> {
   }
 
   public render() {
+    let imageURL = this.props.image;
+    if (imageURL === null) {
+      imageURL = 'http://placehold.it/700x400';
+    }
     return (
       <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
-        <div className="card h-100">
-          <a href="#">
-            {' '}
+        <div className="card h-100" id={`${styles.card_product}`}>
+          <div className={`${styles.product_image}`}>
             <img
+              id="product-img"
               className="card-img-top"
-              src="http://placehold.it/700x400"
+              src={imageURL}
               alt=""
-            />{' '}
-          </a>
+            />
+          </div>
           <div className="card-body">
             {this.getDropdown()}
             <h4 className="card-title">
