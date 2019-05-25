@@ -1,34 +1,3 @@
-import React, { Component } from 'react';
-
-// - Import styles
-import styles from './Post.module.css';
-
-// - Import app components
-import Avatar from '../Avatar/Avatar';
-import Comment from '../Comment/Comment';
-import ImagePreloader from '../ImagePreloader/ImagePreloader';
-import PostFile from '../PostFile/PostFile';
-import PostImageCarousel from '../PostImageCarousel/PostImageCarousel';
-import DeleteModal from '../PostModal/DeleteModal';
-import InviteModal from '../PostModal/InviteModal';
-import PostModal from '../PostModal/PostModal';
-import ReportModal from '../PostModal/ReportModal';
-import VideoPreloader from '../VideoPreloader/VideoPreloader';
-
-type MyFile = {
-  name: string;
-  mimetype: string;
-  src?: string;
-  size: number;
-};
-
-// - Import utils
-import { apiCheckPostUserReport } from '../../utils/apiReport';
-import { apiSubscription } from '../../utils/apiSubscription';
-import { getApiURL } from '../../utils/apiURL';
-import { apiGetUserInteractions } from '../../utils/apiUserInteractions';
-import { dictionary, LanguageContext } from '../../utils/language';
-
 import {
   faGlobeAfrica,
   faLock,
@@ -36,10 +5,36 @@ import {
   faUserFriends,
   IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
+import React, { Component } from 'react';
+// - Import utils
+import { apiCheckPostUserReport } from '../../utils/apiReport';
+import { apiSubscription } from '../../utils/apiSubscription';
+import { getApiURL } from '../../utils/apiURL';
+import { apiGetUserInteractions } from '../../utils/apiUserInteractions';
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+// - Import app components
+import Avatar from '../Avatar/Avatar';
+import Comment from '../Comment/Comment';
 import Icon from '../Icon/Icon';
+import ImagePreloader from '../ImagePreloader/ImagePreloader';
+import PostFile from '../PostFile/PostFile';
+import PostImageCarousel from '../PostImageCarousel/PostImageCarousel';
+import DeleteModal from '../PostModal/DeleteModal';
+import InviteModal from '../PostModal/InviteModal';
+import PostModal from '../PostModal/PostModal';
+import ReportModal from '../PostModal/ReportModal';
 import PostVideoCarousel from '../PostVideoCarousel/PostVideoCarousel';
+// - Import styles
+import styles from './Post.module.css';
+
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
 
 export type Props = {
   id: number;
@@ -288,7 +283,7 @@ class Post extends Component<Props, IState> {
         headers: {},
         post_id: this.state.postID
       })
-      .then(res => {
+      .then(() => {
         console.log('Comment created - reloading page...');
         window.location.reload();
       })
@@ -505,7 +500,6 @@ class Post extends Component<Props, IState> {
 
       currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
     }
-    console.log(currentComments);
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
@@ -567,7 +561,7 @@ class Post extends Component<Props, IState> {
       pageNumbersInd.push(i);
     }
 
-    const renderPageNumbers = pageNumbersInd.map(pageNumber => {
+    return pageNumbersInd.map(pageNumber => {
       return (
         <li
           key={pageNumber}
@@ -578,8 +572,6 @@ class Post extends Component<Props, IState> {
         </li>
       );
     });
-
-    return renderPageNumbers;
   }
 
   private getVisibilityIcon(v: string): IconDefinition {
@@ -617,7 +609,7 @@ class Post extends Component<Props, IState> {
         <div className={styles.overlay} onClick={this.handleOverlayClick}>
           <ImagePreloader src={this.state.clickedImage}>
             {({ src }) => {
-              return <img src={src} />;
+              return <img src={src} alt={'post_image'} />;
             }}
           </ImagePreloader>
         </div>
@@ -646,7 +638,7 @@ class Post extends Component<Props, IState> {
           >
             <ImagePreloader src={image.src}>
               {({ src }) => {
-                return <img src={src} />;
+                return <img src={src} alt={'post_image'} />;
               }}
             </ImagePreloader>
           </div>

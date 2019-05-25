@@ -210,11 +210,11 @@ talkRouter.get('/:id', controller.getTalk);
 talkRouter.post('/:id/change_privacy', controller.changePrivacy);
 
 /**
- * @api {post} /api/talk/:id/archive Archive a conference
- * @apiName Archive-Conference
- * @apiGroup Post
+ * @api {put} /api/talk/:id/archive Archive a talk
+ * @apiName Archive-Talk
+ * @apiGroup Talk
  *
- * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   id          ID of the talk
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -222,14 +222,14 @@ talkRouter.post('/:id/change_privacy', controller.changePrivacy);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.post('/:id/archive', controller.archiveTalk);
+talkRouter.put('/:id/archive', controller.archiveTalk);
 
 /**
- * @api {post} /api/talk/:id/unarchive Unarchive a conference
- * @apiName Unarchive-Conference
- * @apiGroup Post
+ * @api {put} /api/talk/:id/hide Hide a talk
+ * @apiName Hide-Talk
+ * @apiGroup Talk
  *
- * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   id          ID of the talk
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -237,7 +237,7 @@ talkRouter.post('/:id/archive', controller.archiveTalk);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.delete('/:id/archive', controller.unarchiveTalk);
+talkRouter.put('/:id/hide', controller.hideTalk);
 
 /**
  * @api {get} /api/talk/:id/user/:user_id/posts Get posts of a user in a talk

@@ -27,6 +27,7 @@ export type Props = {
 };
 
 export type State = {
+  archiveModalOpen: boolean;
   challenges: any[];
   challengeFields: {
     answer: string;
@@ -65,6 +66,7 @@ export type State = {
     tags: boolean;
     title: boolean;
   };
+  hideModalOpen: boolean;
   inviteModalOpen: boolean;
   isArchived: boolean;
   isHidden: boolean;
@@ -153,6 +155,7 @@ class Talk extends PureComponent<Props, State> {
     };
 
     this.state = {
+      archiveModalOpen: false,
       challengeFields: {
         answer: '',
         correctAnswer: '',
@@ -191,6 +194,7 @@ class Talk extends PureComponent<Props, State> {
         tags: false,
         title: false
       },
+      hideModalOpen: false,
       inviteModalOpen: false,
       isArchived: false,
       isHidden: false,
@@ -282,7 +286,7 @@ class Talk extends PureComponent<Props, State> {
             title: talk.title
           },
           isArchived: talk.archived,
-          isHidden: talk.privacy === 'closed',
+          isHidden: talk.hidden,
           joined,
           posts,
           talk: {
@@ -1740,37 +1744,171 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderArchiveForm = () => {
+    const isArchived = this.state.isArchived;
+    const handleShow = () => {
+      this.setState({
+        archiveModalOpen: true
+      });
+    };
+    const handleHide = () => {
+      this.setState({
+        archiveModalOpen: false
+      });
+    };
+
     return (
-      <ListGroup.Item>
-        <i className={'fas fa-archive mr-2'} />
-        {this.state.isArchived
-          ? dictionary.unarchive_talk[this.context]
-          : dictionary.archive_talk[this.context]}
-      </ListGroup.Item>
+      <>
+        <ListGroup.Item onClick={handleShow}>
+          <i className={'fas fa-archive mr-2'} />
+          {this.state.isArchived
+            ? dictionary.restore_talk[this.context]
+            : dictionary.archive_talk[this.context]}
+        </ListGroup.Item>
+
+        <Modal
+          show={this.state.archiveModalOpen}
+          onHide={handleHide}
+          centered={true}
+        >
+          <Modal.Header closeButton={true}>
+            <Modal.Title>
+              {isArchived
+                ? dictionary.restore_talk[this.context]
+                : dictionary.archive_talk[this.context]}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body
+            className={
+              'd-flex flex-column justify-content-start align-items-start'
+            }
+          >
+            <strong className={'text-danger'}>
+              {isArchived
+                ? dictionary.confirm_restore[this.context]
+                : dictionary.confirm_archive[this.context]}
+            </strong>
+            <small>
+              {isArchived
+                ? dictionary.restore_description[this.context]
+                : dictionary.archive_description[this.context]}
+            </small>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleHide} variant={'secondary'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button
+              onClick={this.handleArchiveSubmission}
+              variant={isArchived ? 'success' : 'danger'}
+            >
+              {isArchived
+                ? dictionary.restore[this.context]
+                : dictionary.archive[this.context]}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   };
 
   private handleArchiveSubmission = () => {
-    console.log(
-      'TALK ARCHIVED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
-    );
+    axiosInstance
+      .put(`/talk/${this.id}/archive`, {
+        value: !this.state.isArchived
+      })
+      .then(() => {
+        this.setState({
+          archiveModalOpen: false,
+          isArchived: !this.state.isArchived
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+      });
   };
 
   private renderHideForm = () => {
+    const isHidden = this.state.isHidden;
+    const handleShow = () => {
+      this.setState({
+        hideModalOpen: true
+      });
+    };
+    const handleHide = () => {
+      this.setState({
+        hideModalOpen: false
+      });
+    };
+
     return (
-      <ListGroup.Item>
-        <i className={'fas fa-trash mr-2'} />
-        {this.state.isHidden
-          ? dictionary.reopen_talk[this.context]
-          : dictionary.hide_talk[this.context]}
-      </ListGroup.Item>
+      <>
+        <ListGroup.Item onClick={handleShow}>
+          <i className={'fas fa-trash mr-2'} />
+          {this.state.isHidden
+            ? dictionary.reopen_talk[this.context]
+            : dictionary.hide_talk[this.context]}
+        </ListGroup.Item>
+
+        <Modal
+          show={this.state.hideModalOpen}
+          onHide={handleHide}
+          centered={true}
+        >
+          <Modal.Header closeButton={true}>
+            <Modal.Title>
+              {isHidden
+                ? dictionary.reopen_talk[this.context]
+                : dictionary.hide_talk[this.context]}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body
+            className={
+              'd-flex flex-column justify-content-start align-items-start'
+            }
+          >
+            <strong className={'text-danger'}>
+              {isHidden
+                ? dictionary.confirm_open[this.context]
+                : dictionary.confirm_hide[this.context]}
+            </strong>
+            <small>
+              {isHidden
+                ? dictionary.open_description[this.context]
+                : dictionary.hide_description[this.context]}
+            </small>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleHide} variant={'secondary'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button
+              onClick={this.handleHideSubmission}
+              variant={isHidden ? 'success' : 'danger'}
+            >
+              {isHidden
+                ? dictionary.open[this.context]
+                : dictionary.hide[this.context]}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   };
 
   private handleHideSubmission = () => {
-    console.log(
-      'TALK HIDDEN! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
-    );
+    axiosInstance
+      .put(`/talk/${this.id}/hide`, {
+        value: !this.state.isHidden
+      })
+      .then(() => {
+        this.setState({
+          hideModalOpen: false,
+          isHidden: !this.state.isHidden
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+      });
   };
 
   private renderPostForm = () => {

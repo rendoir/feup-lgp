@@ -13,8 +13,7 @@ CREATE TYPE talk_permission_level_enum AS ENUM (
 CREATE TYPE visibility_enum AS ENUM (
     'public',
     'followers',
-    'private',
-    'closed'
+    'private'
 );
 
 CREATE TYPE content_type_enum AS ENUM (
@@ -88,7 +87,8 @@ CREATE TABLE talks (
     dateEnd TEXT,
     avatar TEXT,
     privacy visibility_enum NOT NULL DEFAULT 'public',
-	archived BOOLEAN DEFAULT FALSE
+	archived BOOLEAN DEFAULT FALSE,
+	hidden BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE posts (

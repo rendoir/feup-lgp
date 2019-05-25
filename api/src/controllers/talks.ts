@@ -1,4 +1,4 @@
-import { query } from "../db/db";
+import { query } from '../db/db';
 
 export function createTalk(req, res) {
   if (!req.body.title.trim()) {
@@ -319,14 +319,15 @@ export async function getTalk(req, res) {
     const talk = await query({
       text: `
               SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name, t.title, t.conference as conference_id,
-              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, c.title as conference_title
+              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, t.hidden,
+              c.title as conference_title
               FROM talks t
               INNER JOIN users a ON t.author = a.id
               INNER JOIN conferences c ON t.conference = c.id
               WHERE t.id = $1
                 AND (t.author = $2
+                    OR (archived = FALSE AND hidden = FALSE)
                     OR t.privacy = 'public'
-                    OR t.privacy = 'closed'
                     OR (t.privacy = 'followers'
                         AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )
@@ -479,49 +480,39 @@ export function changePrivacy(req, res) {
 // Can only archive if user is author.
 export async function archiveTalk(req, res) {
   const id = req.params.id;
-  const userId = req.user.id;
-  try {
-    const archivedConference = await query({
-      text: `UPDATE talks
-              SET archived = TRUE
+  const user = req.user.id;
+  const value = req.body.value;
+  await query({
+    text: `UPDATE talks
+              SET archived = $3
               WHERE id = $1 AND author = $2`,
-      values: [id, userId],
+    values: [id, user, value],
+  }).then(() => {
+    res.status(200).send();
+  }).catch((error) => {
+    res.status(500).send({
+      message: `Error ${value ? 'archiving' : 'restoring'} talk. Error: ${error}`,
     });
-    if (archivedConference === null) {
-      res.status(400).send(
-        new Error('Error in the archieve process of talk'),
-      );
-      return;
-    }
-    res.send();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(new Error('Error archieve talk'));
-  }
+  });
 }
 
-// Can only unarchive if user is author.
-export async function unarchiveTalk(req, res) {
+export async function hideTalk(req, res) {
   const id = req.params.id;
-  const userId = req.user.id;
-  try {
-    const archivedConference = await query({
-      text: `UPDATE talks
-            SET archived = FALSE
-            WHERE id = $1 AND author = $2`,
-      values: [id, userId],
+  const user = req.user.id;
+  const value = req.body.value;
+  console.log(value);
+  await query({
+    text: `UPDATE talks
+              SET hidden = $3
+              WHERE id = $1 AND author = $2`,
+    values: [id, user, value],
+  }).then(() => {
+    res.status(200).send();
+  }).catch((error) => {
+    res.status(500).send({
+      message: `Error ${value ? 'hiding' : 'opening'} talk. Error: ${error}`,
     });
-    if (archivedConference === null) {
-      res.status(400).send(
-        new Error('Error in the archieve process of talk'),
-      );
-      return;
-    }
-    res.send();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(new Error('Error archieve talk'));
-  }
+  });
 }
 
 export function getPointsUserTalk(req, res) {
