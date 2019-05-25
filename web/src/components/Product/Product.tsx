@@ -1,9 +1,10 @@
 import styles from './Product.module.css';
 
-import { dictionary, LanguageContext } from '../../utils/language';
+import React, { Component } from 'react';
 
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
-import React, { Component } from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
+
 import Button from '../Button/Button';
 import EditProductModal from '../ProductModal/EditProductModal';
 import RemoveProductModal from '../ProductModal/RemoveProductModal';
@@ -20,16 +21,12 @@ export type Props = {
   user: any;
 };
 
-interface IState {}
-
-class Product extends Component<Props, IState> {
+class Product extends Component<Props> {
   public static contextType = LanguageContext;
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
-
-    this.state = {};
   }
 
   public render() {

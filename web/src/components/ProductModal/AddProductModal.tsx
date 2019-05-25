@@ -30,9 +30,9 @@ class AddProductModal extends Component<IProps, IState> {
 
     this.state = {
       product_error: false,
+      product_image: '',
       product_name: '',
       product_name_error: false,
-      product_image: '',
       product_points: 0,
       product_points_error: false,
       product_stock: 0,
@@ -174,7 +174,8 @@ class AddProductModal extends Component<IProps, IState> {
   }
 
   public apiAddProduct() {
-    let conferenceId, url;
+    let conferenceId;
+    let url;
     if (this.props.conference_id === undefined) {
       conferenceId = null;
       url = '/products/';
@@ -183,8 +184,8 @@ class AddProductModal extends Component<IProps, IState> {
       url = `/conference/${this.props.conference_id}/products/`;
     }
     const body = {
-      name: this.state.product_name,
       image: this.state.product_image,
+      name: this.state.product_name,
       points: this.state.product_points,
       stock: this.state.product_stock
     };

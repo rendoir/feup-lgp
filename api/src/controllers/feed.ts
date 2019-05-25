@@ -273,4 +273,3 @@ export async function getFeedStuff(req, res) {
         res.status(500).send(new Error('Error retrieving feed '));
     }
 }
-

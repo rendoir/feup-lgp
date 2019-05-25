@@ -2,11 +2,10 @@ import * as React from 'react';
 import Product from '../components/Product/Product';
 import AddProductModal from '../components/ProductModal/AddProductModal';
 import '../styles/Shop.css';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
-import { getApiURL } from '../utils/apiURL';
-import AuthHelperMethods from '../utils/AuthHelperMethods';
 
 type Props = {
   user: any;
@@ -144,7 +143,8 @@ class Shop extends React.Component<Props, State> {
   }
 
   private apiGetProducts = () => {
-    let conferenceId, url;
+    let conferenceId;
+    let url;
     if (this.props.match.params.id === undefined) {
       conferenceId = null;
       url = '/shop/';
@@ -155,9 +155,7 @@ class Shop extends React.Component<Props, State> {
     this.setState({ isLoading: true }, () => {
       axiosInstance
         .get(url, {
-          params: {
-            conferenceId: conferenceId
-          }
+          params: { conferenceId }
         })
         .then(res => {
           this.setState({

@@ -156,7 +156,7 @@ class EditProductModal extends Component<IProps, IState> {
     }
   }
 
-  public apiEditProduct() {
+  private apiEditProduct() {
     const body = {
       image: this.state.product_image,
       name: this.state.product_name,
