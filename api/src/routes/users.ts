@@ -53,6 +53,22 @@ usersRouter.post('/', controller.register);
 usersRouter.get('/:id', controller.getUser);
 
 /**
+ * @api {post} /api/users/:id/:filename Gets the contents of a user avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the user
+ * @apiParam {String}   filename   Name of the avatar of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
  * @api {post} /api/users/{id} Get user posts
  * @apiName Profile Posts
  * @apiGroup Users

@@ -17,6 +17,7 @@ import ProfileModal from '../components/ProfileModal/ProfileModal';
 import { isNull } from 'util';
 
 import { Request, Step } from '../components/ProfileModal/types';
+import { fileToBase64 } from '../utils/fileToBase64';
 
 interface IProps {
   match: {
@@ -27,6 +28,7 @@ interface IProps {
 }
 
 type State = {
+  avatar?: string;
   fetchingUserUserInteractions: boolean;
   isOpen: boolean;
   userRate: number;
@@ -67,6 +69,7 @@ class Profile extends React.Component<IProps, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
+      avatar: 'http://cosmicgirlgames.com/images/games/morty.gif',
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
       isOpen: false,
@@ -138,7 +141,7 @@ class Profile extends React.Component<IProps, State> {
                     title="Admin Admino"
                     placeholder="empty"
                     size={250}
-                    image="http://cosmicgirlgames.com/images/games/morty.gif"
+                    image={this.state.avatar}
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
@@ -435,25 +438,83 @@ class Profile extends React.Component<IProps, State> {
     axiosInstance
       .get(`/users/${this.id}`)
       .then(res => {
+        this.apiGetUserAvatar(res.data);
+      })
+      .catch(() => console.log('Failed to get user'));
+  }
+
+  private apiGetUserAvatar(userData: any) {
+    if (userData.user.avatar === undefined || userData.user.avatar === null) {
+      this.setState({
+        request: {
+          avatar: undefined,
+          confirm_password: '',
+          email: userData.user.email,
+          first_name: userData.user.first_name,
+          home_town: userData.user.home_town,
+          last_name: userData.user.last_name,
+          loading: false,
+          old_password: '',
+          password: '',
+          university: userData.user.university,
+          work: userData.user.work,
+          work_field: userData.user.work_field
+        },
+        user: userData.user
+      });
+      return;
+    }
+
+    axiosInstance
+      .get(`/users/${this.id}/avatar/${userData.user.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          userData.user.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
         this.setState({
+          avatar: src,
           request: {
-            avatar: res.data.user.avatar,
+            avatar: undefined,
             confirm_password: '',
-            email: res.data.user.email,
-            first_name: res.data.user.first_name,
-            home_town: res.data.user.home_town,
-            last_name: res.data.user.last_name,
+            email: userData.user.email,
+            first_name: userData.user.first_name,
+            home_town: userData.user.home_town,
+            last_name: userData.user.last_name,
             loading: false,
             old_password: '',
             password: '',
-            university: res.data.user.university,
-            work: res.data.user.work,
-            work_field: res.data.user.work_field
+            university: userData.user.university,
+            work: userData.user.work,
+            work_field: userData.user.work_field
           },
-          user: res.data.user
+          user: userData.user
         });
       })
-      .catch(() => console.log('Failed to get user'));
+      .catch(() => {
+        this.setState({
+          request: {
+            avatar: undefined,
+            confirm_password: '',
+            email: userData.user.email,
+            first_name: userData.user.first_name,
+            home_town: userData.user.home_town,
+            last_name: userData.user.last_name,
+            loading: false,
+            old_password: '',
+            password: '',
+            university: userData.user.university,
+            work: userData.user.work,
+            work_field: userData.user.work_field
+          },
+          user: userData.user
+        });
+        console.log('Failed to get user avatar');
+      });
   }
 
   private handleEditProfile = (event: MouseEvent) => {
