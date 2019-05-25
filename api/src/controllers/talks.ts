@@ -451,6 +451,13 @@ export async function getTalk(req, res) {
              FROM tags`,
       values: [],
     });
+    const userPoints = await query({
+      text: `SELECT points
+             FROM talk_participants
+             WHERE talk = $1
+             AND participant_user = $2`,
+      values: [id, userId],
+    });
     const result = {
       challenges: challenges.rows,
       talk: talk.rows[0],
@@ -458,6 +465,7 @@ export async function getTalk(req, res) {
       size: totalSize.rows[0].count,
       isParticipating: isParticipating.rows.length > 0,
       tags: tags.rows,
+      userPoints: userPoints.rows[0].points,
     };
     res.send(result);
   } catch (error) {
@@ -506,7 +514,6 @@ export async function hideTalk(req, res) {
   const id = req.params.id;
   const user = req.user.id;
   const value = req.body.value;
-  console.log(value);
   await query({
     text: `UPDATE talks
               SET hidden = $3

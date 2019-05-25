@@ -271,6 +271,7 @@ class Talk extends PureComponent<Props, State> {
         const challenges = res.data.challenges;
         const joined = res.data.isParticipating;
         const tags = res.data.tags;
+        const userPoints = Number(res.data.userPoints);
 
         this.conferenceId = talk.conference_id;
         this.conferenceTitle = talk.conference_title;
@@ -303,7 +304,7 @@ class Talk extends PureComponent<Props, State> {
             local: talk.local,
             title: talk.title
           },
-          userPoints: 0
+          userPoints
         });
       })
       .catch(error => {
