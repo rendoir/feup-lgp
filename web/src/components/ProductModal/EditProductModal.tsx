@@ -75,6 +75,7 @@ class EditProductModal extends Component<IProps, IState> {
                 onChange={e =>
                   this.handleInputChange('product_name', e.target.value)
                 }
+                defaultValue={this.props.name}
                 placeholder={dictionary.insert_product_name[this.context]}
                 required={true}
               />
@@ -86,6 +87,7 @@ class EditProductModal extends Component<IProps, IState> {
                 type="number"
                 autoComplete="off"
                 className="post_field"
+                defaultValue={this.props.points.toString()}
                 onChange={e =>
                   this.handleInputChange('product_points', e.target.value)
                 }
@@ -103,6 +105,7 @@ class EditProductModal extends Component<IProps, IState> {
                 onChange={e =>
                   this.handleInputChange('product_stock', e.target.value)
                 }
+                defaultValue={this.props.stock.toString()}
                 placeholder={dictionary.insert_product_stock[this.context]}
                 required={true}
               />
