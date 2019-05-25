@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from './axiosInstance';
 
 export async function apiInviteUser(
   inviteSubjectId: number,
@@ -12,7 +12,7 @@ export async function apiInviteUser(
     await axiosInstance.post(apiURL, body);
     return true;
   } catch (error) {
-    console.log("Failed to invite user");
+    console.log('Failed to invite user');
     return false;
   }
 }
@@ -27,7 +27,7 @@ export async function apiInviteSubscribers(
     await axiosInstance.post(apiURL);
     return true;
   } catch (error) {
-    console.log("Failed to invite subscribers");
+    console.log('Failed to invite subscribers');
     return false;
   }
 }
@@ -40,13 +40,13 @@ export async function apiGetUninvitedSubscribersAmount(
 
   try {
     const res =
-      inviteType === "talk"
+      inviteType === 'talk'
         ? await axiosInstance.get(apiURL)
         : await axiosInstance.post(apiURL);
 
     return res.data.amountUninvitedSubscribers;
   } catch (error) {
-    console.log("Failed to fetch uninvited subscribers amount");
+    console.log('Failed to fetch uninvited subscribers amount');
     return -1;
   }
 }
@@ -59,13 +59,13 @@ export async function apiGetUninvitedUsersInfo(
 
   try {
     const res =
-      inviteType === "talk"
+      inviteType === 'talk'
         ? await axiosInstance.get(apiURL)
         : await axiosInstance.post(apiURL);
 
     return res.data.uninvitedUsers;
   } catch (error) {
-    console.log("Failed to fetch uninvited users info");
+    console.log('Failed to fetch uninvited users info');
     return null;
   }
 }
@@ -77,7 +77,7 @@ export async function apiInviteNotified(inviteId: number): Promise<boolean> {
     await axiosInstance.put(apiURL, { inviteId });
     return true;
   } catch (error) {
-    console.log("Failed to set invite as notified");
+    console.log('Failed to set invite as notified');
     return false;
   }
 }
@@ -89,7 +89,7 @@ export async function apiGetNotifications() {
     const res = await axiosInstance.get(apiURL);
     return res.data.notifications;
   } catch (error) {
-    console.log("Failed to get notifications");
+    console.log('Failed to get notifications');
     return null;
   }
 }

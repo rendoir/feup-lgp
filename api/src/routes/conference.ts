@@ -20,6 +20,21 @@ export const conferenceRouter = Router();
 conferenceRouter.get('/:id', controller.getConference);
 
 /**
+ * @api {get} /api/conference Get all conferences
+ * @apiName Get-All-Conferences
+ * @apiGroup Conference
+ *
+ * @apiParam {Number}   user          Id of the user making the request
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/', controller.getAllConferences);
+
+/**
  * @api {post} /api/conference Create a conference
  * @apiName Create-A-Conference
  * @apiGroup Conference
@@ -61,3 +76,13 @@ conferenceRouter.post('/', controller.createConference);
  *     }
  */
 conferenceRouter.put('/:id', controller.editConference);
+
+conferenceRouter.get('/:id/shop', controller.getProducts);
+
+conferenceRouter.get('/:conf_id/products/:prod_id', controller.getProduct);
+
+conferenceRouter.post('/:conf_id/products', controller.createProduct);
+
+conferenceRouter.put('/:conf_id/products/:prod_id', controller.updateProduct);
+
+conferenceRouter.delete('/:conf_id/products/:prod_id', controller.deleteProduct);

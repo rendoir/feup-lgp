@@ -24,6 +24,7 @@ import styles from './Header.module.css';
 
 import { apiGetNotificationsAmount } from '../../utils/apiInvite';
 import { apiGetReportNotificationsAmount } from '../../utils/apiReport';
+import { getApiURL } from '../../utils/apiURL';
 
 type Props = {
   title: string;
@@ -54,6 +55,7 @@ type State = {
     livestream: string;
     switcher: string;
   };
+  userFirstName;
   adminNotifications: number;
   userNotifications: number;
 };
@@ -89,6 +91,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       },
       search: '',
       step: 'type',
+      userFirstName: 'User',
       userNotifications: 0
     };
 
@@ -97,6 +100,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   public componentDidMount(): void {
     if (this.auth.loggedIn()) {
+      this.apiGetUserName();
       this.getPossibleTags();
       this.getUserNotificationAmount();
       this.getAdminNotificationAmount();
@@ -170,8 +174,23 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         <Nav.Link href={'/shop'} className={styles.link}>
           {dictionary.shop[this.context]}
         </Nav.Link>
+        <Nav.Link href={'/conferences'} className={styles.link}>
+          {dictionary.conferences[this.context]}
+        </Nav.Link>
       </Nav>
     );
+  }
+
+  private apiGetUserName() {
+    const userID = this.auth.getUserPayload().id;
+    axiosInstance
+      .get(`/users/${userID}`)
+      .then(res => {
+        this.setState({
+          userFirstName: res.data.user.first_name
+        });
+      })
+      .catch(() => console.log('Failed to get user'));
   }
 
   private getNotificationIcon(type: string = 'user') {
@@ -217,7 +236,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           title={
             <div style={{ display: 'inline-block' }} className={styles.link}>
               <Icon icon={faUserMd} size={'lg'} className={styles.icon} />{' '}
-              {dictionary.user_dropdown[this.context]}
+              {this.state.userFirstName}
             </div>
           }
           id="header_user_dropdown"
@@ -225,6 +244,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
             {dictionary.profile[this.context]}
           </NavDropdown.Item>
+          {this.renderAdminDropdown()}
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={this.onClickLogout}>
             {dictionary.logout[this.context]}
@@ -246,6 +266,26 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         ) : null}
       </Nav>
     );
+  }
+
+  private renderAdminDropdown() {
+    let isAdmin = false;
+
+    axiosInstance
+      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .then(res => {
+        isAdmin = res.data;
+        if (isAdmin) {
+          return (
+            <div>
+              <NavDropdown.Item href="/admin">
+                {dictionary.admin_area[this.context]}
+              </NavDropdown.Item>
+            </div>
+          );
+        }
+      })
+      .catch(error => console.log('Failed to check if isAdmin. ' + error));
   }
 
   private onClickLogout = (event: any) => {

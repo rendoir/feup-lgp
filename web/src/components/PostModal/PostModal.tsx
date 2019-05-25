@@ -1,22 +1,15 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./PostModal.css";
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+import AddTags from '../AddTags/AddTags';
+import PostFile from '../PostFile/PostFile';
+import Select from '../Select/Select';
 
-import Avatar from "../Avatar/Avatar";
-import Button from "../Button/Button";
+import './PostModal.css';
 
-import { checkPropTypes } from "prop-types";
-import AddTags from "../AddTags/AddTags";
-import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import PostFile from "../PostFile/PostFile";
-import Select from "../Select/Select";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-
-import axiosInstance from "../../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../../utils/language";
-
-const CREATE_MODE = "Create";
-const EDIT_MODE = "Edit";
+const CREATE_MODE = 'Create';
+const EDIT_MODE = 'Edit';
 
 type MyFile = {
   name: string;
@@ -65,14 +58,14 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
-      content: props.content || "",
+      content: props.content || '',
       docs: [],
       images: [],
       removedFiles: [],
       tags: [],
-      title: props.title || "",
+      title: props.title || '',
       videos: [],
-      visibility: props.visibility || "private"
+      visibility: props.visibility || 'private'
     };
 
     this.addTags = React.createRef();
@@ -90,80 +83,80 @@ class PostModal extends Component<IProps, IState> {
   public handlePostCancel() {
     // Reset field values
     this.setState({
-      content: this.props.content || "",
-      title: this.props.title || "",
-      visibility: this.props.visibility || "private"
+      content: this.props.content || '',
+      title: this.props.title || '',
+      visibility: this.props.visibility || 'private'
     });
   }
 
   public apiCreatePost() {
     const formData = new FormData();
     this.state.images.forEach((file, i) =>
-      formData.append("images[" + i + "]", file)
+      formData.append('images[' + i + ']', file)
     );
     this.state.videos.forEach((file, i) =>
-      formData.append("videos[" + i + "]", file)
+      formData.append('videos[' + i + ']', file)
     );
     this.state.docs.forEach((file, i) =>
-      formData.append("docs[" + i + "]", file)
+      formData.append('docs[' + i + ']', file)
     );
 
     this.state.tags.forEach((tag, i) =>
-      formData.append("tags[" + i + "]", tag)
+      formData.append('tags[' + i + ']', tag)
     );
 
-    formData.append("text", this.state.content);
-    formData.append("title", this.state.title);
-    formData.append("visibility", this.state.visibility);
+    formData.append('text', this.state.content);
+    formData.append('title', this.state.title);
+    formData.append('visibility', this.state.visibility);
 
     axiosInstance
-      .post("/post", formData, {
+      .post('/post', formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {
-        console.log("Post created - reloading page...");
-        window.location.href = "/post/" + res.data.id;
+        console.log('Post created - reloading page...');
+        window.location.href = '/post/' + res.data.id;
       })
-      .catch(() => console.log("Failed to create post"));
+      .catch(() => console.log('Failed to create post'));
   }
 
   public apiEditPost() {
     const formData = new FormData();
 
     this.state.tags.forEach((tag, i) =>
-      formData.append("tags[" + i + "]", tag)
+      formData.append('tags[' + i + ']', tag)
     );
 
     this.state.images.forEach((file, i) =>
-      formData.append("images[" + i + "]", file)
+      formData.append('images[' + i + ']', file)
     );
     this.state.videos.forEach((file, i) =>
-      formData.append("videos[" + i + "]", file)
+      formData.append('videos[' + i + ']', file)
     );
     this.state.docs.forEach((file, i) =>
-      formData.append("docs[" + i + "]", file)
+      formData.append('docs[' + i + ']', file)
     );
     if (this.state.removedFiles) {
-      formData.append("removed", JSON.stringify(this.state.removedFiles));
+      formData.append('removed', JSON.stringify(this.state.removedFiles));
     }
-    formData.append("author", "1");
-    formData.append("text", this.state.content);
-    formData.append("title", this.state.title);
-    formData.append("visibility", this.state.visibility);
+    formData.append('author', '1');
+    formData.append('text', this.state.content);
+    formData.append('title', this.state.title);
+    formData.append('visibility', this.state.visibility);
 
     axiosInstance
       .put(`/post/${this.props.id}`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {
-        console.log("Post edited - reloading page...");
+        console.log('Post edited - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to edit post"));
+      .catch(() => console.log('Failed to edit post'));
   }
 
   public validPost() {
@@ -182,8 +175,8 @@ class PostModal extends Component<IProps, IState> {
 
   public handleInputChange(event: any) {
     const field = event.target.name;
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     const partialState: any = {};
@@ -201,9 +194,9 @@ class PostModal extends Component<IProps, IState> {
     const docs: File[] = [];
 
     Array.from(files).forEach(file => {
-      if (file.type.startsWith("image")) {
+      if (file.type.startsWith('image')) {
         images.push(file);
-      } else if (file.type.startsWith("video")) {
+      } else if (file.type.startsWith('video')) {
         videos.push(file);
       } else {
         docs.push(file);
@@ -218,21 +211,21 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public getPostForm() {
     this.visibilityOptions = [
-      { value: "public", title: dictionary.visibility_public[this.context] },
+      { value: 'public', title: dictionary.visibility_public[this.context] },
       {
         title: dictionary.visibility_followers[this.context],
-        value: "followers"
+        value: 'followers'
       },
-      { value: "private", title: dictionary.visibility_private[this.context] }
+      { value: 'private', title: dictionary.visibility_private[this.context] }
     ];
 
     return (
@@ -303,7 +296,7 @@ class PostModal extends Component<IProps, IState> {
             accept="*"
             className="custom-file-input"
             onChange={e => this.handleFileUpload(e.target.files)}
-            defaultValue={""}
+            defaultValue={''}
             multiple={true}
           />
         </div>
@@ -339,13 +332,13 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public getFileLabel() {
-    let label = "";
+    let label = '';
 
-    this.state.images.forEach(file => (label += file.name + " "));
-    this.state.videos.forEach(file => (label += file.name + " "));
-    this.state.docs.forEach(file => (label += file.name + " "));
+    this.state.images.forEach(file => (label += file.name + ' '));
+    this.state.videos.forEach(file => (label += file.name + ' '));
+    this.state.docs.forEach(file => (label += file.name + ' '));
 
-    if (label === "") {
+    if (label === '') {
       label = dictionary.insert_files[this.context];
     }
 

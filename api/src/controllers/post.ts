@@ -91,7 +91,7 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, first_name, last_name, p.title, p.content,
+            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
                         p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
@@ -114,7 +114,8 @@ export async function getPost(req, res) {
          * this query checks again to avoid wrong assumptions.
          */
         const comments = await query({
-            text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+            text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                        a.first_name, a.last_name, a.id AS author_id
                     FROM posts p
                         LEFT JOIN comments c ON p.id = c.post
                         INNER JOIN users a ON c.author = a.id

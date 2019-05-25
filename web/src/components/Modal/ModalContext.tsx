@@ -1,4 +1,4 @@
-import React, { Context, PureComponent, ReactNode } from "react";
+import React, { Context, PureComponent, ReactNode } from 'react';
 
 type ModalProviderProps = {
   modalRootId?: string;
@@ -27,13 +27,13 @@ export class ModalProvider extends PureComponent<
   }
 
   public componentDidMount(): void {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const { modalRootId } = this.props;
       const body = document.body;
       if (body) {
-        const modalRoot = document.createElement("div");
+        const modalRoot = document.createElement('div');
         if (modalRootId) {
-          modalRoot.setAttribute("id", modalRootId);
+          modalRoot.setAttribute('id', modalRootId);
         }
         body.appendChild(modalRoot);
         this.setState({ modalRoot });

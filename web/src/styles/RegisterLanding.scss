@@ -8,8 +8,14 @@
   display: block !important;
 }
 
-#emailErrorMessage, #passwordErrorMessage, #confirmPasswordErrorMessage,
-#firstNameErrorMessage, #lastNameErrorMessage{
+#emailErrorMessage, #emailExistsErrorMessage, #passwordErrorMessage,
+#confirmPasswordErrorMessage, #firstNameErrorMessage, #lastNameErrorMessage {
+  color: red !important;
+  font-size: 13px !important;
+  display: none;
+}
+
+.email_exists {
   color: red !important;
   font-size: 13px !important;
   display: none;

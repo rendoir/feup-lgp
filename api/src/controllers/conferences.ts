@@ -1,4 +1,5 @@
 import { query } from '../db/db';
+import * as shop from './shop';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
@@ -117,9 +118,9 @@ export function editConference(req, res) {
   }
   query({
     text: 'UPDATE conferences ' +
-          'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
-          'WHERE id = $1 ' +
-          'RETURNING id',
+      'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
+      'WHERE id = $1 ' +
+      'RETURNING id',
     values: [
       id,
       data.title,
@@ -141,16 +142,16 @@ export function editConference(req, res) {
 }
 
 export async function getConference(req, res) {
-    const id = req.params.id;
-    const user = 2;
-    try {
-      /**
-       * talk must be owned by user
-       * OR talk is public
-       * OR talk is private to followers and user is a follower of the author
-       */
-      const conference = await query({
-        text: `
+  const id = req.params.id;
+  const user = req.query.user;
+  try {
+    /**
+     * talk must be owned by user
+     * OR talk is public
+     * OR talk is private to followers and user is a follower of the author
+     */
+    const conference = await query({
+      text: `
                 SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
                 c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
                 FROM conferences c
@@ -163,16 +164,16 @@ export async function getConference(req, res) {
                       )
                   )
               `,
-        values: [id, user],
+      values: [id, user],
+    });
+    if (conference.rows.length === 0) {
+      res.status(400).send({
+        message: 'Talk either does not exists or you do not have the required permissions',
       });
-      if (conference === null) {
-        res.status(400).send(
-          new Error('Talk either does not exists or you do not have the required permissions'),
-        );
-        return;
-      }
-      const talksResult = await query({
-        text: `SELECT users.id AS user_id,
+      return;
+    }
+    const talksResult = await query({
+      text: `SELECT users.id AS user_id,
                     t.id,
                     t.author,
                     t.avatar,
@@ -187,22 +188,67 @@ export async function getConference(req, res) {
             WHERE t.conference = $1
             ORDER BY t.dateEnd
             LIMIT 10 `,
-        values: [id],
-      });
+      values: [id],
+    });
 
-      if (talksResult == null) {
-        res.status(400).send(new Error(`Conference either does not exist or you do not have the required permissions.`));
-        return;
-      }
+    const result = {
+      conference: conference.rows[0],
+      talks: talksResult.rows,
 
-      const result = {
-        conference: conference.rows[0],
-        talks: talksResult.rows,
-
-      };
-      res.send(result);
-    } catch (error) {
-      console.log(error);
-      res.status(500).send(new Error('Error retrieving Conference'));
-    }
+    };
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error retrieving Conference'));
   }
+}
+
+export async function getAllConferences(req, res) {
+  const user = req.query.user;
+  try {
+    const conferences = await query({
+      text: `
+              SELECT c.*, u.id as userid, (u.first_name || ' ' || u.last_name) as username
+              FROM conferences c
+              INNER JOIN users u ON c.author = u.id
+              WHERE
+                c.author = $1
+                OR c.privacy = 'public'
+                OR (
+                  c.privacy = 'followers'
+                  AND c.author IN (
+                    SELECT followed FROM follows WHERE follower = $1
+                  )
+                )
+              ORDER BY c.dateend
+            `,
+      values: [user],
+    });
+    res.send({
+      conferences: conferences.rows,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(new Error('Error retrieving Conferences'));
+  }
+}
+
+export async function getProducts(req, res) {
+  shop.getProducts(req, res);
+}
+
+export async function getProduct(req, res) {
+  shop.getProduct(req, res);
+}
+
+export async function createProduct(req, res) {
+  shop.createProduct(req, res);
+}
+
+export async function updateProduct(req, res) {
+  shop.updateProduct(req, res);
+}
+
+export async function deleteProduct(req, res) {
+  shop.deleteProduct(req, res);
+}

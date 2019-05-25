@@ -1,8 +1,8 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
-import classNames from "classnames";
-import React, { MouseEvent, PureComponent } from "react";
-import Icon from "../Icon/Icon";
-import styles from "./Tag.module.css";
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
+import classNames from 'classnames';
+import React, { MouseEvent, PureComponent } from 'react';
+import Icon from '../Icon/Icon';
+import styles from './Tag.module.css';
 
 export type Props = {
   id: string;
@@ -30,8 +30,8 @@ class Tag extends PureComponent<Props> {
       >
         <p className={styles.tag}>
           #{value}
-          <a href={"#"} onClick={this.handleRemove}>
-            <Icon icon={faTimes} size={"2x"} className={styles.icon} />
+          <a href={'#'} onClick={this.handleRemove}>
+            <Icon icon={faTimes} size={'2x'} className={styles.icon} />
           </a>
         </p>
       </div>

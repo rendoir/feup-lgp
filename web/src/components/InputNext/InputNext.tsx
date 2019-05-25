@@ -1,7 +1,6 @@
-import React, { Component } from "react";
-
-import classNames from "classnames";
-import styles from "./InputNext.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import styles from './InputNext.module.css';
 
 export type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -18,17 +17,17 @@ export type Props = {
   id: string;
   /** input type attribute */
   type:
-    | "text"
-    | "number"
-    | "email"
-    | "search"
-    | "tel"
-    | "url"
-    | "password"
-    | "file"
-    | "datetime-local"
-    | "url"
-    | "textarea";
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'password'
+    | 'file'
+    | 'datetime-local'
+    | 'url'
+    | 'textarea';
   /** input value attribute */
   value?: string | number;
   /** input name attribute */
@@ -46,7 +45,7 @@ export type Props = {
   /** input hint */
   hint?: string;
   /** input status */
-  status: "normal" | "success" | "error" | "warning";
+  status: 'normal' | 'success' | 'error' | 'warning';
   /** input autoFocus */
   autoFocus?: boolean;
   /** input tabIndex attribute */
@@ -93,9 +92,9 @@ export type State = {
 class InputNext extends Component<Props, State> {
   public static defaultProps = {
     required: false,
-    spellcheck: "false",
-    status: "normal",
-    type: "text"
+    spellcheck: 'false',
+    status: 'normal',
+    type: 'text'
   };
 
   private input: HTMLInputElement | HTMLTextAreaElement | null | undefined;
@@ -269,7 +268,7 @@ class InputNext extends Component<Props, State> {
 
     return (
       <div className={styles.lengthLimitCounter}>
-        {`${length} ${maxLength ? `/ ${maxLength}` : ""}`}
+        {`${length} ${maxLength ? `/ ${maxLength}` : ''}`}
       </div>
     );
   }
@@ -306,7 +305,7 @@ class InputNext extends Component<Props, State> {
       onChange: this.handleChange,
       onFocus: this.handleFocus,
       onKeyUp: this.handleKeyUp,
-      placeholder: placeholder ? placeholder : "",
+      placeholder: placeholder ? placeholder : '',
       ref: this.setInput,
       required,
       tabIndex,
@@ -314,7 +313,7 @@ class InputNext extends Component<Props, State> {
       value
     };
 
-    if (type === "textarea") {
+    if (type === 'textarea') {
       return (
         <textarea
           {...props}

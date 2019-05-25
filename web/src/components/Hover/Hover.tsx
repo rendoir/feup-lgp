@@ -1,6 +1,6 @@
-import React, { Component, MouseEvent, ReactNode } from "react";
-import { hasSelection } from "../../utils/hasSelection";
-import { listen } from "../../utils/listen";
+import React, { Component, MouseEvent, ReactNode } from 'react';
+import { hasSelection } from '../../utils/hasSelection';
+import { listen } from '../../utils/listen';
 
 export type Props = {
   className?: string;
@@ -25,7 +25,7 @@ class Hover extends Component<Props> {
   public componentDidMount(): void {
     this.listener = listen(
       document,
-      "selectionchange",
+      'selectionchange',
       this.handleSelectionChange,
       { passive: true }
     );

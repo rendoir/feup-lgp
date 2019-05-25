@@ -1,7 +1,6 @@
-import React, { Component, ReactNode } from "react";
-
-import classNames from "classnames";
-import styles from "./ButtonNext.module.css";
+import classNames from 'classnames';
+import React, { Component, ReactNode } from 'react';
+import styles from './ButtonNext.module.css';
 
 export type Props = {
   /** Button id attribute */
@@ -19,13 +18,13 @@ export type Props = {
   /** Button form attribute */
   form?: string;
   /** Button view */
-  view: "button" | "outline";
+  view: 'button' | 'outline';
   /** Button type attribute */
-  type: "submit" | "reset" | "button";
+  type: 'submit' | 'reset' | 'button';
   /** Button theme */
-  theme: "primary" | "success" | "danger" | "info" | "warning";
+  theme: 'primary' | 'success' | 'danger' | 'info' | 'warning';
   /** Button size */
-  size: "small" | "normal" | "large";
+  size: 'small' | 'normal' | 'large';
   /** Button onClick event attribute */
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => any;
 };
@@ -34,10 +33,10 @@ class ButtonNext extends Component<Props> {
   public static defaultProps = {
     disabled: false,
     rounded: true,
-    size: "normal",
-    theme: "primary",
-    type: "button",
-    view: "button",
+    size: 'normal',
+    theme: 'primary',
+    type: 'button',
+    view: 'button',
     wide: false
   };
 

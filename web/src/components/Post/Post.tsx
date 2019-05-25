@@ -1,34 +1,3 @@
-import React, { Component } from 'react';
-
-// - Import styles
-import styles from './Post.module.css';
-
-// - Import app components
-import Avatar from '../Avatar/Avatar';
-import Comment from '../Comment/Comment';
-import ImagePreloader from '../ImagePreloader/ImagePreloader';
-import PostFile from '../PostFile/PostFile';
-import PostImageCarousel from '../PostImageCarousel/PostImageCarousel';
-import DeleteModal from '../PostModal/DeleteModal';
-import InviteModal from '../PostModal/InviteModal';
-import PostModal from '../PostModal/PostModal';
-import ReportModal from '../PostModal/ReportModal';
-import VideoPreloader from '../VideoPreloader/VideoPreloader';
-
-type MyFile = {
-  name: string;
-  mimetype: string;
-  src?: string;
-  size: number;
-};
-
-// - Import utils
-import { apiCheckPostUserReport } from '../../utils/apiReport';
-import { apiSubscription } from '../../utils/apiSubscription';
-import { getApiURL } from '../../utils/apiURL';
-import { apiGetUserInteractions } from '../../utils/apiUserInteractions';
-import { dictionary, LanguageContext } from '../../utils/language';
-
 import {
   faGlobeAfrica,
   faLock,
@@ -36,10 +5,36 @@ import {
   faUserFriends,
   IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
+import React, { Component } from 'react';
+// - Import utils
+import { apiCheckPostUserReport } from '../../utils/apiReport';
+import { apiSubscription } from '../../utils/apiSubscription';
+import { getApiURL } from '../../utils/apiURL';
+import { apiGetUserInteractions } from '../../utils/apiUserInteractions';
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+// - Import app components
+import Avatar from '../Avatar/Avatar';
+import Comment from '../Comment/Comment';
 import Icon from '../Icon/Icon';
+import ImagePreloader from '../ImagePreloader/ImagePreloader';
+import PostFile from '../PostFile/PostFile';
+import PostImageCarousel from '../PostImageCarousel/PostImageCarousel';
+import DeleteModal from '../PostModal/DeleteModal';
+import InviteModal from '../PostModal/InviteModal';
+import PostModal from '../PostModal/PostModal';
+import ReportModal from '../PostModal/ReportModal';
 import PostVideoCarousel from '../PostVideoCarousel/PostVideoCarousel';
+// - Import styles
+import styles from './Post.module.css';
+
+type MyFile = {
+  name: string;
+  mimetype: string;
+  src?: string;
+  size: number;
+};
 
 export type Props = {
   id: number;
@@ -81,6 +76,8 @@ interface IState {
 
 class Post extends Component<Props, IState> {
   public static contextType = LanguageContext;
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
@@ -286,7 +283,7 @@ class Post extends Component<Props, IState> {
         headers: {},
         post_id: this.state.postID
       })
-      .then(res => {
+      .then(() => {
         console.log('Comment created - reloading page...');
         window.location.reload();
       })
@@ -297,7 +294,10 @@ class Post extends Component<Props, IState> {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
-    if (!this.state.postRated) {
+    if (
+      !this.state.postRated &&
+      this.auth.getUserPayload().id !== this.props.user_id
+    ) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handlePostRate}>
@@ -500,14 +500,16 @@ class Post extends Component<Props, IState> {
 
       currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
     }
-
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment
           key={idx}
+          id={comment.id}
           postID={comment.post}
-          title={comment.id}
-          author={comment.first_name + ' ' + comment.last_name}
+          author={{
+            id: comment.author_id,
+            name: comment.first_name + ' ' + comment.last_name
+          }}
           text={comment.comment}
           secondLevel={false}
         />
@@ -559,7 +561,7 @@ class Post extends Component<Props, IState> {
       pageNumbersInd.push(i);
     }
 
-    const renderPageNumbers = pageNumbersInd.map(pageNumber => {
+    return pageNumbersInd.map(pageNumber => {
       return (
         <li
           key={pageNumber}
@@ -570,8 +572,6 @@ class Post extends Component<Props, IState> {
         </li>
       );
     });
-
-    return renderPageNumbers;
   }
 
   private getVisibilityIcon(v: string): IconDefinition {
@@ -609,7 +609,7 @@ class Post extends Component<Props, IState> {
         <div className={styles.overlay} onClick={this.handleOverlayClick}>
           <ImagePreloader src={this.state.clickedImage}>
             {({ src }) => {
-              return <img src={src} />;
+              return <img src={src} alt={'post_image'} />;
             }}
           </ImagePreloader>
         </div>
@@ -638,7 +638,7 @@ class Post extends Component<Props, IState> {
           >
             <ImagePreloader src={image.src}>
               {({ src }) => {
-                return <img src={src} />;
+                return <img src={src} alt={'post_image'} />;
               }}
             </ImagePreloader>
           </div>
@@ -717,12 +717,16 @@ class Post extends Component<Props, IState> {
         {dictionary.delete_post[this.context]}
       </button>
     );
-    const dropdownButtons = [
-      inviteButton,
-      reportButton,
-      editButton,
-      deleteButton
-    ];
+
+    const dropdownButtons = [inviteButton, reportButton];
+
+    if (this.auth.isLoggedInUser(this.props.user_id)) {
+      dropdownButtons.push(editButton);
+    }
+    if (this.auth.isLoggedInUser(this.props.user_id) || this.auth.isAdmin()) {
+      dropdownButtons.push(deleteButton);
+    }
+
     return dropdownButtons;
   }
 

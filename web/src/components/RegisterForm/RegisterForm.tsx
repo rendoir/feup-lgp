@@ -3,6 +3,7 @@ import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { getApiURL } from '../../utils/apiURL';
 import { dictionary, LanguageContext } from '../../utils/language';
+import styles from './RegisterForm.module.scss';
 
 type State = {
   confirmPasswordError: boolean;
@@ -40,7 +41,7 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
       email: '',
       emailError: true,
       emailErrorMessage: '',
-      emailExists: true,
+      emailExists: false,
       emailHadInteraction: false,
       first_name: '',
       first_nameError: true,
@@ -125,17 +126,23 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
           <input
             type="email"
             className="form-control col"
-            id="inputEmail"
+            id="inputEmailRegister"
             placeholder="E-mail"
             onChange={e => this.validate('email', e.target.value)}
           />
           <p id="emailErrorMessage">{dictionary.invalid_email[this.context]}</p>
+          <p
+            id={styles.emailExistsErrorMessage}
+            className={(this.state.emailExists ? '' : 'd-none') + ' pt-1'}
+          >
+            {dictionary.email_exists[this.context]}
+          </p>
         </div>
         <div className="form-group mt-3">
           <input
             type="password"
             className="form-control col"
-            id="inputPassword"
+            id="inputPasswordRegister"
             placeholder={dictionary.password[this.context]}
             onChange={e => this.validate('password', e.target.value)}
           />
@@ -192,6 +199,7 @@ class RegisterForm extends React.Component<RouteComponentProps, State> {
           this.props.history.push('/');
         })
         .catch(() => {
+          this.setState({ emailExists: true });
           console.log('Register system failed');
         });
     } else {

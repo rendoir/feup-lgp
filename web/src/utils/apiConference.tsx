@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from './axiosInstance';
 
 export async function apiUserJoinConference(
   conferenceId: number
@@ -8,7 +8,7 @@ export async function apiUserJoinConference(
     await axiosInstance.post(apiURL);
     return true;
   } catch (error) {
-    console.log("Failed to join conference");
+    console.log('Failed to join conference');
     return false;
   }
 }
@@ -21,7 +21,7 @@ export async function apiUserLeaveConference(
     await axiosInstance.delete(apiURL);
     return true;
   } catch (error) {
-    console.log("Failed to leave conference");
+    console.log('Failed to leave conference');
     return false;
   }
 }
@@ -34,7 +34,7 @@ export async function apiCheckUserConferenceParticipation(
     const res = await axiosInstance.get(apiURL);
     return res.data.participant;
   } catch (error) {
-    console.log("Failed to check participation");
+    console.log('Failed to check participation');
     return false;
   }
 }
@@ -47,7 +47,7 @@ export async function apiCheckUserCanJoinConference(
     const res = await axiosInstance.get(apiURL);
     return res.data.canJoin;
   } catch (error) {
-    console.log("Failed to check participation");
+    console.log('Failed to check participation');
     return false;
   }
 }

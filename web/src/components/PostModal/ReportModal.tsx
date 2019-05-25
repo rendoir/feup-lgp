@@ -1,11 +1,10 @@
-import React, { Component } from "react";
-
-import "./PostModal.css";
-
+import React, { Component } from 'react';
 // - Import utils
-import { apiReportComment, apiReportPost } from "../../utils/apiReport";
-import AuthHelperMethods from "../../utils/AuthHelperMethods";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { apiReportComment, apiReportPost } from '../../utils/apiReport';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import { dictionary, LanguageContext } from '../../utils/language';
+
+import './PostModal.css';
 
 interface IProps {
   /* Only pass one of the parameters according to the content type */
@@ -33,7 +32,7 @@ class ReportModal extends Component<IProps, IState> {
       ? `report_post_modal_${props.postId}`
       : `report_comment_modal_${props.commentId}`;
 
-    this.state = { reportReason: "" };
+    this.state = { reportReason: '' };
 
     // Report manipulation handlers
     this.handleReportCreation = this.handleReportCreation.bind(this);
@@ -50,8 +49,8 @@ class ReportModal extends Component<IProps, IState> {
   }
 
   public handleInputChange(event: any) {
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     this.setState({ reportReason: value });
@@ -62,11 +61,11 @@ class ReportModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public getReportForm() {

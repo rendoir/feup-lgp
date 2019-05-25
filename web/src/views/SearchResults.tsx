@@ -1,11 +1,8 @@
-import queryString from "query-string";
-import * as React from "react";
-import InfiniteScroll from "../components/InfiniteScroll/InfiniteScroll";
-
-import Post from "../components/Post/Post";
-import UserCard from "../components/UserCard/UserCard";
-import axiosInstance from "../utils/axiosInstance";
-import { dictionary, LanguageContext } from "../utils/language";
+import queryString from 'query-string';
+import * as React from 'react';
+import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
 
 type Props = {
   location: any;
@@ -40,10 +37,10 @@ export default class SearchResults extends React.Component<Props, State> {
   private static getSearchUrl() {
     let searchUrl = `${location.protocol}//${location.hostname}`;
     searchUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    searchUrl += "/search";
+        : '/api';
+    searchUrl += '/search';
 
     return searchUrl;
   }
@@ -124,7 +121,7 @@ export default class SearchResults extends React.Component<Props, State> {
 
   private apiSubmitSearch() {
     axiosInstance
-      .get("/search", {
+      .get('/search', {
         params: {
           df: this.state.searchParams.df,
           di: this.state.searchParams.di,
@@ -210,7 +207,7 @@ export default class SearchResults extends React.Component<Props, State> {
         <InfiniteScroll
           requestUrl={SearchResults.getSearchUrl()}
           requestParams={this.state.searchParams}
-          type={"users"}
+          type={'users'}
         />
       </div>
     );

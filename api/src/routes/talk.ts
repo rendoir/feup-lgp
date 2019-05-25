@@ -111,7 +111,7 @@ talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribers
 talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
 
 /**
- * @api {post} /api/talk/:id/add_participant Add user to talk participants
+ * @api {post} /api/talk/:id/join Add user to talk participants
  * @apiName Add-talk-Participant
  * @apiGroup talk
  *
@@ -125,10 +125,10 @@ talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.post('/:id/add_participant', controller.addParticipantUser);
+talkRouter.post('/:id/join', controller.joinTalk);
 
 /**
- * @api {delete} /api/talk/:id/remove_participant Remove a user participation in a talk
+ * @api {delete} /api/talk/:id/leave Remove a user participation in a talk
  * @apiName Remove-talk-Attendance-Intention
  * @apiGroup talk
  *
@@ -142,7 +142,7 @@ talkRouter.post('/:id/add_participant', controller.addParticipantUser);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.delete('/:id/remove_participant', controller.removeParticipantUser);
+talkRouter.delete('/:id/leave', controller.leaveTalk);
 
 /**
  * @api {get} /api/talk/:id/check_participant Check if a user is participating in a talk
@@ -191,7 +191,7 @@ talkRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.get('/:id', controller.gettalk);
+talkRouter.get('/:id', controller.getTalk);
 
 /**
  * @api {post} /api/talk/:id/change_privacy Change the privacy of a talk
@@ -210,11 +210,11 @@ talkRouter.get('/:id', controller.gettalk);
 talkRouter.post('/:id/change_privacy', controller.changePrivacy);
 
 /**
- * @api {post} /api/talk/:id/archive Archive a conference
- * @apiName Archive-Conference
- * @apiGroup Post
+ * @api {put} /api/talk/:id/archive Archive a talk
+ * @apiName Archive-Talk
+ * @apiGroup Talk
  *
- * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   id          ID of the talk
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -222,14 +222,14 @@ talkRouter.post('/:id/change_privacy', controller.changePrivacy);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.post('/:id/archive', controller.archiveTalk);
+talkRouter.put('/:id/archive', controller.archiveTalk);
 
 /**
- * @api {post} /api/talk/:id/unarchive Unarchive a conference
- * @apiName Unarchive-Conference
- * @apiGroup Post
+ * @api {put} /api/talk/:id/hide Hide a talk
+ * @apiName Hide-Talk
+ * @apiGroup Talk
  *
- * @apiParam {String}   id          ID of the conference
+ * @apiParam {String}   id          ID of the talk
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -237,7 +237,7 @@ talkRouter.post('/:id/archive', controller.archiveTalk);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.delete('/:id/archive', controller.unarchiveTalk);
+talkRouter.put('/:id/hide', controller.hideTalk);
 
 /**
  * @api {get} /api/talk/:id/user/:user_id/posts Get posts of a user in a talk

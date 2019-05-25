@@ -1,7 +1,6 @@
-import React, { Component } from "react";
-
-import classNames from "classnames";
-import styles from "./Tabs.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import styles from './Tabs.module.css';
 
 export type Props<T> = {
   id: T;
