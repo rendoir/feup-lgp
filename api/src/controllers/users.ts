@@ -361,3 +361,18 @@ export async function updateProfile(req, res) {
         }
     }
 }
+
+export async function getPoints(req, res) {
+    const userId = req.user.id;
+    try {
+      const pointsQuery = await query({
+        text: `SELECT points from users WHERE id = $1`,
+        values: [userId],
+      });
+      console.log("points: ", pointsQuery.rows[0]);
+      res.status(200).send({ points: pointsQuery.rows[0] });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user notifications'));
+    }
+}
