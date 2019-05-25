@@ -57,6 +57,7 @@ export type State = {
     dateEnd: boolean;
     dateStart: boolean;
     description: boolean;
+    livestreamURL: boolean;
     local: boolean;
     options: boolean;
     points: boolean;
@@ -109,6 +110,7 @@ class Talk extends PureComponent<Props, State> {
     dateEnd: string;
     dateStart: string;
     description: string;
+    livestreamURL: string;
     local: string;
     options: string;
     points: string;
@@ -142,6 +144,7 @@ class Talk extends PureComponent<Props, State> {
       dateEnd: '',
       dateStart: '',
       description: '',
+      livestreamURL: '',
       local: '',
       options: '',
       points: '',
@@ -180,6 +183,7 @@ class Talk extends PureComponent<Props, State> {
         dateEnd: false,
         dateStart: false,
         description: false,
+        livestreamURL: false,
         local: false,
         options: false,
         points: false,
@@ -255,7 +259,6 @@ class Talk extends PureComponent<Props, State> {
     axiosInstance
       .get(`/talk/${this.id}`)
       .then(res => {
-        console.log(res);
         const talk = res.data.talk;
         const posts = res.data.posts;
         const challenges = res.data.challenges;
@@ -805,6 +808,7 @@ class Talk extends PureComponent<Props, State> {
           dateEnd: false,
           dateStart: false,
           description: false,
+          livestreamURL: false,
           local: false,
           options: false,
           points: false,
@@ -819,6 +823,7 @@ class Talk extends PureComponent<Props, State> {
         dateEnd: '',
         dateStart: '',
         description: '',
+        livestreamURL: '',
         local: '',
         options: '',
         points: '',
@@ -1457,7 +1462,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item action={true} onClick={handleShow}>
+        <ListGroup.Item onClick={handleShow}>
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -1493,7 +1498,8 @@ class Talk extends PureComponent<Props, State> {
                   value={editFields.description}
                   name={'description'}
                   onChange={handleChange}
-                  className={styles.border}
+                  className={classNames('overflow-auto', styles.border)}
+                  style={{ height: '20rem' }}
                 />
                 {this.state.error.description ? (
                   <Form.Text className={'text-danger'}>
@@ -1574,6 +1580,11 @@ class Talk extends PureComponent<Props, State> {
                   disabled={!editFields.hasLivestream}
                   className={styles.border}
                 />
+                {this.state.error.livestreamURL ? (
+                  <Form.Text className={'text-danger'}>
+                    {this.errorMessages.livestreamURL}
+                  </Form.Text>
+                ) : null}
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -1774,43 +1785,72 @@ class Talk extends PureComponent<Props, State> {
 
   private validateInput = (type, value) => {
     let re;
+    let message;
 
     switch (type) {
       case 'answer':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        message =
+          "Invalid field. Answer can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
         break;
       case 'correctAnswer':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        message =
+          "Invalid field. Answer can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
         break;
       case 'dateEnd':
         re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        message =
+          'Invalid field. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00';
         break;
       case 'dateStart':
         re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        message =
+          'Invalid filed. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00';
         break;
       case 'description':
-        re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        re = /^[\-!?%@#)( ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.)(\w\u00C0-\u017F]*$/;
+        message =
+          "Invalid field. Description can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ',', ), (";
         break;
       case 'local':
         re = /^([\w\u00C0-\u017F]+[ \-,.\w\u00C0-\u017F]*){2,}$/;
+        message =
+          "Invalid field. Local can only contain alphanumerical characters, -, ',', '.' and must have at least 2 characters";
         break;
       case 'options':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        message =
+          "Invalid field. Option can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
         break;
       case 'points':
         re = /^\d{1,2}$/;
+        message =
+          'Invalid field. Points must be a positive integer with at maximum 2 digits';
         break;
       case 'question':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
+        message =
+          "Invalid field. Question can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
         break;
       case 'tags':
         re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
+        message =
+          'Invalid field. Tag can only contain alphanumerical characters or - and must have 2 to 150 characters';
         break;
       case 'title':
         re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
+        message =
+          'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters';
         break;
       case 'type':
         re = /^(MCQ|POST|CMT)$/;
+        message = "Invalid field. Type must be one of 'MCQ', 'POST', or 'CMT'";
+        break;
+      case 'livestreamURL':
+        re = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)*(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$|^$/;
+        message = "Invalid field. Livestream's url must be an embed link";
+        break;
     }
 
     if (type === 'options') {
@@ -1822,9 +1862,11 @@ class Talk extends PureComponent<Props, State> {
               [type]: true
             }
           });
+          this.errorMessages[type] = message;
           return false;
         }
       }
+      this.errorMessages[type] = '';
       return true;
     }
 
@@ -1835,6 +1877,7 @@ class Talk extends PureComponent<Props, State> {
           [type]: true
         }
       });
+      this.errorMessages[type] = message;
       return false;
     } else {
       this.setState({
@@ -1843,6 +1886,7 @@ class Talk extends PureComponent<Props, State> {
           [type]: false
         }
       });
+      this.errorMessages[type] = '';
       return true;
     }
   };
