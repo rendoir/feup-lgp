@@ -628,6 +628,23 @@ export let dictionary: Dictionary = {
     EN:
       "Are you sure you want do delete this product? It can't be retrieved later."
   },
+  product_error_message: {
+    PT: 'Produto inválido',
+    EN: 'Invalid product'
+  },
+  product_name_error_message: {
+    PT: 'Dê um nome ao produto',
+    EN: 'Give a name to the product'
+  },
+  product_points_error_message: {
+    PT:
+      'Introduza um número válido de pontos com que o produto deve ser vendido',
+    EN: 'Insert a valid number of points to sell the product'
+  },
+  product_stock_error_message: {
+    PT: 'Introduza uma quantidade válida em stock que o produto tem',
+    EN: 'Insert a valid stock quantity for the product'
+  },
   empty: { PT: '', EN: '' }
 };
 
