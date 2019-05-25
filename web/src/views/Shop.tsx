@@ -1,17 +1,12 @@
 import * as React from 'react';
-import Button from '../components/Button/Button';
 import Product from '../components/Product/Product';
 import AddProductModal from '../components/ProductModal/AddProductModal';
+import DeleteProductModal from '../components/ProductModal/DeleteProductModal';
 import '../styles/Shop.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
-import Post from '../components/Post/Post';
-import InviteModal from '../components/PostModal/InviteModal';
-import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
-import AddAdminModal from '../components/AdminFunctionsModal/AddAdminModal';
 import { getApiURL } from '../utils/apiURL';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import AuthHelperMethods from '../utils/AuthHelperMethods';
 
 type Props = {
@@ -93,7 +88,7 @@ class Shop extends React.Component<Props, State> {
                 </form>
               </div>
             </div>
-            {this.getAdminButtons()}
+            {this.getAddProductButton()}
           </div>
 
           <div id="products-carousel" className="col-lg-9">
@@ -181,19 +176,21 @@ class Shop extends React.Component<Props, State> {
   };
 
   private apiGetConfOwner = () => {
-    axiosInstance
-      .get(`/conference/${this.props.match.params.id}`, {
-        params: {
-          user: this.props.user.id
-        }
-      })
-      .then(res => {
-        const conference = res.data.conference;
-        this.setState({
-          conferenceOwner: conference.user_id
-        });
-      })
-      .catch(error => console.log(error.response.data.message));
+    if (!(this.props.match.params.id === undefined)) {
+      axiosInstance
+        .get(`/conference/${this.props.match.params.id}`, {
+          params: {
+            user: this.props.user.id
+          }
+        })
+        .then(res => {
+          const conference = res.data.conference;
+          this.setState({
+            conferenceOwner: conference.user_id
+          });
+        })
+        .catch(error => console.log(error.response.data.message));
+    }
   };
 
   private renderProducts = () => {
@@ -207,25 +204,18 @@ class Shop extends React.Component<Props, State> {
         )}
         points={product.points}
         stock={product.stock}
+        conferenceId={this.state.conferenceID}
+        conferenceOwner={this.state.conferenceOwner}
+        user={this.props.user}
       />
     ));
   };
 
-  private getAdminButtons() {
-    let isAdmin,
-      permissions = false;
+  private getAddProductButton() {
+    let permissions = false;
 
-    axiosInstance
-      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
-      .then(res => {
-        isAdmin = res.data;
-      })
-      .catch(error => console.log('Failed to check if isAdmin. ' + error));
-
-    if (this.props.match.params.id === undefined) {
-      if (isAdmin) {
-        permissions = true;
-      }
+    if (this.props.match.params.id === undefined && this.auth.isAdmin()) {
+      permissions = true;
     } else {
       if (this.auth.getUserPayload().id === this.state.conferenceOwner) {
         permissions = true;
@@ -248,41 +238,22 @@ class Shop extends React.Component<Props, State> {
                   <i className="fas fa-cart-plus" />
                   {dictionary.add_product[this.context]}
                 </button>
-                <button
-                  id="edit_product"
-                  data-toggle="modal"
-                  data-target={`#add_product_modal`}
-                >
-                  <i className="fas fa-shopping-cart" />
-                  {dictionary.edit_product[this.context]}
-                </button>
-                <button
-                  id="remove_product"
-                  data-toggle="modal"
-                  data-target={`#add_product_modal`}
-                >
-                  <i className="fas fa-cart-arrow-down" />
-                  {dictionary.remove_product[this.context]}
-                </button>
               </div>
             </div>
           </div>
           {this.getAddProductModal()}
+          {this.getDeleteProductModal()}
         </div>
       );
     }
   }
 
-  private onAddProductResponse(success: boolean) {
-    this.setState({
-      addProductSuccess: success,
-      showAddProductAlert: true
-    });
-    setTimeout('window.location.reload()', 2000);
-  }
-
   private getAddProductModal() {
     return <AddProductModal conference_id={this.props.match.params.id} />;
+  }
+
+  private getDeleteProductModal() {
+    return <DeleteProductModal conference_id={this.props.match.params.id} />;
   }
 }
 

@@ -573,6 +573,12 @@ export let dictionary: Dictionary = {
   insert_product_name: { PT: 'Nome do produto', EN: 'Product name' },
   insert_product_points: { PT: 'Pontos do produto', EN: 'Product points' },
   insert_product_stock: { PT: 'Stock do produto', EN: 'Product stock' },
+  confirm_delete_product: {
+    PT:
+      'Tem a certeza que deseja apagar este produto? Não será possível recuperá-lo.',
+    EN:
+      "Are you sure you want do delete this product? It can't be retrieved later."
+  },
   empty: { PT: '', EN: '' }
 };
 

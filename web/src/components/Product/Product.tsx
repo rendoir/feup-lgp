@@ -1,13 +1,11 @@
 import styles from './Product.module.css';
 
-import { getApiURL } from '../../utils/apiURL';
 import { dictionary, LanguageContext } from '../../utils/language';
 
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
-import axiosInstance from '../../utils/axiosInstance';
 import React, { Component } from 'react';
-import Post from '../Post/Post';
 import Button from '../Button/Button';
+import DeleteProductModal from '../ProductModal/DeleteProductModal';
 
 export type Props = {
   id: number;
@@ -15,12 +13,16 @@ export type Props = {
   date: string;
   stock: number;
   points: number;
+  conferenceId: number | undefined;
+  conferenceOwner: number | undefined;
+  user: any;
 };
 
 interface IState {}
 
 class Product extends Component<Props, IState> {
   public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
@@ -41,6 +43,7 @@ class Product extends Component<Props, IState> {
             />{' '}
           </a>
           <div className="card-body">
+            {this.getDropdown()}
             <h4 className="card-title">
               <a href="#">{this.props.name}</a>
             </h4>
@@ -62,6 +65,61 @@ class Product extends Component<Props, IState> {
         </div>
       </div>
     );
+  }
+
+  private getDropdown() {
+    let permissions = false;
+
+    if (this.props.conferenceId === undefined && this.auth.isAdmin()) {
+      permissions = true;
+    } else {
+      if (this.auth.getUserPayload().id === this.props.conferenceOwner) {
+        permissions = true;
+      }
+    }
+
+    if (permissions) {
+      return (
+        <div className={`${styles.post_options} btn-group`}>
+          <button
+            className="w-100 h-100 ml-2"
+            role="button"
+            data-toggle="dropdown"
+          >
+            <i className="fas fa-ellipsis-v" />
+          </button>
+          <div className="dropdown-menu dropdown-menu-right">
+            {this.getDropdownButtons()}
+          </div>
+        </div>
+      );
+    }
+  }
+
+  private getDropdownButtons() {
+    return (
+      <div>
+        <button
+          className="dropdown-item"
+          data-toggle="modal"
+          data-target={`#delete_product_modal${this.props.id}`}
+        >
+          {dictionary.edit_product[this.context]}
+        </button>
+        <button
+          id="add_product"
+          data-toggle="modal"
+          data-target={`#delete_product_modal`}
+        >
+          {dictionary.remove_product[this.context]}
+        </button>
+        {this.getDeleteProductModal()}
+      </div>
+    );
+  }
+
+  private getDeleteProductModal() {
+    return <DeleteProductModal conference_id={this.props.conferenceId} />;
   }
 }
 

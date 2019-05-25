@@ -34,7 +34,9 @@ export async function getProducts(req, res) {
     }
 }
 
-export async function getProduct(req, res, conferenceId = null) {
+export async function getProduct(req, res) {
+    let conferenceId = req.params.conf_id;
+    const userId = req.user.id;
     try {
         const products = await query({
             text: `SELECT name, stock, points
@@ -79,7 +81,8 @@ export async function createProduct(req, res) {
     }
 }
 
-export async function updateProduct(req, res, conferenceId = null) {
+export async function updateProduct(req, res) {
+    let conferenceId = req.params.conf_id;
     const userId = req.user.id;
     if(isAdmin(userId)){
         query({
@@ -95,7 +98,8 @@ export async function updateProduct(req, res, conferenceId = null) {
     }
 }
 
-export async function deleteProduct(req, res, conferenceId = null) {
+export async function deleteProduct(req, res) {
+    let conferenceId = req.params.conf_id;
     const userId = req.user.id;
     if(isAdmin(userId)){
         query({

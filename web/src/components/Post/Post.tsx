@@ -505,7 +505,6 @@ class Post extends Component<Props, IState> {
 
       currentComments = this.props.comments.slice(indexOfFirst, indexOfLast);
     }
-    console.log(currentComments);
     const commentSection = currentComments.map((comment, idx) => {
       return (
         <Comment

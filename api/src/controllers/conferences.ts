@@ -238,7 +238,7 @@ export async function getProducts(req, res) {
 }
 
 export async function getProduct(req, res) {
-  shop.getProduct(req, res, req.params.conf_id);
+  shop.getProduct(req, res);
 }
 
 export async function createProduct(req, res) {
@@ -246,9 +246,9 @@ export async function createProduct(req, res) {
 }
 
 export async function updateProduct(req, res) {
-  shop.updateProduct(req, res, req.params.conf_id);
+  shop.updateProduct(req, res);
 }
 
 export async function deleteProduct(req, res) {
-  shop.deleteProduct(req, res, req.params.conf_id);
+  shop.deleteProduct(req, res);
 }

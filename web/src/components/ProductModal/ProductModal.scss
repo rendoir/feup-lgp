@@ -1,7 +1,7 @@
 @import "../../styles/variables";
 @import "../../styles/colors";
 
-#add_product_modal {
+#add_product_modal, #delete_product_modal {
 
     .post_field {
         width: 100%;
@@ -14,3 +14,4 @@
     }
 
 }
+

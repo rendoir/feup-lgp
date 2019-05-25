@@ -7,7 +7,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
-  conference_id: number;
+  conference_id: number | undefined;
 }
 
 interface IState {
