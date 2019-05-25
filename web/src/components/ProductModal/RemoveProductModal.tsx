@@ -7,22 +7,24 @@ import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
-  conference_id: number | undefined;
+  id: number | undefined;
 }
 
 interface IState {
+  id: number;
   product_name: string;
   product_points: number;
   product_stock: number;
 }
 
-class DeleteProductModal extends Component<IProps, IState> {
+class RemoveProductModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
   constructor(props: IProps) {
     super(props);
 
     this.state = {
+      id: 0,
       product_name: '',
       product_points: 0,
       product_stock: 0
@@ -34,7 +36,7 @@ class DeleteProductModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id={`#delete_product_modal`}
+        id={`remove_product_modal`}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
@@ -80,14 +82,14 @@ class DeleteProductModal extends Component<IProps, IState> {
   }
 
   public apiDeleteProduct() {
-    /*axiosInstance
+    console.log('id: ', this.props.id);
+    axiosInstance
       .delete(getApiURL(`/products/${this.props.id}`))
       .then(res => {
         console.log('Product deleted - reloading page...');
         window.location.reload();
       })
       .catch(() => console.log('Failed to delete product'));
-      */
   }
 
   private handleDeleteProduct() {
@@ -111,4 +113,4 @@ class DeleteProductModal extends Component<IProps, IState> {
   }
 }
 
-export default DeleteProductModal;
+export default RemoveProductModal;

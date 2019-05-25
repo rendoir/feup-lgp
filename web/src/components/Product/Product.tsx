@@ -5,7 +5,7 @@ import { dictionary, LanguageContext } from '../../utils/language';
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import React, { Component } from 'react';
 import Button from '../Button/Button';
-import DeleteProductModal from '../ProductModal/DeleteProductModal';
+import RemoveProductModal from '../ProductModal/RemoveProductModal';
 
 export type Props = {
   id: number;
@@ -61,6 +61,7 @@ class Product extends Component<Props, IState> {
                 {dictionary.shop_exchange[this.context]}
               </Button>
             </div>
+            {this.getRemoveProductModal()}
           </div>
         </div>
       </div>
@@ -100,26 +101,25 @@ class Product extends Component<Props, IState> {
     return (
       <div>
         <button
-          className="dropdown-item"
+          id="edit_product"
           data-toggle="modal"
-          data-target={`#delete_product_modal${this.props.id}`}
+          data-target={`#remove_product_modal`}
         >
           {dictionary.edit_product[this.context]}
         </button>
         <button
-          id="add_product"
+          id="remove_product"
           data-toggle="modal"
-          data-target={`#delete_product_modal`}
+          data-target={`#remove_product_modal`}
         >
           {dictionary.remove_product[this.context]}
         </button>
-        {this.getDeleteProductModal()}
       </div>
     );
   }
 
-  private getDeleteProductModal() {
-    return <DeleteProductModal conference_id={this.props.conferenceId} />;
+  private getRemoveProductModal() {
+    return <RemoveProductModal id={this.props.id} />;
   }
 }
 

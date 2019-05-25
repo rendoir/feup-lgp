@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Product from '../components/Product/Product';
 import AddProductModal from '../components/ProductModal/AddProductModal';
-import DeleteProductModal from '../components/ProductModal/DeleteProductModal';
+import RemoveProductModal from '../components/ProductModal/RemoveProductModal';
 import '../styles/Shop.css';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -242,7 +242,6 @@ class Shop extends React.Component<Props, State> {
             </div>
           </div>
           {this.getAddProductModal()}
-          {this.getDeleteProductModal()}
         </div>
       );
     }
@@ -252,8 +251,8 @@ class Shop extends React.Component<Props, State> {
     return <AddProductModal conference_id={this.props.match.params.id} />;
   }
 
-  private getDeleteProductModal() {
-    return <DeleteProductModal conference_id={this.props.match.params.id} />;
+  private getRemoveProductModal() {
+    return <RemoveProductModal id={undefined} />;
   }
 }
 

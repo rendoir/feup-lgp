@@ -8,7 +8,7 @@ export async function getProducts(req, res) {
         let result;
         if (conferenceId === undefined) {
             result = await query({
-                text: `SELECT name, stock, points, date_created as date, conference
+                text: `SELECT id, name, stock, points, date_created as date, conference
                         FROM products
                         WHERE 
                             conference IS null
@@ -16,7 +16,7 @@ export async function getProducts(req, res) {
             });
         } else {
             result = await query({
-                text: `SELECT name, stock, points, date_created as date, conference
+                text: `SELECT id, name, stock, points, date_created as date, conference
                         FROM products
                         WHERE 
                             conference = $1
@@ -99,13 +99,13 @@ export async function updateProduct(req, res) {
 }
 
 export async function deleteProduct(req, res) {
-    let conferenceId = req.params.conf_id;
+    let productId = req.params.id;
     const userId = req.user.id;
     if(isAdmin(userId)){
         query({
             text: `DELETE FROM products
                     WHERE id = $1`,
-            values: [req.body.id],
+            values: [productId],
         }).then((result) => {
             res.status(200).send();
         }).catch((error) => {
