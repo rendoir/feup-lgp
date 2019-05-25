@@ -265,6 +265,7 @@ class Talk extends PureComponent<Props, State> {
     axiosInstance
       .get(`/talk/${this.id}`)
       .then(res => {
+        console.log(res);
         const talk = res.data.talk;
         const posts = res.data.posts;
         const challenges = res.data.challenges;
@@ -301,7 +302,8 @@ class Talk extends PureComponent<Props, State> {
             livestreamURL: talk.livestream_url,
             local: talk.local,
             title: talk.title
-          }
+          },
+          userPoints: 0
         });
       })
       .catch(error => {
@@ -2167,7 +2169,7 @@ class Talk extends PureComponent<Props, State> {
 
     const formData = new FormData();
     formData.append('title', postFields.title);
-    formData.append('content', postFields.description);
+    formData.append('text', postFields.description);
     formData.append('visibility', 'public');
     formData.append('talk', this.id.toString());
     postFields.files.images.forEach((image, index) =>

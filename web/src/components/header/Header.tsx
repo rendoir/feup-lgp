@@ -292,7 +292,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       );
       request.tags.forEach((tag, i) => formData.append('tags[' + i + ']', tag));
 
-      formData.append('content', request.about);
+      formData.append('text', request.about);
       formData.append('title', request.title);
       formData.append('visibility', request.privacy);
 
