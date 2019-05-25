@@ -7,19 +7,26 @@ $header-font-family: $default-font-family;
 $header-font-size: $default-font-size-large;
 
 .container {
+  height: 5rem;
+  background-color: $white;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 2147483647;
+}
+
+.wrapper {
   color: $header-color;
   background-color: lighten(rgba($header-background-color, 1), 5%);
   font-family: $header-font-family;
   font-size: $header-font-size;
   font-weight: 500;
-}
-
-.wrapper {
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 16777271;
 }
 
 .logo {

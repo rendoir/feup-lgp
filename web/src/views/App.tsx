@@ -47,22 +47,27 @@ class App extends React.Component<{}, State> {
           <Router>
             <ErrorBoundary>
               <Header title={'gNet'} onLanguageChange={this.onLanguageChange} />
-              <Switch>
-                <Route path="/user/:id" component={Profile} />
-                {/*<Route path="/user/:id/edit" component={EditProfile} />*/}
-                <Route path="/post/:id" component={PostView} />
-                <Route path="/admin" component={Backoffice} />
-                <Route path="/shop" component={Shop} />
-                <Route path="/landing" component={Landing} />
-                <Route path="/search" component={SearchResults} />
-                <Route path="/talk/:id" component={Talk} />
-                <Route path="/conference/:id/shop" component={ConferenceShop} />
-                <Route path="/conference/:id" component={Conference} />
-                <Route path="/conferences/" component={Conferences} />
-                <Route path="/notifications" component={Notifications} />
-                <Route path="/invite" component={Invite} />
-                <Route component={Feed} /> {/* default */}
-              </Switch>
+              <div style={{ paddingTop: '4rem' }}>
+                <Switch>
+                  <Route path="/user/:id" component={Profile} />
+                  {/*<Route path="/user/:id/edit" component={EditProfile} />*/}
+                  <Route path="/post/:id" component={PostView} />
+                  <Route path="/admin" component={Backoffice} />
+                  <Route path="/shop" component={Shop} />
+                  <Route path="/landing" component={Landing} />
+                  <Route path="/search" component={SearchResults} />
+                  <Route path="/talk/:id" component={Talk} />
+                  <Route
+                    path="/conference/:id/shop"
+                    component={ConferenceShop}
+                  />
+                  <Route path="/conference/:id" component={Conference} />
+                  <Route path="/conferences/" component={Conferences} />
+                  <Route path="/notifications" component={Notifications} />
+                  <Route path="/invite" component={Invite} />
+                  <Route component={Feed} /> {/* default */}
+                </Switch>
+              </div>
             </ErrorBoundary>
           </Router>
         </LanguageContext.Provider>
