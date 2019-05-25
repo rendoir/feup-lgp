@@ -51,10 +51,14 @@ export async function getProduct(req, res) {
 
 export async function createProduct(req, res) {
     const conferenceId = req.params.conf_id;
+    let imageURL = req.body.image;
+    if (imageURL.length === 0) {
+        imageURL = 'http://placehold.it/700x400';
+    }
     if (conferenceId === undefined) {
         query({
             text: `INSERT INTO products (name, stock, points, image) VALUES ($1, $2, $3, $4)`,
-            values: [req.body.name, req.body.stock, req.body.points, req.body.image],
+            values: [req.body.name, req.body.stock, req.body.points, imageURL],
         }).then(() => {
             res.status(200).send();
         }).catch((error) => {

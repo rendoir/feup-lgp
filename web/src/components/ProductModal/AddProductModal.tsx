@@ -86,7 +86,6 @@ class AddProductModal extends Component<IProps, IState> {
               />
             </div>
             <p
-              id={styles.productNameErrorMessage}
               className={
                 (this.state.product_name_error ? '' : 'd-none') + ' pt-1'
               }
@@ -108,7 +107,6 @@ class AddProductModal extends Component<IProps, IState> {
               />
             </div>
             <p
-              id={styles.productPointsErrorMessage}
               className={
                 (this.state.product_points_error ? '' : 'd-none') + ' pt-1'
               }
@@ -130,7 +128,6 @@ class AddProductModal extends Component<IProps, IState> {
               />
             </div>
             <p
-              id={styles.productStockErrorMessage}
               className={
                 (this.state.product_stock_error ? '' : 'd-none') + ' pt-1'
               }
@@ -151,10 +148,7 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
-            <p
-              id={styles.productErrorMessage}
-              className={(this.state.product_error ? '' : 'd-none') + ' pt-1'}
-            >
+            <p className={(this.state.product_error ? '' : 'd-none') + ' pt-1'}>
               {dictionary.product_error_message[this.context]}
             </p>
             <div className="modal-footer">
