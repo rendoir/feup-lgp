@@ -13,7 +13,7 @@ $header-font-size: $default-font-size-large;
   left: 0;
   right: 0;
   top: 0;
-  z-index: 2147483647;
+  z-index: 100;
 }
 
 .wrapper {
@@ -26,7 +26,7 @@ $header-font-size: $default-font-size-large;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 16777271;
+  z-index: 99;
 }
 
 .logo {
