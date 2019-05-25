@@ -238,6 +238,12 @@ export let dictionary: Dictionary = {
   shop_stock: { PT: 'Em stock: ', EN: 'In stock: ' },
   shop_search_points: { PT: 'Procurar produtos', EN: 'Search products' },
   shop_exchange: { PT: 'Trocar', EN: 'Exchange' },
+  shop_exchanging: { PT: 'Tratando da troca...', EN: 'Exchanging...' },
+  sold_out: { PT: 'Esgotado', EN: 'Sold out' },
+  not_enough_points: {
+    PT: 'Não possui pontos suficientes',
+    EN: 'Not enough points'
+  },
   tag_placeholder: {
     PT: 'Procure ou insira uma nova tag e clique Enter.',
     EN: 'Search for or insert a new tag and click Enter.'

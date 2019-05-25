@@ -1,9 +1,9 @@
+import React, { Component } from 'react';
+
 import styles from './Product.module.css';
 
-import { dictionary, LanguageContext } from '../../utils/language';
-
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
-import React, { Component } from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
 import Button from '../Button/Button';
 import EditProductModal from '../ProductModal/EditProductModal';
 import RemoveProductModal from '../ProductModal/RemoveProductModal';
@@ -18,9 +18,14 @@ export type Props = {
   conferenceId: number | undefined;
   conferenceOwner: number | undefined;
   user: any;
+  enoughPoints: boolean; // True if user has enough points to reedem product
+  updateUserPoints: any; // Function called to update user points when a product purchase occurs
 };
 
-interface IState {}
+interface IState {
+  exchangingProduct: boolean;
+  stock: number;
+}
 
 class Product extends Component<Props, IState> {
   public static contextType = LanguageContext;
@@ -29,7 +34,21 @@ class Product extends Component<Props, IState> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      exchangingProduct: false,
+      stock: this.props.stock
+    };
+
+    this.handleProductExchange = this.handleProductExchange.bind(this);
+  }
+
+  public handleProductExchange() {
+    console.log('COMPPPPRRROU ', this.props.id);
+    this.setState({
+      exchangingProduct: true
+    });
+    // TODO BACKEND: DIMINUIR STOCK, TIRAR PONTOS AO UTILIZADOR
+    // QUANDO A TROCA FOR BEM SUCEDIDA CHAMAR     this.props.updateUserPoints()
   }
 
   public render() {
@@ -62,11 +81,7 @@ class Product extends Component<Props, IState> {
             </p>
           </div>
           <div className="card-footer">
-            <div className="">
-              <Button theme="primary" view="outline" size="small" wide={true}>
-                {dictionary.shop_exchange[this.context]}
-              </Button>
-            </div>
+            <div className="">{this.getReedemButton()}</div>
             {this.getEditProductModal()}
             {this.getRemoveProductModal()}
           </div>
@@ -122,6 +137,41 @@ class Product extends Component<Props, IState> {
           {dictionary.remove_product[this.context]}
         </button>
       </div>
+    );
+  }
+
+  private getReedemButton() {
+    const buttonDisabled = Boolean(
+      this.state.stock === 0 ||
+        !this.props.enoughPoints ||
+        this.state.exchangingProduct
+    );
+
+    let buttonText = dictionary.shop_exchange[this.context];
+    let buttonTheme: 'primary' | 'danger' | 'info' = 'primary';
+
+    if (this.state.exchangingProduct) {
+      buttonText = dictionary.shop_exchanging[this.context];
+      buttonTheme = 'info';
+    } else if (this.state.stock === 0) {
+      buttonText = dictionary.sold_out[this.context];
+      buttonTheme = 'danger';
+    } else if (!this.props.enoughPoints) {
+      buttonText = dictionary.not_enough_points[this.context];
+      buttonTheme = 'danger';
+    }
+
+    return (
+      <Button
+        theme={buttonTheme}
+        view="outline"
+        size="small"
+        wide={true}
+        disabled={buttonDisabled}
+        onClick={this.handleProductExchange}
+      >
+        {buttonText}
+      </Button>
     );
   }
 

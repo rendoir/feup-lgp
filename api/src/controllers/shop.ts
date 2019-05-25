@@ -2,14 +2,14 @@ import { query } from '../db/db';
 import { isAdmin } from './admin';
 
 export async function getProducts(req, res) {
-    let conferenceId = req.params.id;
+    const conferenceId = req.params.id;
     try {
         let result;
         if (conferenceId === undefined) {
             result = await query({
                 text: `SELECT id, name, stock, points, date_created as date, image, conference
                         FROM products
-                        WHERE 
+                        WHERE
                             conference IS null
                         ORDER BY date DESC`,
             });
@@ -17,7 +17,7 @@ export async function getProducts(req, res) {
             result = await query({
                 text: `SELECT id, name, stock, points, date_created as date, image, conference
                         FROM products
-                        WHERE 
+                        WHERE
                             conference = $1
                         ORDER BY date DESC`,
                 values: [conferenceId],
