@@ -3,7 +3,6 @@ import { isAdmin } from './admin';
 
 export async function getProducts(req, res) {
     let conferenceId = req.params.id;
-    const userId = req.user.id;
     try {
         let result;
         if (conferenceId === undefined) {
@@ -36,7 +35,6 @@ export async function getProducts(req, res) {
 
 export async function getProduct(req, res) {
     let conferenceId = req.params.conf_id;
-    const userId = req.user.id;
     try {
         const products = await query({
             text: `SELECT name, stock, points
@@ -53,13 +51,11 @@ export async function getProduct(req, res) {
 
 export async function createProduct(req, res) {
     let conferenceId = req.params.conf_id;
-    const userId = req.user.id;
-    if(isAdmin(userId)){
         let result;
         if (conferenceId === undefined) {
             query({
-                text: `INSERT INTO products (name, stock, points) VALUES ($1, $2, $3)`,
-                values: [req.body.name, req.body.stock, req.body.points],
+                text: `INSERT INTO products (name, stock, points, image) VALUES ($1, $2, $3, $4)`,
+                values: [req.body.name, req.body.stock, req.body.points, req.body.image],
             }).then((result) => {
                 res.status(200).send();
             }).catch((error) => {
@@ -67,10 +63,9 @@ export async function createProduct(req, res) {
                 res.status(400).send({ message: 'An error ocurred while adding a new product' });
             });
         } else {
-            console.log("yo ", req.body);
             query({
-                text: `INSERT INTO products (name, stock, points, conference) VALUES ($1, $2, $3, $4)`,
-                values: [req.body.name, req.body.stock, req.body.points, conferenceId],
+                text: `INSERT INTO products (name, stock, points, image, conference) VALUES ($1, $2, $3, $4, $5)`,
+                values: [req.body.name, req.body.stock, req.body.points, req.body.image, conferenceId],
             }).then((result) => {
                 res.status(200).send();
             }).catch((error) => {
@@ -78,15 +73,14 @@ export async function createProduct(req, res) {
                 res.status(400).send({ message: 'An error ocurred while adding a new product' });
             });
         }
-    }
 }
 
 export async function updateProduct(req, res) {
     let productId = req.params.id;
         query({
-            text: `UPDATE products SET name = $2, stock = $3, points = $4
+            text: `UPDATE products SET name = $2, stock = $3, points = $4, image = $5 
                 WHERE id = $1`,
-            values: [productId, req.body.name, req.body.stock, req.body.points],
+            values: [productId, req.body.name, req.body.stock, req.body.points, req.body.image],
         }).then(() => {
             res.status(200).send();
         }).catch((error) => {

@@ -14,6 +14,7 @@ interface IState {
   product_name: string;
   product_points: number;
   product_stock: number;
+  product_image: string;
 }
 
 class AddProductModal extends Component<IProps, IState> {
@@ -24,6 +25,7 @@ class AddProductModal extends Component<IProps, IState> {
 
     this.state = {
       product_name: '',
+      product_image: '',
       product_points: 0,
       product_stock: 0
     };
@@ -102,6 +104,20 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <div className="modal-body">
+              <h5>{dictionary.insert_product_image[this.context]}</h5>
+              <input
+                name="product_image"
+                type="text"
+                autoComplete="off"
+                className="post_field"
+                onChange={e =>
+                  this.handleInputChange('product_image', e.target.value)
+                }
+                placeholder={dictionary.insert_product_image[this.context]}
+                required={true}
+              />
+            </div>
             <div className="modal-footer">
               <button
                 type="button"
@@ -129,6 +145,7 @@ class AddProductModal extends Component<IProps, IState> {
     }
     const body = {
       name: this.state.product_name,
+      image: this.state.product_image,
       points: this.state.product_points,
       stock: this.state.product_stock
     };
@@ -149,6 +166,8 @@ class AddProductModal extends Component<IProps, IState> {
       this.setState({ product_points: value });
     } else if (type === 'product_stock') {
       this.setState({ product_stock: value });
+    } else if (type === 'product_image') {
+      this.setState({ product_image: value });
     }
   }
 

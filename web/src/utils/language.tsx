@@ -618,6 +618,10 @@ export let dictionary: Dictionary = {
   insert_product_name: { PT: 'Nome do produto', EN: 'Product name' },
   insert_product_points: { PT: 'Pontos do produto', EN: 'Product points' },
   insert_product_stock: { PT: 'Stock do produto', EN: 'Product stock' },
+  insert_product_image: {
+    PT: 'Imagem do produto (URL em formato jpg/png)',
+    EN: 'Product image (URL in jpg/png format)'
+  },
   confirm_delete_product: {
     PT:
       'Tem a certeza que deseja apagar este produto? Não será possível recuperá-lo.',

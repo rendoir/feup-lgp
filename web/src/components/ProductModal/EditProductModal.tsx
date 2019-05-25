@@ -8,6 +8,7 @@ import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   id: number;
+  image: string;
   name: string;
   stock: number;
   points: number;
@@ -15,6 +16,7 @@ interface IProps {
 
 interface IState {
   id: number;
+  product_image: string;
   product_name: string;
   product_points: number;
   product_stock: number;
@@ -28,6 +30,7 @@ class EditProductModal extends Component<IProps, IState> {
 
     this.state = {
       id: 0,
+      product_image: '',
       product_name: '',
       product_points: 0,
       product_stock: 0
@@ -110,6 +113,21 @@ class EditProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <div className="modal-body">
+              <h5>{dictionary.insert_product_image[this.context]}</h5>
+              <input
+                name="product_image"
+                type="text"
+                autoComplete="off"
+                className="post_field"
+                onChange={e =>
+                  this.handleInputChange('product_image', e.target.value)
+                }
+                placeholder={dictionary.insert_product_image[this.context]}
+                defaultValue={this.props.image}
+                required={true}
+              />
+            </div>
             <div className="modal-footer">
               <button
                 type="button"
@@ -133,11 +151,14 @@ class EditProductModal extends Component<IProps, IState> {
       this.setState({ product_points: value });
     } else if (type === 'product_stock') {
       this.setState({ product_stock: value });
+    } else if (type === 'product_image') {
+      this.setState({ product_image: value });
     }
   }
 
   public apiEditProduct() {
     const body = {
+      image: this.state.product_image,
       name: this.state.product_name,
       points: this.state.product_points,
       stock: this.state.product_stock
