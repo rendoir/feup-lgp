@@ -117,7 +117,7 @@ export let dictionary: Dictionary = {
     PT:
       'Uma palestra aberta é visivel para outros utilizadores e pode ter seu conteúdo e informações modificadas.',
     EN:
-      'An open talk é visible to other users and can have its content and info change.'
+      'An open talk is visible to other users and can have its content and info change.'
   },
   report_talk: { PT: 'Reportar palestra', EN: 'Report talk' },
   archive_talk: { PT: 'Arquivar palestra', EN: 'Archive talk' },

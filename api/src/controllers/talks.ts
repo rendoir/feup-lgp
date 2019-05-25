@@ -425,7 +425,7 @@ export async function getTalk(req, res) {
                         ORDER BY c.date_updated ASC`,
         values: [post.id],
       });
-      const tags = await query({
+      const postTags = await query({
         text: `SELECT t.name
                         FROM tags t
                         INNER JOIN posts_tags pt
@@ -443,15 +443,21 @@ export async function getTalk(req, res) {
         values: [post.id],
       });
       post.comments = comment.rows;
-      post.tags = tags.rows;
+      post.tags = postTags.rows;
       post.files = files.rows;
     }
+    const tags = await query({
+      text: `SELECT id, name
+             FROM tags`,
+      values: [],
+    });
     const result = {
       challenges: challenges.rows,
       talk: talk.rows[0],
       posts: posts.rows,
       size: totalSize.rows[0].count,
       isParticipating: isParticipating.rows.length > 0,
+      tags: tags.rows,
     };
     res.send(result);
   } catch (error) {
