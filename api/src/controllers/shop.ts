@@ -82,26 +82,21 @@ export async function createProduct(req, res) {
 }
 
 export async function updateProduct(req, res) {
-    let conferenceId = req.params.conf_id;
-    const userId = req.user.id;
-    if(isAdmin(userId)){
+    let productId = req.params.id;
         query({
             text: `UPDATE products SET name = $2, stock = $3, points = $4
                 WHERE id = $1`,
-            values: [req.body.id, req.body.name, req.body.stock, req.body.points],
+            values: [productId, req.body.name, req.body.stock, req.body.points],
         }).then(() => {
             res.status(200).send();
         }).catch((error) => {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occurred while editing a comment' });
         });
-    }
 }
 
 export async function deleteProduct(req, res) {
     let productId = req.params.id;
-    const userId = req.user.id;
-    if(isAdmin(userId)){
         query({
             text: `DELETE FROM products
                     WHERE id = $1`,
@@ -112,5 +107,4 @@ export async function deleteProduct(req, res) {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while deleting a product' });
         });
-    }
 }

@@ -5,6 +5,7 @@ import { dictionary, LanguageContext } from '../../utils/language';
 import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import React, { Component } from 'react';
 import Button from '../Button/Button';
+import EditProductModal from '../ProductModal/EditProductModal';
 import RemoveProductModal from '../ProductModal/RemoveProductModal';
 
 export type Props = {
@@ -61,6 +62,7 @@ class Product extends Component<Props, IState> {
                 {dictionary.shop_exchange[this.context]}
               </Button>
             </div>
+            {this.getEditProductModal()}
             {this.getRemoveProductModal()}
           </div>
         </div>
@@ -103,7 +105,7 @@ class Product extends Component<Props, IState> {
         <button
           id="edit_product"
           data-toggle="modal"
-          data-target={`#remove_product_modal`}
+          data-target={`#edit_product_modal`}
         >
           {dictionary.edit_product[this.context]}
         </button>
@@ -116,6 +118,10 @@ class Product extends Component<Props, IState> {
         </button>
       </div>
     );
+  }
+
+  private getEditProductModal() {
+    return <EditProductModal {...this.props} />;
   }
 
   private getRemoveProductModal() {

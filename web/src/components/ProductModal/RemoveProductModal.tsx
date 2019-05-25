@@ -7,7 +7,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
-  id: number | undefined;
+  id: number;
 }
 
 interface IState {
@@ -82,7 +82,6 @@ class RemoveProductModal extends Component<IProps, IState> {
   }
 
   public apiDeleteProduct() {
-    console.log('id: ', this.props.id);
     axiosInstance
       .delete(getApiURL(`/products/${this.props.id}`))
       .then(res => {
