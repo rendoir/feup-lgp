@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import classNames from "classnames";
-import { ColorTheme, IconSize } from "../../utils/types";
-import Icon from "../Icon/Icon";
-import styles from "../IconButton/IconButton.module.css";
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import { ColorTheme, IconSize } from '../../utils/types';
+import Icon from '../Icon/Icon';
+import styles from '../IconButton/IconButton.module.css';
 
 export type Props = {
   /** LinkIconButton class attribute */
@@ -16,7 +15,7 @@ export type Props = {
   /** LinkIconButton icon */
   icon: IconProp;
   /** LinkIconButton size property */
-  size: "small" | "normal" | "large";
+  size: 'small' | 'normal' | 'large';
   /** LinkIconButton theme property */
   theme: ColorTheme;
   /** LinkIconButton flat property */
@@ -32,8 +31,8 @@ export type Props = {
 class LinkIconButton extends Component<Props> {
   public static defaultProps = {
     flat: false,
-    size: "normal",
-    theme: "default"
+    size: 'normal',
+    theme: 'default'
   };
 
   public render() {
@@ -78,13 +77,13 @@ class LinkIconButton extends Component<Props> {
   private getIconSize = (): IconSize => {
     const { size } = this.props;
 
-    if (size === "small") {
-      return "xs";
+    if (size === 'small') {
+      return 'xs';
     }
-    if (size === "normal") {
-      return "sm";
+    if (size === 'normal') {
+      return 'sm';
     }
-    return "lg";
+    return 'lg';
   };
 
   private renderIcon() {

@@ -1,7 +1,7 @@
 let isSupports = false;
 
 try {
-  const opts = Object.defineProperty({}, "passive", {
+  const opts = Object.defineProperty({}, 'passive', {
     get() {
       isSupports = true;
       return true;
@@ -9,7 +9,7 @@ try {
   });
 
   // @ts-ignore
-  window.addEventListener("test", null, opts);
+  window.addEventListener('test', null, opts);
 } catch (e) {
   // do nothing
 }

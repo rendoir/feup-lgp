@@ -40,6 +40,11 @@
 
 .link {
 	color: $color-primary;
+
+	&:hover {
+		color: shade($color-primary, 30%);
+		text-decoration: underline;
+	}
 }
 
 .breadcrumbLink {
@@ -68,4 +73,23 @@
       background-color: shade($greyish, 30%) !important;
     }
   }
+}
+
+.arrow {
+	filter: invert(100%);
+}
+
+.correctAnswer {
+	background-color: tint($color-success, 90%);
+	border-color: $color-success;
+}
+
+.wrongAnswer {
+	background-color: tint($color-danger, 90%);
+	border-color: $color-danger;
+
+	&:hover {
+		background-color: tint($color-danger, 30%) !important;
+		color: $white;
+	}
 }

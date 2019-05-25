@@ -36,10 +36,7 @@ export default class AuthHelperMethods {
   isTokenExpired = token => {
     try {
       const decoded = decode(token);
-      if (decoded.exp < Date.now() / 1000) {
-        // Checking if token is expired.
-        return true;
-      } else return false;
+      return decoded.exp < Date.now() / 1000;
     } catch (err) {
       console.log('expired check failed! Line 42: AuthService.js');
       return false;
@@ -62,13 +59,7 @@ export default class AuthHelperMethods {
   };
 
   getUserPayload = () => {
-    const payload = this.getToken() ? decode(this.getToken()) : null;
-    return payload;
-  };
-
-  isAdmin = () => {
-    const payload = this.getUserPayload();
-    return payload && payload.permission === 'admin';
+    return this.getToken() ? decode(this.getToken()) : null;
   };
 
   isLoggedInUser = id => {

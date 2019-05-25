@@ -98,13 +98,56 @@ export let dictionary: Dictionary = {
   open: { PT: 'Aberta', EN: 'Open' },
   hide_talk: { PT: 'Esconder palestra', EN: 'Hide talk' },
   hidden: { PT: 'Escondida', EN: 'Hidden' },
+  hide: { PT: 'Esconder', EN: 'Hide' },
+  confirm_hide: {
+    PT: 'Tens certeza que deseja esconder essa palestra?',
+    EN: 'Are you sure you want to hide this talk?'
+  },
+  hide_description: {
+    PT:
+      'Uma palestra escondida não é visivel para outros utilizadores e não pode ter seu conteudo alterado, mas pode ter suas informações alteradas',
+    EN:
+      'A hidden talk is not visible to other users and can not have its contents change, but it can have its info changed'
+  },
+  confirm_open: {
+    PT: 'Tens certeza que desejar abrir essa palestra?',
+    EN: 'Are you sure you want to open this talk?'
+  },
+  open_description: {
+    PT:
+      'Uma palestra aberta é visivel para outros utilizadores e pode ter seu conteúdo e informações modificadas.',
+    EN:
+      'An open talk é visible to other users and can have its content and info change.'
+  },
   report_talk: { PT: 'Reportar palestra', EN: 'Report talk' },
   archive_talk: { PT: 'Arquivar palestra', EN: 'Archive talk' },
-  unarchive_talk: {
-    PT: 'Desarquivar conferência',
-    EN: 'Unarchive conference'
+  restore_talk: {
+    PT: 'Restaurar palestra',
+    EN: 'Restore talk'
   },
   archived: { PT: 'Arquivada', EN: 'Archived' },
+  archive: { PT: 'Arquivar', EN: 'Archive' },
+  restore: { PT: 'Restaurar', EN: 'Restore' },
+  confirm_archive: {
+    PT: 'Tens certeza que deseja arquivar essa palestra?',
+    EN: 'Are you sure you want to archive this talk?'
+  },
+  archive_description: {
+    PT:
+      'Uma palestra arquivada não pode nem ser visualizada por um utilizador nem ter suas informações ou conteúdo alterados. Você pode restaurar essa palestra posteriormente.',
+    EN:
+      'An archived talk can neither be seen by other users nor have its info or content changed. You can restore this talk later.'
+  },
+  confirm_restore: {
+    PT: 'Tens certeza que deseja restaurar essa palestra?',
+    EN: 'Are you sure you want to restore this talk?'
+  },
+  restore_description: {
+    PT:
+      'Restaurar uma palestra a tornará visivel para outros utilizadores, e suas informações e conteúdo poderão novamente ser alterados.',
+    EN:
+      'Restore a talk will make it visible for other users, and its info and content will be editable again.'
+  },
   start_livestream_talk: {
     PT: 'Começar transmissão em direto',
     EN: 'Start livestream'
@@ -247,6 +290,8 @@ export let dictionary: Dictionary = {
     PT: 'URL da transmissão em direto (Embed Link)',
     EN: 'Livestream URL (Embed Link)'
   },
+  enabled: { PT: 'Abilitado', EN: 'Enabled' },
+  disabled: { PT: 'Desabilitado', EN: 'Disabled' },
   tags: { PT: 'Categorias', EN: 'Tags' },
   files: { PT: 'Ficheiros', EN: 'Files' },
   post_cap: { PT: 'Publicação', EN: 'Post' },

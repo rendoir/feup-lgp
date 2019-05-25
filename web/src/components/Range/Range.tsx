@@ -1,7 +1,7 @@
-import classNames from "classnames";
-import React, { PureComponent } from "react";
-import Slider from "react-rangeslider";
-import styles from "./Range.module.css";
+import classNames from 'classnames';
+import React, { PureComponent } from 'react';
+import Slider from 'react-rangeslider';
+import styles from './Range.module.css';
 
 export type Props = {
   className?: string;
@@ -9,7 +9,7 @@ export type Props = {
   max: number;
   value: number;
   step: number;
-  orientation: "vertical" | "horizontal";
+  orientation: 'vertical' | 'horizontal';
   onChange: (value: number) => any;
 };
 
@@ -17,7 +17,7 @@ class Range extends PureComponent<Props> {
   public static defaultProps = {
     max: 1,
     min: 0,
-    orientation: "horizontal",
+    orientation: 'horizontal',
     step: 0.01,
     value: 0
   };

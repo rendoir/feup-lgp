@@ -91,7 +91,7 @@ export function editTalk(req, res) {
     });
     return;
   }
-  if (!data.about.trim()) {
+  if (!data.description.trim()) {
     console.log('\n\nError: talk about cannot be empty');
     res.status(400).send({
       message: `An error occurred while updating talk #${talk}: ` +
@@ -125,27 +125,24 @@ export function editTalk(req, res) {
   }
 
   query({
-    text: 'UPDATE talks ' +
-      'SET (title, about, local, datestart, dateend, livestream_url) = ($2, $3, $4, $5, $6, $7) ' +
-      'WHERE id = $1 ' +
-      'RETURNING id',
+    text: `UPDATE talks
+           SET (title, about, local, datestart, dateend, livestream_url) =
+               ($2, $3, $4, $5, $6, $7)
+           WHERE id = $1`,
     values: [
       talk,
       data.title,
-      data.about,
+      data.description,
       data.local,
       data.dateStart,
       data.dateEnd,
-      data.livestreamUrl,
+      data.livestreamURL,
     ],
   })
-    .then((response) => {
-      res.send({
-        id: response.rows[0].id,
-      });
+    .then(() => {
+      res.status(200).send();
     })
     .catch((error) => {
-      console.log(`Error: ${error}`);
       res.status(400).send({
         message: `An error occurred while updating a talk. Error: ${error.toString()}`,
       });
@@ -322,14 +319,15 @@ export async function getTalk(req, res) {
     const talk = await query({
       text: `
               SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name, t.title, t.conference as conference_id,
-              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, c.title as conference_title
+              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, t.hidden,
+              c.title as conference_title
               FROM talks t
               INNER JOIN users a ON t.author = a.id
               INNER JOIN conferences c ON t.conference = c.id
               WHERE t.id = $1
                 AND (t.author = $2
+                    OR (archived = FALSE AND hidden = FALSE)
                     OR t.privacy = 'public'
-                    OR t.privacy = 'closed'
                     OR (t.privacy = 'followers'
                         AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
                     )
@@ -354,12 +352,49 @@ export async function getTalk(req, res) {
     });
 
     const challenges = await query ({
-      text: `SELECT id, title, dateStart, dateEnd, prize, points_prize, challengeType, content
-                    FROM challenges
-					          WHERE talk = $1
-                    ORDER BY dateStart DESC`,
+      text: `SELECT *
+              FROM challenges
+              WHERE talk = $1
+              ORDER BY dateStart DESC`,
       values: [id],
     });
+    for (const challenge of challenges.rows) {
+      const isAnswered = await query({
+        text: `SELECT uc.answer, uc.complete
+              FROM user_challenge uc
+              INNER JOIN challenges c ON c.id = uc.challenge
+              INNER JOIN talks t ON t.id = c.talk
+              WHERE (
+                t.id = $1
+                AND uc.challenged = $2
+                AND uc.challenge = $3
+              )
+              `,
+        values: [id, userId, challenge.id],
+      });
+      if (isAnswered.rows.length > 0) {
+        challenge.isComplete = true;
+        challenge.userAnswer = isAnswered.rows[0].answer;
+        challenge.isCorrect = isAnswered.rows[0].complete;
+      } else {
+        challenge.isComplete = false;
+        challenge.userAnswer = null;
+        challenge.isCorrect = null;
+      }
+      if (challenge.challengetype === 'question_options') {
+        const answers = challenge.answers;
+        challenge.options = [];
+        answers.forEach((answer) => {
+          const aux = answer.split(': ');
+          if (aux[0] === 'CorrectAnswer') {
+            challenge.correctAnswer = aux[1];
+          } else {
+            challenge.options.push(aux[1]);
+          }
+          delete challenge.answers;
+        });
+      }
+    }
     const posts = await query({
       text: `SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, users.id AS user_id
@@ -445,49 +480,39 @@ export function changePrivacy(req, res) {
 // Can only archive if user is author.
 export async function archiveTalk(req, res) {
   const id = req.params.id;
-  const userId = req.user.id;
-  try {
-    const archivedConference = await query({
-      text: `UPDATE talks
-              SET archived = TRUE
+  const user = req.user.id;
+  const value = req.body.value;
+  await query({
+    text: `UPDATE talks
+              SET archived = $3
               WHERE id = $1 AND author = $2`,
-      values: [id, userId],
+    values: [id, user, value],
+  }).then(() => {
+    res.status(200).send();
+  }).catch((error) => {
+    res.status(500).send({
+      message: `Error ${value ? 'archiving' : 'restoring'} talk. Error: ${error}`,
     });
-    if (archivedConference === null) {
-      res.status(400).send(
-        new Error('Error in the archieve process of talk'),
-      );
-      return;
-    }
-    res.send();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(new Error('Error archieve talk'));
-  }
+  });
 }
 
-// Can only unarchive if user is author.
-export async function unarchiveTalk(req, res) {
+export async function hideTalk(req, res) {
   const id = req.params.id;
-  const userId = req.user.id;
-  try {
-    const archivedConference = await query({
-      text: `UPDATE talks
-            SET archived = FALSE
-            WHERE id = $1 AND author = $2`,
-      values: [id, userId],
+  const user = req.user.id;
+  const value = req.body.value;
+  console.log(value);
+  await query({
+    text: `UPDATE talks
+              SET hidden = $3
+              WHERE id = $1 AND author = $2`,
+    values: [id, user, value],
+  }).then(() => {
+    res.status(200).send();
+  }).catch((error) => {
+    res.status(500).send({
+      message: `Error ${value ? 'hiding' : 'opening'} talk. Error: ${error}`,
     });
-    if (archivedConference === null) {
-      res.status(400).send(
-        new Error('Error in the archieve process of talk'),
-      );
-      return;
-    }
-    res.send();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(new Error('Error archieve talk'));
-  }
+  });
 }
 
 export function getPointsUserTalk(req, res) {

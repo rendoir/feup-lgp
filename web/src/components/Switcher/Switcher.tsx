@@ -1,6 +1,6 @@
-import classNames from "classnames";
-import React, { ChangeEvent, PureComponent } from "react";
-import styles from "./Switcher.module.css";
+import classNames from 'classnames';
+import React, { ChangeEvent, PureComponent } from 'react';
+import styles from './Switcher.module.css';
 
 export type Props = {
   className?: string;
@@ -96,9 +96,9 @@ class Switcher extends PureComponent<Props> {
             className={styles.input}
             name={name}
             id={id}
-            value={value ? "true" : "false"}
+            value={value ? 'true' : 'false'}
             checked={value}
-            type={"checkbox"}
+            type={'checkbox'}
             tabIndex={tabIndex}
             ref={this.setInput}
             onChange={this.handleChange}
