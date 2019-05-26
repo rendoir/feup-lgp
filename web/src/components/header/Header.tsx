@@ -290,15 +290,24 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         })
         .catch(() => console.log('Failed to create post'));
     } else {
+      const formData = new FormData();
+
+      if (request.avatar !== undefined) {
+        formData.append('avatar', request.avatar);
+      }
+
+      formData.append('about', request.about);
+      formData.append('dateEnd', request.dateEnd);
+      formData.append('dateStart', request.dateStart);
+      formData.append('local', request.local);
+      formData.append('privacy', request.privacy);
+      formData.append('title', request.title);
+
       axiosInstance
-        .post('/conference', {
-          about: request.about,
-          avatar: request.avatar,
-          dateEnd: request.dateEnd,
-          dateStart: request.dateStart,
-          local: request.local,
-          privacy: request.privacy,
-          title: request.title
+        .post('/conference', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
         .then(res => {
           console.log(`conference with id = ${res.data.id} created`);

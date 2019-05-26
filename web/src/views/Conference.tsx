@@ -145,6 +145,8 @@ class Conference extends PureComponent<Props, State> {
         this.ownerId = conference.user_id;
         this.ownerName = `${conference.first_name} ${conference.last_name}`;
 
+        this.apiGetConferenceAvatar(conference);
+
         this.setState({
           dateEnd: conference.dateend,
           dateStart: conference.datestart,
@@ -199,6 +201,29 @@ class Conference extends PureComponent<Props, State> {
     }
   }
 
+  private apiGetConferenceAvatar(conference: any) {
+    if (conference.avatar === undefined || conference.avatar === null) {
+      return;
+    }
+
+    axiosInstance
+      .get(`/users/${this.id}/avatar/${conference.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          conference.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+      })
+      .catch(() => {
+        console.log('Failed to get conference avatar');
+      });
+  }
+
   private renderConferenceCard = () => {
     const dateStart = new Date(this.state.dateStart).toLocaleDateString(
       dictionary.date_format[this.context],
@@ -216,7 +241,8 @@ class Conference extends PureComponent<Props, State> {
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
             <div className={'d-flex align-items-center'}>
-              <Avatar image={''} title={this.state.title} /> &nbsp;
+              <Avatar image={this.state.avatar} title={this.state.title} />{' '}
+              &nbsp;
               <strong>{this.state.title}</strong>
             </div>
             {this.renderEditForm()}

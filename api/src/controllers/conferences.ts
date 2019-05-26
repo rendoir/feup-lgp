@@ -57,6 +57,7 @@ export function createConference(req, res) {
       req.body.privacy,
     ],
   }).then((result) => {
+    req.params.id = result.rows[0].id;
     saveAvatar(req, res);
     res.send({
       id: result.rows[0].id,

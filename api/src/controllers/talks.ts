@@ -69,6 +69,7 @@ export function createTalk(req, res) {
       req.body.conference,
     ],
   }).then((result) => {
+    req.params.id = result.rows[0].id;
     saveAvatar(req, res);
     res.send({
       id: result.rows[0].id,
