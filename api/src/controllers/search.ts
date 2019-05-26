@@ -130,6 +130,36 @@ async function userQuery(keywords: string[], limit: number, offset: number, init
     };
 }
 
+async function productQuery(keywords: string[], limit: number, offset: number, initialDate: number, finalDate: number, conference: number) {
+    const queryKeywords = keywords.join('|');
+    const products = await query({
+        text: `SELECT id, name, points, stock, date_created, image
+                FROM products
+                WHERE
+                    name ~* ($3)
+                    AND conference = $6
+                    AND date_created >= (SELECT TO_TIMESTAMP($4)) AND date_created <= (SELECT TO_TIMESTAMP($5))
+                LIMIT $1
+                OFFSET $2`,
+        values: [limit, offset, queryKeywords, initialDate, finalDate, conference],
+    });
+    const size = await query({
+        text: `SELECT COUNT(id)
+                FROM products
+                WHERE
+                    name ~* ($1)
+                    AND conference = $6
+                    AND date_created >= (SELECT TO_TIMESTAMP($2))
+                    AND date_created <= (SELECT TO_TIMESTAMP($3))`,
+        values: [queryKeywords, initialDate, finalDate, conference],
+    });
+
+    return {
+        products: products.rows,
+        size: size.rows[0].count,
+    };
+}
+
 // Add comments, tags, etc. of posts to response.
 async function addPostDetails(posts: any[]) {
     for (const post of posts) {
