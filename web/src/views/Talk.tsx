@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
+import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
@@ -68,6 +69,14 @@ export type State = {
     title: boolean;
   };
   hideModalOpen: boolean;
+  inviteFields: {
+    email: string;
+    error: boolean;
+    results: any[];
+    selected: any[];
+    success: boolean;
+    userSubs: any[];
+  };
   inviteModalOpen: boolean;
   isArchived: boolean;
   isHidden: boolean;
@@ -106,7 +115,7 @@ class Talk extends PureComponent<Props, State> {
   private conferenceTitle: string | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
-  private privacy: string;
+  private privacy: string | undefined;
   private errorMessages: {
     answer: string;
     correctAnswer: string;
@@ -140,7 +149,6 @@ class Talk extends PureComponent<Props, State> {
       year: 'numeric'
     };
     this.id = this.props.match.params.id;
-    this.privacy = 'public';
     this.errorMessages = {
       answer: '',
       correctAnswer: '',
@@ -155,6 +163,9 @@ class Talk extends PureComponent<Props, State> {
       title: ''
     };
     this.tags = [];
+
+    this.apiGetTalk = this.apiGetTalk.bind(this);
+    this.apiGetSubs = this.apiGetSubs.bind(this);
 
     this.state = {
       archiveModalOpen: false,
@@ -197,6 +208,14 @@ class Talk extends PureComponent<Props, State> {
         title: false
       },
       hideModalOpen: false,
+      inviteFields: {
+        email: '',
+        error: false,
+        results: [],
+        selected: [],
+        success: false,
+        userSubs: []
+      },
       inviteModalOpen: false,
       isArchived: false,
       isHidden: false,
@@ -227,8 +246,11 @@ class Talk extends PureComponent<Props, State> {
     };
   }
 
-  public componentWillMount(): void {
-    this.apiGetTalk();
+  public async componentDidMount() {
+    await this.apiGetTalk();
+    if (this.ownerId === Number(this.auth.getUserPayload().id)) {
+      await this.apiGetSubs();
+    }
   }
 
   public render() {
@@ -244,6 +266,10 @@ class Talk extends PureComponent<Props, State> {
           <div className={'col-lg-9'}>
             {this.state.joined ? (
               <div className={'row'}>
+                {this.state.inviteFields.error ||
+                this.state.inviteFields.success ? (
+                  <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
+                ) : null}
                 <div className={'col-lg-7'}>{this.renderPosts()}</div>
                 <div className={'col-lg-5'}>
                   {this.state.talk.hasLivestream
@@ -261,11 +287,10 @@ class Talk extends PureComponent<Props, State> {
     );
   }
 
-  private apiGetTalk = () => {
-    axiosInstance
+  private async apiGetTalk() {
+    await axiosInstance
       .get(`/talk/${this.id}`)
       .then(res => {
-        console.log(res);
         const talk = res.data.talk;
         const posts = res.data.posts;
         const challenges = res.data.challenges;
@@ -275,7 +300,7 @@ class Talk extends PureComponent<Props, State> {
 
         this.conferenceId = talk.conference_id;
         this.conferenceTitle = talk.conference_title;
-        this.ownerId = talk.user_id;
+        this.ownerId = Number(talk.user_id);
         this.ownerName = talk.user_name;
         this.privacy = talk.privacy;
         this.tags = tags;
@@ -310,7 +335,22 @@ class Talk extends PureComponent<Props, State> {
       .catch(error => {
         console.log(error.response.data.message);
       });
-  };
+  }
+
+  private async apiGetSubs() {
+    await axiosInstance
+      .get(`/talk/${this.id}/uninvited_users_info`)
+      .then(res => {
+        const userSubs = res.data.uninvitedUsers;
+        this.setState({
+          inviteFields: {
+            ...this.state.inviteFields,
+            userSubs
+          }
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
 
   /* Components */
 
@@ -318,6 +358,38 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Alert variant={'danger'}>
         <p>{dictionary.user_not_joined[this.context]}.</p>
+      </Alert>
+    );
+  };
+
+  private renderInviteAlert = () => {
+    const handleClose = () => {
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          error: false,
+          success: false
+        }
+      });
+    };
+
+    return (
+      <Alert
+        variant={
+          this.state.inviteFields.error
+            ? 'danger'
+            : this.state.inviteFields.success
+            ? 'success'
+            : undefined
+        }
+        dismissible={true}
+        onClose={handleClose}
+      >
+        <p>
+          {this.state.inviteFields.error
+            ? dictionary.invite_all_subs_error[this.context]
+            : dictionary.invite_all_subs_done[this.context]}
+        </p>
       </Alert>
     );
   };
@@ -739,7 +811,85 @@ class Talk extends PureComponent<Props, State> {
 
   private renderInviteForm = () => {
     const handleOpen = () => this.setState({ inviteModalOpen: true });
-    const handleHide = () => this.setState({ inviteModalOpen: false });
+    const handleHide = () =>
+      this.setState({
+        inviteFields: {
+          email: '',
+          error: false,
+          results: [],
+          selected: [],
+          success: false,
+          userSubs: this.state.inviteFields.userSubs
+        },
+        inviteModalOpen: false
+      });
+    const handleChange = event =>
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          email: event.target.value
+        }
+      });
+    const handleSearch = () => {
+      const email = this.state.inviteFields.email.trim();
+
+      if (email.length === 0) {
+        return;
+      }
+
+      axiosInstance
+        .get('/search/user/email', {
+          params: {
+            email
+          }
+        })
+        .then(res => {
+          const results: any[] = [];
+          const users = res.data.users;
+
+          users.forEach(user => {
+            results.push(user);
+          });
+
+          this.setState({
+            inviteFields: {
+              ...this.state.inviteFields,
+              results
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error.response.data.message);
+        });
+    };
+    const handleClick = userId => {
+      const results = this.state.inviteFields.results;
+      const userSubs = this.state.inviteFields.userSubs;
+      const users = new Set([
+        ...results.map(r => r.id),
+        ...userSubs.map(u => u.id)
+      ]);
+      let selected = this.state.inviteFields.selected;
+
+      if (users.size > 0) {
+        users.forEach(id => {
+          if (id === userId) {
+            if (selected.includes(id)) {
+              selected = selected.filter(i => i !== userId);
+            } else {
+              selected.push(userId);
+            }
+          }
+        });
+      }
+
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          selected
+        }
+      });
+    };
 
     return (
       <>
@@ -762,13 +912,74 @@ class Talk extends PureComponent<Props, State> {
           <Modal.Body>
             <Form>
               <Form.Group controlId={'invite_user'}>
-                <Form.Label>{dictionary.email[this.context]}</Form.Label>
-                <Form.Control
-                  type={'email'}
-                  className={styles.border}
-                  placeholder={'Enter email'}
-                />
+                <InputGroup>
+                  <FormLabel className={'w-100'}>
+                    {dictionary.email[this.context]}
+                  </FormLabel>
+                  <FormControl
+                    type={'text'}
+                    placeholder={'Enter email'}
+                    className={styles.border}
+                    value={this.state.inviteFields.email}
+                    onChange={handleChange}
+                  />
+                  <InputGroup.Append>
+                    <Button variant={'outline-info'} onClick={handleSearch}>
+                      <i className={'fas fa-search'} /> Search
+                    </Button>
+                  </InputGroup.Append>
+                </InputGroup>
+                <ListGroup>
+                  {this.state.inviteFields.results.length > 0 ? (
+                    <div
+                      className={'overflow-auto'}
+                      style={{ maxHeight: '15rem' }}
+                    >
+                      {this.state.inviteFields.results.map((user, index) => (
+                        <ListGroup.Item
+                          key={index}
+                          className={`
+                              mt-2
+                              ${
+                                this.state.inviteFields.selected.includes(
+                                  user.id
+                                )
+                                  ? 'bg-info text-light'
+                                  : ''
+                              }
+                            `}
+                          onClick={() => handleClick(user.id)}
+                        >
+                          {user.user_name}
+                        </ListGroup.Item>
+                      ))}
+                    </div>
+                  ) : null}
+                </ListGroup>
               </Form.Group>
+              <ListGroup>
+                <Form.Label>
+                  {dictionary.invite_subs_header[this.context]}
+                </Form.Label>
+                <div className={'overflow-auto'} style={{ height: '15rem' }}>
+                  {this.state.inviteFields.userSubs.map((sub, index) => (
+                    <ListGroup.Item
+                      key={index}
+                      className={`
+                      mt-2
+                      ${
+                        this.state.inviteFields.selected.includes(sub.id)
+                          ? 'bg-info text-light'
+                          : ''
+                      }
+                    `}
+                      onClick={() => handleClick(sub.id)}
+                    >
+                      {sub.user_name}
+                    </ListGroup.Item>
+                  ))}
+                </div>
+              </ListGroup>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -776,7 +987,7 @@ class Talk extends PureComponent<Props, State> {
               Cancel
             </Button>
             <Button
-              type={'submit'}
+              type={'button'}
               className={styles.button}
               onClick={this.handleInviteSubmission}
               form={'invite_user'}
@@ -790,9 +1001,38 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private handleInviteSubmission = () => {
-    console.log(
-      'USER INVITED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
-    );
+    const selected = this.state.inviteFields.selected;
+    axiosInstance
+      .post(`/talk/${this.id}/invite`, {
+        selected
+      })
+      .then(() => {
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: false,
+            results: [],
+            selected: [],
+            success: true,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: true,
+            results: [],
+            selected: [],
+            success: false,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      });
   };
 
   /* TODO: finish and improve */

@@ -356,13 +356,21 @@ export let dictionary: Dictionary = {
     PT: 'Carregando subscritores não convidados...',
     EN: 'Fetching uninvited subscribers...'
   },
+  invite_subs_header: {
+    PT: 'subscritores / Subscreveste',
+    EN: 'Subscribers / Subscribed'
+  },
   invite_all_subs: {
-    PT: 'Convidar todos os subscritos',
-    EN: 'Invite all subscribers'
+    PT: 'Convidar todos os seus subscritos ou que subscreveste',
+    EN: 'Invite all yours subscribers that you subscribed'
   },
   invite_all_subs_done: {
-    PT: 'Todos os subscritos foram convidados',
-    EN: 'All subscribers have been invited'
+    PT: 'Utilizador(es) convidado(s) com sucesso',
+    EN: 'Successfully invited user(s)'
+  },
+  invite_all_subs_error: {
+    PT: 'Um erro ocorreu tentando convidar o(s) utilizador(es).',
+    EN: 'An error occurred trying to invite user(s)'
   },
   inviting_subs: { PT: 'Convidando subscritos', EN: 'Inviting subscribers...' },
   invite_without: { PT: 'sem convite', EN: 'without invitation' },
@@ -375,7 +383,10 @@ export let dictionary: Dictionary = {
     PT: 'Convide utilizadores para a sua',
     EN: 'Invite users to your'
   },
-  invite_sucess: { PT: 'Convite enviado com sucesso', EN: 'Invitation Sent' },
+  invite_sucess: {
+    PT: 'Convite(s) enviado com sucesso',
+    EN: 'Invitation(s) Sent'
+  },
   invite_email_error: {
     PT: 'Por favor insira um email correto',
     EN: 'Enter a valid email address'

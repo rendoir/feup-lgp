@@ -79,232 +79,6 @@ export function createTalk(req, res) {
   });
 }
 
-export function editTalk(req, res) {
-  const data = req.body;
-  const talk = req.params.id;
-
-  if (!data.title.trim()) {
-    console.log('\n\nError: talk title cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field title cannot be empty',
-    });
-    return;
-  }
-  if (!data.description.trim()) {
-    console.log('\n\nError: talk about cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field about cannot be empty',
-    });
-    return;
-  }
-  if (!data.local.trim()) {
-    console.log('\n\nError: talk local cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field local cannot be empty',
-    });
-    return;
-  }
-  if (!data.dateStart.trim()) {
-    console.log('\n\nError: talk starting date cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field starting date cannot be empty',
-    });
-    return;
-  }
-  if (!data.dateEnd.trim()) {
-    console.log('\n\nError: talk ending date cannot be empty');
-    res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field ending date cannot be empty',
-    });
-    return;
-  }
-
-  query({
-    text: `UPDATE talks
-           SET (title, about, local, datestart, dateend, livestream_url) =
-               ($2, $3, $4, $5, $6, $7)
-           WHERE id = $1`,
-    values: [
-      talk,
-      data.title,
-      data.description,
-      data.local,
-      data.dateStart,
-      data.dateEnd,
-      data.livestreamURL,
-    ],
-  })
-    .then(() => {
-      res.status(200).send();
-    })
-    .catch((error) => {
-      res.status(400).send({
-        message: `An error occurred while updating a talk. Error: ${error.toString()}`,
-      });
-    });
-}
-
-export async function inviteUser(req, res) {
-  if (!await loggedUserOwnsTalk(req.params.id)) {
-    console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
-    res.status(400).send({ message: 'An error ocurred while inviting user: You are not the talk owner.' });
-    return;
-  }
-
-  query({
-      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ($1, $2, 'talk')`,
-      values: [req.body.invited_user, req.params.id],
-  }).then(() => {
-    res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while inviting user to talk' });
-  });
-}
-
-export async function inviteSubscribers(req, res) {
-  if (!await loggedUserOwnsTalk(req.params.id)) {
-    console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
-    res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the talk owner.' });
-    return;
-  }
-
-  query({
-      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
-                SELECT uninvited_subscriber, $1, 'talk'
-                FROM retrieve_talk_uninvited_subscribers($1)
-              ON CONFLICT ON CONSTRAINT unique_invite
-              DO NOTHING`,
-    values: [req.params.id],
-  }).then(() => {
-    res.status(200).send();
-  }).catch((error) => {
-      console.log('\n\nERROR:', error);
-      res.status(400).send({ message: 'An error ocurred while inviting subscribers to talk' });
-  });
-}
-
-export async function amountSubscribersUninvited(req, res) {
-  if (!await loggedUserOwnsTalk(req.params.id)) {
-    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your talk');
-    res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the talk owner.' });
-    return;
-  }
-
-  try {
-    const amountUninvitedSubscribersQuery = await query({
-      text: `SELECT COUNT(*) FROM retrieve_talk_uninvited_subscribers($1)`,
-      values: [req.params.id],
-    });
-    res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(new Error('Error retrieving user participation in talk'));
-  }
-}
-
-export async function getUninvitedUsersInfo(req, res) {
-  if (!await loggedUserOwnsTalk(req.params.id)) {
-    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to a talk that is not yours');
-    res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the talk owner.' });
-    return;
-  }
-
-  const userId = req.user.id;
-  try {
-    const uninvitedUsersQuery = await query({
-      text: `SELECT id, first_name, last_name, home_town, university, work, work_field
-              FROM users
-              WHERE id NOT IN (SELECT * FROM retrieve_talk_invited_or_joined_users($1)) AND id <> $2`,
-      values: [req.params.id, userId],
-    });
-    res.status(200).send({ uninvitedUsers: uninvitedUsersQuery.rows });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(new Error('Error retrieving user participation in talk'));
-  }
-}
-
-export async function joinTalk(req, res) {
-  const user = req.user.id;
-  const talk = req.params.id;
-  query({
-    text: 'INSERT INTO talk_participants (talk, participant_user) VALUES ($1, $2)',
-    values: [talk, user],
-  }).then(() => {
-    res.status(200).send();
-  }).catch(() => {
-    res.status(400).send({
-      message: 'An error occurred while adding participant to talk',
-    });
-  });
-}
-
-export async function leaveTalk(req, res) {
-  const user = req.user.id;
-  const talk = req.params.id;
-  query({
-    text: 'DELETE FROM talk_participants WHERE talk = $1 AND participant_user = $2',
-    values: [talk, user],
-  }).then(() => {
-    res.status(200).send();
-  }).catch(() => {
-    res.status(400).send({
-      message: 'An error occurred while removing participant from talk',
-    });
-  });
-}
-
-export async function checkUserParticipation(req, res) {
-  const userId = req.user.id;
-  try {
-      const userParticipantQuery = await query({
-          text: `SELECT *
-                  FROM talk_participants
-                  WHERE participant_user = $1 AND talk = $2`,
-          values: [userId, req.params.id],
-      });
-      res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
-  } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in talk'));
-  }
-}
-
-export async function checkUserCanJoin(req, res) {
-  const userId = req.user.id;
-  try {
-      const userCanJoinQuery = await query({
-          text: `SELECT * FROM user_can_join_talk($1, $2)`,
-          values: [req.params.id, userId],
-      });
-      const canJoin = userCanJoinQuery.rows[0].user_can_join_talk;
-      res.status(200).send({ canJoin });
-  } catch (error) {
-      console.error(error);
-      res.status(500).send(new Error('Error retrieving user participation in talk'));
-  }
-}
-
-async function loggedUserOwnsTalk(talkId): Promise<boolean> {
-  const loggedUser = 3;
-  try {
-    const userOwnstalkQuery = await query({
-        text: `SELECT * FROM talks WHERE id = $1 AND author = $2`,
-        values: [talkId, loggedUser],
-    });
-    return Boolean(userOwnstalkQuery.rows[0]);
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
 export async function getTalk(req, res) {
   const id = req.params.id;
   const limit = req.query.perPage;
@@ -472,6 +246,257 @@ export async function getTalk(req, res) {
     res.status(500).send({
       message: 'Error retrieving talk',
     });
+  }
+}
+
+export function editTalk(req, res) {
+  const data = req.body;
+  const talk = req.params.id;
+
+  if (!data.title.trim()) {
+    console.log('\n\nError: talk title cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field title cannot be empty',
+    });
+    return;
+  }
+  if (!data.description.trim()) {
+    console.log('\n\nError: talk about cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field about cannot be empty',
+    });
+    return;
+  }
+  if (!data.local.trim()) {
+    console.log('\n\nError: talk local cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field local cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateStart.trim()) {
+    console.log('\n\nError: talk starting date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field starting date cannot be empty',
+    });
+    return;
+  }
+  if (!data.dateEnd.trim()) {
+    console.log('\n\nError: talk ending date cannot be empty');
+    res.status(400).send({
+      message: `An error occurred while updating talk #${talk}: ` +
+        'The field ending date cannot be empty',
+    });
+    return;
+  }
+
+  query({
+    text: `UPDATE talks
+           SET (title, about, local, datestart, dateend, livestream_url) =
+               ($2, $3, $4, $5, $6, $7)
+           WHERE id = $1`,
+    values: [
+      talk,
+      data.title,
+      data.description,
+      data.local,
+      data.dateStart,
+      data.dateEnd,
+      data.livestreamURL,
+    ],
+  })
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch((error) => {
+      res.status(400).send({
+        message: `An error occurred while updating a talk. Error: ${error.toString()}`,
+      });
+    });
+}
+
+export async function inviteUser(req, res) {
+  const talk = req.params.id;
+  const user = req.user.id;
+  const selected = req.body.selected;
+
+  let values = '';
+
+  selected.forEach((sl) => {
+    values += `(${sl}, $1, 'talk'), `;
+  });
+  values = values.substr(0, values.length - 2);
+  if (await !loggedUserOwnsTalk(talk, user)) {
+    res.status(400).send({
+      message: 'An error occurred while trying to invite users to a talk: You are not the talk owner.',
+    });
+    return;
+  }
+  try {
+    query({
+      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES ${values}`,
+      values: [talk],
+    }).then(() => {
+      res.status(200).send();
+    }).catch((error) => {
+      res.status(400).send({ message: `An error occurred while inviting user to talk. Error ${error}` });
+    });
+  } catch (e) {
+
+  }
+}
+
+export async function inviteSubscribers(req, res) {
+  const talk = req.params.id;
+  const user = req.user.id;
+  if (!await loggedUserOwnsTalk(talk, user)) {
+    console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
+    res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the talk owner.' });
+    return;
+  }
+
+  query({
+      text: `INSERT INTO invites (invited_user, invite_subject_id, invite_type)
+                SELECT uninvited_subscriber, $1, 'talk'
+                FROM retrieve_talk_uninvited_subscribers($1)
+              ON CONFLICT ON CONSTRAINT unique_invite
+              DO NOTHING`,
+    values: [req.params.id],
+  }).then(() => {
+    res.status(200).send();
+  }).catch((error) => {
+      console.log('\n\nERROR:', error);
+      res.status(400).send({ message: 'An error ocurred while inviting subscribers to talk' });
+  });
+}
+
+export async function amountSubscribersUninvited(req, res) {
+  const talk = req.params.id;
+  const user = req.user.id;
+  if (!await loggedUserOwnsTalk(talk, user)) {
+    console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your talk');
+    res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the talk owner.' });
+    return;
+  }
+
+  try {
+    const amountUninvitedSubscribersQuery = await query({
+      text: `SELECT COUNT(*) FROM retrieve_talk_uninvited_subscribers($1)`,
+      values: [req.params.id],
+    });
+    res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(new Error('Error retrieving user participation in talk'));
+  }
+}
+
+export async function getUninvitedUsers(req, res) {
+  const talk = req.params.id;
+  const user = req.user.id;
+  try {
+    if (await !loggedUserOwnsTalk(talk, user)) {
+      res.status(400).send({
+        message: 'An error occurred fetching amount of uninvited subscribers: You are not the talk owner.',
+      });
+      return;
+    }
+
+    const uninvitedUsers = await query({
+      text: `SELECT id, (first_name || ' ' || last_name) as user_name
+             FROM users
+             WHERE id NOT IN (SELECT * FROM retrieve_talk_invited_or_joined_users($1))
+             AND id <> $2
+             AND (
+                  id IN (SELECT follower FROM follows WHERE followed = $2) OR
+                  id IN (SELECT followed FROM follows WHERE follower = $2)
+                )`,
+      values: [talk, user],
+    });
+    res.status(200).send({ uninvitedUsers: uninvitedUsers.rows });
+  } catch (error) {
+    res.status(500).send({
+      message: 'Error retrieving user participation in talk',
+    });
+  }
+}
+
+export async function joinTalk(req, res) {
+  const user = req.user.id;
+  const talk = req.params.id;
+  query({
+    text: 'INSERT INTO talk_participants (talk, participant_user) VALUES ($1, $2)',
+    values: [talk, user],
+  }).then(() => {
+    res.status(200).send();
+  }).catch(() => {
+    res.status(400).send({
+      message: 'An error occurred while adding participant to talk',
+    });
+  });
+}
+
+export async function leaveTalk(req, res) {
+  const user = req.user.id;
+  const talk = req.params.id;
+  query({
+    text: 'DELETE FROM talk_participants WHERE talk = $1 AND participant_user = $2',
+    values: [talk, user],
+  }).then(() => {
+    res.status(200).send();
+  }).catch(() => {
+    res.status(400).send({
+      message: 'An error occurred while removing participant from talk',
+    });
+  });
+}
+
+export async function checkUserParticipation(req, res) {
+  const userId = req.user.id;
+  try {
+      const userParticipantQuery = await query({
+          text: `SELECT *
+                  FROM talk_participants
+                  WHERE participant_user = $1 AND talk = $2`,
+          values: [userId, req.params.id],
+      });
+      res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user participation in talk'));
+  }
+}
+
+export async function checkUserCanJoin(req, res) {
+  const userId = req.user.id;
+  try {
+      const userCanJoinQuery = await query({
+          text: `SELECT * FROM user_can_join_talk($1, $2)`,
+          values: [req.params.id, userId],
+      });
+      const canJoin = userCanJoinQuery.rows[0].user_can_join_talk;
+      res.status(200).send({ canJoin });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user participation in talk'));
+  }
+}
+
+async function loggedUserOwnsTalk(talk, user): Promise<boolean> {
+  try {
+    const isOwner = await query({
+      text: `SELECT COUNT(id) FROM talks WHERE id = $1 AND author = $2`,
+      values: [talk, user],
+    });
+
+    return isOwner.rows[0].count !== 0;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 }
 
