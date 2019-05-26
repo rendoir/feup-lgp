@@ -4,7 +4,7 @@ import * as request from 'request-promise';
 
 import {query} from '../db/db';
 
-export function createComment(req, res) {
+export async function createComment(req, res) {
     if (!req.body.comment.trim()) {
         console.log('\n\nERROR: Comment body cannot be empty');
         res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
@@ -12,15 +12,17 @@ export function createComment(req, res) {
     }
 
     const userId = req.user.id;
-    query({
-        text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3)',
-        values: [userId, req.body.post_id, req.body.comment],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
+
+    try {
+        const comment = (await query({
+            text: 'INSERT INTO comments (author, post, comment) VALUES ($1, $2, $3) RETURNING id',
+            values: [userId, req.body.post_id, req.body.comment],
+        })).rows[0];
+        res.status(200).send({ id: comment.id });
+    } catch (error) /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
-    });
+        res.status(500).send({ message: 'An error ocurred while adding a comment to a post' });
+    }
 }
 
 export async function createNewCommentForComment(req, res) {
@@ -38,9 +40,9 @@ export async function createNewCommentForComment(req, res) {
             values: [userId, req.params.id, req.body.comment],
         });
         res.status(200).send();
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while adding a comment to a post' });
+        res.status(500).send({ message: 'An error ocurred while adding a comment to a post' });
     }
 }
 
@@ -59,9 +61,11 @@ export function editComment(req, res) {
         values: [req.body.id, req.body.comment, userId],
     }).then(() => {
         res.status(200).send({ newComment: req.body.comment });
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error occurred while editing a comment' });
+        res.status(500).send({ message: 'An error occurred while editing a comment' });
     });
 }
 
@@ -73,7 +77,9 @@ export function addALikeToComment(req, res) {
         values: [commentId, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while editing a comment' });
     });
@@ -90,9 +96,11 @@ export function getWhoLikedComment(req, res) {
         values: [commentId],
     }).then((result) => {
         res.send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while editing a comment' });
+        res.status(500).send({ message: 'An error ocurred while editing a comment' });
     });
 }
 
@@ -106,7 +114,9 @@ export function deleteComment(req, res) {
         values: [req.body.id, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while deleting a comment' });
     });
@@ -118,7 +128,9 @@ export function deleteALikeToComment(req, res) {
         text: 'DELETE FROM likes_a_comment WHERE comment = $1 AND author = $2', values: [req.params.id, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while deleting a like to a comment' });
     });
@@ -140,7 +152,7 @@ export async function getCommentsOfComment(req, res) {
             values: [commentId],
         });
         res.send(comments.rows);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving comments of the comment ' + commentId));
     }
@@ -159,9 +171,11 @@ export function reportComment(req, res) {
         values: [userId, req.params.id, req.body.reason],
     }).then((result) => {
         res.status(200).send({ report: true });
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while reporting comment' + req.params.id });
+        res.status(500).send({ message: 'An error ocurred while reporting comment' + req.params.id });
     });
 }
 
@@ -177,8 +191,8 @@ export async function checkCommentUserReport(req, res) {
         });
 
         const result = { report: Boolean(reportQuery.rows[0]) };
-        res.send(result);
-    } catch (error) {
+        res.status(200).send(result);
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send({ message: 'Error retrieving comment ' + req.params.id + ' report' });
     }

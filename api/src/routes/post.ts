@@ -161,12 +161,17 @@ postRouter.delete('/:id/subscription', controller.unsubscribePost);
 postRouter.post('/:id/report', controller.reportPost);
 
 /**
- * @api {post} /api/post/:id/check_report Check if a post as been reported by a given user
+ * @api {get} /api/post/:id/report Check if a post as been reported by a given user
  * @apiName Check-Post-Report
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post whose report we want to verify
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      report: true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

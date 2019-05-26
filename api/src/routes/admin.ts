@@ -96,7 +96,7 @@ adminRouter.get('/users', controller.getAllUsers);
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report notifications'
  *     }
  */
 adminRouter.get('/notifications', controller.getReportNotifications);
@@ -106,10 +106,14 @@ adminRouter.get('/notifications', controller.getReportNotifications);
  * @apiName Get-Amount-Report-Notifications
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'Error retrieving report notifications count'
  *     }
  */
 adminRouter.get('/amount_notifications', controller.amountReportNotifications);
@@ -119,10 +123,14 @@ adminRouter.get('/amount_notifications', controller.amountReportNotifications);
  * @apiName Get-Report-Reasons
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report reasons'
  *     }
  */
 adminRouter.post('/report_reasons', controller.getReportReasons);
@@ -132,6 +140,10 @@ adminRouter.post('/report_reasons', controller.getReportReasons);
  * @apiName Ignore-Reports
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
