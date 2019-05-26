@@ -309,14 +309,17 @@ class Profile extends React.Component<IProps, State> {
 
   private apiEditProfile = (request: Request) => {
     if (this.auth.getUserPayload().id !== this.id) {
+      console.log('Not this user');
       return;
     }
 
     if (request.password !== request.confirm_password) {
+      console.log('Password is not equal to the confirmation password');
       return;
     }
 
     if (request.old_password !== '' && request.password === '') {
+      console.log('Changing password for a empty one is not possib');
       return;
     }
 
@@ -354,8 +357,8 @@ class Profile extends React.Component<IProps, State> {
       })
       .then(res => {
         console.log('Edited user info - reloading page...');
-        window.location.reload();
         this.resetState();
+        window.location.reload();
       })
       .catch(
         error => (
