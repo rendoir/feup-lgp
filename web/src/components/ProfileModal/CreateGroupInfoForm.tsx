@@ -9,6 +9,7 @@ import styles from './CreateNewModal.module.css';
 export type Props = {
   id: string;
   avatar?: File;
+  avatar_str?: string;
   confirm_password: string;
   email: string;
   first_name: string;
@@ -183,7 +184,7 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
           </div>
           <div className="form-group mt-3">
             <InputNext
-              className={styles.input}
+              className={styles.input_email}
               id={`${id}_email`}
               name={'email'}
               type="email"
@@ -297,20 +298,35 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
   private renderAvatar() {
     const { avatar } = this.state;
-    const { email } = this.props;
+    const { email, avatar_str } = this.props;
 
-    return (
-      <div className={styles.avatarBlock}>
-        <AvatarSelector
-          title={email}
-          placeholder={'empty'}
-          avatar={avatar}
-          size={140}
-          onRemove={this.props.onAvatarRemove}
-          onChange={this.props.onAvatarChange}
-        />
-      </div>
-    );
+    if (avatar_str !== '' && avatar === undefined) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={email}
+            placeholder={'empty'}
+            avatar={avatar_str}
+            size={140}
+            onRemove={this.props.onAvatarRemove}
+            onChange={this.props.onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={email}
+            placeholder={'empty'}
+            avatar={avatar}
+            size={140}
+            onRemove={this.props.onAvatarRemove}
+            onChange={this.props.onAvatarChange}
+          />
+        </div>
+      );
+    }
   }
 
   private validate(value, type) {

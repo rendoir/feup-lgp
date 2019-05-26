@@ -21,6 +21,7 @@ type Props = {
 };
 
 type State = {
+  avatar?: string;
   talks: any[];
   title: string;
   description: string;

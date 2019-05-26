@@ -43,6 +43,7 @@ type State = {
   fetchingInfo: boolean;
   request: {
     avatar?: File;
+    avatar_str?: string;
     email: string;
     first_name: string;
     home_town: string;
@@ -69,7 +70,7 @@ class Profile extends React.Component<IProps, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
-      avatar: 'http://cosmicgirlgames.com/images/games/morty.gif',
+      avatar: '',
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
       isOpen: false,
@@ -77,6 +78,7 @@ class Profile extends React.Component<IProps, State> {
       posts: [],
       request: {
         avatar: undefined,
+        avatar_str: '',
         confirm_password: '',
         email: '',
         first_name: '',
@@ -138,7 +140,11 @@ class Profile extends React.Component<IProps, State> {
                 />
                 <div id="avatar-img">
                   <Avatar
-                    title="Admin Admino"
+                    title={
+                      this.state.user.first_name +
+                      ' ' +
+                      this.state.user.last_name
+                    }
                     placeholder="empty"
                     size={250}
                     image={this.state.avatar}
@@ -219,6 +225,7 @@ class Profile extends React.Component<IProps, State> {
       isOpen: false,
       request: {
         avatar: undefined,
+        avatar_str: '',
         confirm_password: '',
         email: this.state.user.email,
         first_name: this.state.user.first_name,
@@ -451,6 +458,7 @@ class Profile extends React.Component<IProps, State> {
       this.setState({
         request: {
           avatar: undefined,
+          avatar_str: '',
           confirm_password: '',
           email: userData.user.email,
           first_name: userData.user.first_name,
@@ -483,6 +491,7 @@ class Profile extends React.Component<IProps, State> {
           avatar: src,
           request: {
             avatar: undefined,
+            avatar_str: src,
             confirm_password: '',
             email: userData.user.email,
             first_name: userData.user.first_name,
@@ -499,23 +508,6 @@ class Profile extends React.Component<IProps, State> {
         });
       })
       .catch(() => {
-        this.setState({
-          request: {
-            avatar: undefined,
-            confirm_password: '',
-            email: userData.user.email,
-            first_name: userData.user.first_name,
-            home_town: userData.user.home_town,
-            last_name: userData.user.last_name,
-            loading: false,
-            old_password: '',
-            password: '',
-            university: userData.user.university,
-            work: userData.user.work,
-            work_field: userData.user.work_field
-          },
-          user: userData.user
-        });
         console.log('Failed to get user avatar');
       });
   }
