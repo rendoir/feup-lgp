@@ -20,6 +20,22 @@ export const conferenceRouter = Router();
 conferenceRouter.get('/:id', controller.getConference);
 
 /**
+ * @api {post} /api/users/:id/:filename Gets the contents of a conference avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the conference
+ * @apiParam {String}   filename   Name of the avatar of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
  * @api {post} /api/conference Create a conference
  * @apiName Create-A-Conference
  * @apiGroup Conference

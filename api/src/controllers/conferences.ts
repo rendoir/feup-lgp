@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { query } from '../db/db';
 
 export function createConference(req, res) {
@@ -56,6 +57,7 @@ export function createConference(req, res) {
       req.body.privacy,
     ],
   }).then((result) => {
+    saveAvatar(req, res);
     res.send({
       id: result.rows[0].id,
     });
@@ -117,9 +119,9 @@ export function editConference(req, res) {
   }
   query({
     text: 'UPDATE conferences ' +
-          'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
-          'WHERE id = $1 ' +
-          'RETURNING id',
+      'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
+      'WHERE id = $1 ' +
+      'RETURNING id',
     values: [
       id,
       data.title,
@@ -129,6 +131,7 @@ export function editConference(req, res) {
       data.dateEnd,
     ],
   }).then((response) => {
+    saveAvatar(req, res);
     res.send({
       id: response.rows[0].id,
     });
@@ -141,18 +144,18 @@ export function editConference(req, res) {
 }
 
 export async function getConference(req, res) {
-    const id = req.params.id;
-    const user = 2;
-    try {
-      /**
-       * talk must be owned by user
-       * OR talk is public
-       * OR talk is private to followers and user is a follower of the author
-       */
-      const conference = await query({
-        text: `
+  const id = req.params.id;
+  const user = 2;
+  try {
+    /**
+     * talk must be owned by user
+     * OR talk is public
+     * OR talk is private to followers and user is a follower of the author
+     */
+    const conference = await query({
+      text: `
                 SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-                c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+                c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.avatar_mimeType, c.privacy
                 FROM conferences c
                 INNER JOIN users a ON c.author = a.id
                 WHERE c.id = $1
@@ -163,19 +166,20 @@ export async function getConference(req, res) {
                       )
                   )
               `,
-        values: [id, user],
-      });
-      if (conference === null) {
-        res.status(400).send(
-          new Error('Talk either does not exists or you do not have the required permissions'),
-        );
-        return;
-      }
-      const talksResult = await query({
-        text: `SELECT users.id AS user_id,
+      values: [id, user],
+    });
+    if (conference === null) {
+      res.status(400).send(
+        new Error('Talk either does not exists or you do not have the required permissions'),
+      );
+      return;
+    }
+    const talksResult = await query({
+      text: `SELECT users.id AS user_id,
                     t.id,
                     t.author,
                     t.avatar,
+                    t.avatar_mimeType,
                     t.privacy,
                     t.title,
                     t.about,
@@ -187,22 +191,61 @@ export async function getConference(req, res) {
             WHERE t.conference = $1
             ORDER BY t.dateEnd
             LIMIT 10 `,
-        values: [id],
-      });
+      values: [id],
+    });
 
-      if (talksResult == null) {
-        res.status(400).send(new Error(`Conference either does not exist or you do not have the required permissions.`));
-        return;
-      }
-
-      const result = {
-        conference: conference.rows[0],
-        talks: talksResult.rows,
-
-      };
-      res.send(result);
-    } catch (error) {
-      console.log(error);
-      res.status(500).send(new Error('Error retrieving Conference'));
+    if (talksResult == null) {
+      res.status(400).send(new Error(`Conference either does not exist or you do not have the required permissions.`));
+      return;
     }
+
+    const result = {
+      conference: conference.rows[0],
+      talks: talksResult.rows,
+
+    };
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(new Error('Error retrieving Conference'));
   }
+}
+
+export async function getAvatar(req, res) {
+  res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
+}
+
+export async function saveAvatar(req, res) {
+
+  if (!req.files || !req.files.avatar) {
+    return;
+  }
+
+  const file = req.files.avatar;
+  const filename = file.name;
+  const mimetype = file.mimetype;
+
+  const filetype = filename.split('.');
+  const savedFileName = 'conference_' + req.params.id + '.' + filetype[filetype.length - 1];
+
+  if (fs.existsSync('uploads/avatars/' + savedFileName)) {
+    fs.unlinkSync('uploads/avatars/' + savedFileName);
+  }
+
+  file.mv('./uploads/avatars/' + savedFileName, (err) => {
+    if (err) {
+      res.status(400).send({ message: 'An error ocurred while editing user: Moving avatar.' });
+    } else {
+      query({
+        text: `UPDATE conferences SET avatar = $2, avatar_mimeType = $3
+                    WHERE id = $1`,
+        values: [req.params.id, savedFileName, mimetype],
+      }).then(() => {
+        return;
+      }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing user: Adding avatar to database.' });
+      });
+    }
+  });
+}

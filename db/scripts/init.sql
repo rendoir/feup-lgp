@@ -74,6 +74,7 @@ CREATE TABLE conferences (
     dateStart TEXT NOT NULL ,
     dateEnd TEXT,
     avatar TEXT,
+    avatar_mimeType TEXT,
     privacy visibility_enum NOT NULL DEFAULT 'public'
 );
 
@@ -88,6 +89,7 @@ CREATE TABLE talks (
     dateStart TEXT NOT NULL ,
     dateEnd TEXT,
     avatar TEXT,
+    avatar_mimeType TEXT,
     privacy visibility_enum NOT NULL DEFAULT 'public',
 	archived BOOLEAN DEFAULT FALSE
 );
