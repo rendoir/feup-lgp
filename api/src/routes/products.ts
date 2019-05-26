@@ -11,3 +11,5 @@ productsRouter.post('/', controller.createProduct);
 productsRouter.put('/:id', controller.updateProduct);
 
 productsRouter.delete('/:id', controller.deleteProduct);
+
+productsRouter.post('/:id/exchange', controller.exchangeProduct);

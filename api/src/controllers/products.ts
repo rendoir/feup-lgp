@@ -15,3 +15,7 @@ export async function updateProduct(req, res) {
 export async function deleteProduct(req, res) {
     shop.deleteProduct(req, res);
 }
+
+export async function exchangeProduct(req, res) {
+    shop.exchangeProduct(req, res);
+}
