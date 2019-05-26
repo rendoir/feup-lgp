@@ -12,6 +12,7 @@ const futureDateStr = '"' + futureDate.toISOString() + '"';
 
 // let adminId = -1;
 let userId = -1;
+let commentId = -1;
 
 const admin = {
     email: 'admin@gmail.com',
@@ -309,30 +310,7 @@ describe('Admin tests', () => {
         });
     });
 
-    describe('Report tests', () => {/*
-        it('Should not allow non admin users to get report notifications', (done) => {
-            request(app)
-                .get('/admin/notifications')
-                .set('authorization', 'Bearer ' + userjwt)
-                .expect(401)
-                .end((err, res) => {
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body[0]).to.have.property('message');
-                    expect(res.body.message).to.have.string(`You do not have permissions to add an admin`);
-                    done();
-                })
-        });*/
-
-        it('Should get notifications for admin', (done) => {
-            request(app)
-                .get('/admin/notifications')
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                })
-        });
+    describe('Report tests', () => {
     });
 
     describe('Whitelist tests', () => {
@@ -620,7 +598,7 @@ describe('Post', () => {
                 expect(res.body.message).to.have.string(`An error ocurred while creating a new post: Invalid post.`);
                 done();
             })
-    })
+    });
 
     it('Should submit a new public post', (done) => {
         request(app)
@@ -634,7 +612,7 @@ describe('Post', () => {
                 postId = res.body.id;
                 done();
             })
-    })
+    });
 
     it('Should retrieve the submitted post', (done) => {
         request(app)
@@ -649,7 +627,7 @@ describe('Post', () => {
                 expect(res.body.comments).to.be.empty;
                 done();
             });
-    })
+    });
 
     it('Should not edit if title is empty', (done) => {
         request(app)
@@ -667,7 +645,7 @@ describe('Post', () => {
                 expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
                 done();
             });
-    })
+    });
 
     it('Should edit the submitted post', (done) => {
         request(app)
@@ -679,7 +657,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should get user-post interaction', (done) => {
         request(app)
@@ -693,7 +671,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should subscribe user to post', (done) => {
         request(app)
@@ -707,7 +685,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should unsubscribe user to post', (done) => {
         request(app)
@@ -721,7 +699,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should not report a post without a reason', (done) => {
         request(app)
@@ -737,40 +715,125 @@ describe('Post', () => {
                 expect(res.body.message).to.have.string(`An error ocurred while creating a new post report`);
                 done();
             });
-    })
+    });
 
-    it('Should report a post', (done) => {
-        request(app)
-            .post(`/post/${postId}/report`)
-            .set('authorization', 'Bearer ' + userjwt)
-            .send({
-                post: postId,
-                reason: 'i hate different oppinions'
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('report');
-                expect(res.body.report === true);
-                done();
-            });
-    })
-/*
-    it('Should check post report', (done) => {
-        request(app)
-            .post(`/post/${postId}/check_report`)
-            .set('authorization', 'Bearer ' + userjwt)
-            .send({
-                post: postId
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('report');
-                done();
-            });
-    })
-*/
+    describe('Report tests', () => {
+        it('Should report a post', (done) => {
+            request(app)
+                .post(`/post/${postId}/report`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    post: postId,
+                    reason: 'i hate different oppinions'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('report');
+                    expect(res.body.report === true);
+                    done();
+                });
+        });
+
+        it('Should check post report', (done) => {
+            request(app)
+                .get(`/post/${postId}/report`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    post: postId
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should not allow non admin users to get report notifications', (done) => {
+            request(app)
+                .get('/admin/notifications')
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should get notifications for admin', (done) => {
+            request(app)
+                .get('/admin/notifications')
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not allow non admin users to get amount of report notifications', (done) => {
+            request(app)
+                .get('/admin/amount_notifications')
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should get amount of report notifications for admin', (done) => {
+            request(app)
+                .get('/admin/amount_notifications')
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not allow non admin users to get report reasons', (done) => {
+            request(app)
+                .post('/admin/report_reasons')
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should get report reasons for admin', (done) => {
+            request(app)
+                .post('/admin/report_reasons')
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not allow non admin users to ignore report', (done) => {
+            request(app)
+                .post('/admin/ignore_reports')
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Admin should ignore report', (done) => {
+            request(app)
+                .post('/admin/ignore_reports')
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+    });
+
     it('Should invite user', (done) => {
         console.log('userID = ' + userId)
         request(app)
@@ -785,7 +848,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should invite subscribers', (done) => {
         request(app)
@@ -799,7 +862,7 @@ describe('Post', () => {
                 expect(err).to.be.null;
                 done();
             });
-    })
+    });
 
     it('Should return amount of subscribers uninvited', (done) => {
         request(app)
@@ -814,7 +877,7 @@ describe('Post', () => {
                 expect(res.body).to.have.property('amountUninvitedSubscribers');
                 done();
             });
-    })
+    });
 
     it('Should return information about uninvited users', (done) => {
         request(app)
@@ -829,7 +892,7 @@ describe('Post', () => {
                 expect(res.body).to.have.property('uninvitedUsers');
                 done();
             });
-    })
+    });
 
     it('Should retrieve the edited post', (done) => {
         request(app)
@@ -844,29 +907,271 @@ describe('Post', () => {
                 expect(res.body.comments).to.be.empty;
                 done();
             });
-    })
+    });
 
-    it('Should delete the submitted post', (done) => {
-        request(app)
-            .delete(`/post/${postId}`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            })
-    })
+    describe('Comments tests', () => {
+        it('Cannot comment on a post with an empty body', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    post_id: postId,
+                    comment: ''
+                })
+                .expect(400)
+                .end((err, res) => {
+                    expect(res.body).to.have.property('message');
+                    done();
+                })
+        });
 
-    it('Should not find deleted post', (done) => {
-        request(app)
-            .get(`/post/${postId}`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(400)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            })
-    })
+        it('Should create a comment to a post', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    post_id: postId,
+                    comment: 'comment to a post'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('id');
+                    commentId = res.body.id;
+                    done();
+                })
+        });
+
+        it('Should not allow to comment with an empty body', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    comment: ''
+                })
+                .expect(400)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should not add a comment to a comment', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    comment: ''
+                })
+                .expect(400)
+                .end((err, res) => {
+                    !expect(err).to.be.null;
+                    done();
+                })
+        });
+
+
+        it('Should add a comment to a comment', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    comment: 'comment to a comment'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not allow to edit a comment with an empty body', (done) => {
+            request(app)
+                .put(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    comment: ''
+                })
+                .expect(400)
+                .end((err, res) => {
+                    !expect(err).to.be.null;
+                    done();
+                })
+        });
+/*
+        it('Should not allow to edit a comment', (done) => {
+            request(app)
+                .put(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .send({
+                    comment: 'cannot edit'
+                })
+                .expect(400)
+                .end((err, res) => {
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body.newComment).to.have.string(`cannot edit`);
+                    !expect(err).to.be.null;
+                    done();
+                })
+        });
+*/
+        it('Should edit a comment', (done) => {
+            request(app)
+                .put(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    comment: 'edited comment'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body.newComment).to.have.string(`edited comment`);
+                    done();
+                })
+        });
+
+        it('Should like a comment', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/${commentId}/like`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .send({
+                    id: commentId
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Get who liked a comment', (done) => {
+            request(app)
+                .get(`/post/${postId}/comment/${commentId}/likes`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+/*
+        it('Should not unlike a comment', (done) => {
+            request(app)
+                .delete(`/post/${postId}/comment/${commentId}/like`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    id: commentId
+                })
+                .expect(400)
+                .end((err, res) => {
+                    !expect(err).to.be.null;
+                    done();
+                })
+        });
+*/
+        it('Should unlike a comment', (done) => {
+            request(app)
+                .delete(`/post/${postId}/comment/${commentId}/like`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .send({
+                    id: commentId
+                })
+                .expect(200)
+                .end((err, res) => {
+                    done();
+                })
+        });
+
+        it('Should get comments of comments', (done) => {
+            request(app)
+                .get(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not report a comment without a reason', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/${commentId}/report`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    reason: ''
+                })
+                .expect(400)
+                .end((err, res) => {
+                    !expect(err).to.be.null;
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body.message).to.have.string(`An error ocurred while creating a new comment report`);
+                    done();
+                })
+        });
+
+        it('Should report a comment', (done) => {
+            request(app)
+                .post(`/post/${postId}/comment/${commentId}/report`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    reason: 'it offends me'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body.report);
+                    done();
+                })
+        });
+
+        it('Should check a comment report', (done) => {
+            request(app)
+                .get(`/post/${postId}/comment/${commentId}/report`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res.body).to.be.instanceOf(Object);
+                    expect(res.body.report);
+                    done();
+                })
+        });
+        
+        it('Should delete the submitted comment', (done) => {
+            request(app)
+                .delete(`/post/${postId}/comment/${commentId}`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should delete the submitted post', (done) => {
+            request(app)
+                .delete(`/post/${postId}`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('Should not find deleted post', (done) => {
+            request(app)
+                .get(`/post/${postId}`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+    });
+    
 });
 
 describe('Login tests', () => {
@@ -933,27 +1238,3 @@ describe('Feed tests', () => {
             });
     });
 });
-/*
-describe('Search tests', () => {
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/search')
-            .send({
-                k: 'word',
-                t: 'post',
-                di: 5,
-                df: 5,
-                0: 10
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-
-});
-*/

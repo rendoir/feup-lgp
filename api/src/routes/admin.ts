@@ -138,7 +138,7 @@ adminRouter.get('/product_exchange_notifications', controller.getProductExchange
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report notifications'
  *     }
  */
 adminRouter.get('/notifications', controller.getReportNotifications);
@@ -148,10 +148,14 @@ adminRouter.get('/notifications', controller.getReportNotifications);
  * @apiName Get-Amount-Report-Notifications
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'Error retrieving report notifications count'
  *     }
  */
 adminRouter.get('/amount_notifications', controller.amountReportNotifications);
@@ -163,10 +167,14 @@ adminRouter.get('/amount_notifications', controller.amountReportNotifications);
  *
  * The id paramater is in the URL to avoid routing errors
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report reasons'
  *     }
  */
 adminRouter.post('/:id/report_reasons', controller.getReportReasons);
@@ -178,6 +186,10 @@ adminRouter.post('/:id/report_reasons', controller.getReportReasons);
  *
  * The id paramater is in the URL to avoid routing errors
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
