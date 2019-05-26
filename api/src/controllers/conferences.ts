@@ -207,10 +207,9 @@ export async function getConference(req, res) {
     const result = {
       conference: conference.rows[0],
       talks: talksResult.rows,
-
     };
     res.send(result);
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     console.log(error);
     res.status(500).send(new Error('Error retrieving Conference'));
   }

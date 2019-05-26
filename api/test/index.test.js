@@ -13,11 +13,8 @@ const futureDateStr = '"' + futureDate.toISOString() + '"';
 // let adminId = -1;
 let userId = -1;
 let commentId = -1;
-<<<<<<< HEAD
 let conferenceId = -1;
 let talkId = -1;
-=======
->>>>>>> Improves coverage of functions to 45.98% and lines to 43.53%
 
 const admin = {
     email: 'admin@gmail.com',
