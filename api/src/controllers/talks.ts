@@ -225,13 +225,16 @@ export async function getTalk(req, res) {
              FROM tags`,
       values: [],
     });
-    const userPoints = await query({
+    let userPoints = await query({
       text: `SELECT points
              FROM talk_participants
              WHERE talk = $1
              AND participant_user = $2`,
       values: [id, userId],
     });
+    userPoints = userPoints.rows.length > 0
+      ? userPoints.rows[0].points
+      : 0;
     const result = {
       challenges: challenges.rows,
       talk: talk.rows[0],
@@ -239,12 +242,12 @@ export async function getTalk(req, res) {
       size: totalSize.rows[0].count,
       isParticipating: isParticipating.rows.length > 0,
       tags: tags.rows,
-      userPoints: userPoints.rows[0].points,
+      userPoints,
     };
     res.send(result);
   } catch (error) {
     res.status(500).send({
-      message: 'Error retrieving talk',
+      message: 'Error retrieving talk. Error: ' + error,
     });
   }
 }
