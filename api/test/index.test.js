@@ -13,8 +13,11 @@ const futureDateStr = '"' + futureDate.toISOString() + '"';
 // let adminId = -1;
 let userId = -1;
 let commentId = -1;
+<<<<<<< HEAD
 let conferenceId = -1;
 let talkId = -1;
+=======
+>>>>>>> Improves coverage of functions to 45.98% and lines to 43.53%
 
 const admin = {
     email: 'admin@gmail.com',
@@ -312,53 +315,7 @@ describe('Admin tests', () => {
         });
     });
 
-    describe('Report tests', () => {/*
-        it('Should not allow non admin users to get report notifications', (done) => {
-            request(app)
-                .post('/admin/users')
-                .send({
-                    email: 'aa',
-                    userLevel: 'user',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(400)
-                .end((err, res) => {
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body).to.have.property('message');
-                    done();
-                })
-        });*/
-
-        it('Should add user to the whitelist', (done) => {
-            request(app)
-                .post('/admin/users')
-                .send({
-                    email: 'camachocosta@amadora.pt',
-                    userLevel: 'user',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body).to.have.property('email');
-                    done();
-                });
-        });
-
-        it('Should remove user from the whitelist', (done) => {
-            request(app)
-                .delete('/admin/users')
-                .send({
-                    email: 'camachocosta@amadora.pt',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                });
-        });
+    describe('Report tests', () => {
     });
 
     describe('Whitelist tests', () => {
@@ -694,24 +651,6 @@ describe('Post', () => {
                 done();
             });
     });
-
-    it('Should not edit if title is empty', (done) => {
-        request(app)
-            .put(`/post/${postId}`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .send({
-                author: editedPublicPost.author,
-                title: '',
-                text: '',
-                visibility: editedPublicPost.visibility,
-            })
-            .expect(400)
-            .end((err, res) => {
-                expect(res.body).to.be.instanceOf(Object);
-                expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
-                done();
-            });
-    })
 
     it('Should edit the submitted post', (done) => {
         request(app)
@@ -1803,27 +1742,3 @@ describe('Feed tests', () => {
             });
     });
 });
-/*
-describe('Search tests', () => {
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/search')
-            .send({
-                k: 'word',
-                t: 'post',
-                di: 5,
-                df: 5,
-                0: 10
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-
-});
-*/
