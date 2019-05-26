@@ -28,6 +28,7 @@ type State = {
   place: string;
   dateStart: string;
   dateEnd: string;
+  fetchingPoints: boolean;
   isHidden: boolean;
   privacy: string;
   points: number;
@@ -115,6 +116,7 @@ class Conference extends PureComponent<Props, State> {
         place: false,
         title: false
       },
+      fetchingPoints: true,
       isHidden: false,
       place: '',
       points: 0,
@@ -137,6 +139,7 @@ class Conference extends PureComponent<Props, State> {
 
   public componentWillMount() {
     this.getConference();
+    this.apiGetUserPoints();
   }
 
   public getConference() {
@@ -168,6 +171,24 @@ class Conference extends PureComponent<Props, State> {
           privacy: conference.privacy,
           talks: res.data.talks,
           title: conference.title
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
+
+  public apiGetUserPoints() {
+    const url = `/users/conference_points/${this.id}`;
+    axiosInstance
+      .get(url, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(res => {
+        console.log('user tem pontos: ', res.data.points);
+        this.setState({
+          fetchingPoints: false,
+          points: res.data.points
         });
       })
       .catch(error => console.log(error.response.data.message));
@@ -266,9 +287,11 @@ class Conference extends PureComponent<Props, State> {
           <Card.Title className={'mb-0'}>
             {dictionary.conference_shop[this.context]}
           </Card.Title>
-          <Card.Title className={'mb-0'}>
-            {dictionary.points[this.context]}: {this.state.points}
-          </Card.Title>
+          {!this.state.fetchingPoints && (
+            <Card.Title className={'mb-0'}>
+              {dictionary.points[this.context]}: {this.state.points}
+            </Card.Title>
+          )}
         </Card.Header>
         <Card.Body>CAROUSEL WITH FEATURED PRODUCTS</Card.Body>
         <Card.Footer>

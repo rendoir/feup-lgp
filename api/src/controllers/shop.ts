@@ -105,35 +105,14 @@ export async function deleteProduct(req, res) {
 export async function exchangeProduct(req, res) {
     const userId = req.user.id;
     const productId = req.params.id;
-    try {
-        const productTypeQuery = await query({
-            text: `SELECT conference, points as product_cost
-                    FROM products
-                    WHERE id = $1`,
-            values: [productId],
-        });
-        const conferenceId = productTypeQuery.rows[0].conference;
-        console.log("exchanging for user: ", userId);
-        console.log("exchanging product with conference: ", conferenceId);
-        console.log("product cost: ", productTypeQuery.rows[0].product_cost);
-        if(conferenceId == null) {
-            console.log("produto geral");
-            await query({
-                text: `UPDATE users SET points = points - $1
-                        WHERE id = $2`,
-                values: [productTypeQuery.rows[0].product_cost, userId],
-            });
-        } else {
-            console.log("produto conferencia");
-            await query({
-                text: `UPDATE user_conference_points SET points = points - $1
-                        WHERE user_id = $2 AND conference = $3`,
-                values: [productTypeQuery.rows[0].product_cost, userId, conferenceId],
-            });
-        }
+    query({
+        text: `SELECT * FROM exchange_product($1, $2)`,
+        values: [productId, userId],
+    }).then((result) => {
+        console.log("TROCOU PRODUTO: ", productId);
         res.status(200).send();
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: 'Error retrieving post report' });
-    }
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while exchanging a product' });
+    });
 }

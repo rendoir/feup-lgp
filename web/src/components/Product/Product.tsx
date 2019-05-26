@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 
 import styles from './Product.module.css';
 
-import AuthHelperMethods from '../../utils/AuthHelperMethods';
-import { dictionary, LanguageContext } from '../../utils/language';
 import Button from '../Button/Button';
 import EditProductModal from '../ProductModal/EditProductModal';
 import RemoveProductModal from '../ProductModal/RemoveProductModal';
+
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   id: number;
@@ -49,6 +51,24 @@ class Product extends Component<Props, IState> {
     });
     // TODO BACKEND: DIMINUIR STOCK, TIRAR PONTOS AO UTILIZADOR
     // QUANDO A TROCA FOR BEM SUCEDIDA CHAMAR     this.props.updateUserPoints()
+    const url = `/products/${this.props.id}/exchange`;
+    axiosInstance
+      .post(url, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(() => {
+        console.log('trocou produtos');
+        this.props.updateUserPoints();
+
+        const newStock = this.state.stock - 1;
+        this.setState({
+          exchangingProduct: false,
+          stock: newStock
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
   }
 
   public render() {
@@ -77,7 +97,7 @@ class Product extends Component<Props, IState> {
             </h5>
             <p className="card-text">
               {dictionary.shop_stock[this.context]}
-              {this.props.stock}
+              {this.state.stock}
             </p>
           </div>
           <div className="card-footer">
