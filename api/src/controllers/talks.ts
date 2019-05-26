@@ -100,10 +100,13 @@ export async function getTalk(req, res) {
               INNER JOIN conferences c ON t.conference = c.id
               WHERE t.id = $1
                 AND (t.author = $2
-                    OR (archived = FALSE AND hidden = FALSE)
-                    OR t.privacy = 'public'
-                    OR (t.privacy = 'followers'
-                        AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                    OR (t.archived = FALSE
+                        AND t.hidden = FALSE
+                        AND (t.privacy = 'public'
+                              OR (t.privacy = 'followers'
+                                    AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                              )
+                        )
                     )
                 )
             `,

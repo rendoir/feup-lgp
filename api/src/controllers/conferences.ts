@@ -185,9 +185,19 @@ export async function getConference(req, res) {
             FROM talks t
                     INNER JOIN users ON (users.id = t.author)
             WHERE t.conference = $1
+                  AND (t.author = $2
+                    OR (t.archived = FALSE
+                        AND t.hidden = FALSE
+                        AND (t.privacy = 'public'
+                              OR (t.privacy = 'followers'
+                                    AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                              )
+                        )
+                    )
+                )
             ORDER BY t.dateEnd
             LIMIT 10 `,
-      values: [id],
+      values: [id, user],
     });
 
     const result = {

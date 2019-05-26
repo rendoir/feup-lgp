@@ -68,6 +68,8 @@ export type State = {
     tags: boolean;
     title: boolean;
   };
+  errorFetching: boolean;
+  errorFetchingMessage: string;
   hideModalOpen: boolean;
   inviteFields: {
     email: string;
@@ -113,6 +115,7 @@ class Talk extends PureComponent<Props, State> {
   private readonly postDateOptions: object;
   private conferenceId: number | undefined;
   private conferenceTitle: string | undefined;
+  private owner: boolean | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
   private privacy: string | undefined;
@@ -207,6 +210,8 @@ class Talk extends PureComponent<Props, State> {
         tags: false,
         title: false
       },
+      errorFetching: false,
+      errorFetchingMessage: '',
       hideModalOpen: false,
       inviteFields: {
         email: '',
@@ -248,7 +253,7 @@ class Talk extends PureComponent<Props, State> {
 
   public async componentDidMount() {
     await this.apiGetTalk();
-    if (this.ownerId === Number(this.auth.getUserPayload().id)) {
+    if (this.owner) {
       await this.apiGetSubs();
     }
   }
@@ -260,11 +265,13 @@ class Talk extends PureComponent<Props, State> {
         <div className={'row'}>
           <div className={'col-lg-3'}>
             {this.renderInfoCard()}
-            {this.renderAdminCard()}
-            {this.renderChallengesCard()}
+            {this.owner ? this.renderAdminCard() : null}
+            {!this.state.errorFetching ? this.renderChallengesCard() : null}
           </div>
           <div className={'col-lg-9'}>
-            {this.state.joined ? (
+            {this.state.errorFetching ? (
+              this.renderErrorFetchingAlert()
+            ) : this.state.joined ? (
               <div className={'row'}>
                 {this.state.inviteFields.error ||
                 this.state.inviteFields.success ? (
@@ -302,6 +309,7 @@ class Talk extends PureComponent<Props, State> {
         this.conferenceTitle = talk.conference_title;
         this.ownerId = Number(talk.user_id);
         this.ownerName = talk.user_name;
+        this.owner = this.ownerId === Number(this.auth.getUserPayload().id);
         this.privacy = talk.privacy;
         this.tags = tags;
 
@@ -316,6 +324,8 @@ class Talk extends PureComponent<Props, State> {
             local: talk.local,
             title: talk.title
           },
+          errorFetching: false,
+          errorFetchingMessage: '',
           isArchived: talk.archived,
           isHidden: talk.hidden,
           joined,
@@ -333,7 +343,10 @@ class Talk extends PureComponent<Props, State> {
         });
       })
       .catch(error => {
-        console.log(error.response.data.message);
+        this.setState({
+          errorFetching: true,
+          errorFetchingMessage: error.response.data.message
+        });
       });
   }
 
@@ -390,6 +403,14 @@ class Talk extends PureComponent<Props, State> {
             ? dictionary.invite_all_subs_error[this.context]
             : dictionary.invite_all_subs_done[this.context]}
         </p>
+      </Alert>
+    );
+  };
+
+  private renderErrorFetchingAlert = () => {
+    return (
+      <Alert variant={'danger'}>
+        <p>{this.state.errorFetchingMessage}.</p>
       </Alert>
     );
   };
@@ -505,7 +526,9 @@ class Talk extends PureComponent<Props, State> {
             {dateEnd}
           </div>
         </Card.Body>
-        <Card.Footer>{this.renderJoin()}</Card.Footer>
+        {this.owner || this.state.errorFetching ? null : (
+          <Card.Footer>{this.renderJoin()}</Card.Footer>
+        )}
       </Card>
     );
   };
@@ -797,7 +820,10 @@ class Talk extends PureComponent<Props, State> {
           <div
             className={'col-3 d-flex justify-content-center align-items-center'}
           >
-            <Button className={classNames('w-100 h-50', styles.button)}>
+            <Button
+              className={classNames('w-100 h-50', styles.button)}
+              disabled={this.state.isArchived || this.state.isHidden}
+            >
               <i className={'fas fa-paper-plane mr-2'} />
               Send
             </Button>
@@ -893,7 +919,10 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item
+          onClick={handleOpen}
+          disabled={this.state.isArchived || this.state.isHidden}
+        >
           <i className={'fas fa-envelope mr-2'} />
           {dictionary.invite_users[this.context]}
         </ListGroup.Item>
@@ -1426,7 +1455,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item onClick={handleOpen} disabled={this.state.isArchived}>
           <i className={'fas fa-puzzle-piece mr-2'} />
           {dictionary.create_challenge_talk[this.context]}
         </ListGroup.Item>
@@ -1713,7 +1742,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -2089,8 +2118,12 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
-          <i className={'fas fa-trash mr-2'} />
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+          <i
+            className={`fas ${
+              this.state.isHidden ? 'fa-eye' : 'fa-eye-slash'
+            } mr-2`}
+          />
           {this.state.isHidden
             ? dictionary.reopen_talk[this.context]
             : dictionary.hide_talk[this.context]}
@@ -2243,12 +2276,16 @@ class Talk extends PureComponent<Props, State> {
         }
       });
     };
+    const buttonClassName = classNames('pt-2 pb-2 pl-3 pr-3', styles.button, {
+      [styles.disabled]: this.state.isHidden || this.state.isArchived
+    });
 
     return (
       <>
         <ListGroup.Item
           onClick={handleShow}
-          className={classNames('pt-2 pb-2 pl-3 pr-3', styles.button)}
+          className={buttonClassName}
+          disabled={this.state.isHidden || this.state.isArchived}
         >
           <i className={'fas fa-plus mr-2'} />
           {dictionary.create_new_post[this.context]}

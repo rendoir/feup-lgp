@@ -70,13 +70,19 @@
 		border-color: $color-primary;
 	}
 
-  &:disabled {
-    background-color: $greyish;
+	&:disabled {
+		background-color: $color-primary !important;
+		color: $white !important;
+		border-color: $color-primary;
+		opacity: 0.5 !important;
+	}
+}
 
-    &:hover {
-      background-color: shade($greyish, 30%) !important;
-    }
-  }
+.disabled {
+	background-color: $color-primary !important;
+	color: $white !important;
+	border-color: $color-primary;
+	opacity: 0.5 !important;
 }
 
 .arrow {
