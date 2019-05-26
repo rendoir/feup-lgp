@@ -13,6 +13,7 @@ const futureDateStr = '"' + futureDate.toISOString() + '"';
 // let adminId = -1;
 let userId = -1;
 let commentId = -1;
+let conferenceId = -1;
 
 const admin = {
     email: 'admin@gmail.com',
@@ -1166,12 +1167,247 @@ describe('Post', () => {
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(400)
                 .end((err, res) => {
-                    expect(err).to.be.null;
+                    !expect(err).to.be.null;
                     done();
                 })
         });
     });
-    
+});
+
+describe('Conference tests', () => {
+    it('Should not create conferece without title parameter' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: '',
+                about: '',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                avatar: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not create conferece without about parameter' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: '',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                avatar: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not create conferece without local parameter' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not create conferece without dateStart parameter' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '',
+                dateEnd: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not create conferece without dateEnd parameter' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '2020/1/31',
+                dateEnd: '1999/1/1',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should create conferece' , (done) => {
+        request(app)
+            .post(`/conference`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '31/1/2020',
+                dateEnd: '31/3/2020',
+                privacy: 'public',
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.have.property('id');
+                conferenceId = res.body.id;
+                done();
+            })
+    });
+
+    it('Should not edit conferece without title parameter' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: '',
+                about: '',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                avatar: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not edit conferece without about parameter' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: '',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                avatar: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not edit conferece without local parameter' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: '',
+                dateStart: '',
+                dateEnd: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not edit conferece without dateStart parameter' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '',
+                dateEnd: '',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should not edit conferece without dateEnd parameter' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '2020/1/31',
+                dateEnd: '1999/1/1',
+                privacy: '',
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            })
+    });
+
+    it('Should edit conferece' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                title: 'title',
+                about: 'about',
+                local: 'local',
+                dateStart: '31/1/2020',
+                dateEnd: '31/3/2020',
+                privacy: 'public',
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            })
+    });
 });
 
 describe('Login tests', () => {
