@@ -6,12 +6,14 @@ import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
+import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import { Avatar } from '../components';
 import Post from '../components/Post/Post';
 import Switcher from '../components/Switcher/Switcher';
+import Tag from '../components/Tags/Tag';
 import styles from '../styles/Feed.module.css';
 import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
@@ -67,6 +69,14 @@ export type State = {
     title: boolean;
   };
   hideModalOpen: boolean;
+  inviteFields: {
+    email: string;
+    error: boolean;
+    results: any[];
+    selected: any[];
+    success: boolean;
+    userSubs: any[];
+  };
   inviteModalOpen: boolean;
   isArchived: boolean;
   isHidden: boolean;
@@ -74,12 +84,12 @@ export type State = {
   postFields: {
     title: string;
     description: string;
-    privacy: string;
     files: {
       images: File[];
       videos: File[];
       documents: File[];
     };
+    tag: string;
     tags: string[];
   };
   postFormOpen: boolean;
@@ -105,7 +115,7 @@ class Talk extends PureComponent<Props, State> {
   private conferenceTitle: string | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
-  private privacy: string;
+  private privacy: string | undefined;
   private errorMessages: {
     answer: string;
     correctAnswer: string;
@@ -119,6 +129,7 @@ class Talk extends PureComponent<Props, State> {
     question: string;
     title: string;
   };
+  private tags: any[];
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
@@ -138,8 +149,6 @@ class Talk extends PureComponent<Props, State> {
       year: 'numeric'
     };
     this.id = this.props.match.params.id;
-    this.privacy = 'public';
-
     this.errorMessages = {
       answer: '',
       correctAnswer: '',
@@ -153,6 +162,10 @@ class Talk extends PureComponent<Props, State> {
       question: '',
       title: ''
     };
+    this.tags = [];
+
+    this.apiGetTalk = this.apiGetTalk.bind(this);
+    this.apiGetSubs = this.apiGetSubs.bind(this);
 
     this.state = {
       archiveModalOpen: false,
@@ -195,6 +208,14 @@ class Talk extends PureComponent<Props, State> {
         title: false
       },
       hideModalOpen: false,
+      inviteFields: {
+        email: '',
+        error: false,
+        results: [],
+        selected: [],
+        success: false,
+        userSubs: []
+      },
       inviteModalOpen: false,
       isArchived: false,
       isHidden: false,
@@ -206,7 +227,7 @@ class Talk extends PureComponent<Props, State> {
           images: [],
           videos: []
         },
-        privacy: '',
+        tag: '',
         tags: [],
         title: ''
       },
@@ -225,8 +246,11 @@ class Talk extends PureComponent<Props, State> {
     };
   }
 
-  public componentWillMount(): void {
-    this.apiGetTalk();
+  public async componentDidMount() {
+    await this.apiGetTalk();
+    if (this.ownerId === Number(this.auth.getUserPayload().id)) {
+      await this.apiGetSubs();
+    }
   }
 
   public render() {
@@ -242,6 +266,10 @@ class Talk extends PureComponent<Props, State> {
           <div className={'col-lg-9'}>
             {this.state.joined ? (
               <div className={'row'}>
+                {this.state.inviteFields.error ||
+                this.state.inviteFields.success ? (
+                  <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
+                ) : null}
                 <div className={'col-lg-7'}>{this.renderPosts()}</div>
                 <div className={'col-lg-5'}>
                   {this.state.talk.hasLivestream
@@ -259,20 +287,23 @@ class Talk extends PureComponent<Props, State> {
     );
   }
 
-  private apiGetTalk = () => {
-    axiosInstance
+  private async apiGetTalk() {
+    await axiosInstance
       .get(`/talk/${this.id}`)
       .then(res => {
         const talk = res.data.talk;
         const posts = res.data.posts;
         const challenges = res.data.challenges;
         const joined = res.data.isParticipating;
+        const tags = res.data.tags;
+        const userPoints = Number(res.data.userPoints);
 
         this.conferenceId = talk.conference_id;
         this.conferenceTitle = talk.conference_title;
-        this.ownerId = talk.user_id;
+        this.ownerId = Number(talk.user_id);
         this.ownerName = talk.user_name;
         this.privacy = talk.privacy;
+        this.tags = tags;
 
         this.setState({
           challenges,
@@ -297,13 +328,29 @@ class Talk extends PureComponent<Props, State> {
             livestreamURL: talk.livestream_url,
             local: talk.local,
             title: talk.title
-          }
+          },
+          userPoints
         });
       })
       .catch(error => {
         console.log(error.response.data.message);
       });
-  };
+  }
+
+  private async apiGetSubs() {
+    await axiosInstance
+      .get(`/talk/${this.id}/uninvited_users_info`)
+      .then(res => {
+        const userSubs = res.data.uninvitedUsers;
+        this.setState({
+          inviteFields: {
+            ...this.state.inviteFields,
+            userSubs
+          }
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
 
   /* Components */
 
@@ -311,6 +358,38 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Alert variant={'danger'}>
         <p>{dictionary.user_not_joined[this.context]}.</p>
+      </Alert>
+    );
+  };
+
+  private renderInviteAlert = () => {
+    const handleClose = () => {
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          error: false,
+          success: false
+        }
+      });
+    };
+
+    return (
+      <Alert
+        variant={
+          this.state.inviteFields.error
+            ? 'danger'
+            : this.state.inviteFields.success
+            ? 'success'
+            : undefined
+        }
+        dismissible={true}
+        onClose={handleClose}
+      >
+        <p>
+          {this.state.inviteFields.error
+            ? dictionary.invite_all_subs_error[this.context]
+            : dictionary.invite_all_subs_done[this.context]}
+        </p>
       </Alert>
     );
   };
@@ -732,7 +811,85 @@ class Talk extends PureComponent<Props, State> {
 
   private renderInviteForm = () => {
     const handleOpen = () => this.setState({ inviteModalOpen: true });
-    const handleHide = () => this.setState({ inviteModalOpen: false });
+    const handleHide = () =>
+      this.setState({
+        inviteFields: {
+          email: '',
+          error: false,
+          results: [],
+          selected: [],
+          success: false,
+          userSubs: this.state.inviteFields.userSubs
+        },
+        inviteModalOpen: false
+      });
+    const handleChange = event =>
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          email: event.target.value
+        }
+      });
+    const handleSearch = () => {
+      const email = this.state.inviteFields.email.trim();
+
+      if (email.length === 0) {
+        return;
+      }
+
+      axiosInstance
+        .get('/search/user/email', {
+          params: {
+            email
+          }
+        })
+        .then(res => {
+          const results: any[] = [];
+          const users = res.data.users;
+
+          users.forEach(user => {
+            results.push(user);
+          });
+
+          this.setState({
+            inviteFields: {
+              ...this.state.inviteFields,
+              results
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error.response.data.message);
+        });
+    };
+    const handleClick = userId => {
+      const results = this.state.inviteFields.results;
+      const userSubs = this.state.inviteFields.userSubs;
+      const users = new Set([
+        ...results.map(r => r.id),
+        ...userSubs.map(u => u.id)
+      ]);
+      let selected = this.state.inviteFields.selected;
+
+      if (users.size > 0) {
+        users.forEach(id => {
+          if (id === userId) {
+            if (selected.includes(id)) {
+              selected = selected.filter(i => i !== userId);
+            } else {
+              selected.push(userId);
+            }
+          }
+        });
+      }
+
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          selected
+        }
+      });
+    };
 
     return (
       <>
@@ -755,13 +912,74 @@ class Talk extends PureComponent<Props, State> {
           <Modal.Body>
             <Form>
               <Form.Group controlId={'invite_user'}>
-                <Form.Label>{dictionary.email[this.context]}</Form.Label>
-                <Form.Control
-                  type={'email'}
-                  className={styles.border}
-                  placeholder={'Enter email'}
-                />
+                <InputGroup>
+                  <FormLabel className={'w-100'}>
+                    {dictionary.email[this.context]}
+                  </FormLabel>
+                  <FormControl
+                    type={'text'}
+                    placeholder={'Enter email'}
+                    className={styles.border}
+                    value={this.state.inviteFields.email}
+                    onChange={handleChange}
+                  />
+                  <InputGroup.Append>
+                    <Button variant={'outline-info'} onClick={handleSearch}>
+                      <i className={'fas fa-search'} /> Search
+                    </Button>
+                  </InputGroup.Append>
+                </InputGroup>
+                <ListGroup>
+                  {this.state.inviteFields.results.length > 0 ? (
+                    <div
+                      className={'overflow-auto'}
+                      style={{ maxHeight: '15rem' }}
+                    >
+                      {this.state.inviteFields.results.map((user, index) => (
+                        <ListGroup.Item
+                          key={index}
+                          className={`
+                              mt-2
+                              ${
+                                this.state.inviteFields.selected.includes(
+                                  user.id
+                                )
+                                  ? 'bg-info text-light'
+                                  : ''
+                              }
+                            `}
+                          onClick={() => handleClick(user.id)}
+                        >
+                          {user.user_name}
+                        </ListGroup.Item>
+                      ))}
+                    </div>
+                  ) : null}
+                </ListGroup>
               </Form.Group>
+              <ListGroup>
+                <Form.Label>
+                  {dictionary.invite_subs_header[this.context]}
+                </Form.Label>
+                <div className={'overflow-auto'} style={{ height: '15rem' }}>
+                  {this.state.inviteFields.userSubs.map((sub, index) => (
+                    <ListGroup.Item
+                      key={index}
+                      className={`
+                      mt-2
+                      ${
+                        this.state.inviteFields.selected.includes(sub.id)
+                          ? 'bg-info text-light'
+                          : ''
+                      }
+                    `}
+                      onClick={() => handleClick(sub.id)}
+                    >
+                      {sub.user_name}
+                    </ListGroup.Item>
+                  ))}
+                </div>
+              </ListGroup>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -769,7 +987,7 @@ class Talk extends PureComponent<Props, State> {
               Cancel
             </Button>
             <Button
-              type={'submit'}
+              type={'button'}
               className={styles.button}
               onClick={this.handleInviteSubmission}
               form={'invite_user'}
@@ -783,9 +1001,38 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private handleInviteSubmission = () => {
-    console.log(
-      'USER INVITED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
-    );
+    const selected = this.state.inviteFields.selected;
+    axiosInstance
+      .post(`/talk/${this.id}/invite`, {
+        selected
+      })
+      .then(() => {
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: false,
+            results: [],
+            selected: [],
+            success: true,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: true,
+            results: [],
+            selected: [],
+            success: false,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      });
   };
 
   /* TODO: finish and improve */
@@ -1912,13 +2159,293 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderPostForm = () => {
-    return <i className={'fas fa-plus'} />;
+    const postFields = this.state.postFields;
+    const handleHide = () => {
+      this.setState({
+        postFields: {
+          description: '',
+          files: {
+            documents: [],
+            images: [],
+            videos: []
+          },
+          tag: '',
+          tags: [],
+          title: ''
+        },
+        postFormOpen: false
+      });
+    };
+    const handleShow = () => {
+      this.setState({
+        postFormOpen: true
+      });
+    };
+    const handleChange = event => {
+      this.setState({
+        postFields: {
+          ...postFields,
+          [event.target.name]: event.target.value
+        }
+      });
+    };
+    const handleKeyUp = event => {
+      if (event.key === 'Enter') {
+        const tags = this.state.postFields.tags;
+        const tag = event.target.value.trim();
+
+        if (tag.length > 0 && !tags.includes(tag)) {
+          tags.unshift(tag);
+        }
+        this.setState({
+          postFields: {
+            ...this.state.postFields,
+            tag: '',
+            tags
+          }
+        });
+      }
+    };
+    const handleTagRemove = value => {
+      const tags = this.state.postFields.tags.filter(tag => tag !== value);
+
+      this.setState({
+        postFields: {
+          ...this.state.postFields,
+          tags
+        }
+      });
+    };
+    const handleFileChange = event => {
+      const files = event.target.files as FileList;
+      const images: File[] = [];
+      const videos: File[] = [];
+      const documents: File[] = [];
+
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image')) {
+          images.push(file);
+        } else if (file.type.startsWith('video')) {
+          videos.push(file);
+        } else {
+          documents.push(file);
+        }
+      });
+
+      this.setState({
+        postFields: {
+          ...this.state.postFields,
+          files: {
+            documents,
+            images,
+            videos
+          }
+        }
+      });
+    };
+
+    return (
+      <>
+        <ListGroup.Item
+          onClick={handleShow}
+          className={classNames('pt-2 pb-2 pl-3 pr-3', styles.button)}
+        >
+          <i className={'fas fa-plus mr-2'} />
+          {dictionary.create_new_post[this.context]}
+        </ListGroup.Item>
+
+        <Modal show={this.state.postFormOpen} onHide={handleHide}>
+          <Modal.Header closeButton={true}>
+            <Modal.Title>{dictionary.new_talk_post[this.context]}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId={'create_post.title'}>
+                <Form.Label>{dictionary.title[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.insert_title[this.context]}
+                  value={postFields.title}
+                  name={'title'}
+                  onChange={handleChange}
+                  className={styles.border}
+                />
+                {this.state.error.title ? (
+                  <Form.Text className={'text-danger'}>
+                    {this.errorMessages.title}
+                  </Form.Text>
+                ) : null}
+              </Form.Group>
+              <Form.Group controlId={'create_post.description'}>
+                <Form.Label>{dictionary.description[this.context]}</Form.Label>
+                <Form.Control
+                  as={'textarea'}
+                  rows={10}
+                  placeholder={dictionary.description_placeholder[this.context]}
+                  value={postFields.description}
+                  name={'description'}
+                  onChange={handleChange}
+                  className={classNames('overflow-auto', styles.border)}
+                  style={{ height: '20rem' }}
+                />
+                {this.state.error.description ? (
+                  <Form.Text className={'text-danger'}>
+                    {this.errorMessages.description}
+                  </Form.Text>
+                ) : null}
+              </Form.Group>
+              <Form.Group controlId={'create_post.tags'}>
+                <Form.Label>{dictionary.tags[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.tag_placeholder[this.context]}
+                  value={this.state.postFields.tag}
+                  name={'tag'}
+                  onChange={handleChange}
+                  onKeyUp={handleKeyUp}
+                  className={styles.border}
+                  list={'existing_tags'}
+                />
+                <datalist id={'existing_tags'}>
+                  {this.tags.map((tag, index) => (
+                    <option key={`tag_${tag.id}`} value={tag.name}>
+                      {index}
+                    </option>
+                  ))}
+                </datalist>
+                {this.state.postFields.tags.map((tag, index) => (
+                  <Tag
+                    key={index}
+                    id={index.toString()}
+                    value={tag}
+                    onRemove={handleTagRemove}
+                    className={'mt-2 mr-1'}
+                  />
+                ))}
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>{dictionary.files[this.context]}</Form.Label>
+                <Form.Control
+                  type={'file'}
+                  multiple={true}
+                  name={'files'}
+                  onChange={handleFileChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleHide} variant={'danger'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button onClick={this.handlePostSubmission} variant={'success'}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
   };
 
   private handlePostSubmission = () => {
-    console.log(
-      'POST CREATED IN TALK - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    let error = false;
+    const postFields = this.state.postFields;
+
+    Object.keys(postFields).map(key => {
+      if (key === 'title' || key === 'description') {
+        postFields[key] = postFields[key].trim();
+      } else if (key === 'tags') {
+        postFields[key] = postFields[key].map(tag => tag.trim());
+      }
+    });
+
+    if (postFields.title.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: true
+        }
+      });
+      this.errorMessages.title = 'Field title can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: false
+        }
+      });
+      this.errorMessages.title = '';
+    }
+    if (postFields.description.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: true
+        }
+      });
+      this.errorMessages.description = 'Field description can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: false
+        }
+      });
+      this.errorMessages.description = '';
+    }
+
+    Object.entries(postFields).forEach(entry => {
+      if (entry[0] !== 'files' && entry[0] !== 'tag') {
+        if (!this.validateInput(entry[0], entry[1])) {
+          error = true;
+        }
+      }
+    });
+
+    if (error) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', postFields.title);
+    formData.append('text', postFields.description);
+    formData.append('visibility', 'public');
+    formData.append('talk', this.id.toString());
+    postFields.files.images.forEach((image, index) =>
+      formData.append(`images[${index}]`, image)
     );
+    postFields.files.videos.forEach((video, index) =>
+      formData.append(`videos[${index}]`, video)
+    );
+    postFields.files.documents.forEach((document, index) =>
+      formData.append(`docs[${index}]`, document)
+    );
+    postFields.tags.forEach((tag, index) =>
+      formData.append(`tags[${index}]`, tag)
+    );
+
+    axiosInstance
+      .post(`/post`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(response => {
+        axiosInstance
+          .get(`/post/${response.data.post}`)
+          .then(post => {
+            this.setState({
+              postFormOpen: false,
+              posts: [post.data, ...this.state.posts]
+            });
+          })
+          .catch(err => {
+            console.log(`Error retrieving new post. Error: ${err}`);
+          });
+      })
+      .catch(err => console.log(err.response.data.message));
   };
 
   private validateInput = (type, value) => {
@@ -1991,9 +2518,9 @@ class Talk extends PureComponent<Props, State> {
         break;
     }
 
-    if (type === 'options') {
-      for (const option of value) {
-        if (!re.test(option)) {
+    if (type === 'options' || type === 'tags') {
+      for (const entry of value) {
+        if (!re.test(entry)) {
           this.setState({
             error: {
               ...this.state.error,

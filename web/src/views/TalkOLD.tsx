@@ -1,18 +1,3 @@
-import { MouseEvent } from 'react';
-import * as React from 'react';
-import Card from 'react-bootstrap/Card';
-import Modal from 'react-bootstrap/Modal';
-import { Avatar, Button, Icon, InputNext } from '../components';
-
-import ChallengeCarousel from '../components/ChallengeCarousel/ChallengeCarousel';
-import Chat from '../components/Chat/Chat';
-import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
-import Livestream from '../components/Livestream/Livestream';
-import InviteModal from '../components/PostModal/InviteModal';
-
-import styles from '../components/Post/Post.module.css';
-import '../styles/Talk.css';
-
 import {
   faGlobeAfrica,
   faLock,
@@ -20,16 +5,28 @@ import {
   faUserFriends,
   IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
+import * as React from 'react';
+import { MouseEvent } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { Avatar, Button, Icon, InputNext } from '../components';
+
+import ChallengeCarousel from '../components/ChallengeCarousel/ChallengeCarousel';
+import Chat from '../components/Chat/Chat';
 import CreateNewModal from '../components/CreateNewModal/CreateNewModal';
-import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
 
 import { Request, Step } from '../components/CreateNewModal/types';
+import CreateNewModalChallenge from '../components/CreateNewModalChallenges/CreateNewModalChallenge';
 import {
   RequestChallenge,
   StepChallenge
 } from '../components/CreateNewModalChallenges/types';
-import Switcher from '../components/Switcher/Switcher';
+import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
+import Livestream from '../components/Livestream/Livestream';
 
+import styles from '../components/Post/Post.module.css';
+import InviteModal from '../components/PostModal/InviteModal';
+import Switcher from '../components/Switcher/Switcher';
+import '../styles/Talk.css';
 // - Import utils
 import {
   apiCheckUserCanJoinTalk,

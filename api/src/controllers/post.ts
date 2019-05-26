@@ -2,16 +2,22 @@ import * as fs from 'fs';
 import { query } from '../db/db';
 
 export async function createPost(req, res) {
-    if (!req.body.title.trim() || !req.body.title.trim()) {
-        console.log('\n\nERROR: Post title and body cannot be empty');
-        res.status(400).send({ message: 'An error ocurred while creating a new post: Invalid post.' });
+    if (!req.body.title.trim()) {
+        res.status(400).send({
+            message: 'An error ocurred while creating a new post. Error: field title can not be empty.',
+        });
+        return;
+    }
+    if (!req.body.text.trim()) {
+        res.status(400).send({
+            message: 'An error ocurred while creating a new post. Error: field content can not be empty.',
+        });
         return;
     }
 
     const userId = req.user.id;
 
     try {
-        console.log('Created post on talk: ' + req.body.talk);
         if ( req.body.talk > 0) {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility, talk)
@@ -20,7 +26,7 @@ export async function createPost(req, res) {
             })).rows[0];
             saveFiles(req, res, post.id);
             saveTags(req, res, post.id);
-            res.send({ id: post.id });
+            res.send({ post: post.id });
         } else {
             const post = (await query({
                 text: `INSERT INTO posts (author, title, content, search_tokens, visibility)
@@ -32,8 +38,9 @@ export async function createPost(req, res) {
             res.send({ id: post.id });
         }
     } catch (error) {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while creating a post' });
+        res.status(400).send({
+            message: 'An error ocurred while creating a post. Error: ' + error,
+        });
     }
 }
 
@@ -72,7 +79,7 @@ export function deletePost(req, res) {
         text: `DELETE FROM posts
                 WHERE id = $1
                     AND (author = $2 OR 'admin' = (SELECT permissions FROM users WHERE id = $2))`, values: [req.params.id, userId],
-    }).then((result) => {
+    }).then(() => {
         deleteFolderRecursive('uploads/' + req.params.id);
         res.status(200).send();
     }).catch((error) => {
@@ -91,8 +98,8 @@ export async function getPost(req, res) {
          * OR post is private to followers and user is a follower of the author
          */
         const post = (await query({
-            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
-                        p.visibility, p.date_created, p.date_updated, a.id AS user_id
+            text: `SELECT p.id, (a.first_name || ' ' || a.last_name) as author, p.title, p.content,
+                        p.visibility, p.date_created as date, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON p.author = a.id
                     WHERE
@@ -149,13 +156,10 @@ export async function getPost(req, res) {
                         p.id = $1`,
             values: [postId],
         });
-        const result = {
-            post,
-            comments: comments.rows,
-            files: files.rows,
-            tags: tags.rows,
-        };
-        res.send(result);
+        post.comments = comments.rows;
+        post.tags = tags.rows;
+        post.files = files.rows;
+        res.send(post);
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
