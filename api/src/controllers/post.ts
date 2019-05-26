@@ -322,7 +322,7 @@ export async function checkPostUserReport(req, res) {
         });
 
         const result = { report: Boolean(reportQuery.rows[0]) };
-        res.send(result);
+        res.status(200).send(result);
     } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send({ message: 'Error retrieving post report' });

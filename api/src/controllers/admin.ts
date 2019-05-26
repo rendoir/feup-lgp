@@ -52,26 +52,28 @@ export function deleteUserFromWhiteList(req, res) {
 }
 
 export async function getReportNotifications(req, res) {
-    const isRequesterAdmin = await isAdmin(req.user.id);
-
-    if (isRequesterAdmin) {
-        query({
-            text: 'SELECT * FROM retrieve_admin_notifications()',
-        }).then((result) => {
-            res.status(200).send(result.rows);
-        }).catch(
-            /* istanbul ignore next */
-            (error) => {
-            console.log('\n\nERROR:', error);
-            res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
-        });
-    } else {
-        res.status(401).send({ message: 'You do not have permissions to add an admin' });
+    /* istanbul ignore next */
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
+        return;
     }
+
+    query({
+        text: 'SELECT * FROM retrieve_admin_notifications()',
+    }).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
+    });
 
 }
 
 export async function amountReportNotifications(req, res) {
+    /* istanbul ignore next */
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
         res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
@@ -83,7 +85,7 @@ export async function amountReportNotifications(req, res) {
             text: `SELECT COUNT(*) FROM retrieve_admin_notifications()`,
         });
         res.status(200).send({ amountReportNotifications: amountReportNotificationsQuery.rows[0].count });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving report notifications count'));
     }
@@ -154,7 +156,9 @@ export async function addAdmin(req, res) {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while adding admin' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to add an admin' }); }
+    } else {
+        res.status(401).send({ message: 'You do not have permissions to add an admin' });
+    }
 }
 
 export async function banUser(req, res) {
