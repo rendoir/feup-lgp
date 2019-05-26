@@ -190,6 +190,11 @@ commentRouter.post('/:id/report', controller.reportComment);
  * (post_id parameter is useless, it's only required due to the comment api route URL)
  * @apiParam {number}   reporter   Id of the user we want to verify if reported the comment
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

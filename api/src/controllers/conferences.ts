@@ -57,10 +57,12 @@ export function createConference(req, res) {
       req.body.privacy,
     ],
   }).then((result) => {
-    res.send({
+    res.status(200).send({
       id: result.rows[0].id,
     });
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR: ', error);
     res.status(400).send({
       message: 'An error occurred while crating a new conference. Error: ' + error.toString(),
@@ -130,12 +132,14 @@ export function editConference(req, res) {
       data.dateEnd,
     ],
   }).then((response) => {
-    res.send({
+    res.status(200).send({
       id: response.rows[0].id,
     });
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('ERROR: ', error);
-    res.status(400).send({
+    res.status(500).send({
       message: 'An error occurred while updating the conference. Error: ' + error.toString(),
     });
   });
@@ -199,10 +203,9 @@ export async function getConference(req, res) {
     const result = {
       conference: conference.rows[0],
       talks: talksResult.rows,
-
     };
     res.send(result);
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     console.log(error);
     res.status(500).send(new Error('Error retrieving Conference'));
   }
