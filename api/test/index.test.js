@@ -714,7 +714,7 @@ describe('Post', () => {
                 expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
                 done();
             });
-    })
+    });
 
     it('Should edit the submitted post', (done) => {
         request(app)
