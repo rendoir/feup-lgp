@@ -85,8 +85,8 @@ app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
 app.use('/shop', shopRouter);
 app.use('/conference', conferenceRouter);
-app.use('/invite', inviteRouter);
 app.use('/products', productsRouter);
+app.use('/invite', inviteRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });
