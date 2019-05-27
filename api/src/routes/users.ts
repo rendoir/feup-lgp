@@ -68,7 +68,7 @@ usersRouter.get('/:id', controller.getUser);
  */
 usersRouter.get('/:id/avatar/:filename', controller.getAvatar);
 
-/** 
+/**
  * @api {get} /api/users/{id}/name Get user name
  * @apiName User-Name
  * @apiGroup Users
