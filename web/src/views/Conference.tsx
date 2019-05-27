@@ -3,7 +3,14 @@ import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
-import { Avatar, Button, Icon, InputNext, Select } from '../components';
+import {
+  Avatar,
+  AvatarSelector,
+  Button,
+  Icon,
+  InputNext,
+  Select
+} from '../components';
 
 import Switcher from '../components/Switcher/Switcher';
 import styles from '../styles/Feed.module.css';
@@ -605,6 +612,55 @@ class Conference extends PureComponent<Props, State> {
       })
       .catch(error => console.log(error));
   };
+
+  /*private renderAvatar() {
+    
+    const { avatar, avatar_str } = this.state.request;
+
+    const requestCopy = this.state.request;
+
+    const onAvatarChange = (avatar: File) => {
+      requestCopy.avatar = avatar;
+      this.setState({
+        request: requestCopy
+      });
+    };
+
+    const onAvatarRemove = () => {
+      requestCopy.avatar = undefined;
+      this.setState({
+        request: requestCopy
+      });
+    };
+
+    if (this.state.request.avatar_str !== '' && this.state.request.avatar === undefined) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={avatar_str}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={avatar}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    }
+  }*/
 
   private renderEditForm = () => {
     const editFields = this.state.editFields;

@@ -380,6 +380,8 @@ class Talk extends PureComponent<Props, State> {
         this.privacy = talk.privacy;
         this.tags = tags;
 
+        // this.apiGetTalkAvatar(talk);
+
         this.setState({
           challenges,
           editFields: {
@@ -398,6 +400,8 @@ class Talk extends PureComponent<Props, State> {
           joined,
           posts,
           talk: {
+            avatar: talk.avatar,
+            avatar_mimeType: talk.avatar_mimeType,
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
@@ -414,6 +418,29 @@ class Talk extends PureComponent<Props, State> {
           errorFetching: true,
           errorFetchingMessage: error.response.data.message
         });
+      });
+  }
+
+  private async apiGetTalkAvatar(talk: any) {
+    if (talk.avatar === undefined || talk.avatar === null) {
+      return;
+    }
+
+    axiosInstance
+      .get(`/talks/${this.id}/avatar/${talk.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          talk.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        talk.avatar_src = src;
+      })
+      .catch(() => {
+        console.log('Failed to get conference avatar');
       });
   }
 
