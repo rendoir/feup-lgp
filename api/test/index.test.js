@@ -329,7 +329,7 @@ describe('Admin tests', () => {
                     expect(res.body).to.be.instanceOf(Object);
                     expect(res.body).to.have.property('message');
                     done();
-                })
+                });
         });
 
         it('Should add user to the whitelist', (done) => {
@@ -346,7 +346,7 @@ describe('Admin tests', () => {
                     expect(res.body).to.be.instanceOf(Object);
                     expect(res.body).to.have.property('email');
                     done();
-                })
+                });
         });
 
         it('Should remove user from the whitelist', (done) => {
@@ -360,7 +360,7 @@ describe('Admin tests', () => {
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
-                })
+                });
         });
     });
 
@@ -401,7 +401,7 @@ describe('Admin tests', () => {
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
-                })
+                });
         });
     });
 });
