@@ -33,17 +33,15 @@ export function createTalk(req, res) {
     });
     return;
   }
-  if (req.body.dateEnd.trim()) {
-    if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
-      console.log(
-        '\n\nError: talk ending date cannot be previous to starting date',
-      );
-      res.status(400).send({
-        message: 'An error occurred while crating a new talk. ' +
-          'The field date end cannot be a date previous to date start',
-      });
-      return;
-    }
+  if (!req.body.dateEnd.trim() || (req.body.dateEnd.trim() && Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) ) {
+    console.log(
+      '\n\nError: talk ending date cannot be previous to starting date',
+    );
+    res.status(400).send({
+      message: 'An error occurred while crating a new talk. ' +
+        'The field date end cannot be empty or be a date previous to date start',
+    });
+    return;
   }
 
   let livestreamURL = req.body.livestream;
@@ -68,12 +66,14 @@ export function createTalk(req, res) {
       req.body.conference,
     ],
   }).then((result) => {
-    res.send({
+    res.status(200).send({
       id: result.rows[0].id,
     });
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR: ', error);
-    res.status(400).send({
+    res.status(500).send({
       message: 'An error occurred while crating a new talk. Error: ' + error.toString(),
     });
   });
@@ -115,11 +115,13 @@ export function editTalk(req, res) {
     });
     return;
   }
-  if (!data.dateEnd.trim()) {
-    console.log('\n\nError: talk ending date cannot be empty');
+  if (!req.body.dateEnd.trim() || (req.body.dateEnd.trim() && Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) ) {
+    console.log(
+      '\n\nError: talk ending date cannot be previous to starting date',
+    );
     res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field ending date cannot be empty',
+      message: 'An error occurred while crating a new talk. ' +
+        'The field date end cannot be empty or be a date previous to date start',
     });
     return;
   }
@@ -144,7 +146,9 @@ export function editTalk(req, res) {
         id: response.rows[0].id,
       });
     })
-    .catch((error) => {
+    .catch(
+      /* istanbul ignore next */
+      (error) => {
       console.log(`Error: ${error}`);
       res.status(400).send({
         message: `An error occurred while updating a talk. Error: ${error.toString()}`,
@@ -164,7 +168,9 @@ export async function inviteUser(req, res) {
       values: [req.body.invited_user, req.params.id],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while inviting user to talk' });
   });
