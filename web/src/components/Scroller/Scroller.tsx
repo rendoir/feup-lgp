@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-import { AutoSizer } from "react-virtualized";
-
-import classNames from "classnames";
-import { listen } from "../../utils/listen";
-import { ClientRect } from "../../utils/types";
-import styles from "./Scroller.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import { AutoSizer } from 'react-virtualized';
+import { listen } from '../../utils/listen';
+import { ClientRect } from '../../utils/types';
+import styles from './Scroller.module.css';
 
 export type Dimensions = {
   scrollTop: number;
@@ -80,35 +79,35 @@ class Scroller extends Component<Props, State> {
       // @ts-ignore
       // @ts-ignore
       this.listeners = [
-        listen(this.container, "user_scroll", this.handleScrollByUser, {
+        listen(this.container, 'user_scroll', this.handleScrollByUser, {
           passive: true
         }),
-        listen(this.container, "js_scroll", this.handleScrollByJS, {
+        listen(this.container, 'js_scroll', this.handleScrollByJS, {
           passive: true
         }),
-        listen(this.container, "scroll", this.handleScroll, {
+        listen(this.container, 'scroll', this.handleScroll, {
           passive: true
         }),
-        listen(this.container, "mousedown", this.handleUserInteractionStart, {
+        listen(this.container, 'mousedown', this.handleUserInteractionStart, {
           passive: true
         }),
-        listen(this.container, "mouseup", this.handleUserInteractionEnd, {
+        listen(this.container, 'mouseup', this.handleUserInteractionEnd, {
           passive: true
         }),
-        listen(this.container, "wheel", this.handleMouseWheel, {
+        listen(this.container, 'wheel', this.handleMouseWheel, {
           passive: true
         }),
-        listen(this.container, "touchstart", this.handleUserInteractionStart, {
+        listen(this.container, 'touchstart', this.handleUserInteractionStart, {
           passive: true
         }),
-        listen(this.container, "touchend", this.handleUserInteractionEnd, {
+        listen(this.container, 'touchend', this.handleUserInteractionEnd, {
           passive: true
         }),
-        listen(this.container, "touchmove", this.handleTouchMove, {
+        listen(this.container, 'touchmove', this.handleTouchMove, {
           passive: true
         }),
         // @ts-ignore
-        listen(this.container, "keydown", this.handleKeyDown, {
+        listen(this.container, 'keydown', this.handleKeyDown, {
           passive: true
         })
       ];
@@ -144,7 +143,7 @@ class Scroller extends Component<Props, State> {
   private handleScroll = (): void => {
     if (this.state.isUserInteraction) {
       if (this.container) {
-        this.container.dispatchEvent(new CustomEvent("user_scroll"));
+        this.container.dispatchEvent(new CustomEvent('user_scroll'));
       }
     }
     if (this.props.onScroll) {
@@ -154,23 +153,23 @@ class Scroller extends Component<Props, State> {
 
   private handleMouseWheel = (): void => {
     if (this.container) {
-      this.container.dispatchEvent(new CustomEvent("user_scroll"));
+      this.container.dispatchEvent(new CustomEvent('user_scroll'));
     }
   };
 
   private handleKeyDown = (event: KeyboardEvent): void => {
     if (
-      event.code === "PageUp" ||
-      event.code === "PageDown" ||
-      event.code === "Home" ||
-      event.code === "End" ||
-      event.code === "ArrowLeft" ||
-      event.code === "ArrowUp" ||
-      event.code === "ArrowRight" ||
-      event.code === "ArrowDown"
+      event.code === 'PageUp' ||
+      event.code === 'PageDown' ||
+      event.code === 'Home' ||
+      event.code === 'End' ||
+      event.code === 'ArrowLeft' ||
+      event.code === 'ArrowUp' ||
+      event.code === 'ArrowRight' ||
+      event.code === 'ArrowDown'
     ) {
       if (this.container) {
-        this.container.dispatchEvent(new CustomEvent("user_scroll"));
+        this.container.dispatchEvent(new CustomEvent('user_scroll'));
       }
     }
   };
@@ -186,7 +185,7 @@ class Scroller extends Component<Props, State> {
   private handleTouchMove = (): void => {
     if (this.state.isUserInteraction) {
       if (this.container) {
-        this.container.dispatchEvent(new CustomEvent("user_scroll"));
+        this.container.dispatchEvent(new CustomEvent('user_scroll'));
       }
     }
   };
@@ -218,7 +217,7 @@ class Scroller extends Component<Props, State> {
   private scrollTo(offset: number): void {
     if (this.container) {
       this.container.scrollTop = offset;
-      this.container.dispatchEvent(new CustomEvent("js_scroll"));
+      this.container.dispatchEvent(new CustomEvent('js_scroll'));
     }
   }
 }

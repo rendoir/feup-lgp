@@ -1,13 +1,13 @@
-import { AvatarPlaceholder } from "../../../utils/types";
-import AvatarColors from "./AvatarColors";
+import { AvatarPlaceholder } from '../../../utils/types';
+import AvatarColors from './AvatarColors';
 
 export type Color = {
-  type: "color";
+  type: 'color';
   payload: string;
 };
 
 export type Gradient = {
-  type: "gradient";
+  type: 'gradient';
   payload: {
     from: string;
     to: string;
@@ -20,7 +20,7 @@ function getAvatarColor(placeholder: AvatarPlaceholder): Gradient {
       from: AvatarColors[placeholder].from,
       to: AvatarColors[placeholder].to
     },
-    type: "gradient"
+    type: 'gradient'
   };
 }
 

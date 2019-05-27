@@ -1,15 +1,14 @@
-import React, { Component } from "react";
-
-import "./PostModal.css";
-
+import React, { Component } from 'react';
 // - Import utils
 import {
   apiGetUninvitedSubscribersAmount,
   apiGetUninvitedUsersInfo,
   apiInviteSubscribers,
   apiInviteUser
-} from "../../utils/apiInvite";
-import { dictionary, LanguageContext } from "../../utils/language";
+} from '../../utils/apiInvite';
+import { dictionary, LanguageContext } from '../../utils/language';
+
+import './PostModal.css';
 
 interface IProps {
   /* Only pass one of the parameters according to the content type */
@@ -38,33 +37,33 @@ class InviteModal extends Component<IProps, IState> {
     super(props);
 
     this.subjectId = this.props.postId || this.props.talkId || -1;
-    this.subjectType = this.props.postId ? "post" : "talk";
+    this.subjectType = this.props.postId ? 'post' : 'talk';
     this.htmlId = `invite_${this.subjectType}_modal_${this.subjectId}`;
 
     this.state = {
-      afterInviteMessage: "",
+      afterInviteMessage: '',
       fetchingUninvitedSubs: true,
       fetchingUninvitedUsers: true,
-      inviteUserInput: "",
+      inviteUserInput: '',
       uninvitedSubscribersAmount: 0,
       uninvitedUsers: [
         {
-          first_name: "Rodrigo",
-          home_town: "Gaia",
+          first_name: 'Rodrigo',
+          home_town: 'Gaia',
           id: 1,
-          last_name: "Pinto",
-          university: "",
-          work: "surgeon",
-          work_field: "Cardiology"
+          last_name: 'Pinto',
+          university: '',
+          work: 'surgeon',
+          work_field: 'Cardiology'
         },
         {
-          first_name: "Joao",
-          home_town: "Porto",
+          first_name: 'Joao',
+          home_town: 'Porto',
           id: 1,
-          last_name: "Carlos",
-          university: "FEUP",
-          work: "",
-          work_field: ""
+          last_name: 'Carlos',
+          university: 'FEUP',
+          work: '',
+          work_field: ''
         }
       ],
       waitingSubscribersInvitation: false,
@@ -117,7 +116,7 @@ class InviteModal extends Component<IProps, IState> {
   }
 
   public handlerInviteUserInputChange(e) {
-    const noExtraWhiteSpace = e.target.value.replace(/\s+/g, " ");
+    const noExtraWhiteSpace = e.target.value.replace(/\s+/g, ' ');
     this.setState({ inviteUserInput: noExtraWhiteSpace });
   }
 
@@ -144,7 +143,7 @@ class InviteModal extends Component<IProps, IState> {
   }
 
   public async handleInviteUser() {
-    const names = this.state.inviteUserInput.trim().split(" ");
+    const names = this.state.inviteUserInput.trim().split(' ');
     const firstName = names[0];
     const lastName = names[1];
 
@@ -164,11 +163,11 @@ class InviteModal extends Component<IProps, IState> {
       );
 
       let afterInviteMessage =
-        dictionary.user[this.context] + " " + firstName + " " + lastName;
+        dictionary.user[this.context] + ' ' + firstName + ' ' + lastName;
       if (inviteSuccess) {
-        afterInviteMessage += " " + dictionary.invite_success[this.context];
+        afterInviteMessage += ' ' + dictionary.invite_success[this.context];
       } else {
-        afterInviteMessage += " " + dictionary.invite_error[this.context];
+        afterInviteMessage += ' ' + dictionary.invite_error[this.context];
       }
 
       this.setState({ afterInviteMessage });
@@ -182,9 +181,9 @@ class InviteModal extends Component<IProps, IState> {
       this.setState({
         afterInviteMessage:
           dictionary.invite_no_user[this.context] +
-          " " +
+          ' ' +
           firstName +
-          " " +
+          ' ' +
           lastName
       });
     }
@@ -232,16 +231,16 @@ class InviteModal extends Component<IProps, IState> {
       this.state.uninvitedSubscribersAmount > 0
         ? dictionary.invite_all_subs[this.context]
         : dictionary.invite_all_subs_done[this.context];
-    let invSubscribersDisclosure = "";
+    let invSubscribersDisclosure = '';
     if (this.state.waitingSubscribersInvitation) {
       invSubscribersText = dictionary.inviting_subs[this.context];
     } else if (this.state.uninvitedSubscribersAmount > 0) {
       invSubscribersDisclosure =
-        "(" +
+        '(' +
         this.state.uninvitedSubscribersAmount +
-        " " +
+        ' ' +
         dictionary.invite_without[this.context] +
-        ")";
+        ')';
     } else if (this.state.uninvitedSubscribersAmount < 0) {
       invSubscribersText = dictionary.invite_error_sub[this.context];
     }
@@ -299,7 +298,7 @@ class InviteModal extends Component<IProps, IState> {
                 {this.getInviteUserForm()}
               </div>
               <div className="row d-flex justify-content-center">
-                {this.state.afterInviteMessage !== "" &&
+                {this.state.afterInviteMessage !== '' &&
                   this.state.afterInviteMessage}
               </div>
             </div>

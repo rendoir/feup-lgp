@@ -1,16 +1,16 @@
-import { faRedo, faUndo } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import Croppie from "croppie";
-import "croppie/croppie.css";
-import React, { MouseEvent, PureComponent, ReactNode } from "react";
-import { fileToBase64 } from "../../utils/fileToBase64";
-import { dictionary, LanguageContext } from "../../utils/language";
-import { listen } from "../../utils/listen";
-import Button from "../Button/Button";
-import HotKeys from "../HotKeys/HotKeys";
-import Icon from "../Icon/Icon";
-import Range from "../Range/Range";
-import styles from "./ImageEdit.module.css";
+import { faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import Croppie from 'croppie';
+import 'croppie/croppie.css';
+import React, { MouseEvent, PureComponent, ReactNode } from 'react';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { dictionary, LanguageContext } from '../../utils/language';
+import { listen } from '../../utils/listen';
+import Button from '../Button/Button';
+import HotKeys from '../HotKeys/HotKeys';
+import Icon from '../Icon/Icon';
+import Range from '../Range/Range';
+import styles from './ImageEdit.module.css';
 
 type FooterRendererProps = {
   submit: () => any;
@@ -29,7 +29,7 @@ type ControlsRendererProps = {
 export type Props = {
   className?: string;
   image: File;
-  type: "circle" | "square";
+  type: 'circle' | 'square';
   size: number;
   height: number;
   maxZoom: number;
@@ -50,7 +50,7 @@ class ImageEdit extends PureComponent<Props, State> {
     height: 400,
     maxZoom: 2,
     size: 250,
-    type: "circle"
+    type: 'circle'
   };
   private croppieElement: HTMLElement | undefined | null;
   private croppie: Croppie | undefined | null;
@@ -120,7 +120,7 @@ class ImageEdit extends PureComponent<Props, State> {
       });
 
       this.listeners = [
-        listen(this.croppieElement, "update", this.handleCroppieUpdate, {
+        listen(this.croppieElement, 'update', this.handleCroppieUpdate, {
           capture: false,
           passive: true
         })
@@ -141,9 +141,9 @@ class ImageEdit extends PureComponent<Props, State> {
       this.croppie
         .result({
           circle: false,
-          format: "png",
-          size: "viewport",
-          type: "blob"
+          format: 'png',
+          size: 'viewport',
+          type: 'blob'
         })
         .then(blob => {
           this.props.onSubmit(
@@ -183,7 +183,7 @@ class ImageEdit extends PureComponent<Props, State> {
   };
 
   private handleHotKey = (hotKey: string, event: KeyboardEvent): void => {
-    if (hotKey === "Enter") {
+    if (hotKey === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
       this.handleSubmit();
@@ -218,11 +218,11 @@ class ImageEdit extends PureComponent<Props, State> {
 
     return (
       <div className={styles.controls}>
-        <a href={"#"} onClick={this.handleRotateLeft}>
-          <Icon icon={faUndo} className={styles.rotateLeft} size={"lg"} />
+        <a href={'#'} onClick={this.handleRotateLeft}>
+          <Icon icon={faUndo} className={styles.rotateLeft} size={'lg'} />
         </a>
-        <a href={"#"} onClick={this.handleRotateRight}>
-          <Icon icon={faRedo} className={styles.rotateRight} size={"lg"} />
+        <a href={'#'} onClick={this.handleRotateRight}>
+          <Icon icon={faRedo} className={styles.rotateRight} size={'lg'} />
         </a>
         <Range
           min={this.state.minZoom}
@@ -244,7 +244,7 @@ class ImageEdit extends PureComponent<Props, State> {
     return (
       <Button
         wide={true}
-        theme={"primary"}
+        theme={'primary'}
         rounded={false}
         onClick={this.handleSubmit}
       >

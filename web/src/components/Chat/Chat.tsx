@@ -1,14 +1,14 @@
-import * as React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import openSocket from "socket.io-client";
+import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import openSocket from 'socket.io-client';
 
-import Avatar from "../Avatar/Avatar";
-import stylesComments from "./../Post/Post.module.scss";
-import styles from "./Chat.module.css";
+import { getApiURL } from '../../utils/apiURL';
 
-import { getApiURL } from "../../utils/apiURL";
+import { dictionary, LanguageContext } from '../../utils/language';
 
-import { dictionary, LanguageContext } from "../../utils/language";
+import Avatar from '../Avatar/Avatar';
+import stylesComments from './../Post/Post.module.scss';
+import styles from './Chat.module.css';
 
 type Message = {
   id: number;
@@ -34,21 +34,21 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
 
   constructor(props: RouteComponentProps<any>) {
     super(props);
-    this.user = "Myself"; // TODO: Should be login name
+    this.user = 'Myself'; // TODO: Should be login name
     this.i = 0; // TODO DELETE
     this.ioNamespace = this.props.match.params.id;
 
     this.state = {
-      chatMessage: "",
+      chatMessage: '',
       messageList: []
     };
 
-    this.socketIo = openSocket(getApiURL(""));
-    this.socketIo.emit("groupConnect", this.ioNamespace); // guarantee namespace exists in backend
+    this.socketIo = openSocket(getApiURL(''));
+    this.socketIo.emit('groupConnect', this.ioNamespace); // guarantee namespace exists in backend
     setTimeout(() => {
       // leave enough time for backend to have created namespace
       const localSocketIo = openSocket(getApiURL(`/${this.ioNamespace}`));
-      localSocketIo.on("message", (msg: Message) => {
+      localSocketIo.on('message', (msg: Message) => {
         this._onNewMessage(msg);
       });
     }, 1500);
@@ -67,7 +67,7 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
 
   public scrollToBottom = () => {
     this.messagesEnd.parentNode.scroll({
-      behavior: "smooth",
+      behavior: 'smooth',
       left: 0,
       top: this.messagesEnd.offsetTop
     });
@@ -89,11 +89,11 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
         </div>
 
         <div className={styles.chat_body}>
-          <div className={stylesComments.post_comment + " w-100"}>
+          <div className={stylesComments.post_comment + ' w-100'}>
             {this.getMessages()}
           </div>
           <div
-            style={{ float: "left", clear: "both" }}
+            style={{ float: 'left', clear: 'both' }}
             ref={el => {
               this.messagesEnd = el;
             }}
@@ -118,17 +118,17 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
   private async onLiveChatSubmit(event: any) {
     event.preventDefault();
     const msg = {
-      date: "12:05 05/03/2019",
+      date: '12:05 05/03/2019',
       text: this.state.chatMessage,
       user: this.user
     };
     console.log(this.socketIo);
-    this.socketIo.emit("message", {
+    this.socketIo.emit('message', {
       msg,
       namespace: this.ioNamespace
     });
     this.setState({
-      chatMessage: ""
+      chatMessage: ''
     });
   }
 
@@ -144,8 +144,8 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
         key={msg.id}
         className={
           stylesComments.post_comment +
-          " w-75 mx-3 my-3 " +
-          (this.user === msg.user ? styles.right : "")
+          ' w-75 mx-3 my-3 ' +
+          (this.user === msg.user ? styles.right : '')
         }
       >
         <div className={stylesComments.comment_header}>
@@ -162,8 +162,8 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
             <div
               className={
                 stylesComments.comment_text +
-                " " +
-                (this.user === msg.user ? styles.glintt_bg : "")
+                ' ' +
+                (this.user === msg.user ? styles.glintt_bg : '')
               }
             >
               <p>
@@ -176,8 +176,8 @@ class Chat extends React.Component<RouteComponentProps<any>, State> {
             <div
               className={
                 styles.date +
-                " my-1 " +
-                (this.user === msg.user ? "ml-auto float-right mr-2" : "ml-3")
+                ' my-1 ' +
+                (this.user === msg.user ? 'ml-auto float-right mr-2' : 'ml-3')
               }
             >
               {msg.date}

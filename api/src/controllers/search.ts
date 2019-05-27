@@ -220,3 +220,19 @@ export async function search(req, res) {
         res.status(500).send('Search error');
     }
 }
+
+export async function searchUserByEmail(req, res) {
+    const email = `%${req.query.email}%`;
+    try {
+        const users = await query({
+            text: `SELECT id, (first_name || ' ' || last_name) as user_name
+                   FROM users
+                   WHERE email LIKE $1
+            `,
+            values: [email],
+        });
+        res.status(200).send({ users: users.rows });
+    } catch (e) {
+
+    }
+}

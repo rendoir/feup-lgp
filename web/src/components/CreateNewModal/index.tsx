@@ -1,10 +1,10 @@
-import { PeerInfo } from "../../utils/types";
-import createSelectorState from "./createSelectorState";
-import { ISelectorState, SelectorStateCreator } from "./types";
+import { PeerInfo } from '../../utils/types';
+import createSelectorState from './createSelectorState';
+import { SelectorStateCreator } from './types';
 
 function peerInfoToQueryString(info: PeerInfo): string {
   if (info.userName) {
-    return info.title + " " + info.userName;
+    return info.title + ' ' + info.userName;
   }
 
   return info.title;
@@ -12,4 +12,4 @@ function peerInfoToQueryString(info: PeerInfo): string {
 
 export const PeerInfoSelectorState: SelectorStateCreator<
   PeerInfo
-> = createSelectorState("PeerInfoSelectorState", peerInfoToQueryString, true);
+> = createSelectorState('PeerInfoSelectorState', peerInfoToQueryString, true);

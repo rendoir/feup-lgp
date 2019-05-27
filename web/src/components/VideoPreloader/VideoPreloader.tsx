@@ -1,10 +1,10 @@
-import { Component, ReactNode } from "react";
+import { Component, ReactNode } from 'react';
 
-export const STATE_PENDING = "pending";
-export const STATE_SUCCESS = "success";
-export const STATE_ERROR = "error";
+export const STATE_PENDING = 'pending';
+export const STATE_SUCCESS = 'success';
+export const STATE_ERROR = 'error';
 
-export type VideoState = "pending" | "success" | "error";
+export type VideoState = 'pending' | 'success' | 'error';
 
 export type State = {
   state: VideoState;
@@ -72,7 +72,7 @@ class VideoPreloader extends Component<Props, State> {
   public handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
-      const Video = document.createElement("iframe");
+      const Video = document.createElement('iframe');
 
       Video.onload = this.handleSuccess;
       Video.onerror = this.handleError;
@@ -98,7 +98,7 @@ class VideoPreloader extends Component<Props, State> {
 
   public handleVideoClear = (): void => {
     if (this.Video) {
-      this.Video.src = "";
+      this.Video.src = '';
       this.Video.onload = null;
       // @ts-ignore
       this.Video.onerror = null;

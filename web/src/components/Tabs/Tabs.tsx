@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-
-import classNames from "classnames";
-import Tab from "./Tab";
-import styles from "./Tabs.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import Tab from './Tab';
+import styles from './Tabs.module.css';
 
 export type TabVariant<T> = {
   id: T;

@@ -11,9 +11,9 @@
 export function getApiURL(route: string) {
   let apiURL = `${location.protocol}//${location.hostname}`;
   apiURL +=
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+    !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? `:${process.env.REACT_APP_API_PORT}`
-      : "/api";
+      : '/api';
   apiURL += route;
 
   return apiURL;

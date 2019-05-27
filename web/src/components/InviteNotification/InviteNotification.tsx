@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-
+import React, { Component } from 'react';
 // - Import utils
-import { apiInviteNotified } from "../../utils/apiInvite";
-import { apiSubscription } from "../../utils/apiSubscription";
-import { apiUserJoinTalk } from "../../utils/apiTalk";
-import { dictionary, LanguageContext } from "../../utils/language";
+import { apiInviteNotified } from '../../utils/apiInvite';
+import { apiSubscription } from '../../utils/apiSubscription';
+import { apiUserJoinTalk } from '../../utils/apiTalk';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 interface IProps {
   id: number;
@@ -37,13 +36,13 @@ class InviteNotification extends Component<IProps, IState> {
     let joinSuccess: boolean = true;
 
     // Joining posts is yet to be implemented
-    if (this.props.subjectType === "talk") {
+    if (this.props.subjectType === 'talk') {
       joinSuccess = await apiUserJoinTalk(this.props.subjectId);
-    } else if (this.props.subjectType === "post") {
+    } else if (this.props.subjectType === 'post') {
       try {
-        await apiSubscription("post", "post", this.props.subjectId);
+        await apiSubscription('post', 'post', this.props.subjectId);
       } catch (error) {
-        console.log("Failed to subscribe post through invite");
+        console.log('Failed to subscribe post through invite');
         joinSuccess = false;
       }
     }
@@ -72,10 +71,10 @@ class InviteNotification extends Component<IProps, IState> {
           <span
             className="far fa-check-square fa-2x"
             onClick={this.handleAcceptInvite}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
           >
             <p className="tooltipText">
-              {this.props.subjectType === "conference"
+              {this.props.subjectType === 'conference'
                 ? dictionary.join[this.context]
                 : dictionary.subscribe_action[this.context]}
             </p>
@@ -83,7 +82,7 @@ class InviteNotification extends Component<IProps, IState> {
           <span
             className="far fa-minus-square fa-2x"
             onClick={this.handleRejectInvite}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
           >
             <p>{dictionary.refuse[this.context]}</p>
           </span>

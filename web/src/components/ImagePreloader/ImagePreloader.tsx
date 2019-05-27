@@ -1,10 +1,10 @@
-import { Component, ReactNode } from "react";
+import { Component, ReactNode } from 'react';
 
-export const STATE_PENDING = "pending";
-export const STATE_SUCCESS = "success";
-export const STATE_ERROR = "error";
+export const STATE_PENDING = 'pending';
+export const STATE_SUCCESS = 'success';
+export const STATE_ERROR = 'error';
 
-export type ImageState = "pending" | "success" | "error";
+export type ImageState = 'pending' | 'success' | 'error';
 
 export type State = {
   state: ImageState;
@@ -76,7 +76,7 @@ class ImagePreloader extends Component<Props, State> {
   private handleStartFetch = (src: string): void => {
     this.handleStopFetch();
     this.requestId = requestAnimationFrame(() => {
-      const image = document.createElement("img");
+      const image = document.createElement('img');
 
       image.onload = this.handleSuccess;
       image.onerror = this.handleError;
@@ -101,7 +101,7 @@ class ImagePreloader extends Component<Props, State> {
 
   private handleImageClear = (): void => {
     if (this.image) {
-      this.image.src = "";
+      this.image.src = '';
       this.image.onload = null;
       // @ts-ignore
       this.image.onerror = null;
