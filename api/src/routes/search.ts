@@ -22,3 +22,18 @@ export const searchRouter = Router();
  *     }
  */
 searchRouter.get('/', controller.search);
+
+/**
+ * @api {get} /api/search/user/email Search user by matching email
+ * @apiName Search-User-Email
+ * @apiGroup Search
+ *
+ * @apiParam {String}   email       User email
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+searchRouter.get('/user/email', controller.searchUserByEmail);

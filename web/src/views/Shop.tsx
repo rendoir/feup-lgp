@@ -1,8 +1,8 @@
-import * as React from "react";
-import Button from "../components/Button/Button";
-import "../styles/Shop.css";
-import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
+import * as React from 'react';
+import Button from '../components/Button/Button';
+import '../styles/Shop.css';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
 
 class Shop extends React.Component {
   public static contextType = LanguageContext;
@@ -37,7 +37,7 @@ class Shop extends React.Component {
                     className="form-control btn btn-secondary my-2 my-sm-0 fas fa-search"
                     type="submit"
                   >
-                    {" "}
+                    {' '}
                   </button>
                 </form>
               </div>
@@ -56,13 +56,13 @@ class Shop extends React.Component {
                   data-slide-to="0"
                   className="active"
                 >
-                  {" "}
+                  {' '}
                 </li>
                 <li data-target="#carouselExampleIndicators" data-slide-to="1">
-                  {" "}
+                  {' '}
                 </li>
                 <li data-target="#carouselExampleIndicators" data-slide-to="2">
-                  {" "}
+                  {' '}
                 </li>
               </ol>
               <div className="carousel-inner" role="listbox">
@@ -94,12 +94,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -108,7 +108,7 @@ class Shop extends React.Component {
                     <h5>10 {dictionary.shop_points[this.context]}</h5>
                     <p className="card-text">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Amet numquam aspernatur!{" "}
+                      Amet numquam aspernatur!{' '}
                     </p>
                   </div>
                   <div className="card-footer">
@@ -129,12 +129,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -164,12 +164,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -199,12 +199,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -234,12 +234,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -269,12 +269,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -304,12 +304,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -339,12 +339,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -374,12 +374,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -409,12 +409,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -444,12 +444,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">
@@ -479,12 +479,12 @@ class Shop extends React.Component {
               <div className="col-lg-4 col-md-6 mb-4 blogBox moreBox">
                 <div className="card h-100">
                   <a href="#">
-                    {" "}
+                    {' '}
                     <img
                       className="card-img-top"
                       src="http://placehold.it/700x400"
                       alt=""
-                    />{" "}
+                    />{' '}
                   </a>
                   <div className="card-body">
                     <h4 className="card-title">

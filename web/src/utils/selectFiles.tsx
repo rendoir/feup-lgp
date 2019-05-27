@@ -3,8 +3,8 @@ export function selectFiles(
   multiple?: boolean,
   accept?: string
 ) {
-  const input = document.createElement("input");
-  input.type = "file";
+  const input = document.createElement('input');
+  input.type = 'file';
   input.multiple = Boolean(multiple);
   if (accept) {
     input.accept = accept;

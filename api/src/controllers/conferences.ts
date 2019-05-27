@@ -118,9 +118,9 @@ export function editConference(req, res) {
   }
   query({
     text: 'UPDATE conferences ' +
-          'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
-          'WHERE id = $1 ' +
-          'RETURNING id',
+      'SET (title, about, local, datestart, dateend) = ($2, $3, $4, $5, $6) ' +
+      'WHERE id = $1 ' +
+      'RETURNING id',
     values: [
       id,
       data.title,
@@ -143,7 +143,7 @@ export function editConference(req, res) {
 
 export async function getConference(req, res) {
   const id = req.params.id;
-  const user = 2;
+  const user = req.query.user;
   try {
     /**
      * talk must be owned by user
@@ -152,49 +152,54 @@ export async function getConference(req, res) {
      */
     const conference = await query({
       text: `
-              SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-              c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
-              FROM conferences c
-              INNER JOIN users a ON c.author = a.id
-              WHERE c.id = $1
-                AND (c.author = $2
-                    OR c.privacy = 'public'
-                    OR (c.privacy = 'followers'
-                        AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
-                    )
-                )
-            `,
+                SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
+                c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+                FROM conferences c
+                INNER JOIN users a ON c.author = a.id
+                WHERE c.id = $1
+                  AND (c.author = $2
+                      OR c.privacy = 'public'
+                      OR (c.privacy = 'followers'
+                          AND c.author IN (SELECT followed FROM follows WHERE follower = $2)
+                      )
+                  )
+              `,
       values: [id, user],
     });
-    if (conference === null) {
-      res.status(400).send(
-        new Error('Talk either does not exists or you do not have the required permissions'),
-      );
+    if (conference.rows.length === 0) {
+      res.status(400).send({
+        message: 'Talk either does not exists or you do not have the required permissions',
+      });
       return;
     }
     const talksResult = await query({
       text: `SELECT users.id AS user_id,
-                  t.id,
-                  t.author,
-                  t.avatar,
-                  t.privacy,
-                  t.title,
-                  t.about,
-                  t.local,
-                  t.dateStart,
-                  t.dateEnd
-          FROM talks t
-                  INNER JOIN users ON (users.id = t.author)
-          WHERE t.conference = $1
-          ORDER BY t.dateEnd
-          LIMIT 10 `,
-      values: [id],
+                    t.id,
+                    t.author,
+                    t.avatar,
+                    t.privacy,
+                    t.title,
+                    t.about,
+                    t.local,
+                    t.dateStart,
+                    t.dateEnd
+            FROM talks t
+                    INNER JOIN users ON (users.id = t.author)
+            WHERE t.conference = $1
+                  AND (t.author = $2
+                    OR (t.archived = FALSE
+                        AND t.hidden = FALSE
+                        AND (t.privacy = 'public'
+                              OR (t.privacy = 'followers'
+                                    AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                              )
+                        )
+                    )
+                )
+            ORDER BY t.dateEnd
+            LIMIT 10 `,
+      values: [id, user],
     });
-
-    if (talksResult == null) {
-      res.status(400).send(new Error(`Conference either does not exist or you do not have the required permissions.`));
-      return;
-    }
 
     const result = {
       conference: conference.rows[0],
@@ -205,6 +210,36 @@ export async function getConference(req, res) {
   } catch (error) {
     console.log(error);
     res.status(500).send(new Error('Error retrieving Conference'));
+  }
+}
+
+export async function getAllConferences(req, res) {
+  const user = req.query.user;
+  try {
+    const conferences = await query({
+      text: `
+              SELECT c.*, u.id as userid, (u.first_name || ' ' || u.last_name) as username
+              FROM conferences c
+              INNER JOIN users u ON c.author = u.id
+              WHERE
+                c.author = $1
+                OR c.privacy = 'public'
+                OR (
+                  c.privacy = 'followers'
+                  AND c.author IN (
+                    SELECT followed FROM follows WHERE follower = $1
+                  )
+                )
+              ORDER BY c.dateend
+            `,
+      values: [user],
+    });
+    res.send({
+      conferences: conferences.rows,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(new Error('Error retrieving Conferences'));
   }
 }
 

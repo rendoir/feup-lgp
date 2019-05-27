@@ -1,13 +1,13 @@
-import { AvatarPlaceholder } from "../../../utils/types";
+import { AvatarPlaceholder } from '../../../utils/types';
 
 const placeholders = [
-  "lblue",
-  "blue",
-  "purple",
-  "red",
-  "orange",
-  "yellow",
-  "green"
+  'lblue',
+  'blue',
+  'purple',
+  'red',
+  'orange',
+  'yellow',
+  'green'
 ];
 
 function getAvatarPlaceholder(id: number): AvatarPlaceholder {

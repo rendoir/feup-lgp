@@ -1,9 +1,9 @@
-import { List } from "immutable";
+import { List } from 'immutable';
 
 export type Filterable<T> = List<T>;
 
 function normalize(text: string) {
-  return text.toLowerCase().replace(/ë/g, "e");
+  return text.toLowerCase().replace(/ë/g, 'e');
 }
 
 export function filterByQuery<T>(

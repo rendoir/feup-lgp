@@ -1,7 +1,7 @@
 // @ts-ignore
-import createKeyHotKey from "key-event-to-string";
-import { Component, ReactNode } from "react";
-import { listen } from "../../utils/listen";
+import createKeyHotKey from 'key-event-to-string';
+import { Component, ReactNode } from 'react';
+import { listen } from '../../utils/listen';
 
 type Props = {
   children: ReactNode;
@@ -25,7 +25,7 @@ class HotKeys extends Component<Props> {
   public componentDidMount(): void {
     this.listener = listen(
       window,
-      "keydown",
+      'keydown',
       this.handleKeyDown as EventListener,
       {
         capture: true,

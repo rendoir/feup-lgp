@@ -1,11 +1,8 @@
 // - Import react components
-import React, { Component } from "react";
-
-// - Import styles
-import styles from "../Post/Post.module.css";
-
+import React, { Component } from 'react';
 // - Import app components
-import Post from "../Post/Post";
+// - Import styles
+import styles from '../Post/Post.module.css';
 
 type MyFile = {
   name: string;
@@ -41,16 +38,16 @@ class PostVideoCarousel extends Component<Props, State> {
     for (let i = 0; i < this.props.videos.length; i++) {
       items.push(
         <li
-          key={"li_" + this.props.id + "_" + i}
-          data-target={"#videoCarousel" + this.props.id}
+          key={'li_' + this.props.id + '_' + i}
+          data-target={'#videoCarousel' + this.props.id}
           data-slide-to={i}
-          className={i ? "" : "active"}
+          className={i ? '' : 'active'}
         />
       );
       videos.push(
         <div
-          key={"div_" + this.props.id + "_" + i}
-          className={"carousel-item " + (i ? "" : "active")}
+          key={'div_' + this.props.id + '_' + i}
+          className={'carousel-item ' + (i ? '' : 'active')}
         >
           <div className={styles.post_content_media}>
             <video src={this.props.videos[i].src} controls={true} />
@@ -61,8 +58,8 @@ class PostVideoCarousel extends Component<Props, State> {
 
     return (
       <div
-        id={"videoCarousel" + this.props.id}
-        className={"carousel slide " + styles.post_video_carousel}
+        id={'videoCarousel' + this.props.id}
+        className={'carousel slide ' + styles.post_video_carousel}
         data-ride="carousel"
         data-interval="false"
       >
@@ -70,7 +67,7 @@ class PostVideoCarousel extends Component<Props, State> {
         <div className="carousel-inner">{videos}</div>
         <a
           className="carousel-control-prev"
-          href={"#videoCarousel" + this.props.id}
+          href={'#videoCarousel' + this.props.id}
           role="button"
           data-slide="prev"
         >
@@ -79,7 +76,7 @@ class PostVideoCarousel extends Component<Props, State> {
         </a>
         <a
           className="carousel-control-next"
-          href={"#videoCarousel" + this.props.id}
+          href={'#videoCarousel' + this.props.id}
           role="button"
           data-slide="next"
         >

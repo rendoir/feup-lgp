@@ -72,7 +72,7 @@ export async function getUser(req, res) {
     const id = req.params.id;
     try {
         const user = await query({
-            text: `SELECT avatar, first_name, last_name, email, bio, home_town, university, work, work_field
+            text: `SELECT id, avatar, first_name, last_name, email, bio, home_town, university, work, work_field
                     FROM users
                     WHERE id = $1
                     `,

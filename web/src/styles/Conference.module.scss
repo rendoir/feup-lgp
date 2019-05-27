@@ -1,0 +1,15 @@
+@import './variables';
+@import './functions';
+
+.header {
+  background-color: tint($color-primary, 50%);
+}
+
+.border {
+  border-color: $color-primary;
+  height: 100%;
+}
+
+.link {
+  color: $color-primary;
+}

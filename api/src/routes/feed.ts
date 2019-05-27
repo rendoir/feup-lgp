@@ -21,8 +21,8 @@ export const feedRouter = Router();
 feedRouter.get('/', controller.getFeed);
 
 /**
- * @api {get} /api/feed/get_stuff Get feed stuff
- * @apiName Get-Feed-Stuff
+ * @api {get} /api/feed/posts Get feed posts
+ * @apiName Get-Feed-Posts
  * @apiGroup Feed
  *
  * @apiParam {number}   userId       ID of the logged user
@@ -33,4 +33,4 @@ feedRouter.get('/', controller.getFeed);
  *      message: 'Error getting the feed stuff'
  *     }
  */
-feedRouter.get('/get_stuff', controller.getFeedStuff);
+feedRouter.get('/posts', controller.getPosts);

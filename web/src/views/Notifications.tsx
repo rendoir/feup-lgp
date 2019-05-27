@@ -1,12 +1,11 @@
-import React, { Component } from "react";
-
-import "../styles/Notifications.css";
-
+import React, { Component } from 'react';
 // - Import utils
-import InviteNotification from "../components/InviteNotification/InviteNotification";
-import { apiGetNotifications } from "../utils/apiInvite";
-import { dictionary, LanguageContext } from "../utils/language";
-import withAuth from "../utils/withAuth";
+import InviteNotification from '../components/InviteNotification/InviteNotification';
+
+import '../styles/Notifications.css';
+import { apiGetNotifications } from '../utils/apiInvite';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
 
 interface IState {
   fetchingNotifications: boolean;

@@ -108,23 +108,24 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
 
   public render() {
     return (
-      <Navbar
-        collapseOnSelect={true}
-        className={styles.container}
-        expand={'lg'}
-        variant={'dark'}
-        sticky={'top'}
-      >
-        {this.renderBrand()}
-        <Navbar.Toggle aria-controls={'navbar-nav'} />
-        <Navbar.Collapse id={'navbar-nav'}>
-          {this.auth.loggedIn() && this.renderLinks()}
-          {this.auth.loggedIn() && <SearchSimpleForm />}
-          {this.renderLanguageSelector()}
-          {this.renderInvite()}
-          {this.auth.loggedIn() && this.renderButtons()}
-        </Navbar.Collapse>
-      </Navbar>
+      <div className={styles.container}>
+        <Navbar
+          collapseOnSelect={true}
+          className={styles.wrapper}
+          expand={'lg'}
+          variant={'dark'}
+        >
+          {this.renderBrand()}
+          <Navbar.Toggle aria-controls={'navbar-nav'} />
+          <Navbar.Collapse id={'navbar-nav'}>
+            {this.auth.loggedIn() && this.renderLinks()}
+            {this.auth.loggedIn() && <SearchSimpleForm />}
+            {this.renderLanguageSelector()}
+            {this.renderInvite()}
+            {this.auth.loggedIn() && this.renderButtons()}
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
     );
   }
 
@@ -167,8 +168,8 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   private renderLinks() {
     return (
       <Nav className={'mr-auto'}>
-        <Nav.Link href={'/'} className={styles.link}>
-          {dictionary.home[this.context]}
+        <Nav.Link href={'/conferences'} className={styles.link}>
+          {dictionary.conferences[this.context]}
         </Nav.Link>
         <Nav.Link href={'/shop'} className={styles.link}>
           {dictionary.shop[this.context]}

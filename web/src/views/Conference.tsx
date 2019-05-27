@@ -1,11 +1,12 @@
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
 import { Avatar, Button, Icon, InputNext, Select } from '../components';
 
-import styles from '../components/CreateNewModal/CreateNewModal.module.css';
 import Switcher from '../components/Switcher/Switcher';
+import styles from '../styles/Feed.module.css';
 // - Import utils
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -29,6 +30,7 @@ type State = {
   dateEnd: string;
   isHidden: boolean;
   privacy: string;
+  points: number;
   postModalOpen: boolean;
   request: {
     title: string;
@@ -60,7 +62,7 @@ type State = {
 class Conference extends PureComponent<Props, State> {
   public static contextType = LanguageContext;
 
-  private id: number;
+  private readonly id: number;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
   private readonly dateOptions: object;
@@ -115,6 +117,7 @@ class Conference extends PureComponent<Props, State> {
       },
       isHidden: false,
       place: '',
+      points: 0,
       postModalOpen: false,
       privacy: '',
       request: {
@@ -132,13 +135,17 @@ class Conference extends PureComponent<Props, State> {
     };
   }
 
-  public componentWillMount() {
+  public componentDidMount() {
     this.getConference();
   }
 
   public getConference() {
     axiosInstance
-      .get(`/conference/${this.id}`)
+      .get(`/conference/${this.id}`, {
+        params: {
+          user: this.props.user.id
+        }
+      })
       .then(res => {
         const conference = res.data.conference;
         this.ownerId = conference.user_id;
@@ -163,7 +170,7 @@ class Conference extends PureComponent<Props, State> {
           title: conference.title
         });
       })
-      .catch(() => console.log('Failed to get conference info'));
+      .catch(error => console.log(error.response.data.message));
   }
 
   public render() {
@@ -188,15 +195,39 @@ class Conference extends PureComponent<Props, State> {
       );
     } else {
       return (
-        <div id="Conference" className="container-fluid w-100 my-5">
+        <div id="Conference" className="container-fluid w-100 mt-3">
+          <div>{this.renderBreadcrumb()}</div>
           <div className={'d-flex flex-row flex-wrap'}>
-            <div className={'col-lg-4 mb-3'}>{this.renderConferenceCard()}</div>
+            <div className={'col-lg-4 mb-3'}>
+              {this.renderConferenceCard()}
+              {this.renderStoreCard()}
+            </div>
             <div className={'col-lg-8'}>{this.renderTalks()}</div>
           </div>
         </div>
       );
     }
   }
+
+  private renderBreadcrumb = () => {
+    return (
+      <nav aria-label={'breadcrumb'} className={'col-lg-12'}>
+        <ol className={classNames('breadcrumb', styles.header)}>
+          <li className={'breadcrumb-item'}>
+            <a href={'/'} className={styles.breadcrumbLink}>
+              {dictionary.home[this.context]}
+            </a>
+          </li>
+          <li className={'breadcrumb-item'}>
+            <a href={'/conferences'} className={styles.breadcrumbLink}>
+              {dictionary.conferences[this.context]}
+            </a>
+          </li>
+          <li className={'breadcrumb-item active'}>{this.state.title}</li>
+        </ol>
+      </nav>
+    );
+  };
 
   private renderConferenceCard = () => {
     const dateStart = new Date(this.state.dateStart).toLocaleDateString(
@@ -209,8 +240,8 @@ class Conference extends PureComponent<Props, State> {
     );
 
     return (
-      <Card border={'light'}>
-        <Card.Header>
+      <Card className={classNames('mb-3', styles.border)}>
+        <Card.Header className={styles.header}>
           <div
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
@@ -218,7 +249,7 @@ class Conference extends PureComponent<Props, State> {
               <Avatar image={''} title={this.state.title} /> &nbsp;
               <strong>{this.state.title}</strong>
             </div>
-            {this.renderEditForm()}
+            {this.ownerId === this.props.user.id ? this.renderEditForm() : null}
           </div>
         </Card.Header>
         <Card.Body>
@@ -244,6 +275,35 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
+  private renderStoreCard = () => {
+    return (
+      <Card>
+        <Card.Header
+          className={classNames(
+            'd-flex flex-row justify-content-between align-items-center',
+            styles.header
+          )}
+        >
+          <Card.Title className={'mb-0'}>
+            {dictionary.conference_shop[this.context]}
+          </Card.Title>
+          <Card.Title className={'mb-0'}>
+            {dictionary.points[this.context]}: {this.state.points}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>CAROUSEL WITH FEATURED PRODUCTS</Card.Body>
+        <Card.Footer>
+          <a
+            href={`/conference/${this.id}/shop`}
+            className={classNames('float-right', styles.link)}
+          >
+            + {dictionary.view_more[this.context]}
+          </a>
+        </Card.Footer>
+      </Card>
+    );
+  };
+
   private renderTalks = () => {
     this.state.talks.sort((a, b) => (a.dateend > b.dateend ? a : b));
 
@@ -255,7 +315,7 @@ class Conference extends PureComponent<Props, State> {
           }
         >
           <h2>{dictionary.talks[this.context]}</h2>
-          {this.renderTalkForm()}
+          {this.ownerId === this.props.user.id ? this.renderTalkForm() : null}
         </div>
         <hr />
         <div>
@@ -272,11 +332,12 @@ class Conference extends PureComponent<Props, State> {
                 style={{ textDecoration: 'none' }}
                 className={'text-dark'}
               >
-                <Card className={'mb-2'}>
+                <Card className={classNames('mb-2', styles.border)}>
                   <Card.Header
-                    className={
-                      'd-flex justify-content-between align-items-center flex-wrap'
-                    }
+                    className={classNames(
+                      'd-flex justify-content-between align-items-center flex-wrap',
+                      styles.header
+                    )}
                   >
                     <div>
                       <Card.Title

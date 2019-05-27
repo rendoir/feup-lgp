@@ -1,8 +1,8 @@
-import { faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import React from "react";
-import Icon from "../Icon/Icon";
-import styles from "./Modal.module.css";
+import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React from 'react';
+import Icon from '../Icon/Icon';
+import styles from './Modal.module.css';
 
 export type Props = {
   className?: string;
@@ -20,7 +20,7 @@ function ModalClose(props: Props) {
 
   return (
     <div id={props.id} className={className} onClick={props.onClick}>
-      <Icon icon={faTimes} className={styles.close} size={"2x"} />
+      <Icon icon={faTimes} className={styles.close} size={'2x'} />
     </div>
   );
 }
