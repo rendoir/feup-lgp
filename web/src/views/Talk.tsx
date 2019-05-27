@@ -2684,7 +2684,8 @@ class Talk extends PureComponent<Props, State> {
       .then(response => {
         axiosInstance
           .get(`/post/${response.data.post}`)
-          .then(post => {
+          .then(res => {
+            const post = res.data.post;
             let points = 0;
             for (const challenge of this.state.challenges) {
               if (
@@ -2698,10 +2699,25 @@ class Talk extends PureComponent<Props, State> {
               }
             }
 
+            post.comments = res.data.comments;
+            post.files = res.data.files;
+            post.tags = res.data.tags;
+
             this.setState({
               challenges: this.state.challenges,
+              postFields: {
+                description: '',
+                files: {
+                  documents: [],
+                  images: [],
+                  videos: []
+                },
+                tag: '',
+                tags: [],
+                title: ''
+              },
               postFormOpen: false,
-              posts: [post.data, ...this.state.posts],
+              posts: [post, ...this.state.posts],
               userPoints: Number(this.state.userPoints) + Number(points)
             });
           })
