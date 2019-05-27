@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import moment from 'moment';
 import React, { PureComponent } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -10,14 +11,29 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
+import openSocket from 'socket.io-client';
 import { Avatar } from '../components';
 import Post from '../components/Post/Post';
 import Switcher from '../components/Switcher/Switcher';
 import Tag from '../components/Tags/Tag';
 import styles from '../styles/Feed.module.css';
+import { getApiURL } from '../utils/apiURL';
 import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
+
+export type User = {
+  avatar: string | undefined;
+  id: number;
+  name: string;
+};
+
+export type Message = {
+  id: number;
+  user: User;
+  text: string;
+  date: string;
+};
 
 export type Props = {
   match: {
@@ -48,6 +64,10 @@ export type State = {
     userAnswer: string;
   };
   challengeFormOpen: boolean;
+  chatFields: {
+    message: string;
+    messageList: Message[];
+  };
   editFields: {
     title: string;
     dateEnd: string;
@@ -117,12 +137,15 @@ class Talk extends PureComponent<Props, State> {
   private readonly id: number;
   private readonly dateOptions: object;
   private readonly postDateOptions: object;
+  private readonly socketIo: SocketIOClient.Socket;
+  private readonly ioNamespace: number;
   private conferenceId: number | undefined;
   private conferenceTitle: string | undefined;
   private owner: boolean | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
   private privacy: string | undefined;
+  private user: User;
   private errorMessages: {
     answer: string;
     correctAnswer: string;
@@ -137,6 +160,7 @@ class Talk extends PureComponent<Props, State> {
     title: string;
   };
   private tags: any[];
+  private messageIndex: number;
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
@@ -171,8 +195,32 @@ class Talk extends PureComponent<Props, State> {
     };
     this.tags = [];
 
+    this.messageIndex = 0;
+    this.ioNamespace = this.id;
+    this.socketIo = openSocket(getApiURL(''));
+    this.socketIo.emit('groupConnect', this.ioNamespace);
+    setTimeout(() => {
+      const localSocketIo = openSocket(getApiURL(`/${this.ioNamespace}`));
+      localSocketIo.on('message', (msg: Message) => {
+        msg.id = ++this.messageIndex;
+        this.setState({
+          chatFields: {
+            ...this.state.chatFields,
+            messageList: [...this.state.chatFields.messageList, msg]
+          }
+        });
+      });
+    }, 1500);
+
+    this.user = {
+      avatar: undefined,
+      id: 0,
+      name: ''
+    };
+
     this.apiGetTalk = this.apiGetTalk.bind(this);
     this.apiGetSubs = this.apiGetSubs.bind(this);
+    this.apiGetUser = this.apiGetUser.bind(this);
 
     this.state = {
       archiveModalOpen: false,
@@ -194,6 +242,10 @@ class Talk extends PureComponent<Props, State> {
       },
       challengeFormOpen: false,
       challenges: [],
+      chatFields: {
+        message: '',
+        messageList: []
+      },
       editFields: {
         dateEnd: '',
         dateStart: '',
@@ -261,6 +313,7 @@ class Talk extends PureComponent<Props, State> {
 
   public async componentDidMount() {
     await this.apiGetTalk();
+    await this.apiGetUser();
     if (this.owner) {
       await this.apiGetSubs();
     }
@@ -303,6 +356,10 @@ class Talk extends PureComponent<Props, State> {
       </div>
     );
   }
+
+  /**
+   * Data requests
+   */
 
   private async apiGetTalk() {
     await axiosInstance
@@ -375,7 +432,23 @@ class Talk extends PureComponent<Props, State> {
       .catch(error => console.log(error.response.data.message));
   }
 
-  /* Components */
+  private async apiGetUser() {
+    await axiosInstance
+      .get(`/users/${this.auth.getUserPayload().id}`)
+      .then(res => {
+        const user = res.data.user;
+        this.user = {
+          avatar: user.avatar,
+          id: Number(user.id),
+          name: `${user.first_name} ${user.last_name}`
+        };
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
+
+  /**
+   * Components
+   */
 
   private renderJoinAlert = () => {
     return (
@@ -822,17 +895,109 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderChat = () => {
+    const handleChange = event =>
+      this.setState({
+        chatFields: {
+          ...this.state.chatFields,
+          message: event.target.value
+        }
+      });
+    const handleKeyUp = event => {
+      if (event.key === 'Enter') {
+        handleSubmit();
+      }
+    };
+    const handleSubmit = () => {
+      if (this.state.chatFields.message.length === 0) {
+        return;
+      }
+
+      const msg = {
+        date: new Date(),
+        text: this.state.chatFields.message,
+        user: this.user
+      };
+      this.socketIo.emit('message', {
+        msg,
+        namespace: this.ioNamespace
+      });
+      this.setState({
+        chatFields: {
+          ...this.state.chatFields,
+          message: ''
+        }
+      });
+    };
+
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header className={styles.header}>Chat</Card.Header>
-        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'} />
+        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'}>
+          {this.state.chatFields.messageList.map(msg => (
+            <div
+              key={msg.id}
+              className={
+                this.user.id === msg.user.id
+                  ? 'd-flex flex-row mb-2 justify-content-end'
+                  : 'd-flex flex-row mb-2 justify-content-start'
+              }
+            >
+              <div
+                className={
+                  this.user.id === msg.user.id
+                    ? 'order-last ml-2'
+                    : 'order-first mr-2'
+                }
+              >
+                <Avatar image={msg.user.avatar} title={msg.user.name} />
+              </div>
+              <div
+                className={
+                  this.user.id === msg.user.id ? 'order-fist' : 'order-last'
+                }
+              >
+                <p
+                  className={`
+                  d-flex text-muted flex-row text-capitalize
+                  ${
+                    this.user.id === msg.user.id
+                      ? 'justify-content-end'
+                      : 'justify-content-start'
+                  }
+                  `}
+                >
+                  {msg.user.name.toLowerCase()}
+                </p>
+                <Card
+                  className={
+                    this.user.id === msg.user.id ? styles.header : 'bg-light'
+                  }
+                >
+                  <Card.Body
+                    style={{ maxWidth: '22.5rem' }}
+                    className={'pb-1 pt-0'}
+                  >
+                    <Card.Text>{msg.text}</Card.Text>
+                  </Card.Body>
+                </Card>
+                <small className={'text-muted'}>
+                  {moment(msg.date).fromNow()}
+                </small>
+              </div>
+            </div>
+          ))}
+        </Card.Body>
         <Card.Footer className={'row m-0 p-1'}>
           <div className={'col-9 m-0 p-0'}>
             <textarea
               className={'w-100'}
               rows={3}
-              maxLength={300}
+              maxLength={250}
               minLength={1}
+              value={this.state.chatFields.message}
+              onChange={handleChange}
+              onKeyUp={handleKeyUp}
+              disabled={this.state.isHidden || this.state.isArchived}
             />
           </div>
           <div
@@ -841,6 +1006,7 @@ class Talk extends PureComponent<Props, State> {
             <Button
               className={classNames('w-100 h-50', styles.button)}
               disabled={this.state.isArchived || this.state.isHidden}
+              onClick={handleSubmit}
             >
               <i className={'fas fa-paper-plane mr-2'} />
               Send
@@ -851,7 +1017,9 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  /* Forms */
+  /**
+   * Forms
+   */
 
   private renderInviteForm = () => {
     const handleOpen = () => this.setState({ inviteModalOpen: true });
