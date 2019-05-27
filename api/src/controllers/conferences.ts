@@ -255,21 +255,29 @@ export async function saveAvatar(req, res) {
     }
   });
 }
+export async function getConferenceShop(req, res) {
+  res.send({
+    message: 'YOU INVOKED GETCONFERENCESHOP METHOD!',
+  });
+}
+export async function getProducts(req, res) {
+  shop.getProducts(req, res);
+}
 
 export async function getProduct(req, res) {
-  shop.getProduct(req, res, req.params.conf_id);
+  shop.getProduct(req, res);
 }
 
 export async function createProduct(req, res) {
-  shop.createProduct(req, res, req.params.conf_id);
+  shop.createProduct(req, res);
 }
 
 export async function updateProduct(req, res) {
-  shop.updateProduct(req, res, req.params.conf_id);
+  shop.updateProduct(req, res);
 }
 
 export async function deleteProduct(req, res) {
-  shop.deleteProduct(req, res, req.params.conf_id);
+  shop.deleteProduct(req, res);
 }
 
 export async function getAllConferences(req, res) {
@@ -300,10 +308,4 @@ export async function getAllConferences(req, res) {
     console.log(e);
     res.status(500).send(new Error('Error retrieving Conferences'));
   }
-}
-
-export async function getConferenceShop(req, res) {
-  res.send({
-    message: 'YOU INVOKED GETCONFERENCESHOP METHOD!',
-  });
 }

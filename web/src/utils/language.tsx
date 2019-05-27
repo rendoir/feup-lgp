@@ -235,6 +235,7 @@ export let dictionary: Dictionary = {
   search_users: { PT: 'Utilizadores', EN: 'Users' },
   shop_you_have: { PT: 'Tem', EN: 'You have' },
   shop_points: { PT: 'pontos', EN: 'points' },
+  shop_stock: { PT: 'Em stock: ', EN: 'In stock: ' },
   shop_search_points: { PT: 'Procurar produtos', EN: 'Search products' },
   shop_exchange: { PT: 'Trocar', EN: 'Exchange' },
   tag_placeholder: {
@@ -621,8 +622,41 @@ export let dictionary: Dictionary = {
     PT: 'Insira o email da pessoa que deseja convidar para a plataforma:',
     EN: 'Enter the email of the person you want to invite to the platform:'
   },
-  empty: { PT: '', EN: '' },
-  orderBy: { PT: 'Ordenar por', EN: 'Order by' }
+  orderBy: { PT: 'Ordenar por', EN: 'Order by' },
+  add_product: { PT: ' Adicionar produto', EN: ' Add product' },
+  edit_product: { PT: ' Editar produto', EN: ' Edit product' },
+  remove_product: { PT: ' Remover produto', EN: ' Remove product' },
+  insert_product_name: { PT: 'Nome do produto', EN: 'Product name' },
+  insert_product_points: { PT: 'Pontos do produto', EN: 'Product points' },
+  insert_product_stock: { PT: 'Stock do produto', EN: 'Product stock' },
+  insert_product_image: {
+    PT: 'Imagem do produto (URL em formato jpg/png)',
+    EN: 'Product image (URL in jpg/png format)'
+  },
+  confirm_delete_product: {
+    PT:
+      'Tem a certeza que deseja apagar este produto? Não será possível recuperá-lo.',
+    EN:
+      "Are you sure you want do delete this product? It can't be retrieved later."
+  },
+  product_error_message: {
+    PT: 'Produto inválido',
+    EN: 'Invalid product'
+  },
+  product_name_error_message: {
+    PT: 'Dê um nome ao produto',
+    EN: 'Give a name to the product'
+  },
+  product_points_error_message: {
+    PT:
+      'Introduza um número válido de pontos com que o produto deve ser vendido',
+    EN: 'Insert a valid number of points to sell the product'
+  },
+  product_stock_error_message: {
+    PT: 'Introduza uma quantidade válida em stock que o produto tem',
+    EN: 'Insert a valid stock quantity for the product'
+  },
+  empty: { PT: '', EN: '' }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

@@ -218,8 +218,9 @@ CREATE TABLE products (
     name TEXT NOT NULL,
     stock INT NOT NULL,
     points INT NOT NULL,
+    image TEXT,
     date_created TIMESTAMP DEFAULT NOW(),
-    conference BIGINT REFERENCES conferences ON DELETE CASCADE
+    conference BIGINT DEFAULT NULL REFERENCES conferences ON DELETE CASCADE
 );
 
 /**
@@ -498,8 +499,8 @@ INSERT INTO users_rates (evaluator, rate, target_user) VALUES (4, 2, 3);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (2, 3, 4);
 INSERT INTO users_rates (evaluator, rate, target_user) VALUES (3, 1, 4);
 
-INSERT INTO conferences(author, title, about, local, dateStart, dateEnd, privacy) VALUES (1, 'Musical Conference', 'This conference was made for music lovers', 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
-INSERT INTO conferences(author, title, about, local, dateStart, dateEnd, privacy) VALUES (1, 'Diverse Conference', 'This conference was made everything else', 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'public');
+INSERT INTO conferences(author, title, about, local, dateStart, dateEnd, privacy) VALUES (1, 'Musical Conference', 'This conference was made for music lovers', 'Porto', '2019-06-06T21:30', '2019-07-07T21:30', 'public');
+INSERT INTO conferences(author, title, about, local, dateStart, dateEnd, privacy) VALUES (1, 'Diverse Conference', 'This conference was made everything else', 'Porto', '2019-06-06T23:30', '2019-08-08T21:30', 'public');
 
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy, avatar) VALUES (1, 1, 'Chill Music', 'This talk was created by an admin that likes chill music', 'https://www.youtube.com/embed/hHW1oY26kxQ' , 'Porto', '2019-05-05T21:30', '2019-05-08T21:30', 'public', 'https://static1.squarespace.com/static/57e7d4db44024351976cbf08/t/5b0714d12b6a28312911c518/1527190744736/music-200x200.png?format=300w');
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy, avatar) VALUES (2, 1, 'Nasa Talk', 'This talk was created by a user that likes Nasa', 'https://www.youtube.com/embed/4993sBLAzGA' , 'Porto', '2019-05-06T21:30', '2019-05-10T21:30', 'public', 'http://lofrev.net/wp-content/photos/2014/09/Nasa-icon-e1410677250198.jpg');
@@ -843,3 +844,16 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, question, answers, talk) VALUES ('Challenge Options 1','This is a multiple choice question challenge!','2019-05-05 23:00','2019-05-05 23:59',10,'question_options','What is the title of this conference?','{"CorrectAnswer: User talk 2", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}', 3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, post, talk) VALUES ('Challenge Comment Post 1','Comment on the owner post to win a lot of points!','2019-05-05 23:00','2019-05-05 23:59',10,'comment_post',25,3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, talk) VALUES ('Challenge Create Post 1', 'Create a Post in this talk where you explain why it is so important for you!','2019-05-05 23:00','2019-05-05 23:59',10,'create_post',3);
+
+/**
+* PRODUCTS
+*/
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 1', 31, 30, '2019-05-05 23:00', 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 2', 42, 40, '2019-05-09 23:00', 'https://a2.vnda.com.br/1200x/pedeapoio/2019/02/28/20196-estetoscopio-littmann-master-cardiology-brass-finish-ref-2175-1781.jpg?1551371775');
+INSERT INTO products (name, stock, points, date_created) VALUES ('Product 3', 3, 100, '2019-05-23 22:00');
+INSERT INTO products (name, stock, points, date_created) VALUES ('Product 4', 1, 300, '2019-05-15 23:00');
+INSERT INTO products (name, stock, points, date_created, image) VALUES ('Product 5', 12, 95, '2019-04-20 23:00', 'https://cdn.shopify.com/s/files/1/1217/7182/products/product-image-153801932_752ae95c-0406-41c7-b4c8-3a65b4494e24_800x.jpg?v=1549070825');
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 6', 40, 4, '2019-04-20 23:00', 1, 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');
+INSERT INTO products (name, stock, points, date_created, conference) VALUES ('Product 7', 5, 255, '2019-05-20 23:00', 1);
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 8', 4, 53, '2019-05-02 23:00', 1, 'https://cdn.shopify.com/s/files/1/1217/7182/products/product-image-153801932_752ae95c-0406-41c7-b4c8-3a65b4494e24_800x.jpg?v=1549070825');
+INSERT INTO products (name, stock, points, date_created, conference, image) VALUES ('Product 9', 12, 44, '2019-04-07 23:00', 2, 'https://images-na.ssl-images-amazon.com/images/I/51CVAV6ZGkL._SL1000_.jpg');

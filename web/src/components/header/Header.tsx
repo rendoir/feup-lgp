@@ -24,6 +24,7 @@ import styles from './Header.module.css';
 
 import { apiGetNotificationsAmount } from '../../utils/apiInvite';
 import { apiGetReportNotificationsAmount } from '../../utils/apiReport';
+import { getApiURL } from '../../utils/apiURL';
 
 type Props = {
   title: string;
@@ -241,6 +242,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
             {dictionary.profile[this.context]}
           </NavDropdown.Item>
+          {this.renderAdminDropdown()}
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={this.onClickLogout}>
             {dictionary.logout[this.context]}
@@ -262,6 +264,26 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         ) : null}
       </Nav>
     );
+  }
+
+  private renderAdminDropdown() {
+    let isAdmin = false;
+
+    axiosInstance
+      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .then(res => {
+        isAdmin = res.data;
+        if (isAdmin) {
+          return (
+            <div>
+              <NavDropdown.Item href="/admin">
+                {dictionary.admin_area[this.context]}
+              </NavDropdown.Item>
+            </div>
+          );
+        }
+      })
+      .catch(error => console.log('Failed to check if isAdmin. ' + error));
   }
 
   private onClickLogout = (event: any) => {
