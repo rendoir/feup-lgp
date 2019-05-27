@@ -53,8 +53,8 @@ export function createTalk(req, res) {
   const userId = req.user.id;
 
   query({
-    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference, hidden) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id',
     values: [
       userId,
       req.body.title,
@@ -64,8 +64,9 @@ export function createTalk(req, res) {
       req.body.dateStart,
       req.body.dateEnd,
       req.body.avatar,
-      'closed',
+      req.body.privacy,
       req.body.conference,
+      true,
     ],
   }).then((result) => {
     res.send({
