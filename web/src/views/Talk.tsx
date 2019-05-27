@@ -271,26 +271,28 @@ class Talk extends PureComponent<Props, State> {
       <div className={'container-fluid mt-3 col-lg-12'}>
         <div className={'row'}>{this.renderBreadcrumb()}</div>
         <div className={'row'}>
-          <div className={'col-lg-3'}>
+          <div className={'col-lg-3 order-lg-1'}>
             {this.renderInfoCard()}
             {this.owner ? this.renderAdminCard() : null}
             {!this.state.errorFetching ? this.renderChallengesCard() : null}
           </div>
-          <div className={'col-lg-9'}>
+          <div className={'col-lg-9 order-lg-2'}>
             {this.state.errorFetching ? (
               this.renderErrorFetchingAlert()
-            ) : this.state.joined ? (
+            ) : this.state.joined || this.owner ? (
               <div className={'row'}>
                 {this.state.inviteFields.error ||
                 this.state.inviteFields.success ? (
                   <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
                 ) : null}
-                <div className={'col-lg-7'}>{this.renderPosts()}</div>
-                <div className={'col-lg-5'}>
+                <div className={'col-lg-5 order-lg-2'}>
                   {this.state.talk.hasLivestream
                     ? this.renderLivestream()
                     : null}
                   {this.renderChat()}
+                </div>
+                <div className={'col-lg-7 order-lg-1'}>
+                  {this.renderPosts()}
                 </div>
               </div>
             ) : (
