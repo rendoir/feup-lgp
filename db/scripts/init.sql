@@ -498,15 +498,12 @@ INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateS
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (3, 2, 'Titulo 2', 'This is a followers or invite only talk (visibility: followers)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'followers');
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (4, 2, 'Titulo 3', 'This is an invite only talk (visibility: private)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'private');
 
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 1, 'admin');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 1, 'moderator');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 1, 'user');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 2, 'moderator');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 2, 'admin');
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 2, 'user');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 3, 'admin');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 3, 'user');
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 3, 'moderator');
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2018-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user 3', 'public', '2018-12-03');
