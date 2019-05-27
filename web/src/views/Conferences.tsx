@@ -45,7 +45,7 @@ class Conferences extends PureComponent<Props, State> {
     };
   }
 
-  public componentWillMount(): void {
+  public componentDidMount(): void {
     this.getConferences();
   }
 
