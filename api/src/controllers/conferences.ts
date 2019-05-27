@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { query } from '../db/db';
+import * as shop from './shop';
 
 export function createConference(req, res) {
   if (!req.body.title.trim()) {
@@ -249,4 +250,20 @@ export async function saveAvatar(req, res) {
       });
     }
   });
+}
+
+export async function getProduct(req, res) {
+  shop.getProduct(req, res, req.params.conf_id);
+}
+
+export async function createProduct(req, res) {
+  shop.createProduct(req, res, req.params.conf_id);
+}
+
+export async function updateProduct(req, res) {
+  shop.updateProduct(req, res, req.params.conf_id);
+}
+
+export async function deleteProduct(req, res) {
+  shop.deleteProduct(req, res, req.params.conf_id);
 }

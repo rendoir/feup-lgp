@@ -207,7 +207,7 @@ talkRouter.get('/:id/check_user_access', controller.checkUserCanJoin);
  *      message: 'An error message here'
  *     }
  */
-talkRouter.get('/:id', controller.gettalk);
+talkRouter.get('/:id', controller.getTalk);
 
 /**
  * @api {post} /api/talk/:id/change_privacy Change the privacy of a talk

@@ -59,12 +59,11 @@ export async function getFeed(req, res) {
         });
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                            a.first_name, a.last_name, a.id AS author_id
                         FROM posts p
-                        LEFT JOIN comments c
-                        ON p.id = c.post
-                        INNER JOIN users a
-                        ON c.author = a.id
+                            LEFT JOIN comments c ON (p.id = c.post)
+                            INNER JOIN users a ON (c.author = a.id)
                         WHERE
                             p.id = $1
                         ORDER BY c.date_updated ASC`,

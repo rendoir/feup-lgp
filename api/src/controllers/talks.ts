@@ -157,7 +157,7 @@ export function editTalk(req, res) {
 }
 
 export async function inviteUser(req, res) {
-  if (!await loggedUserOwnstalk(req.params.id)) {
+  if (!await loggedUserOwnsTalk(req.params.id)) {
     console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
     res.status(400).send({ message: 'An error ocurred while inviting user: You are not the talk owner.' });
     return;
@@ -175,7 +175,7 @@ export async function inviteUser(req, res) {
 }
 
 export async function inviteSubscribers(req, res) {
-  if (!await loggedUserOwnstalk(req.params.id)) {
+  if (!await loggedUserOwnsTalk(req.params.id)) {
     console.log('\n\nERROR: You cannot invite users to a talk if you are not the owner');
     res.status(400).send({ message: 'An error ocurred while inviting subscribers: You are not the talk owner.' });
     return;
@@ -197,7 +197,7 @@ export async function inviteSubscribers(req, res) {
 }
 
 export async function amountSubscribersUninvited(req, res) {
-  if (!await loggedUserOwnstalk(req.params.id)) {
+  if (!await loggedUserOwnsTalk(req.params.id)) {
     console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to your talk');
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the talk owner.' });
     return;
@@ -216,7 +216,7 @@ export async function amountSubscribersUninvited(req, res) {
 }
 
 export async function getUninvitedUsersInfo(req, res) {
-  if (!await loggedUserOwnstalk(req.params.id)) {
+  if (!await loggedUserOwnsTalk(req.params.id)) {
     console.log('\n\nERROR: You cannot retrieve the amount of uninvited subscribers to a talk that is not yours');
     res.status(400).send({ message: 'An error ocurred fetching amount of uninvited subscribers: You are not the talk owner.' });
     return;
@@ -238,7 +238,7 @@ export async function getUninvitedUsersInfo(req, res) {
 }
 
 export function addParticipantUser(req, res) {
-  const userId = req.user.id; // logged user
+  const userId = req.user.id;
   query({
       text: `INSERT INTO talk_participants (participant_user, talk) VALUES ($1, $2)`,
       values: [userId, req.params.id],
@@ -251,7 +251,7 @@ export function addParticipantUser(req, res) {
 }
 
 export function removeParticipantUser(req, res) {
-  const userId = req.user.id; // logged user
+  const userId = req.user.id;
   query({
       text: `DELETE FROM talk_participants WHERE participant_user = $1 AND talk = $2`,
       values: [userId, req.params.id],
@@ -264,7 +264,7 @@ export function removeParticipantUser(req, res) {
 }
 
 export async function checkUserParticipation(req, res) {
-  const userId = req.user.id; // logged user
+  const userId = req.user.id;
   try {
       const userParticipantQuery = await query({
           text: `SELECT *
@@ -280,7 +280,7 @@ export async function checkUserParticipation(req, res) {
 }
 
 export async function checkUserCanJoin(req, res) {
-  const userId = req.user.id; // logged user
+  const userId = req.user.id;
   try {
       const userCanJoinQuery = await query({
           text: `SELECT * FROM user_can_join_talk($1, $2)`,
@@ -294,7 +294,7 @@ export async function checkUserCanJoin(req, res) {
   }
 }
 
-async function loggedUserOwnstalk(talkId): Promise<boolean> {
+async function loggedUserOwnsTalk(talkId): Promise<boolean> {
   const loggedUser = 3;
   try {
     const userOwnstalkQuery = await query({
@@ -308,7 +308,7 @@ async function loggedUserOwnstalk(talkId): Promise<boolean> {
   }
 }
 
-export async function gettalk(req, res) {
+export async function getTalk(req, res) {
   const id = req.params.id;
   const limit = req.query.perPage;
   const offset = req.query.offset;

@@ -109,6 +109,7 @@ async function userQuery(keywords: string[], limit: number, offset: number, init
                     (first_name ~* ($3)
                         OR last_name ~* ($3))
                     AND date_created >= (SELECT TO_TIMESTAMP($4)) AND date_created <= (SELECT TO_TIMESTAMP($5))
+                    AND id <> 1
                 LIMIT $1
                 OFFSET $2`,
         values: [limit, offset, queryKeywords, initialDate, finalDate],

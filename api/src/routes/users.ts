@@ -68,6 +68,25 @@ usersRouter.get('/:id', controller.getUser);
  */
 usersRouter.get('/:id/avatar/:filename', controller.getAvatar);
 
+/** 
+ * @api {get} /api/users/{id}/name Get user name
+ * @apiName User-Name
+ * @apiGroup Users
+ *
+ * @apiParam {id} id ID of the user.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error occurred while getting user name'
+ *     }
+ */
+usersRouter.get('/:id/name', controller.getUserName);
+
 /**
  * @api {post} /api/users/{id} Get user posts
  * @apiName Profile Posts
