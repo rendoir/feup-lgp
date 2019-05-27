@@ -92,6 +92,11 @@
 .correctAnswer {
 	background-color: tint($color-success, 90%);
 	border-color: $color-success;
+
+	&:hover {
+		background-color: tint($color-success, 70%) !important;
+		//color: $white;
+	}
 }
 
 .wrongAnswer {
@@ -99,7 +104,7 @@
 	border-color: $color-danger;
 
 	&:hover {
-		background-color: tint($color-danger, 30%) !important;
-		color: $white;
+		background-color: tint($color-danger, 70%) !important;
+		//color: $white;
 	}
 }

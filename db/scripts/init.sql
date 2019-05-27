@@ -210,6 +210,78 @@ CREATE TABLE user_challenge (
     PRIMARY KEY(challenged, challenge)
 );
 
+CREATE OR REPLACE FUNCTION update_challenge_posts() RETURNS trigger LANGUAGE plpgsql
+AS $$
+DECLARE
+    challengeId BIGINT;
+BEGIN
+    IF (EXISTS(
+            SELECT c.id
+            FROM challenges c
+            WHERE challengetype = 'create_post' AND
+                    c.talk = NEW.talk AND
+                    c.dateend::timestamp with time zone > NOW() AND
+                    c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+        )
+        ) THEN
+            SELECT c.id INTO challengeId
+            FROM challenges c
+            WHERE challengetype = 'create_post' AND
+                    c.talk = NEW.talk AND
+                    c.dateend::timestamp with time zone > NOW() AND
+                    c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+            ORDER BY c.id
+            LIMIT 1;
+
+            INSERT INTO user_challenge (challenged, challenge, answer, complete)
+            VALUES (NEW.author, challengeId, NULL, TRUE);
+    END IF;
+    RETURN NEW;
+END$$;
+
+CREATE TRIGGER update_challenge_posts
+AFTER INSERT ON posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_challenge_posts();
+
+create function update_challenge_comments() returns trigger language plpgsql
+as
+$$
+DECLARE
+    challengeId BIGINT;
+BEGIN
+    IF (EXISTS(
+            SELECT c.id
+            FROM challenges c
+            WHERE challengetype = 'comment_post' AND
+                    c.talk IN (SELECT p.talk FROM posts p WHERE p.id = NEW.post) AND
+                    c.post = NEW.post AND
+                    c.dateend::timestamp with time zone > NOW() AND
+                    c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+            )
+        ) THEN
+            SELECT c.id INTO challengeId
+            FROM challenges c
+            WHERE challengetype = 'comment_post' AND
+                    c.talk IN (SELECT p.talk FROM posts p WHERE p.id = NEW.post) AND
+                    c.post = NEW.post AND
+                    c.dateend::timestamp with time zone > NOW() AND
+                    c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+            ORDER BY c.id
+            LIMIT 1;
+
+            INSERT INTO user_challenge (challenged, challenge, answer, complete)
+            VALUES (NEW.author, challengeId, NULL, TRUE);
+    END IF;
+    RETURN NEW;
+END
+$$;
+
+CREATE TRIGGER update_challenge_comments
+    AFTER INSERT ON comments
+    FOR EACH ROW
+EXECUTE PROCEDURE update_challenge_comments();
+
 CREATE FUNCTION update_points_user() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN

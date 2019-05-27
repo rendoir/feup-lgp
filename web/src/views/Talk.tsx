@@ -32,16 +32,20 @@ export type State = {
   archiveModalOpen: boolean;
   challenges: any[];
   challengeFields: {
-    answer: string;
-    correctAnswer: string;
+    answer: string | undefined;
+    challengetype: 'question_options' | 'create_post' | 'comment_post';
+    correctAnswer: string | undefined;
     dateEnd: string;
     dateStart: string;
     description: string;
+    isComplete: boolean;
+    isCorrect: boolean;
     options: string[];
     points: number;
-    question: string;
+    post: string | undefined;
+    question: string | undefined;
     title: string;
-    type: 'MCQ' | 'POST' | 'CMT';
+    userAnswer: string;
   };
   challengeFormOpen: boolean;
   editFields: {
@@ -173,16 +177,20 @@ class Talk extends PureComponent<Props, State> {
     this.state = {
       archiveModalOpen: false,
       challengeFields: {
-        answer: '',
-        correctAnswer: '',
+        answer: undefined,
+        challengetype: 'question_options',
+        correctAnswer: undefined,
         dateEnd: '',
         dateStart: '',
         description: '',
+        isComplete: false,
+        isCorrect: false,
         options: [],
         points: 0,
-        question: '',
+        post: undefined,
+        question: undefined,
         title: '',
-        type: 'MCQ'
+        userAnswer: ''
       },
       challengeFormOpen: false,
       challenges: [],
@@ -589,131 +597,6 @@ class Talk extends PureComponent<Props, State> {
         className={classNames('carousel-control-prev-icon', styles.arrow)}
       />
     );
-    const handleType = type => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.challenge_type[this.context]}
-          </Card.Subtitle>
-          {type === 'question_options' ? 'Multiple Choice Question' : null}
-          {type === 'create_post' ? 'Create post' : null}
-          {type === 'comment_post' ? 'Comment on a post' : null}
-        </>
-      );
-    };
-    const handleClick = (challenge, userAnswer) => {
-      if (challenge.isComplete) {
-        return;
-      }
-      axiosInstance
-        .post(`/talk/${this.id}/challenge/solve`, {
-          author: this.auth.getUserPayload().id,
-          challenge: challenge.id,
-          challenge_answer: userAnswer,
-          completion: userAnswer === challenge.correctAnswer
-        })
-        .then(() => {
-          const challenges = this.state.challenges;
-          challenges.forEach(ch => {
-            if (ch.id === challenge.id) {
-              challenge.userAnswer = userAnswer;
-              challenge.isCorrect = userAnswer === challenge.correctAnswer;
-              challenge.isComplete = true;
-            }
-          });
-          this.setState({
-            challenges
-          });
-        })
-        .catch(error => console.log(error.response.data.message));
-    };
-    const handleMCQ = challenge => {
-      const itemClassName = option => {
-        if (challenge.isComplete) {
-          if (challenge.userAnswer === option) {
-            return challenge.isCorrect
-              ? classNames(styles.correctAnswer, 'mb-1')
-              : classNames(styles.wrongAnswer, 'mb-1');
-          }
-        }
-        return 'mb-1';
-      };
-
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.question[this.context]}
-          </Card.Subtitle>
-          {challenge.question}
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.options[this.context]}
-          </Card.Subtitle>
-          <ListGroup>
-            {challenge.options.map((option, index) => (
-              <ListGroup.Item
-                key={index}
-                action={!challenge.isComplete}
-                onClick={() => handleClick(challenge, option)}
-                className={itemClassName(option)}
-              >
-                {option}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </>
-      );
-    };
-    const handleCMT = challenge => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.post_to_com[this.context]}
-          </Card.Subtitle>
-          {this.state.posts.map(post => {
-            if (post.id === challenge.post) {
-              return (
-                <a href={`#${post.id}`} className={styles.link} key={post.id}>
-                  {post.title}
-                </a>
-              );
-            }
-          })}
-        </>
-      );
-    };
-    const handleChallenges = () => {
-      return this.state.challenges.map(challenge => {
-        return (
-          <Carousel.Item key={challenge.id}>
-            <Card
-              className={
-                challenge.challengetype !== 'question_options' &&
-                challenge.isComplete
-                  ? classNames('mr-5 ml-5', styles.correctAnswer)
-                  : 'mr-5 ml-5'
-              }
-              border={'light'}
-            >
-              <Card.Body>
-                <Card.Title>{challenge.title}</Card.Title>
-                <hr />
-                <Card.Subtitle className={'mb-2'}>
-                  {dictionary.description[this.context]}:
-                </Card.Subtitle>
-                {challenge.description}
-                {handleType(challenge.challengetype)}
-                {challenge.challengetype === 'question_options'
-                  ? handleMCQ(challenge)
-                  : null}
-                {challenge.challengetype === 'comment_post'
-                  ? handleCMT(challenge)
-                  : null}
-              </Card.Body>
-            </Card>
-          </Carousel.Item>
-        );
-      });
-    };
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
@@ -730,17 +613,146 @@ class Talk extends PureComponent<Props, State> {
             {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
-        <Card.Body className={'p-1'}>
+        <Card.Body className={'p-1'} style={{ height: '39rem' }}>
           {this.state.challenges.length > 0 ? (
             <Carousel
-              fade={true}
               indicators={false}
               controls={this.state.challenges.length > 1}
               nextIcon={nextIcon}
               prevIcon={prevIcon}
               interval={0}
+              className={'h-100'}
             >
-              {handleChallenges()}
+              {this.state.challenges.map(challenge => {
+                const cardBackgroundColor = challenge.isComplete
+                  ? challenge.isCorrect
+                    ? styles.correctAnswer
+                    : styles.wrongAnswer
+                  : undefined;
+                const challengeType = () => {
+                  if (challenge.challengetype === 'question_options') {
+                    return 'Multiple Choice Question';
+                  } else if (challenge.challengetype === 'create_post') {
+                    return 'Create post';
+                  } else {
+                    return 'Comment on a post';
+                  }
+                };
+                const handleClick = option => {
+                  if (challenge.isComplete) {
+                    return;
+                  }
+
+                  axiosInstance
+                    .post(`/talk/${this.id}/challenge/solve`, {
+                      author: this.auth.getUserPayload().id,
+                      challenge: challenge.id,
+                      challenge_answer: option,
+                      completion: option === challenge.correctAnswer
+                    })
+                    .then(() => {
+                      const challenges = this.state.challenges;
+                      challenges.forEach(ch => {
+                        if (ch.id === challenge.id) {
+                          challenge.userAnswer = option;
+                          challenge.isCorrect =
+                            option === challenge.correctAnswer;
+                          challenge.isComplete = true;
+                        }
+                      });
+                      this.setState({
+                        challenges
+                      });
+                      this.forceUpdate();
+                    })
+                    .catch(error => console.log(error.response.data.message));
+                };
+
+                return (
+                  <Carousel.Item key={challenge.id} className={'h-100'}>
+                    <Card border={'light'} className={'px-5 w-100'}>
+                      <Card.Header className={cardBackgroundColor}>
+                        <Card.Title className={'mb-0'}>
+                          {challenge.title}
+                        </Card.Title>
+                      </Card.Header>
+                      <Card.Body>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.description[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challenge.description}</p>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.challenge_type[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challengeType()}</p>
+                        {challenge.challengetype === 'comment_post' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              Post to comment
+                            </Card.Subtitle>
+                            {this.state.posts.map(post => {
+                              if (post.id === challenge.post) {
+                                return (
+                                  <a
+                                    href={`#${post.id}`}
+                                    className={classNames(styles.link, 'w-100')}
+                                  >
+                                    {post.title}
+                                  </a>
+                                );
+                              }
+                            })}
+                          </>
+                        ) : null}
+                        {challenge.challengetype === 'question_options' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              {dictionary.question[this.context]}
+                            </Card.Subtitle>
+                            <p className={'w-100 mb-3'}>{challenge.question}</p>
+                            <Card.Subtitle className={'w-100 mb-3'}>
+                              {dictionary.options[this.context]}
+                            </Card.Subtitle>
+                            <ListGroup variant={'flush'}>
+                              {challenge.options.map((option, index) => {
+                                const selected = challenge.isComplete
+                                  ? challenge.userAnswer === option
+                                    ? option === challenge.correctAnswer
+                                      ? styles.correctAnswer
+                                      : styles.wrongAnswer
+                                    : undefined
+                                  : undefined;
+
+                                return (
+                                  <ListGroup.Item
+                                    key={index}
+                                    className={selected}
+                                    onClick={() => handleClick(option)}
+                                  >
+                                    {option}
+                                  </ListGroup.Item>
+                                );
+                              })}
+                            </ListGroup>
+                          </>
+                        ) : null}
+                      </Card.Body>
+                      <Card.Footer
+                        className={
+                          'd-flex flex-row justify-content-between align-items-center'
+                        }
+                      >
+                        <Card.Subtitle className={'mt-0'}>
+                          {dictionary.points[this.context]}
+                        </Card.Subtitle>
+                        <div>{challenge.points}</div>
+                      </Card.Footer>
+                    </Card>
+                  </Carousel.Item>
+                );
+              })}
             </Carousel>
           ) : null}
         </Card.Body>
@@ -1064,22 +1076,27 @@ class Talk extends PureComponent<Props, State> {
       });
   };
 
-  /* TODO: finish and improve */
   private renderChallengeForm = () => {
     const handleOpen = () => this.setState({ challengeFormOpen: true });
     const handleClose = () => {
       this.setState({
         challengeFields: {
-          answer: '',
-          correctAnswer: '',
+          answer: undefined,
+          challengetype: 'question_options',
+          correctAnswer: undefined,
           dateEnd: '',
           dateStart: '',
           description: '',
+          isComplete: false,
+          isCorrect: false,
           options: [],
           points: 0,
-          question: '',
+          post: this.state.posts[0]
+            ? this.state.posts[0].id.toString()
+            : undefined,
+          question: undefined,
           title: '',
-          type: 'MCQ'
+          userAnswer: ''
         },
         challengeFormOpen: false,
         error: {
@@ -1121,7 +1138,7 @@ class Talk extends PureComponent<Props, State> {
     };
     const handleAddOptionsByKeyPress = event => {
       if (event.key === 'Enter') {
-        const answer = this.state.challengeFields.answer.trim();
+        const answer = this.state.challengeFields.answer!.trim();
         const options = this.state.challengeFields.options;
 
         if (options.length >= 5 || answer.length === 0) {
@@ -1142,7 +1159,7 @@ class Talk extends PureComponent<Props, State> {
       }
     };
     const handleAddOptionsByButtonPress = () => {
-      const answer = this.state.challengeFields.answer.trim();
+      const answer = this.state.challengeFields.answer!.trim();
       const options = this.state.challengeFields.options;
 
       if (options.length >= 5 || answer.length === 0) {
@@ -1385,8 +1402,8 @@ class Talk extends PureComponent<Props, State> {
             <Form.Control
               as={'select'}
               className={styles.border}
-              value={this.state.challengeFields.answer}
-              name={'answer'}
+              value={this.state.challengeFields.post}
+              name={'post'}
               onChange={handleChange}
             >
               {this.state.posts.map(post => {
@@ -1408,26 +1425,30 @@ class Talk extends PureComponent<Props, State> {
           <Form.Control
             as={'select'}
             className={styles.border}
-            value={this.state.challengeFields.type}
-            name={'type'}
+            value={this.state.challengeFields.challengetype}
+            name={'challengetype'}
             onChange={handleChange}
             required={true}
           >
-            <option value={'MCQ'}>
+            <option value={'question_options'}>
               {dictionary.mult_choice_question[this.context]}
             </option>
-            <option value={'POST'}>
+            <option value={'create_post'}>
               {dictionary.post_create[this.context]}
             </option>
-            <option value={'CMT'}>
+            <option value={'comment_post'}>
               {dictionary.comment_post[this.context]}
             </option>
           </Form.Control>
-          {this.state.challengeFields.type === 'MCQ' ? renderMCQFields() : null}
-          {this.state.challengeFields.type === 'POST'
+          {this.state.challengeFields.challengetype === 'question_options'
+            ? renderMCQFields()
+            : null}
+          {this.state.challengeFields.challengetype === 'create_post'
             ? renderPOSTFields()
             : null}
-          {this.state.challengeFields.type === 'CMT' ? renderCMTFields() : null}
+          {this.state.challengeFields.challengetype === 'comment_post'
+            ? renderCMTFields()
+            : null}
         </Form.Group>
       );
     };
@@ -1499,10 +1520,12 @@ class Talk extends PureComponent<Props, State> {
     const fields = this.state.challengeFields;
 
     Object.keys(fields).map(key => {
-      if (key !== 'options') {
-        fields[key] = fields[key].toString().trim();
-      } else {
-        fields[key] = fields[key].map(value => value.toString().trim());
+      if (fields[key]) {
+        if (key !== 'options') {
+          fields[key] = fields[key].toString().trim();
+        } else {
+          fields[key] = fields[key].map(value => value.toString().trim());
+        }
       }
     });
 
@@ -1578,7 +1601,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.dateEnd = '';
     }
-    if (fields.type === 'MCQ' && fields.question.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.question!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1596,7 +1622,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.question = '';
     }
-    if (fields.type === 'MCQ' && fields.options.length <= 1) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.options!.length <= 1
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1615,7 +1644,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.options = '';
     }
-    if (fields.type === 'MCQ' && fields.correctAnswer.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.correctAnswer!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1654,7 +1686,7 @@ class Talk extends PureComponent<Props, State> {
     }
 
     Object.entries(this.state.challengeFields).forEach(entry => {
-      if (entry[1].toString().length > 0) {
+      if (entry[1] && entry[1]!.toString().length > 0) {
         if (!this.validateInput(entry[0], entry[1])) {
           error = true;
         }
@@ -1666,19 +1698,21 @@ class Talk extends PureComponent<Props, State> {
     }
 
     const formData = new FormData();
-    formData.append('type', fields.type);
+    formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
     formData.append('dateEnd', fields.dateEnd);
     formData.append('dateStart', fields.dateStart);
     formData.append('points', fields.points.toString());
-    formData.append('question', fields.question);
-    formData.append('correctAnswer', fields.correctAnswer);
+    formData.append('question', fields.question!);
+    formData.append('correctAnswer', fields.correctAnswer!);
     fields.options.forEach((option, index) =>
       formData.append(`options[${index}]`, option)
     );
-    formData.append('post', fields.answer);
+    formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
+
+    console.log(fields);
 
     axiosInstance
       .post(`/talk/${this.id}/challenge/create`, formData, {
@@ -1690,19 +1724,27 @@ class Talk extends PureComponent<Props, State> {
         this.setState({
           challengeFields: {
             answer: '',
+            challengetype: 'question_options',
             correctAnswer: '',
             dateEnd: '',
             dateStart: '',
             description: '',
+            isComplete: false,
+            isCorrect: false,
             options: [],
             points: 0,
+            post: this.state.posts[0]
+              ? this.state.posts[0].id.toString()
+              : undefined,
             question: '',
             title: '',
-            type: 'MCQ'
+            userAnswer: ''
           },
           challengeFormOpen: false,
-          challenges: [...this.state.challenges, this.state.challengeFields]
+          challenges: [...this.state.challenges, fields]
         });
+
+        console.log(this.state.challenges);
       })
       .catch(err => console.log(err.response.data.message));
   };
@@ -2545,14 +2587,17 @@ class Talk extends PureComponent<Props, State> {
         message =
           'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters';
         break;
-      case 'type':
-        re = /^(MCQ|POST|CMT)$/;
-        message = "Invalid field. Type must be one of 'MCQ', 'POST', or 'CMT'";
+      case 'challengetype':
+        re = /^(question_options|create_post|comment_post)$/;
+        message =
+          "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'";
         break;
       case 'livestreamURL':
         re = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)*(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$|^$/;
         message = "Invalid field. Livestream's url must be an embed link";
         break;
+      default:
+        return true;
     }
 
     if (type === 'options' || type === 'tags') {
