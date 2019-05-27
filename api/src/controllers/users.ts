@@ -394,7 +394,6 @@ export async function getGeneralPoints(req, res) {
         text: `SELECT points from users WHERE id = $1`,
         values: [userId],
       });
-      console.log("GENERAL POINTS: ", pointsQuery.rows[0].points);
       res.status(200).send({ points: pointsQuery.rows[0].points });
     } catch (error) {
       console.error(error);
@@ -411,8 +410,6 @@ export async function getConferencePoints(req, res) {
         values: [userId, conferenceId],
       });
       const points = pointsQuery.rows[0] ? pointsQuery.rows[0].points : 0;
-      console.log("CONFERENCE: ", conferenceId);
-      console.log("POINTS: ", points);
       res.status(200).send({ points });
     } catch (error) {
       console.error(error);

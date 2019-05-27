@@ -45,12 +45,10 @@ class Product extends Component<Props, IState> {
   }
 
   public handleProductExchange() {
-    console.log('COMPPPPRRROU ', this.props.id);
     this.setState({
       exchangingProduct: true
     });
-    // TODO BACKEND: DIMINUIR STOCK, TIRAR PONTOS AO UTILIZADOR
-    // QUANDO A TROCA FOR BEM SUCEDIDA CHAMAR     this.props.updateUserPoints()
+
     const url = `/products/${this.props.id}/exchange`;
     axiosInstance
       .post(url, {
@@ -59,7 +57,6 @@ class Product extends Component<Props, IState> {
         }
       })
       .then(() => {
-        console.log('trocou produtos');
         this.props.updateUserPoints();
 
         const newStock = this.state.stock - 1;
@@ -68,7 +65,7 @@ class Product extends Component<Props, IState> {
           stock: newStock
         });
       })
-      .catch(error => console.log(error.response.data.message));
+      .catch(error => console.log(error));
   }
 
   public render() {

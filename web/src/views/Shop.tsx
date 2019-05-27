@@ -195,13 +195,12 @@ class Shop extends React.Component<Props, State> {
         }
       })
       .then(res => {
-        console.log('user tem pontos: ', res.data.points);
         this.setState({
           fetchingUserPoints: false,
           userPoints: res.data.points
         });
       })
-      .catch(error => console.log(error.response.data.message));
+      .catch(error => console.log(error));
   };
 
   private apiGetConfOwner = () => {

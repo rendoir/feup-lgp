@@ -185,13 +185,12 @@ class Conference extends PureComponent<Props, State> {
         }
       })
       .then(res => {
-        console.log('user tem pontos: ', res.data.points);
         this.setState({
           fetchingPoints: false,
           points: res.data.points
         });
       })
-      .catch(error => console.log(error.response.data.message));
+      .catch(error => console.log(error));
   }
 
   public render() {

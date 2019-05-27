@@ -109,7 +109,6 @@ export async function exchangeProduct(req, res) {
         text: `SELECT * FROM exchange_product($1, $2)`,
         values: [productId, userId],
     }).then((result) => {
-        console.log("TROCOU PRODUTO: ", productId);
         res.status(200).send();
     }).catch((error) => {
         console.log('\n\nERROR:', error);
