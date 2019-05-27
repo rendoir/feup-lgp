@@ -220,6 +220,102 @@ CREATE TABLE products (
     conference BIGINT DEFAULT NULL REFERENCES conferences ON DELETE CASCADE
 );
 
+/**
+*
+*   TRIGGERS
+*
+*/
+
+/* Update user_challenge when user creates a new post on a talk */
+CREATE OR REPLACE FUNCTION update_challenge_posts() RETURNS trigger LANGUAGE plpgsql
+AS $$
+    DECLARE
+        challengeId BIGINT;
+    BEGIN
+        IF (EXISTS(
+                SELECT c.id
+                FROM challenges c
+                WHERE challengetype = 'create_post' AND
+                        c.talk = NEW.talk AND
+                        c.dateend::timestamp with time zone > NOW() AND
+                        c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+            )
+            ) THEN
+                SELECT c.id INTO challengeId
+                FROM challenges c
+                WHERE challengetype = 'create_post' AND
+                        c.talk = NEW.talk AND
+                        c.dateend::timestamp with time zone > NOW() AND
+                        c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+                ORDER BY c.id
+                LIMIT 1;
+
+                INSERT INTO user_challenge (challenged, challenge, answer, complete)
+                VALUES (NEW.author, challengeId, NULL, TRUE);
+        END IF;
+        RETURN NEW;
+    END
+    $$;
+
+CREATE TRIGGER update_challenge_posts
+AFTER INSERT ON posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_challenge_posts();
+
+/* Update user_challenge when user creates a new comment on a post of a talk */
+CREATE FUNCTION update_challenge_comments() RETURNS trigger LANGUAGE plpgsql
+AS $$
+    DECLARE
+        challengeId BIGINT;
+    BEGIN
+        IF (EXISTS(
+                SELECT c.id
+                FROM challenges c
+                WHERE challengetype = 'comment_post' AND
+                        c.talk IN (SELECT p.talk FROM posts p WHERE p.id = NEW.post) AND
+                        c.post = NEW.post AND
+                        c.dateend::timestamp with time zone > NOW() AND
+                        c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+                )
+            ) THEN
+                SELECT c.id INTO challengeId
+                FROM challenges c
+                WHERE challengetype = 'comment_post' AND
+                        c.talk IN (SELECT p.talk FROM posts p WHERE p.id = NEW.post) AND
+                        c.post = NEW.post AND
+                        c.dateend::timestamp with time zone > NOW() AND
+                        c.id NOT IN (SELECT uc.challenge FROM user_challenge uc WHERE uc.challenged = NEW.author)
+                ORDER BY c.id
+                LIMIT 1;
+
+                INSERT INTO user_challenge (challenged, challenge, answer, complete)
+                VALUES (NEW.author, challengeId, NULL, TRUE);
+        END IF;
+        RETURN NEW;
+    END
+    $$;
+
+CREATE TRIGGER update_challenge_comments
+    AFTER INSERT ON comments
+    FOR EACH ROW
+EXECUTE PROCEDURE update_challenge_comments();
+
+/* Add talk owner to talk_participants as admin */
+CREATE OR REPLACE FUNCTION talk_owner_participant() RETURNS trigger LANGUAGE plpgsql
+AS $$
+    BEGIN
+       INSERT INTO talk_participants (participant_user, talk, talk_permissions)
+       VALUES (NEW.author, NEW.id, 'admin');
+    RETURN NEW;
+    END;
+    $$;
+
+CREATE TRIGGER talk_owner_participant
+    AFTER INSERT ON talks
+    FOR EACH ROW
+    EXECUTE PROCEDURE talk_owner_participant();
+
+/* Give challenge points to user upon completion */
 CREATE FUNCTION update_points_user() RETURNS trigger
     LANGUAGE plpgsql
 AS $$BEGIN
@@ -412,15 +508,12 @@ INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateS
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (3, 2, 'Titulo 2', 'This is a followers or invite only talk (visibility: followers)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'followers');
 INSERT INTO talks(author, conference, title, about, livestream_URL, local, dateStart, dateEnd, privacy) VALUES (4, 2, 'Titulo 3', 'This is an invite only talk (visibility: private)', 'https://www.youtube.com/embed/PPPLiCWllv8' , 'Porto', '2019-05-05T21:30', '2019-05-06T21:30', 'private');
 
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 1, 'admin');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 1, 'moderator');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 1, 'user');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 2, 'moderator');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 2, 'admin');
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 2, 'user');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (2, 3, 'admin');
 INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (1, 3, 'user');
-INSERT INTO talk_participants (participant_user, talk, talk_permissions) VALUES (3, 3, 'moderator');
 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This post should NOT be visible', 'private', '2018-12-03');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user 3', 'public', '2018-12-03');

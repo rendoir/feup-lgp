@@ -156,10 +156,13 @@ export async function getPost(req, res) {
                         p.id = $1`,
             values: [postId],
         });
-        post.comments = comments.rows;
-        post.tags = tags.rows;
-        post.files = files.rows;
-        res.send(post);
+        const result = {
+            post,
+            comments: comments.rows,
+            tags: tags.rows,
+            files: files.rows,
+        };
+        res.send(result);
     } catch (error) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));

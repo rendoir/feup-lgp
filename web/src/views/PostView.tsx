@@ -70,23 +70,14 @@ class PostView extends React.Component<IProps, IState> {
       .get(`/post/${this.id}`)
       .then(res => {
         this.setState({
-          ...res.data,
-          fetchingInfo: false
+          ...res.data.post,
+          comments: res.data.comments,
+          fetchingInfo: false,
+          files: res.data.files,
+          tags: res.data.tags
         });
       })
       .catch(error => console.log(error.response.data.message));
-  }
-
-  public date() {
-    if (this.state.date_updated != null) {
-      return this.processDate(this.state.date_updated);
-    } else {
-      return this.processDate(this.state.date);
-    }
-  }
-
-  public processDate(dateToProcess: string) {
-    return dateToProcess.split('T')[0];
   }
 
   public render() {

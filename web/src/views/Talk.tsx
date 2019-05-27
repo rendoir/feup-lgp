@@ -32,16 +32,20 @@ export type State = {
   archiveModalOpen: boolean;
   challenges: any[];
   challengeFields: {
-    answer: string;
-    correctAnswer: string;
+    answer: string | undefined;
+    challengetype: 'question_options' | 'create_post' | 'comment_post';
+    correctAnswer: string | undefined;
     dateEnd: string;
     dateStart: string;
     description: string;
+    isComplete: boolean;
+    isCorrect: boolean;
     options: string[];
     points: number;
-    question: string;
+    post: string | undefined;
+    question: string | undefined;
     title: string;
-    type: 'MCQ' | 'POST' | 'CMT';
+    userAnswer: string;
   };
   challengeFormOpen: boolean;
   editFields: {
@@ -68,6 +72,8 @@ export type State = {
     tags: boolean;
     title: boolean;
   };
+  errorFetching: boolean;
+  errorFetchingMessage: string;
   hideModalOpen: boolean;
   inviteFields: {
     email: string;
@@ -113,6 +119,7 @@ class Talk extends PureComponent<Props, State> {
   private readonly postDateOptions: object;
   private conferenceId: number | undefined;
   private conferenceTitle: string | undefined;
+  private owner: boolean | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
   private privacy: string | undefined;
@@ -170,16 +177,20 @@ class Talk extends PureComponent<Props, State> {
     this.state = {
       archiveModalOpen: false,
       challengeFields: {
-        answer: '',
-        correctAnswer: '',
+        answer: undefined,
+        challengetype: 'question_options',
+        correctAnswer: undefined,
         dateEnd: '',
         dateStart: '',
         description: '',
+        isComplete: false,
+        isCorrect: false,
         options: [],
         points: 0,
-        question: '',
+        post: undefined,
+        question: undefined,
         title: '',
-        type: 'MCQ'
+        userAnswer: ''
       },
       challengeFormOpen: false,
       challenges: [],
@@ -207,6 +218,8 @@ class Talk extends PureComponent<Props, State> {
         tags: false,
         title: false
       },
+      errorFetching: false,
+      errorFetchingMessage: '',
       hideModalOpen: false,
       inviteFields: {
         email: '',
@@ -248,7 +261,7 @@ class Talk extends PureComponent<Props, State> {
 
   public async componentDidMount() {
     await this.apiGetTalk();
-    if (this.ownerId === Number(this.auth.getUserPayload().id)) {
+    if (this.owner) {
       await this.apiGetSubs();
     }
   }
@@ -258,24 +271,28 @@ class Talk extends PureComponent<Props, State> {
       <div className={'container-fluid mt-3 col-lg-12'}>
         <div className={'row'}>{this.renderBreadcrumb()}</div>
         <div className={'row'}>
-          <div className={'col-lg-3'}>
+          <div className={'col-lg-3 order-lg-1'}>
             {this.renderInfoCard()}
-            {this.renderAdminCard()}
-            {this.renderChallengesCard()}
+            {this.owner ? this.renderAdminCard() : null}
+            {!this.state.errorFetching ? this.renderChallengesCard() : null}
           </div>
-          <div className={'col-lg-9'}>
-            {this.state.joined ? (
+          <div className={'col-lg-9 order-lg-2'}>
+            {this.state.errorFetching ? (
+              this.renderErrorFetchingAlert()
+            ) : this.state.joined || this.owner ? (
               <div className={'row'}>
                 {this.state.inviteFields.error ||
                 this.state.inviteFields.success ? (
                   <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
                 ) : null}
-                <div className={'col-lg-7'}>{this.renderPosts()}</div>
-                <div className={'col-lg-5'}>
+                <div className={'col-lg-5 order-lg-2'}>
                   {this.state.talk.hasLivestream
                     ? this.renderLivestream()
                     : null}
                   {this.renderChat()}
+                </div>
+                <div className={'col-lg-7 order-lg-1'}>
+                  {this.renderPosts()}
                 </div>
               </div>
             ) : (
@@ -302,6 +319,7 @@ class Talk extends PureComponent<Props, State> {
         this.conferenceTitle = talk.conference_title;
         this.ownerId = Number(talk.user_id);
         this.ownerName = talk.user_name;
+        this.owner = this.ownerId === Number(this.auth.getUserPayload().id);
         this.privacy = talk.privacy;
         this.tags = tags;
 
@@ -316,6 +334,8 @@ class Talk extends PureComponent<Props, State> {
             local: talk.local,
             title: talk.title
           },
+          errorFetching: false,
+          errorFetchingMessage: '',
           isArchived: talk.archived,
           isHidden: talk.hidden,
           joined,
@@ -333,7 +353,10 @@ class Talk extends PureComponent<Props, State> {
         });
       })
       .catch(error => {
-        console.log(error.response.data.message);
+        this.setState({
+          errorFetching: true,
+          errorFetchingMessage: error.response.data.message
+        });
       });
   }
 
@@ -390,6 +413,14 @@ class Talk extends PureComponent<Props, State> {
             ? dictionary.invite_all_subs_error[this.context]
             : dictionary.invite_all_subs_done[this.context]}
         </p>
+      </Alert>
+    );
+  };
+
+  private renderErrorFetchingAlert = () => {
+    return (
+      <Alert variant={'danger'}>
+        <p>{this.state.errorFetchingMessage}.</p>
       </Alert>
     );
   };
@@ -505,7 +536,9 @@ class Talk extends PureComponent<Props, State> {
             {dateEnd}
           </div>
         </Card.Body>
-        <Card.Footer>{this.renderJoin()}</Card.Footer>
+        {this.owner || this.state.errorFetching ? null : (
+          <Card.Footer>{this.renderJoin()}</Card.Footer>
+        )}
       </Card>
     );
   };
@@ -566,131 +599,6 @@ class Talk extends PureComponent<Props, State> {
         className={classNames('carousel-control-prev-icon', styles.arrow)}
       />
     );
-    const handleType = type => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.challenge_type[this.context]}
-          </Card.Subtitle>
-          {type === 'question_options' ? 'Multiple Choice Question' : null}
-          {type === 'create_post' ? 'Create post' : null}
-          {type === 'comment_post' ? 'Comment on a post' : null}
-        </>
-      );
-    };
-    const handleClick = (challenge, userAnswer) => {
-      if (challenge.isComplete) {
-        return;
-      }
-      axiosInstance
-        .post(`/talk/${this.id}/challenge/solve`, {
-          author: this.auth.getUserPayload().id,
-          challenge: challenge.id,
-          challenge_answer: userAnswer,
-          completion: userAnswer === challenge.correctAnswer
-        })
-        .then(() => {
-          const challenges = this.state.challenges;
-          challenges.forEach(ch => {
-            if (ch.id === challenge.id) {
-              challenge.userAnswer = userAnswer;
-              challenge.isCorrect = userAnswer === challenge.correctAnswer;
-              challenge.isComplete = true;
-            }
-          });
-          this.setState({
-            challenges
-          });
-        })
-        .catch(error => console.log(error.response.data.message));
-    };
-    const handleMCQ = challenge => {
-      const itemClassName = option => {
-        if (challenge.isComplete) {
-          if (challenge.userAnswer === option) {
-            return challenge.isCorrect
-              ? classNames(styles.correctAnswer, 'mb-1')
-              : classNames(styles.wrongAnswer, 'mb-1');
-          }
-        }
-        return 'mb-1';
-      };
-
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.question[this.context]}
-          </Card.Subtitle>
-          {challenge.question}
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.options[this.context]}
-          </Card.Subtitle>
-          <ListGroup>
-            {challenge.options.map((option, index) => (
-              <ListGroup.Item
-                key={index}
-                action={!challenge.isComplete}
-                onClick={() => handleClick(challenge, option)}
-                className={itemClassName(option)}
-              >
-                {option}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </>
-      );
-    };
-    const handleCMT = challenge => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.post_to_com[this.context]}
-          </Card.Subtitle>
-          {this.state.posts.map(post => {
-            if (post.id === challenge.post) {
-              return (
-                <a href={`#${post.id}`} className={styles.link} key={post.id}>
-                  {post.title}
-                </a>
-              );
-            }
-          })}
-        </>
-      );
-    };
-    const handleChallenges = () => {
-      return this.state.challenges.map(challenge => {
-        return (
-          <Carousel.Item key={challenge.id}>
-            <Card
-              className={
-                challenge.challengetype !== 'question_options' &&
-                challenge.isComplete
-                  ? classNames('mr-5 ml-5', styles.correctAnswer)
-                  : 'mr-5 ml-5'
-              }
-              border={'light'}
-            >
-              <Card.Body>
-                <Card.Title>{challenge.title}</Card.Title>
-                <hr />
-                <Card.Subtitle className={'mb-2'}>
-                  {dictionary.description[this.context]}:
-                </Card.Subtitle>
-                {challenge.description}
-                {handleType(challenge.challengetype)}
-                {challenge.challengetype === 'question_options'
-                  ? handleMCQ(challenge)
-                  : null}
-                {challenge.challengetype === 'comment_post'
-                  ? handleCMT(challenge)
-                  : null}
-              </Card.Body>
-            </Card>
-          </Carousel.Item>
-        );
-      });
-    };
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
@@ -707,17 +615,150 @@ class Talk extends PureComponent<Props, State> {
             {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
-        <Card.Body className={'p-1'}>
+        <Card.Body className={'p-1'} style={{ height: '39rem' }}>
           {this.state.challenges.length > 0 ? (
             <Carousel
-              fade={true}
               indicators={false}
               controls={this.state.challenges.length > 1}
               nextIcon={nextIcon}
               prevIcon={prevIcon}
               interval={0}
+              className={'h-100'}
             >
-              {handleChallenges()}
+              {this.state.challenges.map(challenge => {
+                const cardBackgroundColor = challenge.isComplete
+                  ? challenge.isCorrect
+                    ? styles.correctAnswer
+                    : styles.wrongAnswer
+                  : undefined;
+                const challengeType = () => {
+                  if (challenge.challengetype === 'question_options') {
+                    return 'Multiple Choice Question';
+                  } else if (challenge.challengetype === 'create_post') {
+                    return 'Create post';
+                  } else {
+                    return 'Comment on a post';
+                  }
+                };
+                const handleClick = option => {
+                  if (challenge.isComplete) {
+                    return;
+                  }
+
+                  axiosInstance
+                    .post(`/talk/${this.id}/challenge/solve`, {
+                      author: this.auth.getUserPayload().id,
+                      challenge: challenge.id,
+                      challenge_answer: option,
+                      completion: option === challenge.correctAnswer
+                    })
+                    .then(() => {
+                      const challenges = this.state.challenges;
+                      let points = 0;
+                      challenges.forEach(ch => {
+                        if (ch.id === challenge.id) {
+                          challenge.userAnswer = option;
+                          challenge.isCorrect =
+                            option === challenge.correctAnswer;
+                          challenge.isComplete = true;
+                          points = challenge.isCorrect ? challenge.points : 0;
+                        }
+                      });
+                      this.setState({
+                        challenges,
+                        userPoints:
+                          Number(this.state.userPoints) + Number(points)
+                      });
+                      this.forceUpdate();
+                    })
+                    .catch(error => console.log(error.response.data.message));
+                };
+
+                return (
+                  <Carousel.Item key={challenge.id} className={'h-100'}>
+                    <Card border={'light'} className={'px-5 w-100'}>
+                      <Card.Header className={cardBackgroundColor}>
+                        <Card.Title className={'mb-0'}>
+                          {challenge.title}
+                        </Card.Title>
+                      </Card.Header>
+                      <Card.Body>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.description[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challenge.description}</p>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.challenge_type[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challengeType()}</p>
+                        {challenge.challengetype === 'comment_post' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              Post to comment
+                            </Card.Subtitle>
+                            {this.state.posts.map(post => {
+                              if (post.id === challenge.post) {
+                                return (
+                                  <a
+                                    href={`#${post.id}`}
+                                    className={classNames(styles.link, 'w-100')}
+                                  >
+                                    {post.title}
+                                  </a>
+                                );
+                              }
+                            })}
+                          </>
+                        ) : null}
+                        {challenge.challengetype === 'question_options' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              {dictionary.question[this.context]}
+                            </Card.Subtitle>
+                            <p className={'w-100 mb-3'}>{challenge.question}</p>
+                            <Card.Subtitle className={'w-100 mb-3'}>
+                              {dictionary.options[this.context]}
+                            </Card.Subtitle>
+                            <ListGroup variant={'flush'}>
+                              {challenge.options.map((option, index) => {
+                                const selected = challenge.isComplete
+                                  ? challenge.userAnswer === option
+                                    ? option === challenge.correctAnswer
+                                      ? styles.correctAnswer
+                                      : styles.wrongAnswer
+                                    : undefined
+                                  : undefined;
+
+                                return (
+                                  <ListGroup.Item
+                                    key={index}
+                                    className={selected}
+                                    onClick={() => handleClick(option)}
+                                  >
+                                    {option}
+                                  </ListGroup.Item>
+                                );
+                              })}
+                            </ListGroup>
+                          </>
+                        ) : null}
+                      </Card.Body>
+                      <Card.Footer
+                        className={
+                          'd-flex flex-row justify-content-between align-items-center'
+                        }
+                      >
+                        <Card.Subtitle className={'mt-0'}>
+                          {dictionary.points[this.context]}
+                        </Card.Subtitle>
+                        <div>{challenge.points}</div>
+                      </Card.Footer>
+                    </Card>
+                  </Carousel.Item>
+                );
+              })}
             </Carousel>
           ) : null}
         </Card.Body>
@@ -797,7 +838,10 @@ class Talk extends PureComponent<Props, State> {
           <div
             className={'col-3 d-flex justify-content-center align-items-center'}
           >
-            <Button className={classNames('w-100 h-50', styles.button)}>
+            <Button
+              className={classNames('w-100 h-50', styles.button)}
+              disabled={this.state.isArchived || this.state.isHidden}
+            >
               <i className={'fas fa-paper-plane mr-2'} />
               Send
             </Button>
@@ -893,7 +937,10 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item
+          onClick={handleOpen}
+          disabled={this.state.isArchived || this.state.isHidden}
+        >
           <i className={'fas fa-envelope mr-2'} />
           {dictionary.invite_users[this.context]}
         </ListGroup.Item>
@@ -1035,22 +1082,27 @@ class Talk extends PureComponent<Props, State> {
       });
   };
 
-  /* TODO: finish and improve */
   private renderChallengeForm = () => {
     const handleOpen = () => this.setState({ challengeFormOpen: true });
     const handleClose = () => {
       this.setState({
         challengeFields: {
-          answer: '',
-          correctAnswer: '',
+          answer: undefined,
+          challengetype: 'question_options',
+          correctAnswer: undefined,
           dateEnd: '',
           dateStart: '',
           description: '',
+          isComplete: false,
+          isCorrect: false,
           options: [],
           points: 0,
-          question: '',
+          post: this.state.posts[0]
+            ? this.state.posts[0].id.toString()
+            : undefined,
+          question: undefined,
           title: '',
-          type: 'MCQ'
+          userAnswer: ''
         },
         challengeFormOpen: false,
         error: {
@@ -1092,7 +1144,7 @@ class Talk extends PureComponent<Props, State> {
     };
     const handleAddOptionsByKeyPress = event => {
       if (event.key === 'Enter') {
-        const answer = this.state.challengeFields.answer.trim();
+        const answer = this.state.challengeFields.answer!.trim();
         const options = this.state.challengeFields.options;
 
         if (options.length >= 5 || answer.length === 0) {
@@ -1113,7 +1165,7 @@ class Talk extends PureComponent<Props, State> {
       }
     };
     const handleAddOptionsByButtonPress = () => {
-      const answer = this.state.challengeFields.answer.trim();
+      const answer = this.state.challengeFields.answer!.trim();
       const options = this.state.challengeFields.options;
 
       if (options.length >= 5 || answer.length === 0) {
@@ -1356,8 +1408,8 @@ class Talk extends PureComponent<Props, State> {
             <Form.Control
               as={'select'}
               className={styles.border}
-              value={this.state.challengeFields.answer}
-              name={'answer'}
+              value={this.state.challengeFields.post}
+              name={'post'}
               onChange={handleChange}
             >
               {this.state.posts.map(post => {
@@ -1379,26 +1431,30 @@ class Talk extends PureComponent<Props, State> {
           <Form.Control
             as={'select'}
             className={styles.border}
-            value={this.state.challengeFields.type}
-            name={'type'}
+            value={this.state.challengeFields.challengetype}
+            name={'challengetype'}
             onChange={handleChange}
             required={true}
           >
-            <option value={'MCQ'}>
+            <option value={'question_options'}>
               {dictionary.mult_choice_question[this.context]}
             </option>
-            <option value={'POST'}>
+            <option value={'create_post'}>
               {dictionary.post_create[this.context]}
             </option>
-            <option value={'CMT'}>
+            <option value={'comment_post'}>
               {dictionary.comment_post[this.context]}
             </option>
           </Form.Control>
-          {this.state.challengeFields.type === 'MCQ' ? renderMCQFields() : null}
-          {this.state.challengeFields.type === 'POST'
+          {this.state.challengeFields.challengetype === 'question_options'
+            ? renderMCQFields()
+            : null}
+          {this.state.challengeFields.challengetype === 'create_post'
             ? renderPOSTFields()
             : null}
-          {this.state.challengeFields.type === 'CMT' ? renderCMTFields() : null}
+          {this.state.challengeFields.challengetype === 'comment_post'
+            ? renderCMTFields()
+            : null}
         </Form.Group>
       );
     };
@@ -1426,7 +1482,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item onClick={handleOpen} disabled={this.state.isArchived}>
           <i className={'fas fa-puzzle-piece mr-2'} />
           {dictionary.create_challenge_talk[this.context]}
         </ListGroup.Item>
@@ -1470,10 +1526,12 @@ class Talk extends PureComponent<Props, State> {
     const fields = this.state.challengeFields;
 
     Object.keys(fields).map(key => {
-      if (key !== 'options') {
-        fields[key] = fields[key].toString().trim();
-      } else {
-        fields[key] = fields[key].map(value => value.toString().trim());
+      if (fields[key]) {
+        if (key !== 'options') {
+          fields[key] = fields[key].toString().trim();
+        } else {
+          fields[key] = fields[key].map(value => value.toString().trim());
+        }
       }
     });
 
@@ -1549,7 +1607,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.dateEnd = '';
     }
-    if (fields.type === 'MCQ' && fields.question.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.question!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1567,7 +1628,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.question = '';
     }
-    if (fields.type === 'MCQ' && fields.options.length <= 1) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.options!.length <= 1
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1586,7 +1650,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.options = '';
     }
-    if (fields.type === 'MCQ' && fields.correctAnswer.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.correctAnswer!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1625,7 +1692,7 @@ class Talk extends PureComponent<Props, State> {
     }
 
     Object.entries(this.state.challengeFields).forEach(entry => {
-      if (entry[1].toString().length > 0) {
+      if (entry[1] && entry[1]!.toString().length > 0) {
         if (!this.validateInput(entry[0], entry[1])) {
           error = true;
         }
@@ -1637,18 +1704,18 @@ class Talk extends PureComponent<Props, State> {
     }
 
     const formData = new FormData();
-    formData.append('type', fields.type);
+    formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
     formData.append('dateEnd', fields.dateEnd);
     formData.append('dateStart', fields.dateStart);
     formData.append('points', fields.points.toString());
-    formData.append('question', fields.question);
-    formData.append('correctAnswer', fields.correctAnswer);
+    formData.append('question', fields.question!);
+    formData.append('correctAnswer', fields.correctAnswer!);
     fields.options.forEach((option, index) =>
       formData.append(`options[${index}]`, option)
     );
-    formData.append('post', fields.answer);
+    formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
 
     axiosInstance
@@ -1661,18 +1728,24 @@ class Talk extends PureComponent<Props, State> {
         this.setState({
           challengeFields: {
             answer: '',
+            challengetype: 'question_options',
             correctAnswer: '',
             dateEnd: '',
             dateStart: '',
             description: '',
+            isComplete: false,
+            isCorrect: false,
             options: [],
             points: 0,
+            post: this.state.posts[0]
+              ? this.state.posts[0].id.toString()
+              : undefined,
             question: '',
             title: '',
-            type: 'MCQ'
+            userAnswer: ''
           },
           challengeFormOpen: false,
-          challenges: [...this.state.challenges, this.state.challengeFields]
+          challenges: [...this.state.challenges, fields]
         });
       })
       .catch(err => console.log(err.response.data.message));
@@ -1713,7 +1786,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -2089,8 +2162,12 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
-          <i className={'fas fa-trash mr-2'} />
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+          <i
+            className={`fas ${
+              this.state.isHidden ? 'fa-eye' : 'fa-eye-slash'
+            } mr-2`}
+          />
           {this.state.isHidden
             ? dictionary.reopen_talk[this.context]
             : dictionary.hide_talk[this.context]}
@@ -2243,12 +2320,16 @@ class Talk extends PureComponent<Props, State> {
         }
       });
     };
+    const buttonClassName = classNames('pt-2 pb-2 pl-3 pr-3', styles.button, {
+      [styles.disabled]: this.state.isHidden || this.state.isArchived
+    });
 
     return (
       <>
         <ListGroup.Item
           onClick={handleShow}
-          className={classNames('pt-2 pb-2 pl-3 pr-3', styles.button)}
+          className={buttonClassName}
+          disabled={this.state.isHidden || this.state.isArchived}
         >
           <i className={'fas fa-plus mr-2'} />
           {dictionary.create_new_post[this.context]}
@@ -2436,9 +2517,24 @@ class Talk extends PureComponent<Props, State> {
         axiosInstance
           .get(`/post/${response.data.post}`)
           .then(post => {
+            let points = 0;
+            for (const challenge of this.state.challenges) {
+              if (
+                challenge.challengetype === 'create_post' &&
+                !challenge.isComplete
+              ) {
+                challenge.isComplete = true;
+                challenge.isCorrect = true;
+                points = challenge.points;
+                break;
+              }
+            }
+
             this.setState({
+              challenges: this.state.challenges,
               postFormOpen: false,
-              posts: [post.data, ...this.state.posts]
+              posts: [post.data, ...this.state.posts],
+              userPoints: Number(this.state.userPoints) + Number(points)
             });
           })
           .catch(err => {
@@ -2508,14 +2604,17 @@ class Talk extends PureComponent<Props, State> {
         message =
           'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters';
         break;
-      case 'type':
-        re = /^(MCQ|POST|CMT)$/;
-        message = "Invalid field. Type must be one of 'MCQ', 'POST', or 'CMT'";
+      case 'challengetype':
+        re = /^(question_options|create_post|comment_post)$/;
+        message =
+          "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'";
         break;
       case 'livestreamURL':
         re = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)*(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$|^$/;
         message = "Invalid field. Livestream's url must be an embed link";
         break;
+      default:
+        return true;
     }
 
     if (type === 'options' || type === 'tags') {

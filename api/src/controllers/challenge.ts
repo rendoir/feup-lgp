@@ -13,8 +13,8 @@ export async function createChallenge(req, res) {
         return;
     }
 
+    const type = req.body.type;
     let answers = null;
-    let type = '';
     let points = 0;
     let question = null;
     let post = null;
@@ -23,13 +23,8 @@ export async function createChallenge(req, res) {
         points = Number(req.body.points);
     }
 
-    switch (req.body.type) {
-        case 'POST': {
-            type = 'create_post';
-            break;
-        }
-        case 'MCQ': {
-            type = 'question_options';
+    switch (type) {
+        case 'question_options': {
             question = req.body.question;
             answers = [];
             answers.push('CorrectAnswer: ' + req.body.correctAnswer);
@@ -40,8 +35,7 @@ export async function createChallenge(req, res) {
             }
             break;
         }
-        case 'CMT': {
-            type = 'comment_post';
+        case 'comment_post': {
             post = Number(req.body.post);
             break;
         }

@@ -53,8 +53,8 @@ export function createTalk(req, res) {
   const userId = req.user.id;
 
   query({
-    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+    text: 'INSERT INTO talks (author, title, about, livestream_url, local, datestart, dateend, avatar, privacy, conference, hidden) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id',
     values: [
       userId,
       req.body.title,
@@ -64,8 +64,9 @@ export function createTalk(req, res) {
       req.body.dateStart,
       req.body.dateEnd,
       req.body.avatar,
-      'closed',
+      req.body.privacy,
       req.body.conference,
+      true,
     ],
   }).then((result) => {
     res.send({
@@ -100,10 +101,13 @@ export async function getTalk(req, res) {
               INNER JOIN conferences c ON t.conference = c.id
               WHERE t.id = $1
                 AND (t.author = $2
-                    OR (archived = FALSE AND hidden = FALSE)
-                    OR t.privacy = 'public'
-                    OR (t.privacy = 'followers'
-                        AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                    OR (t.archived = FALSE
+                        AND t.hidden = FALSE
+                        AND (t.privacy = 'public'
+                              OR (t.privacy = 'followers'
+                                    AND t.author IN (SELECT followed FROM follows WHERE follower = $2)
+                              )
+                        )
                     )
                 )
             `,
@@ -225,13 +229,16 @@ export async function getTalk(req, res) {
              FROM tags`,
       values: [],
     });
-    const userPoints = await query({
+    let userPoints = await query({
       text: `SELECT points
              FROM talk_participants
              WHERE talk = $1
              AND participant_user = $2`,
       values: [id, userId],
     });
+    userPoints = userPoints.rows.length > 0
+      ? userPoints.rows[0].points
+      : 0;
     const result = {
       challenges: challenges.rows,
       talk: talk.rows[0],
@@ -239,12 +246,12 @@ export async function getTalk(req, res) {
       size: totalSize.rows[0].count,
       isParticipating: isParticipating.rows.length > 0,
       tags: tags.rows,
-      userPoints: userPoints.rows[0].points,
+      userPoints,
     };
     res.send(result);
   } catch (error) {
     res.status(500).send({
-      message: 'Error retrieving talk',
+      message: 'Error retrieving talk. Error: ' + error,
     });
   }
 }
