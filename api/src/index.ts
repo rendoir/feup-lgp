@@ -11,7 +11,7 @@ import * as express_session from 'express-session';
 import * as http from 'http';
 import * as morgan from 'morgan';
 import * as socketIo from 'socket.io';
-import { jwtMiddleware } from './_helpers/jwt';
+import { jwtMiddleware } from './helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -39,6 +39,7 @@ import {
     inviteRouter,
     loginRouter,
     postRouter,
+    productsRouter,
     searchRouter,
     tagsRouter,
     talkRouter,
@@ -82,6 +83,7 @@ app.use('/talk', talkRouter);
 app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
 app.use('/conference', conferenceRouter);
+app.use('/products', productsRouter);
 app.use('/invite', inviteRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
