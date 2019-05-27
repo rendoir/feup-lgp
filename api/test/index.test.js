@@ -330,7 +330,6 @@ describe('Admin tests', () => {
                     expect(res.body).to.have.property('message');
                     done();
                 });
-<<<<<<< HEAD
         });
 
         it('Should add user to the whitelist', (done) => {
@@ -379,9 +378,7 @@ describe('Admin tests', () => {
                     expect(res.body).to.be.instanceOf(Object);
                     expect(res.body).to.have.property('message');
                     done();
-                })
-=======
->>>>>>> Improves coverage of functions to 53.76% and lines to 63.56%
+                });
         });
 
         it('Should add user to the whitelist', (done) => {
@@ -679,24 +676,6 @@ describe('Post', () => {
                 expect(equalPosts(publicPost, res.body.post)).to.be.true;
                 expect(res.body).to.have.property('comments');
                 expect(res.body.comments).to.be.empty;
-                done();
-            });
-    });
-
-    it('Should not edit if title is empty', (done) => {
-        request(app)
-            .put(`/post/${postId}`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .send({
-                author: editedPublicPost.author,
-                title: '',
-                text: '',
-                visibility: editedPublicPost.visibility,
-            })
-            .expect(400)
-            .end((err, res) => {
-                expect(res.body).to.be.instanceOf(Object);
-                expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
                 done();
             });
     });
