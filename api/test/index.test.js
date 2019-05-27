@@ -209,6 +209,7 @@ describe('Register tests', () => {
             })
             .expect(401)
             .end((err, res) => {
+                !expect(err).to.be.null;
                 done();
             });
     });
@@ -248,7 +249,7 @@ describe('Admin tests', () => {
     });
 
     describe('Ban/unban user', () => {
-        it('Should not ban unexisting user (400)', (done) => {
+        it('Should not ban unexisting user', (done) => {
             request(app)
             .post('/admin/ban')
             .set('authorization', 'Bearer ' + admin.jwt)
@@ -257,6 +258,7 @@ describe('Admin tests', () => {
             })
             .expect(400)
             .end((err, res) => {
+                !expect(err).to.be.null;
                 done();
             });
         });
@@ -282,13 +284,14 @@ describe('Admin tests', () => {
                     email: 'baduser@lgp.com',
                     password: 'Yoldpass420',
                 })
-                .expect(400)
+                .expect(500)
                 .end((err, res) => {
+                    !expect(err).to.be.null;
                     done();
                 });
         });
 
-        it('Should unban (200)', (done) => {
+        it('Should unban', (done) => {
             request(app)
                 .post('/admin/user')
                 .send({ email: users[0].email })
@@ -300,13 +303,14 @@ describe('Admin tests', () => {
                 });
         });
 
-        it('Should not unban unexistent user 400', (done) => {
+        it('Should not unban unexistent user', (done) => {
             request(app)
                 .post('/admin/user')
                 .send({ email: "notanemail" })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(400)
                 .end((err, res) => {
+                    !expect(err).to.be.null;
                     done();
                 });
         });
@@ -330,58 +334,6 @@ describe('Admin tests', () => {
                     expect(res.body).to.have.property('message');
                     done();
                 });
-<<<<<<< HEAD
-        });
-
-        it('Should add user to the whitelist', (done) => {
-            request(app)
-                .post('/admin/users')
-                .send({
-                    email: 'camachocosta@amadora.pt',
-                    userLevel: 'user',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body).to.have.property('email');
-                    done();
-                });
-        });
-
-        it('Should remove user from the whitelist', (done) => {
-            request(app)
-                .delete('/admin/users')
-                .send({
-                    email: 'camachocosta@amadora.pt',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    done();
-                });
-        });
-    });
-
-    describe('Whitelist tests', () => {
-        it('Shouldn\'t add bad email to the whitelist', (done) => {
-            request(app)
-                .post('/admin/users')
-                .send({
-                    email: 'aa',
-                    userLevel: 'user',
-                })
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .expect(400)
-                .end((err, res) => {
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body).to.have.property('message');
-                    done();
-                })
-=======
->>>>>>> Improves coverage of functions to 53.76% and lines to 63.56%
         });
 
         it('Should add user to the whitelist', (done) => {
