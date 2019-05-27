@@ -32,6 +32,8 @@ type State = {
   privacy: string;
   postModalOpen: boolean;
   request: {
+    avatar?: File;
+    avatar_str?: string;
     title: string;
     about: string;
     privacy: string;
@@ -207,7 +209,7 @@ class Conference extends PureComponent<Props, State> {
     }
 
     axiosInstance
-      .get(`/users/${this.id}/avatar/${conference.avatar}`, {
+      .get(`/conference/${this.id}/avatar/${conference.avatar}`, {
         responseType: 'arraybuffer'
       })
       .then(res => {
@@ -271,6 +273,29 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
+  private apiGetTalkAvatar(talk: any) {
+    if (talk.avatar === undefined || talk.avatar === null) {
+      return;
+    }
+
+    axiosInstance
+      .get(`/talks/${this.id}/avatar/${talk.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          talk.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        talk.avatar_src = src;
+      })
+      .catch(() => {
+        console.log('Failed to get conference avatar');
+      });
+  }
+
   private renderTalks = () => {
     this.state.talks.sort((a, b) => (a.dateend > b.dateend ? a : b));
 
@@ -287,6 +312,7 @@ class Conference extends PureComponent<Props, State> {
         <hr />
         <div>
           {this.state.talks.map(talk => {
+            this.apiGetTalkAvatar(talk);
             const dateEnd = new Date(talk.dateend).toLocaleDateString(
               dictionary.date_format[this.context],
               this.dateOptions
@@ -310,7 +336,7 @@ class Conference extends PureComponent<Props, State> {
                         className={'d-flex align-items-center mb-1 mt-1'}
                       >
                         <Avatar
-                          image={talk.avatar}
+                          image={talk.avatar_src}
                           title={talk.title}
                           className={'mr-1'}
                         />
