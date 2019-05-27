@@ -15,8 +15,14 @@ export const talkRouter = Router();
  * @apiParam {string}   dateStart   date when the talk starts
  * @apiParam {string}   dateEnd   date when the talk ends
  * @apiParam {Object}   avatar      talk image
+ * @apiParam {string}   livestream   livestream link
  * @apiParam {String}   privacy     Visibility of the post: public/followers/private
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      id: 28
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -37,8 +43,13 @@ talkRouter.post('/', controller.createTalk);
  * @apiParam {string}   dateStart   Date when the talk starts
  * @apiParam {string}   dateEnd     Date when the talk ends
  * @apiParam {Object}   avatar      Talk image
+ * @apiParam {string}   livestream   livestream link
  * @apiParam {String}   privacy     Visibility of the talk: public | followers | private
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -55,6 +66,10 @@ talkRouter.put('/:id', controller.editTalk);
  * @apiParam {number}   id    Id of the talk the user will be invited to
  * @apiParam {number}   invited_user    Id of the user being invited
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

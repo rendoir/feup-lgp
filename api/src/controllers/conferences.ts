@@ -31,8 +31,7 @@ export function createConference(req, res) {
         'The field date start cannot be empty',
     });
   }
-  if (req.body.dateEnd.trim()) {
-    if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
+  if (!req.body.dateEnd.trim() || (req.body.dateEnd.trim() && Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) ) {
       console.log(
         '\n\nError: conference ending date cannot be previous to starting date',
       );
@@ -40,7 +39,7 @@ export function createConference(req, res) {
         message: 'An error occurred while creating a new conference. ' +
           'The field date end cannot be a date previous to date start',
       });
-    }
+      return;
   }
   const userId = req.user.id;
   query({
