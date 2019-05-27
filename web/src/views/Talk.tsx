@@ -652,16 +652,20 @@ class Talk extends PureComponent<Props, State> {
                     })
                     .then(() => {
                       const challenges = this.state.challenges;
+                      let points = 0;
                       challenges.forEach(ch => {
                         if (ch.id === challenge.id) {
                           challenge.userAnswer = option;
                           challenge.isCorrect =
                             option === challenge.correctAnswer;
                           challenge.isComplete = true;
+                          points = challenge.isCorrect ? challenge.points : 0;
                         }
                       });
                       this.setState({
-                        challenges
+                        challenges,
+                        userPoints:
+                          Number(this.state.userPoints) + Number(points)
                       });
                       this.forceUpdate();
                     })
@@ -1712,8 +1716,6 @@ class Talk extends PureComponent<Props, State> {
     formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
 
-    console.log(fields);
-
     axiosInstance
       .post(`/talk/${this.id}/challenge/create`, formData, {
         headers: {
@@ -1743,8 +1745,6 @@ class Talk extends PureComponent<Props, State> {
           challengeFormOpen: false,
           challenges: [...this.state.challenges, fields]
         });
-
-        console.log(this.state.challenges);
       })
       .catch(err => console.log(err.response.data.message));
   };
@@ -2515,9 +2515,24 @@ class Talk extends PureComponent<Props, State> {
         axiosInstance
           .get(`/post/${response.data.post}`)
           .then(post => {
+            let points = 0;
+            for (const challenge of this.state.challenges) {
+              if (
+                challenge.challengetype === 'create_post' &&
+                !challenge.isComplete
+              ) {
+                challenge.isComplete = true;
+                challenge.isCorrect = true;
+                points = challenge.points;
+                break;
+              }
+            }
+
             this.setState({
+              challenges: this.state.challenges,
               postFormOpen: false,
-              posts: [post.data, ...this.state.posts]
+              posts: [post.data, ...this.state.posts],
+              userPoints: Number(this.state.userPoints) + Number(points)
             });
           })
           .catch(err => {
