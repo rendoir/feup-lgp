@@ -17,6 +17,7 @@ type BackofficeState = {
   fetchingNotifications: boolean;
   notifications: any[];
   notificationsAmount: number;
+  productExchangeNotifications: any[];
   addAdminSuccess: boolean;
   banUserSuccess: boolean;
   removeAdminSuccess: boolean;
@@ -43,6 +44,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       fetchingNotifications: true,
       notifications: [],
       notificationsAmount: 0,
+      productExchangeNotifications: [],
       removeAdminSuccess: false,
       search: '',
       showBanUserAlert: false,

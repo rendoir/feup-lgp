@@ -108,6 +108,19 @@ adminRouter.get('/users', controller.getAllUsers);
 adminRouter.post('/:id', controller.isUserAdmin);
 
 /**
+ * @api {get} /api/admin/product_exchange_notifications Get list of products exchanged by users
+ * @apiName Get-Product-Exchange-Notifications
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.get('/product_exchange_notifications', controller.getProductExchangeNotifications);
+
+/**
  * @api {get} /api/admin/notifications Get list of reported content who has not been subject of admin review
  * @apiName Get-Report-Notifications
  * @apiGroup Admin
