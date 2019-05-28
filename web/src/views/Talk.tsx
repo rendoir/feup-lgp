@@ -477,13 +477,39 @@ class Talk extends PureComponent<Props, State> {
   private async apiGetUser() {
     await axiosInstance
       .get(`/users/${this.auth.getUserPayload().id}`)
-      .then(res => {
+      .then(async res => {
         const user = res.data.user;
-        this.user = {
-          avatar: user.avatar,
-          id: Number(user.id),
-          name: `${user.first_name} ${user.last_name}`
-        };
+        if (
+          res.data.user.avatar !== null &&
+          res.data.user.avatar !== undefined
+        ) {
+          await axiosInstance
+            .get(`/users/${Number(user.id)}/avatar/${user.avatar}`, {
+              responseType: 'arraybuffer'
+            })
+            .then(res => {
+              const src =
+                'data:' +
+                user.avatar_mimeType +
+                ';base64, ' +
+                new Buffer(res.data, 'binary').toString('base64');
+
+              this.user = {
+                avatar: src,
+                id: Number(user.id),
+                name: `${user.first_name} ${user.last_name}`
+              };
+            })
+            .catch(() => {
+              console.log('Failed to get user avatar');
+            });
+        } else {
+          this.user = {
+            avatar: '',
+            id: Number(user.id),
+            name: `${user.first_name} ${user.last_name}`
+          };
+        }
       })
       .catch(error => console.log(error.response.data.message));
   }
