@@ -85,54 +85,8 @@ class Shop extends React.Component<Props, State> {
             </div>
             {this.getAddProductButton()}
           </div>
-
-          <div id="products-carousel" className="col-lg-9">
-            <div
-              id="carouselExampleIndicators"
-              className="carousel slide my-4"
-              data-ride="carousel"
-            >
-              <ol className="carousel-indicators">
-                <li
-                  data-target="#carouselExampleIndicators"
-                  data-slide-to="0"
-                  className="active"
-                >
-                  {' '}
-                </li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1">
-                  {' '}
-                </li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2">
-                  {' '}
-                </li>
-              </ol>
-              <div className="carousel-inner" role="listbox">
-                <div className="carousel-item active">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="First slide"
-                  />
-                </div>
-                <div className="carousel-item">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="Second slide"
-                  />
-                </div>
-                <div className="carousel-item">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="Third slide"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row">{this.renderProducts()}</div>
+          <div id="" className="col-lg-9">
+            <div className="slide row my-4">{this.renderProducts()}</div>
           </div>
         </div>
       </div>
