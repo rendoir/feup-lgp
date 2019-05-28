@@ -45,6 +45,23 @@ export function deleteUserFromWhiteList(req, res) {
     });
 }
 
+export async function getProductExchangeNotifications(req, res) {
+    if (!await isAdmin(req.user.id)) {
+        console.log('\n\nERROR: You cannot retrieve product exchange notifications if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching product exchange notifications: You are not an admin.' });
+        return;
+    }
+
+    query({
+        text: 'SELECT * FROM retrieve_exchange_notifications()',
+    }).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
+    });
+}
+
 export async function getReportNotifications(req, res) {
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');

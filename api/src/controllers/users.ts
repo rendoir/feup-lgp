@@ -387,6 +387,36 @@ export async function updateProfile(req, res) {
     }
 }
 
+export async function getGeneralPoints(req, res) {
+    const userId = req.user.id;
+    try {
+      const pointsQuery = await query({
+        text: `SELECT points from users WHERE id = $1`,
+        values: [userId],
+      });
+      res.status(200).send({ points: pointsQuery.rows[0].points });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user general points'));
+    }
+}
+
+export async function getConferencePoints(req, res) {
+    const userId = req.user.id;
+    const conferenceId = req.params.conf_id;
+    try {
+      const pointsQuery = await query({
+        text: `SELECT points from user_conference_points WHERE user_id = $1 AND conference = $2`,
+        values: [userId, conferenceId],
+      });
+      const points = pointsQuery.rows[0] ? pointsQuery.rows[0].points : 0;
+      res.status(200).send({ points });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(new Error('Error retrieving user general points'));
+    }
+}
+
 export async function getAvatar(req, res) {
     res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
 }

@@ -3,6 +3,8 @@
 
 .post_modal_Edit, .post_modal_Create, .report_modal, .invite_modal {
 
+    background-color: rgba(51, 51, 51, 0.45);
+
     textarea {
         overflow-y: scroll !important;
         height: 500px !important;

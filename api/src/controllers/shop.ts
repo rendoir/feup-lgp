@@ -105,3 +105,17 @@ export async function deleteProduct(req, res) {
         res.status(400).send({ message: 'An error ocurred while deleting a product' });
     });
 }
+
+export async function exchangeProduct(req, res) {
+    const userId = req.user.id;
+    const productId = req.params.id;
+    query({
+        text: `SELECT * FROM exchange_product($1, $2)`,
+        values: [productId, userId],
+    }).then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while exchanging a product' });
+    });
+}

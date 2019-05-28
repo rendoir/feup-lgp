@@ -1,13 +1,14 @@
-import styles from './Product.module.css';
-
 import React, { Component } from 'react';
 
-import AuthHelperMethods from '../../utils/AuthHelperMethods';
-import { dictionary, LanguageContext } from '../../utils/language';
+import styles from './Product.module.css';
 
 import Button from '../Button/Button';
 import EditProductModal from '../ProductModal/EditProductModal';
 import RemoveProductModal from '../ProductModal/RemoveProductModal';
+
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   id: number;
@@ -19,14 +20,52 @@ export type Props = {
   conferenceId: number | undefined;
   conferenceOwner: number | undefined;
   user: any;
+  enoughPoints: boolean; // True if user has enough points to reedem product
+  updateUserPoints: any; // Function called to update user points when a product purchase occurs
 };
 
-class Product extends Component<Props> {
+interface IState {
+  exchangingProduct: boolean;
+  stock: number;
+}
+
+class Product extends Component<Props, IState> {
   public static contextType = LanguageContext;
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
+
+    this.state = {
+      exchangingProduct: false,
+      stock: this.props.stock
+    };
+
+    this.handleProductExchange = this.handleProductExchange.bind(this);
+  }
+
+  public handleProductExchange() {
+    this.setState({
+      exchangingProduct: true
+    });
+
+    const url = `/products/${this.props.id}/exchange`;
+    axiosInstance
+      .post(url, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(() => {
+        this.props.updateUserPoints();
+
+        const newStock = this.state.stock - 1;
+        this.setState({
+          exchangingProduct: false,
+          stock: newStock
+        });
+      })
+      .catch(error => console.log(error));
   }
 
   public render() {
@@ -55,15 +94,11 @@ class Product extends Component<Props> {
             </h5>
             <p className="card-text">
               {dictionary.shop_stock[this.context]}
-              {this.props.stock}
+              {this.state.stock}
             </p>
           </div>
           <div className="card-footer">
-            <div className="">
-              <Button theme="primary" view="outline" size="small" wide={true}>
-                {dictionary.shop_exchange[this.context]}
-              </Button>
-            </div>
+            <div className="">{this.getReedemButton()}</div>
             {this.getEditProductModal()}
             {this.getRemoveProductModal()}
           </div>
@@ -119,6 +154,41 @@ class Product extends Component<Props> {
           {dictionary.remove_product[this.context]}
         </button>
       </div>
+    );
+  }
+
+  private getReedemButton() {
+    const buttonDisabled = Boolean(
+      this.state.stock === 0 ||
+        !this.props.enoughPoints ||
+        this.state.exchangingProduct
+    );
+
+    let buttonText = dictionary.shop_exchange[this.context];
+    let buttonTheme: 'primary' | 'danger' | 'info' = 'primary';
+
+    if (this.state.exchangingProduct) {
+      buttonText = dictionary.shop_exchanging[this.context];
+      buttonTheme = 'info';
+    } else if (this.state.stock === 0) {
+      buttonText = dictionary.sold_out[this.context];
+      buttonTheme = 'danger';
+    } else if (!this.props.enoughPoints) {
+      buttonText = dictionary.not_enough_points[this.context];
+      buttonTheme = 'danger';
+    }
+
+    return (
+      <Button
+        theme={buttonTheme}
+        view="outline"
+        size="small"
+        wide={true}
+        disabled={buttonDisabled}
+        onClick={this.handleProductExchange}
+      >
+        {buttonText}
+      </Button>
     );
   }
 
