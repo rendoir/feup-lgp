@@ -487,6 +487,7 @@ class Talk extends PureComponent<Props, State> {
             .get(`/users/${Number(user.id)}/avatar/${user.avatar}`, {
               responseType: 'arraybuffer'
             })
+            // tslint:disable-next-line: no-shadowed-variable
             .then(res => {
               const src =
                 'data:' +
