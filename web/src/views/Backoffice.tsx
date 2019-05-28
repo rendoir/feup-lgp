@@ -5,6 +5,7 @@ import BanUserModal from '../components/AdminFunctionsModal/BanUserModal';
 import RemoveAdminModal from '../components/AdminFunctionsModal/RemoveAdminModal';
 import UnbanUserModal from '../components/AdminFunctionsModal/UnbanUserModal';
 import { BackofficeNotification } from '../components/BackofficeNotification/BackofficeNotification';
+import { ProductExchangeNotification } from '../components/BackofficeNotification/ProductExchangeNotification';
 import { BackofficeUserCard } from '../components/BackofficeUserCard/BackofficeUserCard';
 
 import { apiGetReportNotificationsInfo } from '../utils/apiReport';
@@ -17,6 +18,7 @@ type BackofficeState = {
   fetchingNotifications: boolean;
   notifications: any[];
   notificationsAmount: number;
+  fetchingProductExchangeNotifications: boolean;
   productExchangeNotifications: any[];
   addAdminSuccess: boolean;
   banUserSuccess: boolean;
@@ -42,6 +44,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       addAdminSuccess: false,
       banUserSuccess: false,
       fetchingNotifications: true,
+      fetchingProductExchangeNotifications: true,
       notifications: [],
       notificationsAmount: 0,
       productExchangeNotifications: [],
@@ -79,6 +82,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   public componentDidMount() {
     this.apiSubmitSearch();
+    this.apiGetProductExchangeNotifications();
     this.apiGetNotifications();
   }
 
@@ -157,6 +161,19 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         </div>
       </div>
     );
+  }
+
+  private apiGetProductExchangeNotifications() {
+    const url = `admin/product_exchange_notifications`;
+    axiosInstance
+      .get(url)
+      .then(result => {
+        this.setState({
+          fetchingProductExchangeNotifications: false,
+          productExchangeNotifications: result.data
+        });
+      })
+      .catch(error => console.log(error));
   }
 
   private async apiGetNotifications() {
@@ -552,8 +569,37 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         className="col-12 col-md-9 mt-2 mt-md-0"
       >
         {notificationList}
+        {this.getProductExchangeNotifications()}
       </div>
     );
+  }
+
+  private getProductExchangeNotifications() {
+    if (
+      this.state.fetchingProductExchangeNotifications ||
+      !this.state.notifications ||
+      this.state.notifications.length === 0
+    ) {
+      return null;
+    }
+
+    const productExchangeNotificationList = this.state.productExchangeNotifications.map(
+      exchangeNotif => {
+        return (
+          <ProductExchangeNotification
+            key={exchangeNotif.exchange_id}
+            exchangeId={exchangeNotif.exchange_id}
+            productId={exchangeNotif.product_id}
+            productName={exchangeNotif.product_name}
+            buyerId={exchangeNotif.buyer_id}
+            buyerFirstName={exchangeNotif.buyer_first_name}
+            buyerLastName={exchangeNotif.buyer_last_name}
+          />
+        );
+      }
+    );
+
+    return productExchangeNotificationList;
   }
 
   private handleInputChange(event: any) {

@@ -634,7 +634,11 @@ export let dictionary: Dictionary = {
     EN:
       "Are you sure you want do delete this product? It can't be retrieved later."
   },
-  empty: { PT: '', EN: '' }
+  empty: { PT: '', EN: '' },
+  shipment_order: { PT: 'Ordem de entrega', EN: 'Shipment order' },
+  ship_product: { PT: 'Enviar produto', EN: 'Ship product' },
+  to_user: { PT: 'para o utilizador', EN: 'to user' },
+  product: { PT: 'Produto', EN: 'Product' }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

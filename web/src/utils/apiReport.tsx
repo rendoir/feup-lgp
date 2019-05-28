@@ -72,7 +72,7 @@ export async function apiGetReportReasons(
   reportedContentId: number,
   reportedContentType: string
 ) {
-  const apiURL = `admin/report_reasons`;
+  const apiURL = `admin/1/report_reasons`;
   const body = {
     content_id: reportedContentId,
     content_type: reportedContentType

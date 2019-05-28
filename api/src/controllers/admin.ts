@@ -55,7 +55,6 @@ export async function getProductExchangeNotifications(req, res) {
     query({
         text: 'SELECT * FROM retrieve_exchange_notifications()',
     }).then((result) => {
-        console.log("compras: ", result.rows);
         res.status(200).send(result.rows);
     }).catch((error) => {
         console.log('\n\nERROR:', error);
