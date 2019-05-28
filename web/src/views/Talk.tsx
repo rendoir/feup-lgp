@@ -12,7 +12,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import openSocket from 'socket.io-client';
-import { Avatar } from '../components';
+import { Avatar, AvatarSelector } from '../components';
 import Post from '../components/Post/Post';
 import Switcher from '../components/Switcher/Switcher';
 import Tag from '../components/Tags/Tag';
@@ -69,6 +69,8 @@ export type State = {
     messageList: Message[];
   };
   editFields: {
+    avatar?: File;
+    avatar_str?: string;
     title: string;
     dateEnd: string;
     dateStart: string;
@@ -121,6 +123,9 @@ export type State = {
   postFormOpen: boolean;
   posts: any[];
   talk: {
+    avatar?: string;
+    avatar_mimeType?: string;
+    avatar_src?: string;
     title: string;
     description: string;
     dateStart: string;
@@ -247,6 +252,8 @@ class Talk extends PureComponent<Props, State> {
         messageList: []
       },
       editFields: {
+        avatar: undefined,
+        avatar_str: '',
         dateEnd: '',
         dateStart: '',
         description: '',
@@ -299,6 +306,9 @@ class Talk extends PureComponent<Props, State> {
       postFormOpen: false,
       posts: [],
       talk: {
+        avatar: '',
+        avatar_mimeType: '',
+        avatar_src: '',
         dateEnd: '',
         dateStart: '',
         description: '',
@@ -380,11 +390,13 @@ class Talk extends PureComponent<Props, State> {
         this.privacy = talk.privacy;
         this.tags = tags;
 
-        // this.apiGetTalkAvatar(talk);
+        this.apiGetTalkAvatar(talk);
 
         this.setState({
           challenges,
           editFields: {
+            avatar: undefined,
+            avatar_str: talk.avatar_src,
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
@@ -402,6 +414,7 @@ class Talk extends PureComponent<Props, State> {
           talk: {
             avatar: talk.avatar,
             avatar_mimeType: talk.avatar_mimeType,
+            avatar_src: talk.avatar_src,
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
@@ -421,13 +434,13 @@ class Talk extends PureComponent<Props, State> {
       });
   }
 
-  private async apiGetTalkAvatar(talk: any) {
+  private apiGetTalkAvatar(talk: any) {
     if (talk.avatar === undefined || talk.avatar === null) {
       return;
     }
 
     axiosInstance
-      .get(`/talks/${this.id}/avatar/${talk.avatar}`, {
+      .get(`/talk/${this.id}/avatar/${talk.avatar}`, {
         responseType: 'arraybuffer'
       })
       .then(res => {
@@ -438,6 +451,8 @@ class Talk extends PureComponent<Props, State> {
           new Buffer(res.data, 'binary').toString('base64');
 
         talk.avatar_src = src;
+        this.setState({ talk });
+        this.forceUpdate();
       })
       .catch(() => {
         console.log('Failed to get conference avatar');
@@ -611,7 +626,7 @@ class Talk extends PureComponent<Props, State> {
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
             <div className={'d-flex align-items-center'}>
-              <Avatar image={''} title={talk.title} /> &nbsp;
+              <Avatar image={talk.avatar_src} title={talk.title} /> &nbsp;
               <strong>{talk.title}</strong>
             </div>
             {this.renderTalkStatus()}
@@ -1946,12 +1961,71 @@ class Talk extends PureComponent<Props, State> {
       .catch(err => console.log(err.response.data.message));
   };
 
+  private renderAvatarTalk() {
+    const onAvatarChange = (avatar: File) => {
+      const editFields = this.state.editFields;
+      editFields.avatar = avatar;
+      this.setState({
+        editFields
+      });
+      this.forceUpdate();
+    };
+
+    const onAvatarRemove = () => {
+      const editFields = this.state.editFields;
+      editFields.avatar = undefined;
+      this.setState({
+        editFields
+      });
+    };
+
+    if (
+      this.state.editFields.avatar_str !== '' &&
+      this.state.editFields.avatar_str !== undefined &&
+      this.state.editFields.avatar === undefined
+    ) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.talk.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar_str}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.talk.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    }
+  }
+
   private renderEditForm = () => {
     const editFields = this.state.editFields;
     const handleHide = () => {
       this.setState({
         editFields: {
-          ...this.state.talk
+          avatar: undefined,
+          avatar_str: this.state.talk.avatar_src,
+          dateEnd: this.state.talk.dateEnd,
+          dateStart: this.state.talk.dateStart,
+          description: this.state.talk.description,
+          hasLivestream: this.state.talk.hasLivestream,
+          livestreamURL: this.state.talk.livestreamURL,
+          local: this.state.talk.local,
+          title: this.state.talk.title
         },
         editFormOpen: false
       });
@@ -1991,6 +2065,9 @@ class Talk extends PureComponent<Props, State> {
             <Modal.Title>{dictionary.edit_talk[this.context]}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <div id="avatarEditTalk" className={styles.avatarEdit}>
+              {this.renderAvatarTalk()}
+            </div>
             <Form>
               <Form.Group controlId={'edit_talk.title'}>
                 <Form.Label>{dictionary.title[this.context]}</Form.Label>
@@ -2234,6 +2311,11 @@ class Talk extends PureComponent<Props, State> {
     }
 
     const formData = new FormData();
+
+    if (editFields.avatar !== undefined) {
+      formData.append('avatar', editFields.avatar);
+    }
+
     formData.append('title', editFields.title);
     formData.append('description', editFields.description);
     formData.append('dateEnd', editFields.dateEnd);
@@ -2249,11 +2331,9 @@ class Talk extends PureComponent<Props, State> {
       })
       .then(() => {
         this.setState({
-          editFormOpen: false,
-          talk: {
-            ...editFields
-          }
+          editFormOpen: false
         });
+        window.location.reload();
       })
       .catch(err => console.log(err.response.data.message));
   };
