@@ -89,6 +89,15 @@ class Conferences extends PureComponent<Props, State> {
 
   private renderNavbar = () => {
     const handleClick = value => {
+      const compare = (a, b, parameter) => {
+        if (a[parameter] < b[parameter]) {
+          return this.state.orderDirection === 'ASC' ? -1 : 1;
+        }
+        if (a[parameter] > b[parameter]) {
+          return this.state.orderDirection === 'ASC' ? 1 : -1;
+        }
+        return 0;
+      };
       if (this.state.orderBy === value) {
         this.setState({
           orderDirection: this.state.orderDirection === 'ASC' ? 'DESC' : 'ASC'
@@ -97,6 +106,26 @@ class Conferences extends PureComponent<Props, State> {
         this.setState({
           orderBy: value,
           orderDirection: 'ASC'
+        });
+      }
+
+      if (this.state.orderBy === 'title') {
+        this.setState({
+          conferences: this.state.conferences.sort((a, b) =>
+            compare(a, b, 'title')
+          )
+        });
+      } else if (this.state.orderBy === 'start') {
+        this.setState({
+          conferences: this.state.conferences.sort((a, b) =>
+            compare(a, b, 'datestart')
+          )
+        });
+      } else if (this.state.orderBy === 'end') {
+        this.setState({
+          conferences: this.state.conferences.sort((a, b) =>
+            compare(a, b, 'dateend')
+          )
         });
       }
     };
@@ -109,45 +138,6 @@ class Conferences extends PureComponent<Props, State> {
             <Card.Title>{dictionary.conferences[this.context]}</Card.Title>
           </Card.Header>
           <Card.Body className={'d-flex flex-column justify-content-start'}>
-            {/*<SplitButton
-              id={'conferences_order_by'}
-              title={`${dictionary.orderBy[this.context]}: ${this.state.orderTitle}`}
-              variant={'secondary'}
-              alignRight={true}
-              onClick={toggleDirection}
-            >
-              <Dropdown.Item
-                as={'button'}
-                className={
-                  this.state.orderBy === 'title'
-                    ? 'bg-primary text-light'
-                    : 'bg-light text-dark'
-                }
-                onClick={() => handleClick('title')}
-              >
-                { dictionary.title[this.context] }
-              </Dropdown.Item>
-              <Dropdown.Item
-                as={'button'}
-                className={
-                  this.state.orderBy === 'start'
-                    ? 'bg-primary text-light'
-                    : 'bg-light text-dark'
-                }
-                onClick={() => handleClick('start')}
-              >
-                { dictionary.starting_date[this.context] }</Dropdown.Item>
-              <Dropdown.Item
-                as={'button'}
-                className={
-                  this.state.orderBy === 'end'
-                    ? 'bg-primary text-light'
-                    : 'bg-light text-dark'
-                }
-                onClick={() => handleClick('end')}
-              >
-                { dictionary.ending_date[this.context] }</Dropdown.Item>
-            </SplitButton>*/}
             <Card.Title className={'mb-2'}>
               {dictionary.orderBy[this.context]}
             </Card.Title>
@@ -200,36 +190,6 @@ class Conferences extends PureComponent<Props, State> {
   };
 
   private renderConferences = () => {
-    const compare = (a, b, parameter) => {
-      if (a[parameter] < b[parameter]) {
-        return this.state.orderDirection === 'ASC' ? -1 : 1;
-      }
-      if (a[parameter] > b[parameter]) {
-        return this.state.orderDirection === 'ASC' ? 1 : -1;
-      }
-      return 0;
-    };
-
-    if (this.state.orderBy === 'title') {
-      this.setState({
-        conferences: this.state.conferences.sort((a, b) =>
-          compare(a, b, 'title')
-        )
-      });
-    } else if (this.state.orderBy === 'start') {
-      this.setState({
-        conferences: this.state.conferences.sort((a, b) =>
-          compare(a, b, 'datestart')
-        )
-      });
-    } else if (this.state.orderBy === 'end') {
-      this.setState({
-        conferences: this.state.conferences.sort((a, b) =>
-          compare(a, b, 'dateend')
-        )
-      });
-    }
-
     return (
       <CardGroup className={'mt-3'}>
         {this.state.conferences.map(conference => {
