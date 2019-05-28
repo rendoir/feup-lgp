@@ -313,7 +313,6 @@ class Conference extends PureComponent<Props, State> {
             </Card.Title>
           )}
         </Card.Header>
-        <Card.Body>CAROUSEL WITH FEATURED PRODUCTS</Card.Body>
         <Card.Footer>
           <a
             href={`/conference/${this.id}/shop`}
