@@ -3,10 +3,18 @@ import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
-import { Avatar, Button, Icon, InputNext, Select } from '../components';
+import {
+  Avatar,
+  AvatarSelector,
+  Button,
+  Icon,
+  InputNext,
+  Select
+} from '../components';
 
 import Switcher from '../components/Switcher/Switcher';
 import styles from '../styles/Feed.module.css';
+
 // - Import utils
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -36,7 +44,6 @@ type State = {
   postModalOpen: boolean;
   request: {
     avatar?: File;
-    avatar_str?: string;
     title: string;
     about: string;
     privacy: string;
@@ -48,6 +55,8 @@ type State = {
   };
   editFormOpen: boolean;
   editFields: {
+    avatar?: File;
+    avatar_str?: string;
     title: string;
     description: string;
     place: string;
@@ -101,10 +110,13 @@ class Conference extends PureComponent<Props, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
+      avatar: undefined,
       dateEnd: '',
       dateStart: '',
       description: '',
       editFields: {
+        avatar: undefined,
+        avatar_str: '',
         dateEnd: '',
         dateStart: '',
         description: '',
@@ -127,6 +139,7 @@ class Conference extends PureComponent<Props, State> {
       privacy: '',
       request: {
         about: '',
+        avatar: undefined,
         dateEnd: '',
         dateStart: '',
         livestream: '',
@@ -164,6 +177,8 @@ class Conference extends PureComponent<Props, State> {
           dateStart: conference.datestart,
           description: conference.about,
           editFields: {
+            avatar: undefined,
+            avatar_str: conference.avatar_src,
             dateEnd: conference.dateend,
             dateStart: conference.datestart,
             description: conference.about,
@@ -324,13 +339,13 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
-  private apiGetTalkAvatar(talk: any) {
+  private apiGetTalkAvatar(talk: any, index: number) {
     if (talk.avatar === undefined || talk.avatar === null) {
       return;
     }
 
     axiosInstance
-      .get(`/talks/${this.id}/avatar/${talk.avatar}`, {
+      .get(`/talk/${this.id}/avatar/${talk.avatar}`, {
         responseType: 'arraybuffer'
       })
       .then(res => {
@@ -341,6 +356,10 @@ class Conference extends PureComponent<Props, State> {
           new Buffer(res.data, 'binary').toString('base64');
 
         talk.avatar_src = src;
+        const talks = this.state.talks;
+        talks[index] = talk;
+        this.setState({ talks });
+        this.forceUpdate();
       })
       .catch(() => {
         console.log('Failed to get conference avatar');
@@ -392,8 +411,8 @@ class Conference extends PureComponent<Props, State> {
         </div>
         <hr />
         <div>
-          {this.state.talks.map(talk => {
-            this.apiGetTalkAvatar(talk);
+          {this.state.talks.map((talk, index) => {
+            this.apiGetTalkAvatar(talk, index);
             const dateEnd = new Date(talk.dateend).toLocaleDateString(
               dictionary.date_format[this.context],
               this.dateOptions
@@ -444,6 +463,38 @@ class Conference extends PureComponent<Props, State> {
     );
   };
 
+  private renderAvatarTalk() {
+    const onAvatarChange = (avatar: File) => {
+      const request = this.state.request;
+      request.avatar = avatar;
+      this.setState({
+        request
+      });
+      this.forceUpdate();
+    };
+
+    const onAvatarRemove = () => {
+      const request = this.state.request;
+      request.avatar = undefined;
+      this.setState({
+        request
+      });
+    };
+
+    return (
+      <div className={styles.avatarBlock}>
+        <AvatarSelector
+          title={this.state.request.title}
+          placeholder={'empty'}
+          avatar={this.state.request.avatar}
+          size={140}
+          onRemove={onAvatarRemove}
+          onChange={onAvatarChange}
+        />
+      </div>
+    );
+  }
+
   private renderTalkForm = () => {
     const handleShow = event => {
       event.preventDefault();
@@ -487,6 +538,9 @@ class Conference extends PureComponent<Props, State> {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className={'d-flex flex-column'}>
+            <div id="avatarEditTalk" className={styles.avatarEdit}>
+              {this.renderAvatarTalk()}
+            </div>
             <InputNext
               onChange={handleChange}
               id={`talk_title_field`}
@@ -608,17 +662,27 @@ class Conference extends PureComponent<Props, State> {
       return;
     }
 
+    const formData = new FormData();
+
+    if (this.state.request.avatar !== undefined) {
+      formData.append('avatar', this.state.request.avatar);
+    }
+
+    formData.append('about', request.about.trim());
+    formData.append('author', String(this.props.user.id));
+    formData.append('conference', String(this.id));
+    formData.append('dateEnd', request.dateEnd.trim());
+    formData.append('dateStart', request.dateStart.trim());
+    formData.append('livestream', request.livestream.trim());
+    formData.append('privacy', request.privacy.trim());
+    formData.append('title', request.title.trim());
+    formData.append('local', request.local.trim());
+
     axiosInstance
-      .post('/talk', {
-        about: request.about.trim(),
-        author: this.props.user.id,
-        conference: this.id,
-        dateEnd: request.dateEnd.trim(),
-        dateStart: request.dateStart.trim(),
-        livestream: request.livestream.trim(),
-        local: request.local.trim(),
-        privacy: request.privacy.trim(),
-        title: request.title.trim()
+      .post('/talk', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
       .then(res => {
         this.resetState();
@@ -627,11 +691,64 @@ class Conference extends PureComponent<Props, State> {
       .catch(error => console.log(error));
   };
 
+  private renderAvatarConference() {
+    const onAvatarChange = (avatar: File) => {
+      const editFields = this.state.editFields;
+      editFields.avatar = avatar;
+      this.setState({
+        editFields
+      });
+      this.forceUpdate();
+    };
+
+    const onAvatarRemove = () => {
+      const editFields = this.state.editFields;
+      editFields.avatar = undefined;
+      this.setState({
+        editFields
+      });
+    };
+
+    if (
+      this.state.editFields.avatar_str !== '' &&
+      this.state.editFields.avatar_str !== undefined &&
+      this.state.editFields.avatar === undefined
+    ) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar_str}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    }
+  }
+
   private renderEditForm = () => {
     const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
         editFields: {
+          avatar: undefined,
+          avatar_str: this.state.avatar,
           dateEnd: this.state.dateEnd.trim(),
           dateStart: this.state.dateStart.trim(),
           description: this.state.description.trim(),
@@ -667,6 +784,9 @@ class Conference extends PureComponent<Props, State> {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <div id="avatarEdit" className={styles.avatarEdit}>
+              {this.renderAvatarConference()}
+            </div>
             <InputNext
               onChange={handleChange}
               id={'conference_edit_title_field'}
@@ -748,23 +868,35 @@ class Conference extends PureComponent<Props, State> {
     editFields.dateEnd = editFields.dateEnd.trim();
     editFields.place = editFields.place.trim();
 
+    const formData = new FormData();
+
+    if (this.state.editFields.avatar !== undefined) {
+      formData.append('avatar', this.state.editFields.avatar);
+    }
+
+    formData.append('about', editFields.description);
+    formData.append('dateEnd', editFields.dateEnd);
+    formData.append('dateStart', editFields.dateStart);
+    formData.append('title', editFields.title);
+    formData.append('local', editFields.place);
+
     if (Object.values(errors).includes(true)) {
       return;
     } else {
       axiosInstance
-        .put(`/conference/${this.id}`, {
-          about: editFields.description,
-          dateEnd: editFields.dateEnd,
-          dateStart: editFields.dateStart,
-          local: editFields.place,
-          title: editFields.title
+        .put(`/conference/${this.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
         .then(() => {
           this.setState({
             ...this.state,
-            ...editFields,
+            // ...editFields,
             editFormOpen: false
           });
+
+          window.location.reload();
         })
         .catch(err => {
           console.log(err);

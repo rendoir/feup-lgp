@@ -72,8 +72,8 @@ class Conferences extends PureComponent<Props, State> {
         }
       })
       .then(res => {
+        this.apiGetConferencesAvatars(res.data.conferences);
         this.setState({
-          conferences: res.data.conferences,
           error: '',
           orderBy: 'title',
           orderDirection: 'ASC',
@@ -86,6 +86,32 @@ class Conferences extends PureComponent<Props, State> {
         });
       });
   };
+
+  private apiGetConferencesAvatars(conferences: any) {
+    for (const conference of conferences) {
+      if (conference.avatar === undefined || conference.avatar === null) {
+        conference.avatar_src = '';
+      } else {
+        axiosInstance
+          .get(`/conference/${conference.id}/avatar/${conference.avatar}`, {
+            responseType: 'arraybuffer'
+          })
+          .then(res => {
+            const src =
+              'data:' +
+              conference.avatar_mimeType +
+              ';base64, ' +
+              new Buffer(res.data, 'binary').toString('base64');
+            conference.avatar_src = src;
+            this.setState({ conferences });
+            this.forceUpdate();
+          })
+          .catch(() => {
+            console.log('Failed to get conference avatar');
+          });
+      }
+    }
+  }
 
   private renderNavbar = () => {
     const handleClick = value => {
@@ -216,7 +242,7 @@ class Conferences extends PureComponent<Props, State> {
               <Card className={styles.border}>
                 <Card.Header className={className}>
                   <Avatar
-                    image={conference.avatar}
+                    image={conference.avatar_src}
                     title={conference.title}
                     className={'mr-2'}
                   />

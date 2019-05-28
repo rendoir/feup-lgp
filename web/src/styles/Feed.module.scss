@@ -108,3 +108,16 @@
 		//color: $white;
 	}
 }
+
+.avatarBlock {
+	width: 140px;
+	margin-right: 34px;
+	flex: 0 0 auto;
+  }
+
+.avatarEdit {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
