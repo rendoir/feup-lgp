@@ -50,7 +50,7 @@ class EditProductModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id={`edit_product_modal`}
+        id={`edit_product_modal_${this.props.id}`}
         className="modal fade"
         tabIndex={-1}
         role="dialog"
