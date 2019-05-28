@@ -381,6 +381,10 @@ class Talk extends PureComponent<Props, State> {
         this.tags = tags;
 
         this.setState({
+          challengeFields: {
+            ...this.state.challengeFields,
+            post: posts[0] ? posts[0].id : 0
+          },
           challenges,
           editFields: {
             dateEnd: talk.dateend,
@@ -1251,7 +1255,15 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderChallengeForm = () => {
-    const handleOpen = () => this.setState({ challengeFormOpen: true });
+    const handleOpen = () => {
+      this.setState({
+        challengeFields: {
+          ...this.state.challengeFields,
+          post: this.state.posts[0] ? this.state.posts[0].id : undefined
+        },
+        challengeFormOpen: true
+      });
+    };
     const handleClose = () => {
       this.setState({
         challengeFields: {
