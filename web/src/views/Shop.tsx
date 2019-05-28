@@ -1,7 +1,10 @@
 import * as React from 'react';
+
+import '../styles/Shop.css';
+
 import Product from '../components/Product/Product';
 import AddProductModal from '../components/ProductModal/AddProductModal';
-import '../styles/Shop.css';
+
 import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -18,37 +21,47 @@ type Props = {
 
 type State = {
   addProductSuccess: boolean;
-  conferenceID: number | undefined;
   conferenceOwner: number | undefined;
   error: boolean;
   errorMessage: string;
+  fetchingUserPoints: boolean;
   isLoading: boolean;
   products: any[];
   showAddProductAlert: boolean;
+  userPoints: number;
 };
 
 class Shop extends React.Component<Props, State> {
   public static contextType = LanguageContext;
+  public isConferenceShop: boolean; // Indicates if the shop is general (false) or belongs to a conference (true)
+  public conferenceId: number | undefined;
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
     super(props);
 
+    this.conferenceId = this.props.match.params.id;
+    this.isConferenceShop = this.conferenceId !== undefined;
+
     this.state = {
       addProductSuccess: true,
-      conferenceID: undefined,
       conferenceOwner: undefined,
       error: false,
       errorMessage: '',
+      fetchingUserPoints: true,
       isLoading: true,
       products: [],
-      showAddProductAlert: true
+      showAddProductAlert: true,
+      userPoints: 0
     };
   }
 
   public componentWillMount() {
     this.apiGetProducts();
-    this.apiGetConfOwner();
+    this.apiGetUserPoints();
+    if (this.isConferenceShop) {
+      this.apiGetConfOwner();
+    }
   }
 
   public render() {
@@ -60,64 +73,20 @@ class Shop extends React.Component<Props, State> {
               <h1 className="my-4" />
               <div className="card h-100">
                 <div className="card-body">
-                  <h6>
-                    {dictionary.shop_you_have[this.context]}
-                    <a id="user-points"> x </a>
-                    {dictionary.shop_points[this.context]}
-                  </h6>
+                  {!this.state.fetchingUserPoints && (
+                    <h6>
+                      {dictionary.shop_you_have[this.context]}
+                      <a id="user-points"> {this.state.userPoints} </a>
+                      {dictionary.shop_points[this.context]}
+                    </h6>
+                  )}
                 </div>
               </div>
             </div>
             {this.getAddProductButton()}
           </div>
-
-          <div id="products-carousel" className="col-lg-9">
-            <div
-              id="carouselExampleIndicators"
-              className="carousel slide my-4"
-              data-ride="carousel"
-            >
-              <ol className="carousel-indicators">
-                <li
-                  data-target="#carouselExampleIndicators"
-                  data-slide-to="0"
-                  className="active"
-                >
-                  {' '}
-                </li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1">
-                  {' '}
-                </li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2">
-                  {' '}
-                </li>
-              </ol>
-              <div className="carousel-inner" role="listbox">
-                <div className="carousel-item active">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="First slide"
-                  />
-                </div>
-                <div className="carousel-item">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="Second slide"
-                  />
-                </div>
-                <div className="carousel-item">
-                  <img
-                    className="d-block img-fluid"
-                    src="http://placehold.it/900x350"
-                    alt="Third slide"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row">{this.renderProducts()}</div>
+          <div id="" className="col-lg-9">
+            <div className="slide row my-4">{this.renderProducts()}</div>
           </div>
         </div>
       </div>
@@ -125,19 +94,16 @@ class Shop extends React.Component<Props, State> {
   }
 
   private apiGetProducts = () => {
-    let conferenceId;
-    let url;
-    if (this.props.match.params.id === undefined) {
-      conferenceId = null;
-      url = '/shop/';
-    } else {
-      conferenceId = this.props.match.params.id;
-      url = `/conference/${this.props.match.params.id}/shop/`;
-    }
+    const url = this.isConferenceShop
+      ? `/conference/${this.conferenceId}/shop`
+      : '/shop';
+
     this.setState({ isLoading: true }, () => {
       axiosInstance
         .get(url, {
-          params: { conferenceId }
+          params: {
+            conferenceId: this.conferenceId
+          }
         })
         .then(res => {
           this.setState({
@@ -154,25 +120,46 @@ class Shop extends React.Component<Props, State> {
     });
   };
 
+  private apiGetUserPoints = () => {
+    const url = this.isConferenceShop
+      ? `/users/conference_points/${this.conferenceId}`
+      : '/users/1/points';
+    axiosInstance
+      .get(url, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(res => {
+        this.setState({
+          fetchingUserPoints: false,
+          userPoints: res.data.points
+        });
+      })
+      .catch(error => console.log(error));
+  };
+
   private apiGetConfOwner = () => {
-    if (!(this.props.match.params.id === undefined)) {
-      axiosInstance
-        .get(`/conference/${this.props.match.params.id}`, {
-          params: {
-            user: this.props.user.id
-          }
-        })
-        .then(res => {
-          const conference = res.data.conference;
-          this.setState({
-            conferenceOwner: conference.user_id
-          });
-        })
-        .catch(error => console.log(error.response.data.message));
-    }
+    axiosInstance
+      .get(`/conference/${this.conferenceId}`, {
+        params: {
+          user: this.props.user.id
+        }
+      })
+      .then(res => {
+        const conference = res.data.conference;
+        this.setState({
+          conferenceOwner: conference.user_id
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
   };
 
   private renderProducts = () => {
+    if (this.state.fetchingUserPoints) {
+      return null;
+    }
+
     return this.state.products.map(product => (
       <Product
         key={product.id}
@@ -184,9 +171,11 @@ class Shop extends React.Component<Props, State> {
         points={product.points}
         stock={product.stock}
         image={product.image}
-        conferenceId={this.state.conferenceID}
+        conferenceId={this.conferenceId}
         conferenceOwner={this.state.conferenceOwner}
         user={this.props.user}
+        enoughPoints={this.state.userPoints >= product.points}
+        updateUserPoints={this.apiGetUserPoints}
       />
     ));
   };
@@ -194,7 +183,7 @@ class Shop extends React.Component<Props, State> {
   private getAddProductButton() {
     let permissions = false;
 
-    if (this.props.match.params.id === undefined && this.auth.isAdmin()) {
+    if (!this.isConferenceShop && this.auth.isAdmin()) {
       permissions = true;
     } else {
       if (this.auth.getUserPayload().id === this.state.conferenceOwner) {
@@ -228,7 +217,7 @@ class Shop extends React.Component<Props, State> {
   }
 
   private getAddProductModal() {
-    return <AddProductModal conference_id={this.props.match.params.id} />;
+    return <AddProductModal conference_id={this.conferenceId} />;
   }
 }
 

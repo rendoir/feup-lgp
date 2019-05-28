@@ -108,6 +108,19 @@ adminRouter.get('/users', controller.getAllUsers);
 adminRouter.post('/:id', controller.isUserAdmin);
 
 /**
+ * @api {get} /api/admin/product_exchange_notifications Get list of products exchanged by users
+ * @apiName Get-Product-Exchange-Notifications
+ * @apiGroup Admin
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.get('/product_exchange_notifications', controller.getProductExchangeNotifications);
+
+/**
  * @api {get} /api/admin/notifications Get list of reported content who has not been subject of admin review
  * @apiName Get-Report-Notifications
  * @apiGroup Admin
@@ -138,18 +151,7 @@ adminRouter.get('/amount_notifications', controller.amountReportNotifications);
  * @apiName Get-Report-Reasons
  * @apiGroup Admin
  *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error ocurred while gettting users'
- *     }
- */
-adminRouter.post('/report_reasons', controller.getReportReasons);
-
-/**
- * @api {post} /api/admin/ignore_reports Ignore all reports to a given content
- * @apiName Ignore-Reports
- * @apiGroup Admin
+ * The id paramater is in the URL to avoid routing errors
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -157,7 +159,22 @@ adminRouter.post('/report_reasons', controller.getReportReasons);
  *      message: 'An error ocurred while gettting users'
  *     }
  */
-adminRouter.post('/ignore_reports', controller.ignoreContentReports);
+adminRouter.post('/:id/report_reasons', controller.getReportReasons);
+
+/**
+ * @api {post} /api/admin/ignore_reports Ignore all reports to a given content
+ * @apiName Ignore-Reports
+ * @apiGroup Admin
+ *
+ * The id paramater is in the URL to avoid routing errors
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error ocurred while gettting users'
+ *     }
+ */
+adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
 
 /**
  * @api {post} /api/admin Make user an admin

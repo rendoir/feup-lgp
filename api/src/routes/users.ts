@@ -227,3 +227,35 @@ usersRouter.put('/:id/invite_notified', controller.inviteNotified);
  *     }
  */
 usersRouter.post('/:id/edit', controller.updateProfile);
+
+/**
+ * @api {get} /api/users/:id/points Get the points availabe for a user on the general shop
+ * @apiName Get-General-Points
+ * @apiGroup Users
+ *
+ * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL due to route problems.
+ *
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.get('/:id/points', controller.getGeneralPoints);
+
+/**
+ * @api {get} /api/users/conference_points/:conf_id Get the points availabe for a user on a given conference shop
+ * @apiName Get-Conference-Points
+ * @apiGroup Users
+ *
+ * @apiParam {number}   conf_id   Id of the conference where we are fetching the user points
+ *
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.get('/conference_points/:conf_id', controller.getConferencePoints);

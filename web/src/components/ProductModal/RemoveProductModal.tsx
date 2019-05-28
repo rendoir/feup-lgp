@@ -36,8 +36,8 @@ class RemoveProductModal extends Component<IProps, IState> {
   public render() {
     return (
       <div
-        id={`remove_product_modal`}
-        className="modal fade"
+        id={`remove_product_modal_${this.props.id}`}
+        className="modal fade remove-product"
         tabIndex={-1}
         role="dialog"
         aria-labelledby="exampleModalCenterTitle"
