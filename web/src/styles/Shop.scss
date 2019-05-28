@@ -73,6 +73,23 @@
     background-color: #042a63;
   }
 
+  #shop-admin-buttons{
+    button {
+      display: block;
+      background: none;
+      border: none;
+      padding: 0.3em 0.5em;
+    }
+
+    button:hover {
+      background: rgb(245, 245, 245);
+    }
+
+    button:focus {
+      outline: none;
+    }
+  }
+
   @media screen and (max-width: 1500px) {
     .container {
       margin-left: 0;

@@ -291,9 +291,12 @@ class Post extends Component<Props, IState> {
   }
 
   public handleStars() {
-    const userRate =
+    let userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.12;
 
+    if (isNaN(userRate)) {
+      userRate = 0;
+    }
     if (
       !this.state.postRated &&
       this.auth.getUserPayload().id !== this.props.user_id

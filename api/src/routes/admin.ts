@@ -79,6 +79,35 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
 adminRouter.get('/users', controller.getAllUsers);
 
 /**
+ * @api {post} /api/admin/isAdmin Know if user is admin
+ * @apiName Is-admin
+ * @apiGroup Admin
+ *
+ * @apiParam {number} is ID of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to add a admin'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while adding admin'
+ *     }
+ */
+adminRouter.post('/:id', controller.isUserAdmin);
+
+/**
  * @api {get} /api/admin/notifications Get list of reported content who has not been subject of admin review
  * @apiName Get-Report-Notifications
  * @apiGroup Admin
