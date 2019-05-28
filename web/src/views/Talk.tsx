@@ -2202,7 +2202,7 @@ class Talk extends PureComponent<Props, State> {
     const editFields = this.state.editFields;
 
     Object.keys(editFields).map(key => {
-      if (key !== 'hasLivestream') {
+      if (key !== 'hasLivestream' && key !== 'avatar' && key !== 'avatar_str') {
         editFields[key] = editFields[key].trim();
       }
     });
@@ -2299,7 +2299,11 @@ class Talk extends PureComponent<Props, State> {
     }
 
     Object.entries(editFields).forEach(entry => {
-      if (entry[0] !== 'hasLivestream') {
+      if (
+        entry[0] !== 'hasLivestream' &&
+        entry[0] !== 'avatar' &&
+        entry[0] !== 'avatar_str'
+      ) {
         if (!this.validateInput(entry[0], entry[1])) {
           error = true;
         }
