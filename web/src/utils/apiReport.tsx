@@ -91,7 +91,7 @@ export async function apiIgnoreReports(
   reportedContentId: number,
   reportedContentType: string
 ): Promise<boolean> {
-  const apiURL = `admin/ignore_reports`;
+  const apiURL = `admin/1/ignore_reports`;
   const body = {
     content_id: reportedContentId,
     content_type: reportedContentType

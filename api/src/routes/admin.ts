@@ -166,13 +166,15 @@ adminRouter.post('/:id/report_reasons', controller.getReportReasons);
  * @apiName Ignore-Reports
  * @apiGroup Admin
  *
+ * The id paramater is in the URL to avoid routing errors
+ *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *      message: 'An error ocurred while gettting users'
  *     }
  */
-adminRouter.post('/ignore_reports', controller.ignoreContentReports);
+adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
 
 /**
  * @api {post} /api/admin Make user an admin

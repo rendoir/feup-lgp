@@ -535,6 +535,18 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private getNotifications() {
+    return (
+      <div
+        id="backoffice_notifications_area"
+        className="col-12 col-md-9 mt-2 mt-md-0"
+      >
+        {this.getReportNotifications()}
+        {this.getProductExchangeNotifications()}
+      </div>
+    );
+  }
+
+  private getReportNotifications() {
     if (this.state.fetchingNotifications) {
       return null;
     } else if (!this.state.notifications) {
@@ -563,22 +575,14 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       );
     });
 
-    return (
-      <div
-        id="backoffice_notifications_area"
-        className="col-12 col-md-9 mt-2 mt-md-0"
-      >
-        {notificationList}
-        {this.getProductExchangeNotifications()}
-      </div>
-    );
+    return notificationList;
   }
 
   private getProductExchangeNotifications() {
     if (
       this.state.fetchingProductExchangeNotifications ||
-      !this.state.notifications ||
-      this.state.notifications.length === 0
+      !this.state.productExchangeNotifications ||
+      this.state.productExchangeNotifications.length === 0
     ) {
       return null;
     }
