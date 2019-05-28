@@ -117,7 +117,7 @@ export let dictionary: Dictionary = {
     PT:
       'Uma palestra aberta é visivel para outros utilizadores e pode ter seu conteúdo e informações modificadas.',
     EN:
-      'An open talk é visible to other users and can have its content and info change.'
+      'An open talk is visible to other users and can have its content and info change.'
   },
   report_talk: { PT: 'Reportar palestra', EN: 'Report talk' },
   archive_talk: { PT: 'Arquivar palestra', EN: 'Archive talk' },
@@ -363,13 +363,21 @@ export let dictionary: Dictionary = {
     PT: 'Carregando subscritores não convidados...',
     EN: 'Fetching uninvited subscribers...'
   },
+  invite_subs_header: {
+    PT: 'subscritores / Subscreveste',
+    EN: 'Subscribers / Subscribed'
+  },
   invite_all_subs: {
-    PT: 'Convidar todos os subscritos',
-    EN: 'Invite all subscribers'
+    PT: 'Convidar todos os seus subscritos ou que subscreveste',
+    EN: 'Invite all yours subscribers that you subscribed'
   },
   invite_all_subs_done: {
-    PT: 'Todos os subscritos foram convidados',
-    EN: 'All subscribers have been invited'
+    PT: 'Utilizador(es) convidado(s) com sucesso',
+    EN: 'Successfully invited user(s)'
+  },
+  invite_all_subs_error: {
+    PT: 'Um erro ocorreu tentando convidar o(s) utilizador(es).',
+    EN: 'An error occurred trying to invite user(s)'
   },
   inviting_subs: { PT: 'Convidando subscritos', EN: 'Inviting subscribers...' },
   invite_without: { PT: 'sem convite', EN: 'without invitation' },
@@ -382,7 +390,10 @@ export let dictionary: Dictionary = {
     PT: 'Convide utilizadores para a sua',
     EN: 'Invite users to your'
   },
-  invite_sucess: { PT: 'Convite enviado com sucesso', EN: 'Invitation Sent' },
+  invite_sucess: {
+    PT: 'Convite(s) enviado com sucesso',
+    EN: 'Invitation(s) Sent'
+  },
   invite_email_error: {
     PT: 'Por favor insira um email correto',
     EN: 'Enter a valid email address'
@@ -634,11 +645,28 @@ export let dictionary: Dictionary = {
     EN:
       "Are you sure you want do delete this product? It can't be retrieved later."
   },
-  empty: { PT: '', EN: '' },
   shipment_order: { PT: 'Ordem de entrega', EN: 'Shipment order' },
   ship_product: { PT: 'Enviar produto', EN: 'Ship product' },
   to_user: { PT: 'para o utilizador', EN: 'to user' },
-  product: { PT: 'Produto', EN: 'Product' }
+  product: { PT: 'Produto', EN: 'Product' },
+  product_error_message: {
+    PT: 'Produto inválido',
+    EN: 'Invalid product'
+  },
+  product_name_error_message: {
+    PT: 'Dê um nome ao produto',
+    EN: 'Give a name to the product'
+  },
+  product_points_error_message: {
+    PT:
+      'Introduza um número válido de pontos com que o produto deve ser vendido',
+    EN: 'Insert a valid number of points to sell the product'
+  },
+  product_stock_error_message: {
+    PT: 'Introduza uma quantidade válida em stock que o produto tem',
+    EN: 'Insert a valid stock quantity for the product'
+  },
+  empty: { PT: '', EN: '' }
 };
 
 export const LanguageContext: Context<string> = React.createContext<string>(

@@ -10,5 +10,5 @@ export * from './shop';
 export * from './tags';
 export * from './challenge';
 export * from './conference';
-export * from './invite';
 export * from './products';
+export * from './invite';

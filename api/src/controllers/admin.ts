@@ -145,8 +145,9 @@ export async function isUserAdmin(req, res) {
     const isRequesterAdmin = await isAdmin(req.params.id);
     if (isRequesterAdmin) {
         res.send(true);
+    } else {
+        res.send(false);
     }
-    res.send(false);
 }
 
 export async function addAdmin(req, res) {

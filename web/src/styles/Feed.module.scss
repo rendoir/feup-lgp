@@ -2,7 +2,7 @@
 
 .cardsLeft {
 	position: fixed;
-	top: 10%;
+	top: 6rem;
 	left: 0;
 
 	@media (max-width: 992px) {
@@ -12,7 +12,7 @@
 
 .cardsRight {
 	position: fixed;
-	top: 10%;
+	top: 6rem;
 	right: 0;
 
 	@media (max-width: 992px) {
@@ -35,7 +35,11 @@
 }
 
 .border {
-	border-color: $color-primary;
+	border-color: $color-primary !important;
+
+	&:focus {
+		box-shadow: 0 0 2px 1px $color-primary;
+	}
 }
 
 .link {
@@ -66,13 +70,19 @@
 		border-color: $color-primary;
 	}
 
-  &:disabled {
-    background-color: $greyish;
+	&:disabled {
+		background-color: $color-primary !important;
+		color: $white !important;
+		border-color: $color-primary;
+		opacity: 0.5 !important;
+	}
+}
 
-    &:hover {
-      background-color: shade($greyish, 30%) !important;
-    }
-  }
+.disabled {
+	background-color: $color-primary !important;
+	color: $white !important;
+	border-color: $color-primary;
+	opacity: 0.5 !important;
 }
 
 .arrow {
@@ -82,6 +92,11 @@
 .correctAnswer {
 	background-color: tint($color-success, 90%);
 	border-color: $color-success;
+
+	&:hover {
+		background-color: tint($color-success, 70%) !important;
+		//color: $white;
+	}
 }
 
 .wrongAnswer {
@@ -89,7 +104,7 @@
 	border-color: $color-danger;
 
 	&:hover {
-		background-color: tint($color-danger, 30%) !important;
-		color: $white;
+		background-color: tint($color-danger, 70%) !important;
+		//color: $white;
 	}
 }

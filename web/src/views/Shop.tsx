@@ -81,24 +81,6 @@ class Shop extends React.Component<Props, State> {
                     </h6>
                   )}
                 </div>
-                <form id="shop-left-box" className="form-inline my-2 my-lg-0">
-                  <h5 className="my-4" id="search-products">
-                    {dictionary.shop_search_points[this.context]}
-                  </h5>
-                  <input
-                    id="search-shop-input"
-                    className="form-control mr-sm-2"
-                    type="text"
-                    placeholder={dictionary.search[this.context]}
-                  />
-                  <button
-                    id="search-shop-button"
-                    className="form-control btn btn-secondary my-2 my-sm-0 fas fa-search"
-                    type="submit"
-                  >
-                    {' '}
-                  </button>
-                </form>
               </div>
             </div>
             {this.getAddProductButton()}

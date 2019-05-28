@@ -108,7 +108,7 @@ talkRouter.get('/:id/amount_uninvited_subscribers', controller.amountSubscribers
  *      message: 'An error message here'
  *     }
  */
-talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);
+talkRouter.get('/:id/uninvited_users_info', controller.getUninvitedUsers);
 
 /**
  * @api {post} /api/talk/:id/join Add user to talk participants

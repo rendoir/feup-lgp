@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import moment from 'moment';
 import React, { PureComponent } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -6,16 +7,33 @@ import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
+import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
+import openSocket from 'socket.io-client';
 import { Avatar } from '../components';
 import Post from '../components/Post/Post';
 import Switcher from '../components/Switcher/Switcher';
+import Tag from '../components/Tags/Tag';
 import styles from '../styles/Feed.module.css';
+import { getApiURL } from '../utils/apiURL';
 import AuthHelperMethods from '../utils/AuthHelperMethods';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
+
+export type User = {
+  avatar: string | undefined;
+  id: number;
+  name: string;
+};
+
+export type Message = {
+  id: number;
+  user: User;
+  text: string;
+  date: string;
+};
 
 export type Props = {
   match: {
@@ -30,18 +48,26 @@ export type State = {
   archiveModalOpen: boolean;
   challenges: any[];
   challengeFields: {
-    answer: string;
-    correctAnswer: string;
+    answer: string | undefined;
+    challengetype: 'question_options' | 'create_post' | 'comment_post';
+    correctAnswer: string | undefined;
     dateEnd: string;
     dateStart: string;
     description: string;
+    isComplete: boolean;
+    isCorrect: boolean;
     options: string[];
     points: number;
-    question: string;
+    post: string | undefined;
+    question: string | undefined;
     title: string;
-    type: 'MCQ' | 'POST' | 'CMT';
+    userAnswer: string;
   };
   challengeFormOpen: boolean;
+  chatFields: {
+    message: string;
+    messageList: Message[];
+  };
   editFields: {
     title: string;
     dateEnd: string;
@@ -66,7 +92,17 @@ export type State = {
     tags: boolean;
     title: boolean;
   };
+  errorFetching: boolean;
+  errorFetchingMessage: string;
   hideModalOpen: boolean;
+  inviteFields: {
+    email: string;
+    error: boolean;
+    results: any[];
+    selected: any[];
+    success: boolean;
+    userSubs: any[];
+  };
   inviteModalOpen: boolean;
   isArchived: boolean;
   isHidden: boolean;
@@ -74,12 +110,12 @@ export type State = {
   postFields: {
     title: string;
     description: string;
-    privacy: string;
     files: {
       images: File[];
       videos: File[];
       documents: File[];
     };
+    tag: string;
     tags: string[];
   };
   postFormOpen: boolean;
@@ -101,11 +137,15 @@ class Talk extends PureComponent<Props, State> {
   private readonly id: number;
   private readonly dateOptions: object;
   private readonly postDateOptions: object;
+  private readonly socketIo: SocketIOClient.Socket;
+  private readonly ioNamespace: number;
   private conferenceId: number | undefined;
   private conferenceTitle: string | undefined;
+  private owner: boolean | undefined;
   private ownerId: number | undefined;
   private ownerName: string | undefined;
-  private privacy: string;
+  private privacy: string | undefined;
+  private user: User;
   private errorMessages: {
     answer: string;
     correctAnswer: string;
@@ -119,6 +159,8 @@ class Talk extends PureComponent<Props, State> {
     question: string;
     title: string;
   };
+  private tags: any[];
+  private messageIndex: number;
   private auth = new AuthHelperMethods();
 
   constructor(props: Props) {
@@ -138,8 +180,6 @@ class Talk extends PureComponent<Props, State> {
       year: 'numeric'
     };
     this.id = this.props.match.params.id;
-    this.privacy = 'public';
-
     this.errorMessages = {
       answer: '',
       correctAnswer: '',
@@ -153,23 +193,59 @@ class Talk extends PureComponent<Props, State> {
       question: '',
       title: ''
     };
+    this.tags = [];
+
+    this.messageIndex = 0;
+    this.ioNamespace = this.id;
+    this.socketIo = openSocket(getApiURL(''));
+    this.socketIo.emit('groupConnect', this.ioNamespace);
+    setTimeout(() => {
+      const localSocketIo = openSocket(getApiURL(`/${this.ioNamespace}`));
+      localSocketIo.on('message', (msg: Message) => {
+        msg.id = ++this.messageIndex;
+        this.setState({
+          chatFields: {
+            ...this.state.chatFields,
+            messageList: [...this.state.chatFields.messageList, msg]
+          }
+        });
+      });
+    }, 1500);
+
+    this.user = {
+      avatar: undefined,
+      id: 0,
+      name: ''
+    };
+
+    this.apiGetTalk = this.apiGetTalk.bind(this);
+    this.apiGetSubs = this.apiGetSubs.bind(this);
+    this.apiGetUser = this.apiGetUser.bind(this);
 
     this.state = {
       archiveModalOpen: false,
       challengeFields: {
-        answer: '',
-        correctAnswer: '',
+        answer: undefined,
+        challengetype: 'question_options',
+        correctAnswer: undefined,
         dateEnd: '',
         dateStart: '',
         description: '',
+        isComplete: false,
+        isCorrect: false,
         options: [],
         points: 0,
-        question: '',
+        post: undefined,
+        question: undefined,
         title: '',
-        type: 'MCQ'
+        userAnswer: ''
       },
       challengeFormOpen: false,
       challenges: [],
+      chatFields: {
+        message: '',
+        messageList: []
+      },
       editFields: {
         dateEnd: '',
         dateStart: '',
@@ -194,7 +270,17 @@ class Talk extends PureComponent<Props, State> {
         tags: false,
         title: false
       },
+      errorFetching: false,
+      errorFetchingMessage: '',
       hideModalOpen: false,
+      inviteFields: {
+        email: '',
+        error: false,
+        results: [],
+        selected: [],
+        success: false,
+        userSubs: []
+      },
       inviteModalOpen: false,
       isArchived: false,
       isHidden: false,
@@ -206,7 +292,7 @@ class Talk extends PureComponent<Props, State> {
           images: [],
           videos: []
         },
-        privacy: '',
+        tag: '',
         tags: [],
         title: ''
       },
@@ -225,8 +311,12 @@ class Talk extends PureComponent<Props, State> {
     };
   }
 
-  public componentWillMount(): void {
-    this.apiGetTalk();
+  public async componentDidMount() {
+    await this.apiGetTalk();
+    await this.apiGetUser();
+    if (this.owner) {
+      await this.apiGetSubs();
+    }
   }
 
   public render() {
@@ -234,20 +324,28 @@ class Talk extends PureComponent<Props, State> {
       <div className={'container-fluid mt-3 col-lg-12'}>
         <div className={'row'}>{this.renderBreadcrumb()}</div>
         <div className={'row'}>
-          <div className={'col-lg-3'}>
+          <div className={'col-lg-3 order-lg-1'}>
             {this.renderInfoCard()}
-            {this.renderAdminCard()}
-            {this.renderChallengesCard()}
+            {this.owner ? this.renderAdminCard() : null}
+            {!this.state.errorFetching ? this.renderChallengesCard() : null}
           </div>
-          <div className={'col-lg-9'}>
-            {this.state.joined ? (
+          <div className={'col-lg-9 order-lg-2'}>
+            {this.state.errorFetching ? (
+              this.renderErrorFetchingAlert()
+            ) : this.state.joined || this.owner ? (
               <div className={'row'}>
-                <div className={'col-lg-7'}>{this.renderPosts()}</div>
-                <div className={'col-lg-5'}>
+                {this.state.inviteFields.error ||
+                this.state.inviteFields.success ? (
+                  <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
+                ) : null}
+                <div className={'col-lg-5 order-lg-2'}>
                   {this.state.talk.hasLivestream
                     ? this.renderLivestream()
                     : null}
                   {this.renderChat()}
+                </div>
+                <div className={'col-lg-7 order-lg-1'}>
+                  {this.renderPosts()}
                 </div>
               </div>
             ) : (
@@ -259,20 +357,28 @@ class Talk extends PureComponent<Props, State> {
     );
   }
 
-  private apiGetTalk = () => {
-    axiosInstance
+  /**
+   * Data requests
+   */
+
+  private async apiGetTalk() {
+    await axiosInstance
       .get(`/talk/${this.id}`)
       .then(res => {
         const talk = res.data.talk;
         const posts = res.data.posts;
         const challenges = res.data.challenges;
         const joined = res.data.isParticipating;
+        const tags = res.data.tags;
+        const userPoints = Number(res.data.userPoints);
 
         this.conferenceId = talk.conference_id;
         this.conferenceTitle = talk.conference_title;
-        this.ownerId = talk.user_id;
+        this.ownerId = Number(talk.user_id);
         this.ownerName = talk.user_name;
+        this.owner = this.ownerId === Number(this.auth.getUserPayload().id);
         this.privacy = talk.privacy;
+        this.tags = tags;
 
         this.setState({
           challenges,
@@ -285,6 +391,8 @@ class Talk extends PureComponent<Props, State> {
             local: talk.local,
             title: talk.title
           },
+          errorFetching: false,
+          errorFetchingMessage: '',
           isArchived: talk.archived,
           isHidden: talk.hidden,
           joined,
@@ -297,20 +405,95 @@ class Talk extends PureComponent<Props, State> {
             livestreamURL: talk.livestream_url,
             local: talk.local,
             title: talk.title
-          }
+          },
+          userPoints
         });
       })
       .catch(error => {
-        console.log(error.response.data.message);
+        this.setState({
+          errorFetching: true,
+          errorFetchingMessage: error.response.data.message
+        });
       });
-  };
+  }
 
-  /* Components */
+  private async apiGetSubs() {
+    await axiosInstance
+      .get(`/talk/${this.id}/uninvited_users_info`)
+      .then(res => {
+        const userSubs = res.data.uninvitedUsers;
+        this.setState({
+          inviteFields: {
+            ...this.state.inviteFields,
+            userSubs
+          }
+        });
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
+
+  private async apiGetUser() {
+    await axiosInstance
+      .get(`/users/${this.auth.getUserPayload().id}`)
+      .then(res => {
+        const user = res.data.user;
+        this.user = {
+          avatar: user.avatar,
+          id: Number(user.id),
+          name: `${user.first_name} ${user.last_name}`
+        };
+      })
+      .catch(error => console.log(error.response.data.message));
+  }
+
+  /**
+   * Components
+   */
 
   private renderJoinAlert = () => {
     return (
       <Alert variant={'danger'}>
         <p>{dictionary.user_not_joined[this.context]}.</p>
+      </Alert>
+    );
+  };
+
+  private renderInviteAlert = () => {
+    const handleClose = () => {
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          error: false,
+          success: false
+        }
+      });
+    };
+
+    return (
+      <Alert
+        variant={
+          this.state.inviteFields.error
+            ? 'danger'
+            : this.state.inviteFields.success
+            ? 'success'
+            : undefined
+        }
+        dismissible={true}
+        onClose={handleClose}
+      >
+        <p>
+          {this.state.inviteFields.error
+            ? dictionary.invite_all_subs_error[this.context]
+            : dictionary.invite_all_subs_done[this.context]}
+        </p>
+      </Alert>
+    );
+  };
+
+  private renderErrorFetchingAlert = () => {
+    return (
+      <Alert variant={'danger'}>
+        <p>{this.state.errorFetchingMessage}.</p>
       </Alert>
     );
   };
@@ -426,7 +609,9 @@ class Talk extends PureComponent<Props, State> {
             {dateEnd}
           </div>
         </Card.Body>
-        <Card.Footer>{this.renderJoin()}</Card.Footer>
+        {this.owner || this.state.errorFetching ? null : (
+          <Card.Footer>{this.renderJoin()}</Card.Footer>
+        )}
       </Card>
     );
   };
@@ -487,131 +672,6 @@ class Talk extends PureComponent<Props, State> {
         className={classNames('carousel-control-prev-icon', styles.arrow)}
       />
     );
-    const handleType = type => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.challenge_type[this.context]}
-          </Card.Subtitle>
-          {type === 'question_options' ? 'Multiple Choice Question' : null}
-          {type === 'create_post' ? 'Create post' : null}
-          {type === 'comment_post' ? 'Comment on a post' : null}
-        </>
-      );
-    };
-    const handleClick = (challenge, userAnswer) => {
-      if (challenge.isComplete) {
-        return;
-      }
-      axiosInstance
-        .post(`/talk/${this.id}/challenge/solve`, {
-          author: this.auth.getUserPayload().id,
-          challenge: challenge.id,
-          challenge_answer: userAnswer,
-          completion: userAnswer === challenge.correctAnswer
-        })
-        .then(() => {
-          const challenges = this.state.challenges;
-          challenges.forEach(ch => {
-            if (ch.id === challenge.id) {
-              challenge.userAnswer = userAnswer;
-              challenge.isCorrect = userAnswer === challenge.correctAnswer;
-              challenge.isComplete = true;
-            }
-          });
-          this.setState({
-            challenges
-          });
-        })
-        .catch(error => console.log(error.response.data.message));
-    };
-    const handleMCQ = challenge => {
-      const itemClassName = option => {
-        if (challenge.isComplete) {
-          if (challenge.userAnswer === option) {
-            return challenge.isCorrect
-              ? classNames(styles.correctAnswer, 'mb-1')
-              : classNames(styles.wrongAnswer, 'mb-1');
-          }
-        }
-        return 'mb-1';
-      };
-
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.question[this.context]}
-          </Card.Subtitle>
-          {challenge.question}
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.options[this.context]}
-          </Card.Subtitle>
-          <ListGroup>
-            {challenge.options.map((option, index) => (
-              <ListGroup.Item
-                key={index}
-                action={!challenge.isComplete}
-                onClick={() => handleClick(challenge, option)}
-                className={itemClassName(option)}
-              >
-                {option}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </>
-      );
-    };
-    const handleCMT = challenge => {
-      return (
-        <>
-          <Card.Subtitle className={'mt-3 mb-2'}>
-            {dictionary.post_to_com[this.context]}
-          </Card.Subtitle>
-          {this.state.posts.map(post => {
-            if (post.id === challenge.post) {
-              return (
-                <a href={`#${post.id}`} className={styles.link} key={post.id}>
-                  {post.title}
-                </a>
-              );
-            }
-          })}
-        </>
-      );
-    };
-    const handleChallenges = () => {
-      return this.state.challenges.map(challenge => {
-        return (
-          <Carousel.Item key={challenge.id}>
-            <Card
-              className={
-                challenge.challengetype !== 'question_options' &&
-                challenge.isComplete
-                  ? classNames('mr-5 ml-5', styles.correctAnswer)
-                  : 'mr-5 ml-5'
-              }
-              border={'light'}
-            >
-              <Card.Body>
-                <Card.Title>{challenge.title}</Card.Title>
-                <hr />
-                <Card.Subtitle className={'mb-2'}>
-                  {dictionary.description[this.context]}:
-                </Card.Subtitle>
-                {challenge.description}
-                {handleType(challenge.challengetype)}
-                {challenge.challengetype === 'question_options'
-                  ? handleMCQ(challenge)
-                  : null}
-                {challenge.challengetype === 'comment_post'
-                  ? handleCMT(challenge)
-                  : null}
-              </Card.Body>
-            </Card>
-          </Carousel.Item>
-        );
-      });
-    };
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
@@ -628,17 +688,150 @@ class Talk extends PureComponent<Props, State> {
             {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
-        <Card.Body className={'p-1'}>
+        <Card.Body className={'p-1'} style={{ height: '39rem' }}>
           {this.state.challenges.length > 0 ? (
             <Carousel
-              fade={true}
               indicators={false}
               controls={this.state.challenges.length > 1}
               nextIcon={nextIcon}
               prevIcon={prevIcon}
               interval={0}
+              className={'h-100'}
             >
-              {handleChallenges()}
+              {this.state.challenges.map(challenge => {
+                const cardBackgroundColor = challenge.isComplete
+                  ? challenge.isCorrect
+                    ? styles.correctAnswer
+                    : styles.wrongAnswer
+                  : undefined;
+                const challengeType = () => {
+                  if (challenge.challengetype === 'question_options') {
+                    return 'Multiple Choice Question';
+                  } else if (challenge.challengetype === 'create_post') {
+                    return 'Create post';
+                  } else {
+                    return 'Comment on a post';
+                  }
+                };
+                const handleClick = option => {
+                  if (challenge.isComplete) {
+                    return;
+                  }
+
+                  axiosInstance
+                    .post(`/talk/${this.id}/challenge/solve`, {
+                      author: this.auth.getUserPayload().id,
+                      challenge: challenge.id,
+                      challenge_answer: option,
+                      completion: option === challenge.correctAnswer
+                    })
+                    .then(() => {
+                      const challenges = this.state.challenges;
+                      let points = 0;
+                      challenges.forEach(ch => {
+                        if (ch.id === challenge.id) {
+                          challenge.userAnswer = option;
+                          challenge.isCorrect =
+                            option === challenge.correctAnswer;
+                          challenge.isComplete = true;
+                          points = challenge.isCorrect ? challenge.points : 0;
+                        }
+                      });
+                      this.setState({
+                        challenges,
+                        userPoints:
+                          Number(this.state.userPoints) + Number(points)
+                      });
+                      this.forceUpdate();
+                    })
+                    .catch(error => console.log(error.response.data.message));
+                };
+
+                return (
+                  <Carousel.Item key={challenge.id} className={'h-100'}>
+                    <Card border={'light'} className={'px-5 w-100'}>
+                      <Card.Header className={cardBackgroundColor}>
+                        <Card.Title className={'mb-0'}>
+                          {challenge.title}
+                        </Card.Title>
+                      </Card.Header>
+                      <Card.Body>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.description[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challenge.description}</p>
+                        <Card.Subtitle className={'w-100 mb-1'}>
+                          {dictionary.challenge_type[this.context]}
+                        </Card.Subtitle>
+                        <p className={'w-100 mb-3'}>{challengeType()}</p>
+                        {challenge.challengetype === 'comment_post' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              Post to comment
+                            </Card.Subtitle>
+                            {this.state.posts.map(post => {
+                              if (post.id === challenge.post) {
+                                return (
+                                  <a
+                                    href={`#${post.id}`}
+                                    className={classNames(styles.link, 'w-100')}
+                                  >
+                                    {post.title}
+                                  </a>
+                                );
+                              }
+                            })}
+                          </>
+                        ) : null}
+                        {challenge.challengetype === 'question_options' ? (
+                          <>
+                            <hr />
+                            <Card.Subtitle className={'w-100 mb-1'}>
+                              {dictionary.question[this.context]}
+                            </Card.Subtitle>
+                            <p className={'w-100 mb-3'}>{challenge.question}</p>
+                            <Card.Subtitle className={'w-100 mb-3'}>
+                              {dictionary.options[this.context]}
+                            </Card.Subtitle>
+                            <ListGroup variant={'flush'}>
+                              {challenge.options.map((option, index) => {
+                                const selected = challenge.isComplete
+                                  ? challenge.userAnswer === option
+                                    ? option === challenge.correctAnswer
+                                      ? styles.correctAnswer
+                                      : styles.wrongAnswer
+                                    : undefined
+                                  : undefined;
+
+                                return (
+                                  <ListGroup.Item
+                                    key={index}
+                                    className={selected}
+                                    onClick={() => handleClick(option)}
+                                  >
+                                    {option}
+                                  </ListGroup.Item>
+                                );
+                              })}
+                            </ListGroup>
+                          </>
+                        ) : null}
+                      </Card.Body>
+                      <Card.Footer
+                        className={
+                          'd-flex flex-row justify-content-between align-items-center'
+                        }
+                      >
+                        <Card.Subtitle className={'mt-0'}>
+                          {dictionary.points[this.context]}
+                        </Card.Subtitle>
+                        <div>{challenge.points}</div>
+                      </Card.Footer>
+                    </Card>
+                  </Carousel.Item>
+                );
+              })}
             </Carousel>
           ) : null}
         </Card.Body>
@@ -702,23 +895,119 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderChat = () => {
+    const handleChange = event =>
+      this.setState({
+        chatFields: {
+          ...this.state.chatFields,
+          message: event.target.value
+        }
+      });
+    const handleKeyUp = event => {
+      if (event.key === 'Enter') {
+        handleSubmit();
+      }
+    };
+    const handleSubmit = () => {
+      if (this.state.chatFields.message.length === 0) {
+        return;
+      }
+
+      const msg = {
+        date: new Date(),
+        text: this.state.chatFields.message,
+        user: this.user
+      };
+      this.socketIo.emit('message', {
+        msg,
+        namespace: this.ioNamespace
+      });
+      this.setState({
+        chatFields: {
+          ...this.state.chatFields,
+          message: ''
+        }
+      });
+    };
+
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header className={styles.header}>Chat</Card.Header>
-        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'} />
+        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'}>
+          {this.state.chatFields.messageList.map(msg => (
+            <div
+              key={msg.id}
+              className={
+                this.user.id === msg.user.id
+                  ? 'd-flex flex-row mb-2 justify-content-end'
+                  : 'd-flex flex-row mb-2 justify-content-start'
+              }
+            >
+              <div
+                className={
+                  this.user.id === msg.user.id
+                    ? 'order-last ml-2'
+                    : 'order-first mr-2'
+                }
+              >
+                <Avatar image={msg.user.avatar} title={msg.user.name} />
+              </div>
+              <div
+                className={
+                  this.user.id === msg.user.id ? 'order-fist' : 'order-last'
+                }
+              >
+                <p
+                  className={`
+                  d-flex text-muted flex-row text-capitalize
+                  ${
+                    this.user.id === msg.user.id
+                      ? 'justify-content-end'
+                      : 'justify-content-start'
+                  }
+                  `}
+                >
+                  {msg.user.name.toLowerCase()}
+                </p>
+                <Card
+                  className={
+                    this.user.id === msg.user.id ? styles.header : 'bg-light'
+                  }
+                >
+                  <Card.Body
+                    style={{ maxWidth: '22.5rem' }}
+                    className={'pb-1 pt-0'}
+                  >
+                    <Card.Text>{msg.text}</Card.Text>
+                  </Card.Body>
+                </Card>
+                <small className={'text-muted'}>
+                  {moment(msg.date).fromNow()}
+                </small>
+              </div>
+            </div>
+          ))}
+        </Card.Body>
         <Card.Footer className={'row m-0 p-1'}>
           <div className={'col-9 m-0 p-0'}>
             <textarea
               className={'w-100'}
               rows={3}
-              maxLength={300}
+              maxLength={250}
               minLength={1}
+              value={this.state.chatFields.message}
+              onChange={handleChange}
+              onKeyUp={handleKeyUp}
+              disabled={this.state.isHidden || this.state.isArchived}
             />
           </div>
           <div
             className={'col-3 d-flex justify-content-center align-items-center'}
           >
-            <Button className={classNames('w-100 h-50', styles.button)}>
+            <Button
+              className={classNames('w-100 h-50', styles.button)}
+              disabled={this.state.isArchived || this.state.isHidden}
+              onClick={handleSubmit}
+            >
               <i className={'fas fa-paper-plane mr-2'} />
               Send
             </Button>
@@ -728,15 +1017,98 @@ class Talk extends PureComponent<Props, State> {
     );
   };
 
-  /* Forms */
+  /**
+   * Forms
+   */
 
   private renderInviteForm = () => {
     const handleOpen = () => this.setState({ inviteModalOpen: true });
-    const handleHide = () => this.setState({ inviteModalOpen: false });
+    const handleHide = () =>
+      this.setState({
+        inviteFields: {
+          email: '',
+          error: false,
+          results: [],
+          selected: [],
+          success: false,
+          userSubs: this.state.inviteFields.userSubs
+        },
+        inviteModalOpen: false
+      });
+    const handleChange = event =>
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          email: event.target.value
+        }
+      });
+    const handleSearch = () => {
+      const email = this.state.inviteFields.email.trim();
+
+      if (email.length === 0) {
+        return;
+      }
+
+      axiosInstance
+        .get('/search/user/email', {
+          params: {
+            email
+          }
+        })
+        .then(res => {
+          const results: any[] = [];
+          const users = res.data.users;
+
+          users.forEach(user => {
+            results.push(user);
+          });
+
+          this.setState({
+            inviteFields: {
+              ...this.state.inviteFields,
+              results
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error.response.data.message);
+        });
+    };
+    const handleClick = userId => {
+      const results = this.state.inviteFields.results;
+      const userSubs = this.state.inviteFields.userSubs;
+      const users = new Set([
+        ...results.map(r => r.id),
+        ...userSubs.map(u => u.id)
+      ]);
+      let selected = this.state.inviteFields.selected;
+
+      if (users.size > 0) {
+        users.forEach(id => {
+          if (id === userId) {
+            if (selected.includes(id)) {
+              selected = selected.filter(i => i !== userId);
+            } else {
+              selected.push(userId);
+            }
+          }
+        });
+      }
+
+      this.setState({
+        inviteFields: {
+          ...this.state.inviteFields,
+          selected
+        }
+      });
+    };
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item
+          onClick={handleOpen}
+          disabled={this.state.isArchived || this.state.isHidden}
+        >
           <i className={'fas fa-envelope mr-2'} />
           {dictionary.invite_users[this.context]}
         </ListGroup.Item>
@@ -755,13 +1127,74 @@ class Talk extends PureComponent<Props, State> {
           <Modal.Body>
             <Form>
               <Form.Group controlId={'invite_user'}>
-                <Form.Label>{dictionary.email[this.context]}</Form.Label>
-                <Form.Control
-                  type={'email'}
-                  className={styles.border}
-                  placeholder={'Enter email'}
-                />
+                <InputGroup>
+                  <FormLabel className={'w-100'}>
+                    {dictionary.email[this.context]}
+                  </FormLabel>
+                  <FormControl
+                    type={'text'}
+                    placeholder={'Enter email'}
+                    className={styles.border}
+                    value={this.state.inviteFields.email}
+                    onChange={handleChange}
+                  />
+                  <InputGroup.Append>
+                    <Button variant={'outline-info'} onClick={handleSearch}>
+                      <i className={'fas fa-search'} /> Search
+                    </Button>
+                  </InputGroup.Append>
+                </InputGroup>
+                <ListGroup>
+                  {this.state.inviteFields.results.length > 0 ? (
+                    <div
+                      className={'overflow-auto'}
+                      style={{ maxHeight: '15rem' }}
+                    >
+                      {this.state.inviteFields.results.map((user, index) => (
+                        <ListGroup.Item
+                          key={index}
+                          className={`
+                              mt-2
+                              ${
+                                this.state.inviteFields.selected.includes(
+                                  user.id
+                                )
+                                  ? 'bg-info text-light'
+                                  : ''
+                              }
+                            `}
+                          onClick={() => handleClick(user.id)}
+                        >
+                          {user.user_name}
+                        </ListGroup.Item>
+                      ))}
+                    </div>
+                  ) : null}
+                </ListGroup>
               </Form.Group>
+              <ListGroup>
+                <Form.Label>
+                  {dictionary.invite_subs_header[this.context]}
+                </Form.Label>
+                <div className={'overflow-auto'} style={{ height: '15rem' }}>
+                  {this.state.inviteFields.userSubs.map((sub, index) => (
+                    <ListGroup.Item
+                      key={index}
+                      className={`
+                      mt-2
+                      ${
+                        this.state.inviteFields.selected.includes(sub.id)
+                          ? 'bg-info text-light'
+                          : ''
+                      }
+                    `}
+                      onClick={() => handleClick(sub.id)}
+                    >
+                      {sub.user_name}
+                    </ListGroup.Item>
+                  ))}
+                </div>
+              </ListGroup>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -769,7 +1202,7 @@ class Talk extends PureComponent<Props, State> {
               Cancel
             </Button>
             <Button
-              type={'submit'}
+              type={'button'}
               className={styles.button}
               onClick={this.handleInviteSubmission}
               form={'invite_user'}
@@ -783,27 +1216,61 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private handleInviteSubmission = () => {
-    console.log(
-      'USER INVITED! - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
-    );
+    const selected = this.state.inviteFields.selected;
+    axiosInstance
+      .post(`/talk/${this.id}/invite`, {
+        selected
+      })
+      .then(() => {
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: false,
+            results: [],
+            selected: [],
+            success: true,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+        this.setState({
+          inviteFields: {
+            email: '',
+            error: true,
+            results: [],
+            selected: [],
+            success: false,
+            userSubs: []
+          },
+          inviteModalOpen: false
+        });
+      });
   };
 
-  /* TODO: finish and improve */
   private renderChallengeForm = () => {
     const handleOpen = () => this.setState({ challengeFormOpen: true });
     const handleClose = () => {
       this.setState({
         challengeFields: {
-          answer: '',
-          correctAnswer: '',
+          answer: undefined,
+          challengetype: 'question_options',
+          correctAnswer: undefined,
           dateEnd: '',
           dateStart: '',
           description: '',
+          isComplete: false,
+          isCorrect: false,
           options: [],
           points: 0,
-          question: '',
+          post: this.state.posts[0]
+            ? this.state.posts[0].id.toString()
+            : undefined,
+          question: undefined,
           title: '',
-          type: 'MCQ'
+          userAnswer: ''
         },
         challengeFormOpen: false,
         error: {
@@ -845,7 +1312,7 @@ class Talk extends PureComponent<Props, State> {
     };
     const handleAddOptionsByKeyPress = event => {
       if (event.key === 'Enter') {
-        const answer = this.state.challengeFields.answer.trim();
+        const answer = this.state.challengeFields.answer!.trim();
         const options = this.state.challengeFields.options;
 
         if (options.length >= 5 || answer.length === 0) {
@@ -866,7 +1333,7 @@ class Talk extends PureComponent<Props, State> {
       }
     };
     const handleAddOptionsByButtonPress = () => {
-      const answer = this.state.challengeFields.answer.trim();
+      const answer = this.state.challengeFields.answer!.trim();
       const options = this.state.challengeFields.options;
 
       if (options.length >= 5 || answer.length === 0) {
@@ -1109,8 +1576,8 @@ class Talk extends PureComponent<Props, State> {
             <Form.Control
               as={'select'}
               className={styles.border}
-              value={this.state.challengeFields.answer}
-              name={'answer'}
+              value={this.state.challengeFields.post}
+              name={'post'}
               onChange={handleChange}
             >
               {this.state.posts.map(post => {
@@ -1132,26 +1599,30 @@ class Talk extends PureComponent<Props, State> {
           <Form.Control
             as={'select'}
             className={styles.border}
-            value={this.state.challengeFields.type}
-            name={'type'}
+            value={this.state.challengeFields.challengetype}
+            name={'challengetype'}
             onChange={handleChange}
             required={true}
           >
-            <option value={'MCQ'}>
+            <option value={'question_options'}>
               {dictionary.mult_choice_question[this.context]}
             </option>
-            <option value={'POST'}>
+            <option value={'create_post'}>
               {dictionary.post_create[this.context]}
             </option>
-            <option value={'CMT'}>
+            <option value={'comment_post'}>
               {dictionary.comment_post[this.context]}
             </option>
           </Form.Control>
-          {this.state.challengeFields.type === 'MCQ' ? renderMCQFields() : null}
-          {this.state.challengeFields.type === 'POST'
+          {this.state.challengeFields.challengetype === 'question_options'
+            ? renderMCQFields()
+            : null}
+          {this.state.challengeFields.challengetype === 'create_post'
             ? renderPOSTFields()
             : null}
-          {this.state.challengeFields.type === 'CMT' ? renderCMTFields() : null}
+          {this.state.challengeFields.challengetype === 'comment_post'
+            ? renderCMTFields()
+            : null}
         </Form.Group>
       );
     };
@@ -1179,7 +1650,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen}>
+        <ListGroup.Item onClick={handleOpen} disabled={this.state.isArchived}>
           <i className={'fas fa-puzzle-piece mr-2'} />
           {dictionary.create_challenge_talk[this.context]}
         </ListGroup.Item>
@@ -1223,10 +1694,12 @@ class Talk extends PureComponent<Props, State> {
     const fields = this.state.challengeFields;
 
     Object.keys(fields).map(key => {
-      if (key !== 'options') {
-        fields[key] = fields[key].toString().trim();
-      } else {
-        fields[key] = fields[key].map(value => value.toString().trim());
+      if (fields[key]) {
+        if (key !== 'options') {
+          fields[key] = fields[key].toString().trim();
+        } else {
+          fields[key] = fields[key].map(value => value.toString().trim());
+        }
       }
     });
 
@@ -1302,7 +1775,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.dateEnd = '';
     }
-    if (fields.type === 'MCQ' && fields.question.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.question!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1320,7 +1796,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.question = '';
     }
-    if (fields.type === 'MCQ' && fields.options.length <= 1) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.options!.length <= 1
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1339,7 +1818,10 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.options = '';
     }
-    if (fields.type === 'MCQ' && fields.correctAnswer.length === 0) {
+    if (
+      fields.challengetype === 'question_options' &&
+      fields.correctAnswer!.length === 0
+    ) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1378,7 +1860,7 @@ class Talk extends PureComponent<Props, State> {
     }
 
     Object.entries(this.state.challengeFields).forEach(entry => {
-      if (entry[1].toString().length > 0) {
+      if (entry[1] && entry[1]!.toString().length > 0) {
         if (!this.validateInput(entry[0], entry[1])) {
           error = true;
         }
@@ -1390,18 +1872,18 @@ class Talk extends PureComponent<Props, State> {
     }
 
     const formData = new FormData();
-    formData.append('type', fields.type);
+    formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
     formData.append('dateEnd', fields.dateEnd);
     formData.append('dateStart', fields.dateStart);
     formData.append('points', fields.points.toString());
-    formData.append('question', fields.question);
-    formData.append('correctAnswer', fields.correctAnswer);
+    formData.append('question', fields.question!);
+    formData.append('correctAnswer', fields.correctAnswer!);
     fields.options.forEach((option, index) =>
       formData.append(`options[${index}]`, option)
     );
-    formData.append('post', fields.answer);
+    formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
 
     axiosInstance
@@ -1414,18 +1896,24 @@ class Talk extends PureComponent<Props, State> {
         this.setState({
           challengeFields: {
             answer: '',
+            challengetype: 'question_options',
             correctAnswer: '',
             dateEnd: '',
             dateStart: '',
             description: '',
+            isComplete: false,
+            isCorrect: false,
             options: [],
             points: 0,
+            post: this.state.posts[0]
+              ? this.state.posts[0].id.toString()
+              : undefined,
             question: '',
             title: '',
-            type: 'MCQ'
+            userAnswer: ''
           },
           challengeFormOpen: false,
-          challenges: [...this.state.challenges, this.state.challengeFields]
+          challenges: [...this.state.challenges, fields]
         });
       })
       .catch(err => console.log(err.response.data.message));
@@ -1466,7 +1954,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -1842,8 +2330,12 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
-          <i className={'fas fa-trash mr-2'} />
+        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+          <i
+            className={`fas ${
+              this.state.isHidden ? 'fa-eye' : 'fa-eye-slash'
+            } mr-2`}
+          />
           {this.state.isHidden
             ? dictionary.reopen_talk[this.context]
             : dictionary.hide_talk[this.context]}
@@ -1912,13 +2404,328 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderPostForm = () => {
-    return <i className={'fas fa-plus'} />;
+    const postFields = this.state.postFields;
+    const handleHide = () => {
+      this.setState({
+        postFields: {
+          description: '',
+          files: {
+            documents: [],
+            images: [],
+            videos: []
+          },
+          tag: '',
+          tags: [],
+          title: ''
+        },
+        postFormOpen: false
+      });
+    };
+    const handleShow = () => {
+      this.setState({
+        postFormOpen: true
+      });
+    };
+    const handleChange = event => {
+      this.setState({
+        postFields: {
+          ...postFields,
+          [event.target.name]: event.target.value
+        }
+      });
+    };
+    const handleKeyUp = event => {
+      if (event.key === 'Enter') {
+        const tags = this.state.postFields.tags;
+        const tag = event.target.value.trim();
+
+        if (tag.length > 0 && !tags.includes(tag)) {
+          tags.unshift(tag);
+        }
+        this.setState({
+          postFields: {
+            ...this.state.postFields,
+            tag: '',
+            tags
+          }
+        });
+      }
+    };
+    const handleTagRemove = value => {
+      const tags = this.state.postFields.tags.filter(tag => tag !== value);
+
+      this.setState({
+        postFields: {
+          ...this.state.postFields,
+          tags
+        }
+      });
+    };
+    const handleFileChange = event => {
+      const files = event.target.files as FileList;
+      const images: File[] = [];
+      const videos: File[] = [];
+      const documents: File[] = [];
+
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image')) {
+          images.push(file);
+        } else if (file.type.startsWith('video')) {
+          videos.push(file);
+        } else {
+          documents.push(file);
+        }
+      });
+
+      this.setState({
+        postFields: {
+          ...this.state.postFields,
+          files: {
+            documents,
+            images,
+            videos
+          }
+        }
+      });
+    };
+    const buttonClassName = classNames('pt-2 pb-2 pl-3 pr-3', styles.button, {
+      [styles.disabled]: this.state.isHidden || this.state.isArchived
+    });
+
+    return (
+      <>
+        <ListGroup.Item
+          onClick={handleShow}
+          className={buttonClassName}
+          disabled={this.state.isHidden || this.state.isArchived}
+        >
+          <i className={'fas fa-plus mr-2'} />
+          {dictionary.create_new_post[this.context]}
+        </ListGroup.Item>
+
+        <Modal show={this.state.postFormOpen} onHide={handleHide}>
+          <Modal.Header closeButton={true}>
+            <Modal.Title>{dictionary.new_talk_post[this.context]}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId={'create_post.title'}>
+                <Form.Label>{dictionary.title[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.insert_title[this.context]}
+                  value={postFields.title}
+                  name={'title'}
+                  onChange={handleChange}
+                  className={styles.border}
+                />
+                {this.state.error.title ? (
+                  <Form.Text className={'text-danger'}>
+                    {this.errorMessages.title}
+                  </Form.Text>
+                ) : null}
+              </Form.Group>
+              <Form.Group controlId={'create_post.description'}>
+                <Form.Label>{dictionary.description[this.context]}</Form.Label>
+                <Form.Control
+                  as={'textarea'}
+                  rows={10}
+                  placeholder={dictionary.description_placeholder[this.context]}
+                  value={postFields.description}
+                  name={'description'}
+                  onChange={handleChange}
+                  className={classNames('overflow-auto', styles.border)}
+                  style={{ height: '20rem' }}
+                />
+                {this.state.error.description ? (
+                  <Form.Text className={'text-danger'}>
+                    {this.errorMessages.description}
+                  </Form.Text>
+                ) : null}
+              </Form.Group>
+              <Form.Group controlId={'create_post.tags'}>
+                <Form.Label>{dictionary.tags[this.context]}</Form.Label>
+                <Form.Control
+                  type={'text'}
+                  placeholder={dictionary.tag_placeholder[this.context]}
+                  value={this.state.postFields.tag}
+                  name={'tag'}
+                  onChange={handleChange}
+                  onKeyUp={handleKeyUp}
+                  className={styles.border}
+                  list={'existing_tags'}
+                />
+                <datalist id={'existing_tags'}>
+                  {this.tags.map((tag, index) => (
+                    <option key={`tag_${tag.id}`} value={tag.name}>
+                      {index}
+                    </option>
+                  ))}
+                </datalist>
+                {this.state.postFields.tags.map((tag, index) => (
+                  <Tag
+                    key={index}
+                    id={index.toString()}
+                    value={tag}
+                    onRemove={handleTagRemove}
+                    className={'mt-2 mr-1'}
+                  />
+                ))}
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>{dictionary.files[this.context]}</Form.Label>
+                <Form.Control
+                  type={'file'}
+                  multiple={true}
+                  name={'files'}
+                  onChange={handleFileChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleHide} variant={'danger'}>
+              {dictionary.cancel[this.context]}
+            </Button>
+            <Button onClick={this.handlePostSubmission} variant={'success'}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
   };
 
   private handlePostSubmission = () => {
-    console.log(
-      'POST CREATED IN TALK - YOU ARE SEEING THIS MESSAGE BECAUSE THIS FEATURE IS NOT YET FULLY IMPLEMENTED!'
+    let error = false;
+    const postFields = this.state.postFields;
+
+    Object.keys(postFields).map(key => {
+      if (key === 'title' || key === 'description') {
+        postFields[key] = postFields[key].trim();
+      } else if (key === 'tags') {
+        postFields[key] = postFields[key].map(tag => tag.trim());
+      }
+    });
+
+    if (postFields.title.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: true
+        }
+      });
+      this.errorMessages.title = 'Field title can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          title: false
+        }
+      });
+      this.errorMessages.title = '';
+    }
+    if (postFields.description.length === 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: true
+        }
+      });
+      this.errorMessages.description = 'Field description can not be empty!';
+      return false;
+    } else {
+      this.setState({
+        error: {
+          ...this.state.error,
+          description: false
+        }
+      });
+      this.errorMessages.description = '';
+    }
+
+    Object.entries(postFields).forEach(entry => {
+      if (entry[0] !== 'files' && entry[0] !== 'tag') {
+        if (!this.validateInput(entry[0], entry[1])) {
+          error = true;
+        }
+      }
+    });
+
+    if (error) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', postFields.title);
+    formData.append('text', postFields.description);
+    formData.append('visibility', 'public');
+    formData.append('talk', this.id.toString());
+    postFields.files.images.forEach((image, index) =>
+      formData.append(`images[${index}]`, image)
     );
+    postFields.files.videos.forEach((video, index) =>
+      formData.append(`videos[${index}]`, video)
+    );
+    postFields.files.documents.forEach((document, index) =>
+      formData.append(`docs[${index}]`, document)
+    );
+    postFields.tags.forEach((tag, index) =>
+      formData.append(`tags[${index}]`, tag)
+    );
+
+    axiosInstance
+      .post(`/post`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(response => {
+        axiosInstance
+          .get(`/post/${response.data.post}`)
+          .then(res => {
+            const post = res.data.post;
+            let points = 0;
+            for (const challenge of this.state.challenges) {
+              if (
+                challenge.challengetype === 'create_post' &&
+                !challenge.isComplete
+              ) {
+                challenge.isComplete = true;
+                challenge.isCorrect = true;
+                points = challenge.points;
+                break;
+              }
+            }
+
+            post.comments = res.data.comments;
+            post.files = res.data.files;
+            post.tags = res.data.tags;
+
+            this.setState({
+              challenges: this.state.challenges,
+              postFields: {
+                description: '',
+                files: {
+                  documents: [],
+                  images: [],
+                  videos: []
+                },
+                tag: '',
+                tags: [],
+                title: ''
+              },
+              postFormOpen: false,
+              posts: [post, ...this.state.posts],
+              userPoints: Number(this.state.userPoints) + Number(points)
+            });
+          })
+          .catch(err => {
+            console.log(`Error retrieving new post. Error: ${err}`);
+          });
+      })
+      .catch(err => console.log(err.response.data.message));
   };
 
   private validateInput = (type, value) => {
@@ -1981,19 +2788,22 @@ class Talk extends PureComponent<Props, State> {
         message =
           'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters';
         break;
-      case 'type':
-        re = /^(MCQ|POST|CMT)$/;
-        message = "Invalid field. Type must be one of 'MCQ', 'POST', or 'CMT'";
+      case 'challengetype':
+        re = /^(question_options|create_post|comment_post)$/;
+        message =
+          "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'";
         break;
       case 'livestreamURL':
         re = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)*(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$|^$/;
         message = "Invalid field. Livestream's url must be an embed link";
         break;
+      default:
+        return true;
     }
 
-    if (type === 'options') {
-      for (const option of value) {
-        if (!re.test(option)) {
+    if (type === 'options' || type === 'tags') {
+      for (const entry of value) {
+        if (!re.test(entry)) {
           this.setState({
             error: {
               ...this.state.error,

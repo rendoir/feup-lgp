@@ -5,15 +5,20 @@ import './ProductModal.scss';
 import { getApiURL } from '../../utils/apiURL';
 import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
+import styles from '../RegisterForm/RegisterForm.module.scss';
 
 interface IProps {
   conference_id: number | undefined;
 }
 
 interface IState {
+  product_error: boolean;
   product_name: string;
+  product_name_error: boolean;
   product_points: number;
+  product_points_error: boolean;
   product_stock: number;
+  product_stock_error: boolean;
   product_image: string;
 }
 
@@ -24,10 +29,14 @@ class AddProductModal extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      product_name: '',
+      product_error: false,
       product_image: '',
+      product_name: '',
+      product_name_error: false,
       product_points: 0,
-      product_stock: 0
+      product_points_error: false,
+      product_stock: 0,
+      product_stock_error: false
     };
 
     this.handleAddProduct = this.handleAddProduct.bind(this);
@@ -76,6 +85,13 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <p
+              className={
+                (this.state.product_name_error ? '' : 'd-none') + ' pt-1'
+              }
+            >
+              {dictionary.product_name_error_message[this.context]}
+            </p>
             <div className="modal-body">
               <h5>{dictionary.insert_product_points[this.context]}</h5>
               <input
@@ -90,6 +106,13 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <p
+              className={
+                (this.state.product_points_error ? '' : 'd-none') + ' pt-1'
+              }
+            >
+              {dictionary.product_points_error_message[this.context]}
+            </p>
             <div className="modal-body">
               <h5>{dictionary.insert_product_stock[this.context]}</h5>
               <input
@@ -104,6 +127,13 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <p
+              className={
+                (this.state.product_stock_error ? '' : 'd-none') + ' pt-1'
+              }
+            >
+              {dictionary.product_stock_error_message[this.context]}
+            </p>
             <div className="modal-body">
               <h5>{dictionary.insert_product_image[this.context]}</h5>
               <input
@@ -118,6 +148,9 @@ class AddProductModal extends Component<IProps, IState> {
                 required={true}
               />
             </div>
+            <p className={(this.state.product_error ? '' : 'd-none') + ' pt-1'}>
+              {dictionary.product_error_message[this.context]}
+            </p>
             <div className="modal-footer">
               <button
                 type="button"
@@ -135,7 +168,8 @@ class AddProductModal extends Component<IProps, IState> {
   }
 
   public apiAddProduct() {
-    let conferenceId, url;
+    let conferenceId;
+    let url;
     if (this.props.conference_id === undefined) {
       conferenceId = null;
       url = '/products/';
@@ -144,8 +178,8 @@ class AddProductModal extends Component<IProps, IState> {
       url = `/conference/${this.props.conference_id}/products/`;
     }
     const body = {
-      name: this.state.product_name,
       image: this.state.product_image,
+      name: this.state.product_name,
       points: this.state.product_points,
       stock: this.state.product_stock
     };
@@ -156,23 +190,34 @@ class AddProductModal extends Component<IProps, IState> {
         console.log('Product created - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log('Failed to create product'));
+      .catch(() => {
+        console.log('Failed to create product');
+        this.setState({ product_error: true });
+      });
   }
 
   private handleInputChange(type, value) {
     if (type === 'product_name') {
-      this.setState({ product_name: value });
+      this.setState({ product_name: value, product_name_error: false });
     } else if (type === 'product_points') {
-      this.setState({ product_points: value });
+      this.setState({ product_points: value, product_points_error: false });
     } else if (type === 'product_stock') {
-      this.setState({ product_stock: value });
+      this.setState({ product_stock: value, product_stock_error: false });
     } else if (type === 'product_image') {
       this.setState({ product_image: value });
     }
   }
 
-  private handleAddProduct() {
-    this.apiAddProduct();
+  private handleAddProduct(e: any) {
+    if (this.state.product_name.length === 0) {
+      this.setState({ product_name_error: true });
+    } else if (this.state.product_points < 0) {
+      this.setState({ product_points_error: true });
+    } else if (this.state.product_stock < 1) {
+      this.setState({ product_stock_error: true });
+    } else {
+      this.apiAddProduct();
+    }
   }
 
   private getActionButton() {
@@ -182,7 +227,6 @@ class AddProductModal extends Component<IProps, IState> {
           type="button"
           role="submit"
           className="btn btn-primary"
-          data-dismiss="modal"
           onClick={this.handleAddProduct}
         >
           {dictionary.submit[this.context]}
