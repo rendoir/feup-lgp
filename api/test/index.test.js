@@ -653,24 +653,6 @@ describe('Post', () => {
             });
     });
 
-    it('Should not edit if title is empty', (done) => {
-        request(app)
-            .put(`/post/${postId}`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .send({
-                author: editedPublicPost.author,
-                title: '',
-                text: '',
-                visibility: editedPublicPost.visibility,
-            })
-            .expect(400)
-            .end((err, res) => {
-                expect(res.body).to.be.instanceOf(Object);
-                expect(res.body.message).to.have.string(`An error ocurred while editing a post`);
-                done();
-            });
-    });
-
     it('Should edit the submitted post', (done) => {
         request(app)
             .put(`/post/${postId}`)
@@ -1724,57 +1706,6 @@ describe('Tag tests', () => {
             });
     });
 });
-
-describe('Feed tests', () => {
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/feed')
-            .send({
-                offset: 10,
-                limit: 10,
-                userId: userId
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('posts');
-                expect(res.body).to.have.property('size');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/feed/get_stuff')
-            .send({
-                userId: userId
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-});
-
-describe('Tag tests', () => {
-    it('Should return all tags' , (done) => {
-        request(app)
-            .get('/tags')
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-            });
-    });
-});
-
 describe('Feed tests', () => {
     it('Should get feed' , (done) => {
         request(app)
@@ -1832,6 +1763,5 @@ describe('Search tests', () => {
                 done();
             });
     });
-
 });
 */
