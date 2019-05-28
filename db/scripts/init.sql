@@ -355,11 +355,11 @@ BEGIN
         challenge_talk := (SELECT talk FROM challenges WHERE id = NEW.challenge);
         challenge_conference := (SELECT conference FROM talks WHERE id = challenge_talk);
         -- award points on talk
-        UPDATE talk_participants SET points = points + challenge_reward WHERE participant_user = NEW.challenged AND talk = challenge_talk;
+        UPDATE talk_participants SET points = talk_participants.points + challenge_reward WHERE talk_participants.participant_user = NEW.challenged AND talk_participants.talk = challenge_talk;
         -- award points on conference
         INSERT INTO user_conference_points (user_id, conference, points) VALUES (NEW.challenged, challenge_conference, challenge_reward)
             ON CONFLICT ON CONSTRAINT unique_user_conference_points
-            DO UPDATE SET points = points + challenge_reward WHERE user_id = NEW.challenged AND conference = challenge_conference;
+            DO UPDATE SET points = user_conference_points.points + challenge_reward WHERE user_conference_points.user_id = NEW.challenged AND user_conference_points.conference = challenge_conference;
     END IF;
     RETURN NEW;
 END$$;
@@ -1025,7 +1025,7 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 /**
 * CHALLENGES
 */
-INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, question, answers, talk) VALUES ('Challenge Options 1','This is a multiple choice question challenge!','2019-05-05 23:00','2019-05-05 23:59',10,'question_options','What is the title of this conference?','{"CorrectAnswer: User talk 2", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}', 3);
+INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, question, answers, talk) VALUES ('Challenge Options 1','This is a multiple choice question challenge!','2019-05-05 23:00','2019-05-05 23:59',10,'question_options','What is the title of this conference?','{"CorrectAnswer: Admin conference 1", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}', 3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, post, talk) VALUES ('Challenge Comment Post 1','Comment on the owner post to win a lot of points!','2019-05-05 23:00','2019-05-05 23:59',10,'comment_post',25,3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, talk) VALUES ('Challenge Create Post 1', 'Create a Post in this talk where you explain why it is so important for you!','2019-05-05 23:00','2019-05-05 23:59',10,'create_post',3);
 
