@@ -1964,7 +1964,8 @@ class Talk extends PureComponent<Props, State> {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(() => {
+      .then(res => {
+        const newChallenge = { id: res.data.challenge, ...fields };
         this.setState({
           challengeFields: {
             answer: '',
@@ -1985,7 +1986,7 @@ class Talk extends PureComponent<Props, State> {
             userAnswer: ''
           },
           challengeFormOpen: false,
-          challenges: [...this.state.challenges, fields]
+          challenges: [...this.state.challenges, newChallenge]
         });
       })
       .catch(err => console.log(err.response.data.message));
