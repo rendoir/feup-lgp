@@ -3,35 +3,46 @@ version: '3.7'
 services:
   reverseproxy:
     image: registry.gitlab.com/alexandreaam/lgp-3a/reverseproxy:stable
+    restart: always
     depends_on:
-      # - webprod
+      - webprod
       - webstaging
     ports:
       # - 443:443
       - 80:80
-    # restart: always
-  # webprod:
-  #   image: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
-  #   depends_on:
-  #     - apiprod
-  # dbprod:
-  #   image: registry.gitlab.com/alexandreaam/lgp-3a/db:stable
-  # apiprod:
-  #   image: registry.gitlab.com/alexandreaam/lgp-3a/api:stable
-  #   environment:
-  #     - DB_HOST=dbprod
-  #   depends_on:
-  #     - dbprod
+
+  webprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
+    restart: always
+    expose: [5000]
+    depends_on:
+      - apiprod
+  dbprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/db:stable
+    restart: always
+    expose: [5432]
+  apiprod:
+    image: registry.gitlab.com/alexandreaam/lgp-3a/api:stable
+    restart: always
+    expose: [8443]
+    environment:
+      - DB_HOST=dbprod
+    depends_on:
+      - dbprod
+
   webstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:latest
+    restart: always
     expose: [5000]
     depends_on:
       - apistaging
   dbstaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/db:latest
+    restart: always
     expose: [5432]
   apistaging:
     image: registry.gitlab.com/alexandreaam/lgp-3a/api:latest
+    restart: always
     expose: [8443]
     environment:
       - DB_HOST=dbstaging
