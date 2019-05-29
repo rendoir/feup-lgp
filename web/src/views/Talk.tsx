@@ -46,6 +46,7 @@ export type Props = {
 };
 
 export type State = {
+  activeIndex: number;
   adminCardOpen: boolean;
   archiveModalOpen: boolean;
   challenges: any[];
@@ -228,6 +229,7 @@ class Talk extends PureComponent<Props, State> {
     this.apiGetUser = this.apiGetUser.bind(this);
 
     this.state = {
+      activeIndex: 0,
       adminCardOpen: false,
       archiveModalOpen: false,
       challengeFields: {
@@ -705,6 +707,8 @@ class Talk extends PureComponent<Props, State> {
     const handleCardClick = () =>
       this.setState({ challengesCardOpen: !this.state.challengesCardOpen });
 
+    const handleSelect = eventKey => this.setState({ activeIndex: eventKey });
+
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
@@ -737,6 +741,8 @@ class Talk extends PureComponent<Props, State> {
                 prevIcon={prevIcon}
                 interval={0}
                 className={'h-100'}
+                activeIndex={this.state.activeIndex}
+                onSelect={handleSelect}
               >
                 {this.state.challenges.map(challenge => {
                   const cardBackgroundColor = challenge.isComplete
@@ -777,7 +783,15 @@ class Talk extends PureComponent<Props, State> {
                             points = challenge.isCorrect ? challenge.points : 0;
                           }
                         });
+
+                        let activeIndex = this.state.activeIndex;
+                        let length = this.state.challenges.length - 1;
+                        length = length < 0 ? 0 : length;
+                        activeIndex =
+                          activeIndex + 1 > length ? 0 : activeIndex + 1;
+
                         this.setState({
+                          activeIndex,
                           challenges,
                           userPoints:
                             Number(this.state.userPoints) + Number(points)
@@ -2776,7 +2790,13 @@ class Talk extends PureComponent<Props, State> {
             post.files = res.data.files;
             post.tags = res.data.tags;
 
+            let activeIndex = this.state.activeIndex;
+            let length = this.state.challenges.length - 1;
+            length = length < 0 ? 0 : length;
+            activeIndex = activeIndex + 1 > length ? 0 : activeIndex + 1;
+
             this.setState({
+              activeIndex,
               challenges: this.state.challenges,
               postFields: {
                 description: '',
