@@ -1,4 +1,4 @@
-import { isPassiveListenerSupports } from "./isPassiveListenerSupports";
+import { isPassiveListenerSupports } from './isPassiveListenerSupports';
 
 export function listen(
   target: Element | Document | Window,

@@ -5,6 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
+import Collapse from 'react-bootstrap/Collapse';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import FormLabel from 'react-bootstrap/FormLabel';
@@ -45,8 +46,10 @@ export type Props = {
 };
 
 export type State = {
+  adminCardOpen: boolean;
   archiveModalOpen: boolean;
   challenges: any[];
+  challengesCardOpen: boolean;
   challengeFields: {
     answer: string | undefined;
     challengetype: 'question_options' | 'create_post' | 'comment_post';
@@ -64,6 +67,7 @@ export type State = {
     userAnswer: string;
   };
   challengeFormOpen: boolean;
+  chatCardOpen: boolean;
   chatFields: {
     message: string;
     messageList: Message[];
@@ -95,6 +99,7 @@ export type State = {
   errorFetching: boolean;
   errorFetchingMessage: string;
   hideModalOpen: boolean;
+  infoCardOpen: boolean;
   inviteFields: {
     email: string;
     error: boolean;
@@ -223,6 +228,7 @@ class Talk extends PureComponent<Props, State> {
     this.apiGetUser = this.apiGetUser.bind(this);
 
     this.state = {
+      adminCardOpen: false,
       archiveModalOpen: false,
       challengeFields: {
         answer: undefined,
@@ -242,6 +248,8 @@ class Talk extends PureComponent<Props, State> {
       },
       challengeFormOpen: false,
       challenges: [],
+      challengesCardOpen: false,
+      chatCardOpen: true,
       chatFields: {
         message: '',
         messageList: []
@@ -273,6 +281,7 @@ class Talk extends PureComponent<Props, State> {
       errorFetching: false,
       errorFetchingMessage: '',
       hideModalOpen: false,
+      infoCardOpen: true,
       inviteFields: {
         email: '',
         error: false,
@@ -578,10 +587,17 @@ class Talk extends PureComponent<Props, State> {
       dictionary.date_format[this.context],
       this.dateOptions
     );
+    const handleClick = () =>
+      this.setState({ infoCardOpen: !this.state.infoCardOpen });
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
-        <Card.Header className={styles.header}>
+        <Card.Header
+          className={styles.header}
+          onClick={handleClick}
+          aria-controls={'talk_info_card'}
+          aria-expanded={this.state.infoCardOpen}
+        >
           <div
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
@@ -592,25 +608,27 @@ class Talk extends PureComponent<Props, State> {
             {this.renderTalkStatus()}
           </div>
         </Card.Header>
-        <Card.Body>
-          <Card.Text>{talk.description}</Card.Text>
-          <hr />
-          <div>
-            <strong>{dictionary.talk_local[this.context]}</strong>
-            <br />
-            {talk.local}
-            <br />
-            <br />
-            <strong>{dictionary.date_start[this.context]}</strong>
-            <br />
-            {dateStart}
-            <br />
-            <br />
-            <strong>{dictionary.date_end[this.context]}</strong>
-            <br />
-            {dateEnd}
-          </div>
-        </Card.Body>
+        <Collapse in={this.state.infoCardOpen}>
+          <Card.Body id={'talk_info_card'}>
+            <Card.Text>{talk.description}</Card.Text>
+            <hr />
+            <div>
+              <strong>{dictionary.talk_local[this.context]}</strong>
+              <br />
+              {talk.local}
+              <br />
+              <br />
+              <strong>{dictionary.date_start[this.context]}</strong>
+              <br />
+              {dateStart}
+              <br />
+              <br />
+              <strong>{dictionary.date_end[this.context]}</strong>
+              <br />
+              {dateEnd}
+            </div>
+          </Card.Body>
+        </Collapse>
         {this.owner || this.state.errorFetching ? null : (
           <Card.Footer>{this.renderJoin()}</Card.Footer>
         )}
@@ -619,22 +637,32 @@ class Talk extends PureComponent<Props, State> {
   };
 
   private renderAdminCard = () => {
+    const handleClick = () =>
+      this.setState({ adminCardOpen: !this.state.adminCardOpen });
+
     return (
       <Card className={classNames('mb-3', styles.border)}>
-        <Card.Header className={styles.header}>
+        <Card.Header
+          className={styles.header}
+          onClick={handleClick}
+          aria-controls={'talk_admin_card'}
+          aria-expanded={this.state.adminCardOpen}
+        >
           <Card.Title className={'mb-0'}>
             {dictionary.admin_area[this.context]}
           </Card.Title>
         </Card.Header>
-        <Card.Body>
-          <ListGroup variant={'flush'}>
-            {this.renderInviteForm()}
-            {this.renderChallengeForm()}
-            {this.renderEditForm()}
-            {this.renderArchiveForm()}
-            {this.renderHideForm()}
-          </ListGroup>
-        </Card.Body>
+        <Collapse in={this.state.adminCardOpen}>
+          <Card.Body id={'talk_admin_card'}>
+            <ListGroup variant={'flush'}>
+              {this.renderInviteForm()}
+              {this.renderChallengeForm()}
+              {this.renderEditForm()}
+              {this.renderArchiveForm()}
+              {this.renderHideForm()}
+            </ListGroup>
+          </Card.Body>
+        </Collapse>
       </Card>
     );
   };
@@ -674,6 +702,8 @@ class Talk extends PureComponent<Props, State> {
         className={classNames('carousel-control-prev-icon', styles.arrow)}
       />
     );
+    const handleCardClick = () =>
+      this.setState({ challengesCardOpen: !this.state.challengesCardOpen });
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
@@ -682,6 +712,9 @@ class Talk extends PureComponent<Props, State> {
             'd-flex flex-row justify-content-between align-items-center',
             styles.header
           )}
+          onClick={handleCardClick}
+          aria-controls={'talk_challenges_card'}
+          aria-expanded={this.state.challengesCardOpen}
         >
           <Card.Title className={'mb-0'}>
             {dictionary.challenge_conference[this.context]}
@@ -690,153 +723,166 @@ class Talk extends PureComponent<Props, State> {
             {dictionary.points[this.context]}: {this.state.userPoints}
           </Card.Title>
         </Card.Header>
-        <Card.Body className={'p-1'} style={{ height: '39rem' }}>
-          {this.state.challenges.length > 0 ? (
-            <Carousel
-              indicators={false}
-              controls={this.state.challenges.length > 1}
-              nextIcon={nextIcon}
-              prevIcon={prevIcon}
-              interval={0}
-              className={'h-100'}
-            >
-              {this.state.challenges.map(challenge => {
-                const cardBackgroundColor = challenge.isComplete
-                  ? challenge.isCorrect
-                    ? styles.correctAnswer
-                    : styles.wrongAnswer
-                  : undefined;
-                const challengeType = () => {
-                  if (challenge.challengetype === 'question_options') {
-                    return 'Multiple Choice Question';
-                  } else if (challenge.challengetype === 'create_post') {
-                    return 'Create post';
-                  } else {
-                    return 'Comment on a post';
-                  }
-                };
-                const handleClick = option => {
-                  if (challenge.isComplete) {
-                    return;
-                  }
+        <Collapse in={this.state.challengesCardOpen}>
+          <Card.Body
+            className={'p-1'}
+            style={{ height: '39rem' }}
+            id={'talk_challenges_card'}
+          >
+            {this.state.challenges.length > 0 ? (
+              <Carousel
+                indicators={false}
+                controls={this.state.challenges.length > 1}
+                nextIcon={nextIcon}
+                prevIcon={prevIcon}
+                interval={0}
+                className={'h-100'}
+              >
+                {this.state.challenges.map(challenge => {
+                  const cardBackgroundColor = challenge.isComplete
+                    ? challenge.isCorrect
+                      ? styles.correctAnswer
+                      : styles.wrongAnswer
+                    : undefined;
+                  const challengeType = () => {
+                    if (challenge.challengetype === 'question_options') {
+                      return 'Multiple Choice Question';
+                    } else if (challenge.challengetype === 'create_post') {
+                      return 'Create post';
+                    } else {
+                      return 'Comment on a post';
+                    }
+                  };
+                  const handleClick = option => {
+                    if (challenge.isComplete) {
+                      return;
+                    }
 
-                  axiosInstance
-                    .post(`/talk/${this.id}/challenge/solve`, {
-                      author: this.auth.getUserPayload().id,
-                      challenge: challenge.id,
-                      challenge_answer: option,
-                      completion: option === challenge.correctAnswer
-                    })
-                    .then(() => {
-                      const challenges = this.state.challenges;
-                      let points = 0;
-                      challenges.forEach(ch => {
-                        if (ch.id === challenge.id) {
-                          challenge.userAnswer = option;
-                          challenge.isCorrect =
-                            option === challenge.correctAnswer;
-                          challenge.isComplete = true;
-                          points = challenge.isCorrect ? challenge.points : 0;
-                        }
-                      });
-                      this.setState({
-                        challenges,
-                        userPoints:
-                          Number(this.state.userPoints) + Number(points)
-                      });
-                      this.forceUpdate();
-                    })
-                    .catch(error => console.log(error.response.data.message));
-                };
+                    axiosInstance
+                      .post(`/talk/${this.id}/challenge/solve`, {
+                        author: this.auth.getUserPayload().id,
+                        challenge: challenge.id,
+                        challenge_answer: option,
+                        completion: option === challenge.correctAnswer
+                      })
+                      .then(() => {
+                        const challenges = this.state.challenges;
+                        let points = 0;
+                        challenges.forEach(ch => {
+                          if (ch.id === challenge.id) {
+                            challenge.userAnswer = option;
+                            challenge.isCorrect =
+                              option === challenge.correctAnswer;
+                            challenge.isComplete = true;
+                            points = challenge.isCorrect ? challenge.points : 0;
+                          }
+                        });
+                        this.setState({
+                          challenges,
+                          userPoints:
+                            Number(this.state.userPoints) + Number(points)
+                        });
+                        this.forceUpdate();
+                      })
+                      .catch(error => console.log(error.response.data.message));
+                  };
 
-                return (
-                  <Carousel.Item key={challenge.id} className={'h-100'}>
-                    <Card border={'light'} className={'px-5 w-100'}>
-                      <Card.Header className={cardBackgroundColor}>
-                        <Card.Title className={'mb-0'}>
-                          {challenge.title}
-                        </Card.Title>
-                      </Card.Header>
-                      <Card.Body>
-                        <Card.Subtitle className={'w-100 mb-1'}>
-                          {dictionary.description[this.context]}
-                        </Card.Subtitle>
-                        <p className={'w-100 mb-3'}>{challenge.description}</p>
-                        <Card.Subtitle className={'w-100 mb-1'}>
-                          {dictionary.challenge_type[this.context]}
-                        </Card.Subtitle>
-                        <p className={'w-100 mb-3'}>{challengeType()}</p>
-                        {challenge.challengetype === 'comment_post' ? (
-                          <>
-                            <hr />
-                            <Card.Subtitle className={'w-100 mb-1'}>
-                              Post to comment
-                            </Card.Subtitle>
-                            {this.state.posts.map(post => {
-                              if (post.id === challenge.post) {
-                                return (
-                                  <a
-                                    href={`#${post.id}`}
-                                    className={classNames(styles.link, 'w-100')}
-                                  >
-                                    {post.title}
-                                  </a>
-                                );
-                              }
-                            })}
-                          </>
-                        ) : null}
-                        {challenge.challengetype === 'question_options' ? (
-                          <>
-                            <hr />
-                            <Card.Subtitle className={'w-100 mb-1'}>
-                              {dictionary.question[this.context]}
-                            </Card.Subtitle>
-                            <p className={'w-100 mb-3'}>{challenge.question}</p>
-                            <Card.Subtitle className={'w-100 mb-3'}>
-                              {dictionary.options[this.context]}
-                            </Card.Subtitle>
-                            <ListGroup variant={'flush'}>
-                              {challenge.options.map((option, index) => {
-                                const selected = challenge.isComplete
-                                  ? challenge.userAnswer === option
-                                    ? option === challenge.correctAnswer
-                                      ? styles.correctAnswer
-                                      : styles.wrongAnswer
-                                    : undefined
-                                  : undefined;
-
-                                return (
-                                  <ListGroup.Item
-                                    key={index}
-                                    className={selected}
-                                    onClick={() => handleClick(option)}
-                                  >
-                                    {option}
-                                  </ListGroup.Item>
-                                );
+                  return (
+                    <Carousel.Item key={challenge.id} className={'h-100'}>
+                      <Card border={'light'} className={'px-5 w-100'}>
+                        <Card.Header className={cardBackgroundColor}>
+                          <Card.Title className={'mb-0'}>
+                            {challenge.title}
+                          </Card.Title>
+                        </Card.Header>
+                        <Card.Body>
+                          <Card.Subtitle className={'w-100 mb-1'}>
+                            {dictionary.description[this.context]}
+                          </Card.Subtitle>
+                          <p className={'w-100 mb-3'}>
+                            {challenge.description}
+                          </p>
+                          <Card.Subtitle className={'w-100 mb-1'}>
+                            {dictionary.challenge_type[this.context]}
+                          </Card.Subtitle>
+                          <p className={'w-100 mb-3'}>{challengeType()}</p>
+                          {challenge.challengetype === 'comment_post' ? (
+                            <>
+                              <hr />
+                              <Card.Subtitle className={'w-100 mb-1'}>
+                                Post to comment
+                              </Card.Subtitle>
+                              {this.state.posts.map(post => {
+                                if (post.id === challenge.post) {
+                                  return (
+                                    <a
+                                      href={`#${post.id}`}
+                                      className={classNames(
+                                        styles.link,
+                                        'w-100'
+                                      )}
+                                    >
+                                      {post.title}
+                                    </a>
+                                  );
+                                }
                               })}
-                            </ListGroup>
-                          </>
-                        ) : null}
-                      </Card.Body>
-                      <Card.Footer
-                        className={
-                          'd-flex flex-row justify-content-between align-items-center'
-                        }
-                      >
-                        <Card.Subtitle className={'mt-0'}>
-                          {dictionary.points[this.context]}
-                        </Card.Subtitle>
-                        <div>{challenge.points}</div>
-                      </Card.Footer>
-                    </Card>
-                  </Carousel.Item>
-                );
-              })}
-            </Carousel>
-          ) : null}
-        </Card.Body>
+                            </>
+                          ) : null}
+                          {challenge.challengetype === 'question_options' ? (
+                            <>
+                              <hr />
+                              <Card.Subtitle className={'w-100 mb-1'}>
+                                {dictionary.question[this.context]}
+                              </Card.Subtitle>
+                              <p className={'w-100 mb-3'}>
+                                {challenge.question}
+                              </p>
+                              <Card.Subtitle className={'w-100 mb-3'}>
+                                {dictionary.options[this.context]}
+                              </Card.Subtitle>
+                              <ListGroup variant={'flush'}>
+                                {challenge.options.map((option, index) => {
+                                  const selected = challenge.isComplete
+                                    ? challenge.userAnswer === option
+                                      ? option === challenge.correctAnswer
+                                        ? styles.correctAnswer
+                                        : styles.wrongAnswer
+                                      : undefined
+                                    : undefined;
+
+                                  return (
+                                    <ListGroup.Item
+                                      key={index}
+                                      className={selected}
+                                      onClick={() => handleClick(option)}
+                                    >
+                                      {option}
+                                    </ListGroup.Item>
+                                  );
+                                })}
+                              </ListGroup>
+                            </>
+                          ) : null}
+                        </Card.Body>
+                        <Card.Footer
+                          className={
+                            'd-flex flex-row justify-content-between align-items-center'
+                          }
+                        >
+                          <Card.Subtitle className={'mt-0'}>
+                            {dictionary.points[this.context]}
+                          </Card.Subtitle>
+                          <div>{challenge.points}</div>
+                        </Card.Footer>
+                      </Card>
+                    </Carousel.Item>
+                  );
+                })}
+              </Carousel>
+            ) : null}
+          </Card.Body>
+        </Collapse>
       </Card>
     );
   };
@@ -930,36 +976,47 @@ class Talk extends PureComponent<Props, State> {
         }
       });
     };
+    const handleClick = () =>
+      this.setState({ chatCardOpen: !this.state.chatCardOpen });
 
     return (
       <Card className={classNames('mb-3', styles.border)}>
-        <Card.Header className={styles.header}>Chat</Card.Header>
-        <Card.Body style={{ height: '20rem' }} className={'overflow-auto'}>
-          {this.state.chatFields.messageList.map(msg => (
-            <div
-              key={msg.id}
-              className={
-                this.user.id === msg.user.id
-                  ? 'd-flex flex-row mb-2 justify-content-end'
-                  : 'd-flex flex-row mb-2 justify-content-start'
-              }
-            >
-              <div
-                className={
-                  this.user.id === msg.user.id
-                    ? 'order-last ml-2'
-                    : 'order-first mr-2'
-                }
-              >
-                <Avatar image={msg.user.avatar} title={msg.user.name} />
-              </div>
-              <div
-                className={
-                  this.user.id === msg.user.id ? 'order-fist' : 'order-last'
-                }
-              >
-                <p
-                  className={`
+        <Card.Header
+          className={styles.header}
+          onClick={handleClick}
+          aria-controls={'talk_chat_card'}
+          aria-expanded={this.state.chatCardOpen}
+        >
+          Chat
+        </Card.Header>
+        <Collapse in={this.state.chatCardOpen}>
+          <div id={'talk_chat_card'}>
+            <Card.Body style={{ height: '20rem' }} className={'overflow-auto'}>
+              {this.state.chatFields.messageList.map(msg => (
+                <div
+                  key={msg.id}
+                  className={
+                    this.user.id === msg.user.id
+                      ? 'd-flex flex-row mb-2 justify-content-end'
+                      : 'd-flex flex-row mb-2 justify-content-start'
+                  }
+                >
+                  <div
+                    className={
+                      this.user.id === msg.user.id
+                        ? 'order-last ml-2'
+                        : 'order-first mr-2'
+                    }
+                  >
+                    <Avatar image={msg.user.avatar} title={msg.user.name} />
+                  </div>
+                  <div
+                    className={
+                      this.user.id === msg.user.id ? 'order-fist' : 'order-last'
+                    }
+                  >
+                    <p
+                      className={`
                   d-flex text-muted flex-row text-capitalize
                   ${
                     this.user.id === msg.user.id
@@ -967,54 +1024,59 @@ class Talk extends PureComponent<Props, State> {
                       : 'justify-content-start'
                   }
                   `}
-                >
-                  {msg.user.name.toLowerCase()}
-                </p>
-                <Card
-                  className={
-                    this.user.id === msg.user.id ? styles.header : 'bg-light'
-                  }
-                >
-                  <Card.Body
-                    style={{ maxWidth: '22.5rem' }}
-                    className={'pb-1 pt-0'}
-                  >
-                    <Card.Text>{msg.text}</Card.Text>
-                  </Card.Body>
-                </Card>
-                <small className={'text-muted'}>
-                  {moment(msg.date).fromNow()}
-                </small>
+                    >
+                      {msg.user.name.toLowerCase()}
+                    </p>
+                    <Card
+                      className={
+                        this.user.id === msg.user.id
+                          ? styles.header
+                          : 'bg-light'
+                      }
+                    >
+                      <Card.Body
+                        style={{ maxWidth: '22.5rem' }}
+                        className={'pb-1 pt-0'}
+                      >
+                        <Card.Text>{msg.text}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                    <small className={'text-muted'}>
+                      {moment(msg.date).fromNow()}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+            <Card.Footer className={'row m-0 p-1'}>
+              <div className={'col w-75 m-0 p-0'}>
+                <textarea
+                  className={'w-100'}
+                  rows={3}
+                  maxLength={250}
+                  minLength={1}
+                  value={this.state.chatFields.message}
+                  onChange={handleChange}
+                  onKeyUp={handleKeyUp}
+                  disabled={this.state.isHidden || this.state.isArchived}
+                />
               </div>
-            </div>
-          ))}
-        </Card.Body>
-        <Card.Footer className={'row m-0 p-1'}>
-          <div className={'col-9 m-0 p-0'}>
-            <textarea
-              className={'w-100'}
-              rows={3}
-              maxLength={250}
-              minLength={1}
-              value={this.state.chatFields.message}
-              onChange={handleChange}
-              onKeyUp={handleKeyUp}
-              disabled={this.state.isHidden || this.state.isArchived}
-            />
+              <div
+                className={
+                  'col-3 w-25 justify-content-center d-flex align-items-center'
+                }
+              >
+                <Button
+                  className={classNames('w-100', styles.button)}
+                  disabled={this.state.isArchived || this.state.isHidden}
+                  onClick={handleSubmit}
+                >
+                  <i className={'fas fa-paper-plane mr-2 h-100'} />
+                </Button>
+              </div>
+            </Card.Footer>
           </div>
-          <div
-            className={'col-3 d-flex justify-content-center align-items-center'}
-          >
-            <Button
-              className={classNames('w-100 h-50', styles.button)}
-              disabled={this.state.isArchived || this.state.isHidden}
-              onClick={handleSubmit}
-            >
-              <i className={'fas fa-paper-plane mr-2'} />
-              Send
-            </Button>
-          </div>
-        </Card.Footer>
+        </Collapse>
       </Card>
     );
   };
