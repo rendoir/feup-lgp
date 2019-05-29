@@ -1796,7 +1796,7 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title can not be empty!';
+      this.errorMessages.title = 'Field title cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -1814,7 +1814,7 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description can not be empty!';
+      this.errorMessages.description = 'Field description cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -1832,7 +1832,27 @@ class Talk extends PureComponent<Props, State> {
           dateStart: true
         }
       });
-      this.errorMessages.dateStart = 'Field date start can not be empty!';
+      this.errorMessages.dateStart = 'Field date start cannot be empty!';
+      return false;
+    } else if (fields.dateStart < this.state.talk.dateStart) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: true
+        }
+      });
+      this.errorMessages.dateStart =
+        'Starting date cannot be previous to talk starting date';
+      return false;
+    } else if (fields.dateStart > this.state.talk.dateEnd) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: true
+        }
+      });
+      this.errorMessages.dateStart =
+        'Starting date cannot be later than talk ending date!';
       return false;
     } else {
       this.setState({
@@ -1850,7 +1870,17 @@ class Talk extends PureComponent<Props, State> {
           dateEnd: true
         }
       });
-      this.errorMessages.dateEnd = 'Field date end can not be empty!';
+      this.errorMessages.dateEnd = 'Field date end cannot be empty!';
+      return false;
+    } else if (fields.dateEnd < fields.dateStart) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateEnd: true
+        }
+      });
+      this.errorMessages.dateEnd =
+        'Ending date cannot be previous to starting date!';
       return false;
     } else {
       this.setState({
@@ -1871,7 +1901,7 @@ class Talk extends PureComponent<Props, State> {
           question: true
         }
       });
-      this.errorMessages.question = 'Field question can not be empty!';
+      this.errorMessages.question = 'Field question cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -1915,7 +1945,7 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.correctAnswer =
-        'Field correct answer can not be empty!';
+        'Field correct answer cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -1933,7 +1963,7 @@ class Talk extends PureComponent<Props, State> {
           points: true
         }
       });
-      this.errorMessages.points = 'Field points can not be smaller than 0!';
+      this.errorMessages.points = 'Field points cannot be smaller than 0!';
       return false;
     } else {
       this.setState({
@@ -2197,7 +2227,7 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title can not be empty!';
+      this.errorMessages.title = 'Field title cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2215,7 +2245,7 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description can not be empty!';
+      this.errorMessages.description = 'Field description cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2233,7 +2263,7 @@ class Talk extends PureComponent<Props, State> {
           dateStart: true
         }
       });
-      this.errorMessages.dateStart = 'Field date start can not be empty!';
+      this.errorMessages.dateStart = 'Field date start cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2251,7 +2281,7 @@ class Talk extends PureComponent<Props, State> {
           dateEnd: true
         }
       });
-      this.errorMessages.dateEnd = 'Field date end can not be empty!';
+      this.errorMessages.dateEnd = 'Field date end cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2269,7 +2299,7 @@ class Talk extends PureComponent<Props, State> {
           local: true
         }
       });
-      this.errorMessages.local = 'Field local can not be empty!';
+      this.errorMessages.local = 'Field local cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2702,7 +2732,7 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title can not be empty!';
+      this.errorMessages.title = 'Field title cannot be empty!';
       return false;
     } else {
       this.setState({
@@ -2720,7 +2750,7 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description can not be empty!';
+      this.errorMessages.description = 'Field description cannot be empty!';
       return false;
     } else {
       this.setState({
