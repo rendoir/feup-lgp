@@ -1630,7 +1630,7 @@ describe('Conference tests', () => {
         it('Should edit a talk' , (done) => {
             request(app)
                 .put(`/talk/${talkId}`)
-                .set('authorization', 'Bearer ' + userjwt)
+                .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     title: 'title2',
                     about: 'about2',
@@ -1706,6 +1706,7 @@ describe('Tag tests', () => {
             });
     });
 });
+
 describe('Feed tests', () => {
     it('Should get feed' , (done) => {
         request(app)
@@ -1713,7 +1714,7 @@ describe('Feed tests', () => {
             .send({
                 offset: 10,
                 limit: 10,
-                userId: 6
+                userId: userId
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
@@ -1721,22 +1722,6 @@ describe('Feed tests', () => {
                 expect(err).to.be.null;
                 expect(res.body).to.have.property('posts');
                 expect(res.body).to.have.property('size');
-                expect(res.body).to.have.property('following');
-                done();
-            });
-    });
-
-    it('Should get feed' , (done) => {
-        request(app)
-            .get('/feed/get_stuff')
-            .send({
-                userId: userId
-            })
-            .set('authorization', 'Bearer ' + userjwt)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
                 expect(res.body).to.have.property('following');
                 done();
             });
