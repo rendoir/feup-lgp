@@ -1705,6 +1705,13 @@ class Talk extends PureComponent<Props, State> {
     let error = false;
     const fields = this.state.challengeFields;
 
+    const currentDate = Date.now();
+    const startDateTS = Date.parse(fields.dateStart);
+    const endDateTS = Date.parse(fields.dateEnd);
+    console.log('curr: ', currentDate);
+    console.log('start: ', startDateTS);
+    console.log('end: ', endDateTS);
+    console.log('date: ', currentDate - startDateTS);
     Object.keys(fields).map(key => {
       if (fields[key]) {
         if (key !== 'options') {
@@ -1760,6 +1767,16 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.dateStart = 'Field date start can not be empty!';
       return false;
+    } else if (currentDate - startDateTS >= 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: true
+        }
+      });
+      this.errorMessages.dateStart =
+        'The challenge cannot start before current date!';
+      return false;
     } else {
       this.setState({
         error: {
@@ -1777,6 +1794,15 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.dateEnd = 'Field date end can not be empty!';
+      return false;
+    } else if (endDateTS - startDateTS < 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateEnd: true
+        }
+      });
+      this.errorMessages.dateEnd = 'End date cannot be before start date!';
       return false;
     } else {
       this.setState({
