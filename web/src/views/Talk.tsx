@@ -1803,7 +1803,8 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title cannot be empty!';
+      this.errorMessages.title =
+        dictionary.title_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1821,7 +1822,8 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description cannot be empty!';
+      this.errorMessages.description =
+        dictionary.description_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1839,9 +1841,10 @@ class Talk extends PureComponent<Props, State> {
           dateStart: true
         }
       });
-      this.errorMessages.dateStart = 'Field date start cannot be empty!';
+      this.errorMessages.dateStart =
+        dictionary.date_empty_error_message[this.context];
       return false;
-    } else if (fields.dateStart < this.state.talk.dateStart) {
+    } else if (Date.now() - Date.parse(fields.dateStart) >= 0) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1849,17 +1852,7 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.dateStart =
-        'Starting date cannot be previous to talk starting date';
-      return false;
-    } else if (fields.dateStart > this.state.talk.dateEnd) {
-      this.setState({
-        error: {
-          ...this.state.error,
-          dateStart: true
-        }
-      });
-      this.errorMessages.dateStart =
-        'Starting date cannot be later than talk ending date!';
+        dictionary.invalid_date_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1877,9 +1870,10 @@ class Talk extends PureComponent<Props, State> {
           dateEnd: true
         }
       });
-      this.errorMessages.dateEnd = 'Field date end cannot be empty!';
+      this.errorMessages.dateEnd =
+        dictionary.date_empty_error_message[this.context];
       return false;
-    } else if (fields.dateEnd < fields.dateStart) {
+    } else if (Date.parse(fields.dateEnd) - Date.parse(fields.dateStart) < 0) {
       this.setState({
         error: {
           ...this.state.error,
@@ -1887,7 +1881,7 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.dateEnd =
-        'Ending date cannot be previous to starting date!';
+        dictionary.end_date_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1899,8 +1893,9 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.dateEnd = '';
     }
     if (
-      fields.challengetype === 'question_options' &&
-      fields.question!.length === 0
+      fields.question === undefined ||
+      (fields.challengetype === 'question_options' &&
+        fields.question!.length === 0)
     ) {
       this.setState({
         error: {
@@ -1908,7 +1903,8 @@ class Talk extends PureComponent<Props, State> {
           question: true
         }
       });
-      this.errorMessages.question = 'Field question cannot be empty!';
+      this.errorMessages.question =
+        dictionary.question_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1920,8 +1916,9 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.question = '';
     }
     if (
-      fields.challengetype === 'question_options' &&
-      fields.options!.length <= 1
+      fields.options === undefined ||
+      (fields.challengetype === 'question_options' &&
+        fields.options!.length <= 1)
     ) {
       this.setState({
         error: {
@@ -1930,7 +1927,7 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.options =
-        'Field options must have at least two values!';
+        dictionary.options_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1942,8 +1939,9 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.options = '';
     }
     if (
-      fields.challengetype === 'question_options' &&
-      fields.correctAnswer!.length === 0
+      fields.correctAnswer === undefined ||
+      (fields.challengetype === 'question_options' &&
+        fields.correctAnswer!.length === 0)
     ) {
       this.setState({
         error: {
@@ -1952,7 +1950,7 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.errorMessages.correctAnswer =
-        'Field correct answer cannot be empty!';
+        dictionary.correct_answer_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -1963,14 +1961,14 @@ class Talk extends PureComponent<Props, State> {
       });
       this.errorMessages.correctAnswer = '';
     }
-    if (fields.points < 0) {
+    if (fields.points < 0 || fields.points > 99) {
       this.setState({
         error: {
           ...this.state.error,
           points: true
         }
       });
-      this.errorMessages.points = 'Field points cannot be smaller than 0!';
+      this.errorMessages.points = dictionary.points_invalid_field[this.context];
       return false;
     } else {
       this.setState({
@@ -2234,7 +2232,8 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title cannot be empty!';
+      this.errorMessages.title =
+        dictionary.title_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2252,7 +2251,8 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description cannot be empty!';
+      this.errorMessages.description =
+        dictionary.description_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2270,7 +2270,18 @@ class Talk extends PureComponent<Props, State> {
           dateStart: true
         }
       });
-      this.errorMessages.dateStart = 'Field date start cannot be empty!';
+      this.errorMessages.dateStart =
+        dictionary.date_empty_error_message[this.context];
+      return false;
+    } else if (Date.now() - Date.parse(editFields.dateStart) >= 0) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateStart: true
+        }
+      });
+      this.errorMessages.dateStart =
+        dictionary.invalid_date_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2288,7 +2299,21 @@ class Talk extends PureComponent<Props, State> {
           dateEnd: true
         }
       });
-      this.errorMessages.dateEnd = 'Field date end cannot be empty!';
+      this.errorMessages.dateEnd =
+        dictionary.date_empty_error_message[this.context];
+      return false;
+    } else if (
+      Date.parse(editFields.dateEnd) - Date.parse(editFields.dateStart) <
+      0
+    ) {
+      this.setState({
+        error: {
+          ...this.state.error,
+          dateEnd: true
+        }
+      });
+      this.errorMessages.dateEnd =
+        dictionary.end_date_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2306,7 +2331,8 @@ class Talk extends PureComponent<Props, State> {
           local: true
         }
       });
-      this.errorMessages.local = 'Field local cannot be empty!';
+      this.errorMessages.local =
+        dictionary.local_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2739,7 +2765,8 @@ class Talk extends PureComponent<Props, State> {
           title: true
         }
       });
-      this.errorMessages.title = 'Field title cannot be empty!';
+      this.errorMessages.title =
+        dictionary.title_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2757,7 +2784,8 @@ class Talk extends PureComponent<Props, State> {
           description: true
         }
       });
-      this.errorMessages.description = 'Field description cannot be empty!';
+      this.errorMessages.description =
+        dictionary.description_empty_error_message[this.context];
       return false;
     } else {
       this.setState({
@@ -2865,67 +2893,55 @@ class Talk extends PureComponent<Props, State> {
     switch (type) {
       case 'answer':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
-        message =
-          "Invalid field. Answer can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
+        message = dictionary.answer_invalid_field[this.context];
         break;
       case 'correctAnswer':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
-        message =
-          "Invalid field. Answer can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
+        message = dictionary.answer_invalid_field[this.context];
         break;
       case 'dateEnd':
         re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-        message =
-          'Invalid field. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00';
+        message = dictionary.date_invalid_field[this.context];
         break;
       case 'dateStart':
         re = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-        message =
-          'Invalid filed. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00';
+        message = dictionary.date_invalid_field[this.context];
         break;
       case 'description':
         re = /^[\-!?%@#)( ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.)(\w\u00C0-\u017F]*$/;
-        message =
-          "Invalid field. Description can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ',', ), (";
+        message = dictionary.description_invalid_field[this.context];
         break;
       case 'local':
         re = /^([\w\u00C0-\u017F]+[ \-,.\w\u00C0-\u017F]*){2,}$/;
-        message =
-          "Invalid field. Local can only contain alphanumerical characters, -, ',', '.' and must have at least 2 characters";
+        message = dictionary.local_invalid_field[this.context];
         break;
       case 'options':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
-        message =
-          "Invalid field. Option can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
+        message = dictionary.options_invalid_field[this.context];
         break;
       case 'points':
         re = /^\d{1,2}$/;
-        message =
-          'Invalid field. Points must be a positive integer with at maximum 2 digits';
+        message = dictionary.points_invalid_field[this.context];
         break;
       case 'question':
         re = /^[\-!?%@# ]*[\w\u00C0-\u017F]+[\s\-!?@#%,.\w\u00C0-\u017F]*$/;
-        message =
-          "Invalid field. Question can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','";
+        message = dictionary.question_invalid_field[this.context];
         break;
       case 'tags':
         re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
-        message =
-          'Invalid field. Tag can only contain alphanumerical characters or - and must have 2 to 150 characters';
+        message = dictionary.tag_invalid_field[this.context];
         break;
       case 'title':
         re = /^([\s\-]*[\w\u00C0-\u017F]+[\s\-]*){2,150}$/;
-        message =
-          'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters';
+        message = dictionary.title_invalid_field[this.context];
         break;
       case 'challengetype':
         re = /^(question_options|create_post|comment_post)$/;
-        message =
-          "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'";
+        message = dictionary.type_invalid_field[this.context];
         break;
       case 'livestreamURL':
         re = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}\-\\x{ffff}0-9]+)*(?:\.(?:[a-z\\x{00a1}\-\\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$|^$/;
-        message = "Invalid field. Livestream's url must be an embed link";
+        message = dictionary.livestream_invalid_field[this.context];
         break;
       default:
         return true;
