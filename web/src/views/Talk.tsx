@@ -750,7 +750,6 @@ class Talk extends PureComponent<Props, State> {
                     })
                     .catch(error => console.log(error.response.data.message));
                 };
-
                 return (
                   <Carousel.Item key={challenge.id} className={'h-100'}>
                     <Card border={'light'} className={'px-5 w-100'}>
@@ -1881,7 +1880,6 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.correctAnswer = '';
     }
     if (fields.points < 0 || fields.points > 99) {
-      console.log('here');
       this.setState({
         error: {
           ...this.state.error,
