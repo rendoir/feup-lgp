@@ -1,16 +1,17 @@
 'use strict';
 
 import { json, urlencoded } from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import * as express from 'express';
 import * as fileUpload from 'express-fileupload';
-// import * as cookie_parser from 'cookie-parser';
 import * as express_session from 'express-session';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 // import * as https from 'https';
 import * as http from 'http';
 import * as morgan from 'morgan';
-// import { jwtMiddleware } from './_helpers/jwt';
+import * as socketIo from 'socket.io';
+import { jwtMiddleware } from './helpers/jwt';
 
 // let privateKey; let certificate;
 
@@ -31,25 +32,34 @@ if (process.env.PRODUCTION === 'true') {
 
 import {
     adminRouter,
+    challengeRouter,
     commentRouter,
+    conferenceRouter,
     feedRouter,
+    inviteRouter,
     loginRouter,
     postRouter,
+    productsRouter,
     searchRouter,
+    shopRouter,
     tagsRouter,
+    talkRouter,
     usersRouter,
 } from './routes/routes';
 // Create a new Express application.
 export const app = express();
+import cors = require('cors');
 
+app.use(cors());
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(morgan('combined'));
-// app.use(cookie_parser());
+app.use(cookieParser());
 app.use(urlencoded({extended: true}));
 app.use(json());
 app.use(fileUpload({createParentPath: true}));
-app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
+app.use(express_session({secret: 'keyboard cat', resave: true, saveUninitialized: false,
+cookie: { secure: false}}));
 app.use(express.static('uploads'));
 
 // CORS
@@ -60,8 +70,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Uncomment the following line when login is implemented.
-// app.use(jwtMiddleware());
+app.use(jwtMiddleware());
 
 // Define routes.
 app.use('/users', usersRouter);
@@ -71,7 +80,13 @@ app.use('/post', postRouter);
 app.use('/admin', adminRouter);
 app.use('/tags', tagsRouter);
 app.use('/post/:post_id/comment', commentRouter);
+app.use('/talk', talkRouter);
+app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
+app.use('/shop', shopRouter);
+app.use('/conference', conferenceRouter);
+app.use('/products', productsRouter);
+app.use('/invite', inviteRouter);
 app.get('/', (req, res) => {
     res.send('welcome to node api');
 });
@@ -97,4 +112,16 @@ app.use((err, req, res, next) => {
 
 console.log('PORT: ' + process.env.API_PORT);
 // https.createServer(credentials, app).listen(process.env.API_PORT);
-http.createServer(app).listen(process.env.API_PORT);
+const server = http.createServer(app).listen(process.env.API_PORT);
+
+const io = socketIo(server);
+io.on('connection', (socket) => {
+    socket.on('groupConnect', (group: number) => {
+        const namespace = io.of('/' + group);
+        console.log('Created namespace: ' + group);
+    });
+    socket.on('message', (data) => {
+        const namespace = data.namespace;
+        io.of(namespace).emit('message', data.msg);
+    });
+});

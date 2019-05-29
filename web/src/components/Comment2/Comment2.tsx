@@ -3,12 +3,13 @@ import {
   faReply,
   faThumbsUp,
   faTrash
-} from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import React, { MouseEvent, PureComponent, ReactNode } from "react";
-import { Avatar, Icon, InputNext } from "../../components";
-import { AvatarPlaceholder } from "../../utils/types";
-import styles from "./Comment2.module.css";
+} from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { MouseEvent, PureComponent, ReactNode } from 'react';
+import { Avatar, Icon, InputNext } from '../../components';
+import { dictionary, LanguageContext } from '../../utils/language';
+import { AvatarPlaceholder } from '../../utils/types';
+import styles from './Comment2.module.css';
 
 export type Props = {
   avatar: Avatar;
@@ -35,12 +36,14 @@ type State = {
 };
 
 class Comment2 extends PureComponent<Props, State> {
+  public static contextType = LanguageContext;
+
   private static defaultProps = {
     edited: false,
     liked: false,
     likes: 0,
-    message: "",
-    placeholder: "empty",
+    message: '',
+    placeholder: 'empty',
     reply: false,
     withInput: true,
     withReplyInput: false
@@ -52,7 +55,7 @@ class Comment2 extends PureComponent<Props, State> {
     this.state = {
       liked: this.props.liked,
       likes: this.props.likes,
-      message: ""
+      message: ''
     };
 
     this.handleLike = this.handleLike.bind(this);
@@ -82,12 +85,12 @@ class Comment2 extends PureComponent<Props, State> {
       <div className={styles.wrapper}>
         <div>
           <a href={`/user/${userId}`} className={styles.title}>
-            {avatar.props.title || "unknown"}
+            {avatar.props.title || 'unknown'}
           </a>
         </div>
         <div>
           <p className={styles.message}>{message}</p>
-          <div className={styles.edited}>{edited ? "(edited)" : null}</div>
+          <div className={styles.edited}>{edited ? '(edited)' : null}</div>
         </div>
       </div>
     );
@@ -101,21 +104,21 @@ class Comment2 extends PureComponent<Props, State> {
         <div className={styles.footerLinks}>
           <a href="#" className={styles.link} onClick={this.handleLike}>
             <Icon icon={faThumbsUp} />
-            Like
+            {dictionary.like_action[this.context]}
           </a>
           {reply ? null : (
             <a href="#" className={styles.link}>
               <Icon icon={faReply} />
-              Reply
+              {dictionary.reply_action[this.context]}
             </a>
           )}
           <a href="#" className={styles.link}>
             <Icon icon={faEdit} />
-            Edit
+            {dictionary.edit_action[this.context]}
           </a>
           <a href="#" className={styles.link}>
             <Icon icon={faTrash} />
-            Delete
+            {dictionary.delete_action[this.context]}
           </a>
         </div>
         <div className={styles.footerLinks}>
@@ -150,8 +153,8 @@ class Comment2 extends PureComponent<Props, State> {
           <InputNext
             onChange={message => this.setState({ message })}
             value={this.state.message}
-            id={"1"}
-            placeholder={"Leave a comment"}
+            id={'1'}
+            placeholder={dictionary.insert_comment_placeholder[this.context]}
           />
         </div>
       </div>

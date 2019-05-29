@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import ClassNames from "classnames";
-import { ColorTheme, IconSize } from "../../utils/types";
-import Icon from "../Icon/Icon";
-import styles from "./IconButton.module.css";
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import ClassNames from 'classnames';
+import React, { Component } from 'react';
+import { ColorTheme, IconSize } from '../../utils/types';
+import Icon from '../Icon/Icon';
+import styles from './IconButton.module.css';
 
 export type Props = {
   className?: string;
   id?: string;
   style?: object;
   glyph: IconDefinition;
-  size: "small" | "normal" | "large";
+  size: 'small' | 'normal' | 'large';
+  iconSize?: IconSize;
   theme: ColorTheme;
   flat: boolean;
   disabled: boolean;
@@ -23,8 +23,8 @@ class IconButton extends Component<Props> {
   public static defaultProps = {
     disabled: false,
     flat: false,
-    size: "normal",
-    theme: "default"
+    size: 'normal',
+    theme: 'default'
   };
 
   public render() {
@@ -38,6 +38,8 @@ class IconButton extends Component<Props> {
       style,
       active,
       onClick,
+      glyph,
+      iconSize,
       ...otherProps
     } = this.props;
 
@@ -71,29 +73,28 @@ class IconButton extends Component<Props> {
 
   private getIconSize(size: string): IconSize {
     switch (size) {
-      case "small":
-        return "xs";
+      case 'small':
+        return 'xs';
 
-      case "normal":
-        return "sm";
+      case 'normal':
+        return 'sm';
 
-      case "large":
-        return "lg";
+      case 'large':
+        return 'lg';
 
       default:
-        return "sm";
+        return 'lg';
     }
   }
 
   private renderIcon() {
-    const { glyph } = this.props;
-    const { size } = this.props;
+    const { glyph, size, iconSize } = this.props;
 
     return (
       <Icon
         icon={glyph}
         className={styles.icon}
-        size={this.getIconSize(size)}
+        size={iconSize || this.getIconSize(size)}
       />
     );
   }

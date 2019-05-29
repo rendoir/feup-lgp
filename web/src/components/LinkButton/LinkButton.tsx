@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-
-import classNames from "classnames";
-import { ColorTheme } from "../../utils/types";
-import styles from "../Button/Button.module.css";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import { ColorTheme } from '../../utils/types';
+import styles from '../Button/Button.module.css';
 
 export type Props = {
   /** LinkButton class attribute */
@@ -14,11 +13,11 @@ export type Props = {
   /** LinkButton rounded attribute */
   rounded: boolean;
   /** LinkButton view */
-  view: "button" | "outline" | "link";
+  view: 'button' | 'outline' | 'link';
   /** LinkButton theme */
   theme: ColorTheme;
   /** LinkButton Size */
-  size: "small" | "normal" | "large";
+  size: 'small' | 'normal' | 'large';
   /** LinkButton href attribute */
   href: string;
   /** LinkButton target attribute */
@@ -30,9 +29,9 @@ export type Props = {
 class LinkButton extends Component<Props> {
   public static defaultProps = {
     rounded: true,
-    size: "normal",
-    theme: "default",
-    view: "button",
+    size: 'normal',
+    theme: 'default',
+    view: 'button',
     wide: false
   };
 

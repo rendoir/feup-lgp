@@ -1,6 +1,29 @@
 @import 'variables';
 
+#register-landing{
+  margin-top: 0 !important;
+}
+
 #landing-info {
+  display: block !important;
+}
+
+#emailErrorMessage, #emailExistsErrorMessage, #passwordErrorMessage,
+#confirmPasswordErrorMessage, #firstNameErrorMessage, #lastNameErrorMessage {
+  color: red !important;
+  font-size: 13px !important;
+  display: none;
+}
+
+.email_exists {
+  color: red !important;
+  font-size: 13px !important;
+  display: none;
+}
+
+#oldPasswordErrorMessage {
+  color: red !important;
+  font-size: 13px !important;
   display: block !important;
 }
 

@@ -1,0 +1,110 @@
+@import './variables';
+
+.cardsLeft {
+	position: fixed;
+	top: 6rem;
+	left: 0;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.cardsRight {
+	position: fixed;
+	top: 6rem;
+	right: 0;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.posts {
+	position: relative;
+	left: 25%;
+	margin-top: 1em;
+
+	@media (max-width: 992px) {
+		position: initial;
+	}
+}
+
+.header {
+	background-color: tint($color-primary, 50%);
+}
+
+.border {
+	border-color: $color-primary !important;
+
+	&:focus {
+		box-shadow: 0 0 2px 1px $color-primary;
+	}
+}
+
+.link {
+	color: $color-primary;
+
+	&:hover {
+		color: shade($color-primary, 30%);
+		text-decoration: underline;
+	}
+}
+
+.breadcrumbLink {
+	color: shade($color-primary, 10%);
+
+	&:hover {
+		color: shade($color-primary, 50%);
+	}
+}
+
+.button {
+	color: $white;
+	background-color: $color-primary;
+	border-color: $color-primary;
+
+	&:hover,
+	&:active {
+		background-color: shade($color-primary, 10%) !important;
+		border-color: $color-primary;
+	}
+
+	&:disabled {
+		background-color: $color-primary !important;
+		color: $white !important;
+		border-color: $color-primary;
+		opacity: 0.5 !important;
+	}
+}
+
+.disabled {
+	background-color: $color-primary !important;
+	color: $white !important;
+	border-color: $color-primary;
+	opacity: 0.5 !important;
+}
+
+.arrow {
+	filter: invert(100%);
+}
+
+.correctAnswer {
+	background-color: tint($color-success, 90%);
+	border-color: $color-success;
+
+	&:hover {
+		background-color: tint($color-success, 70%) !important;
+		//color: $white;
+	}
+}
+
+.wrongAnswer {
+	background-color: tint($color-danger, 90%);
+	border-color: $color-danger;
+
+	&:hover {
+		background-color: tint($color-danger, 70%) !important;
+		//color: $white;
+	}
+}

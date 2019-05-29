@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 type BackofficeUserCardProps = {
   name: string;
@@ -17,11 +18,18 @@ export class BackofficeUserCard extends React.Component<
   BackofficeUserCardProps,
   {}
 > {
-  public static readonly BANNED_USER = "banned";
-  public static readonly ADMIN_USER = "admin";
+  public static contextType = LanguageContext;
+
+  public static readonly BANNED_USER = 'banned';
+  public static readonly ADMIN_USER = 'admin';
 
   constructor(props: any) {
     super(props);
+
+    this.turnAdminHandler = this.turnAdminHandler.bind(this);
+    this.expelAdminHandler = this.expelAdminHandler.bind(this);
+    this.banUserHandler = this.banUserHandler.bind(this);
+    this.unbanUserHandler = this.unbanUserHandler.bind(this);
   }
 
   public render() {
@@ -38,13 +46,15 @@ export class BackofficeUserCard extends React.Component<
           </div>
           <div className="col-12 col-lg-8 mb-2 mb-lg-0">
             <p className="card-text">
-              <strong>Email:</strong> {this.props.email}
+              <strong>E-mail:</strong> {this.props.email}
             </p>
             <p className="card-text">
-              <strong>Institution/College:</strong> {this.props.institution}
+              <strong>{dictionary.workplace_institution[this.context]}:</strong>{' '}
+              {this.props.institution}
             </p>
             <p className="card-text">
-              <strong>Profession/Course:</strong> {this.props.profession}
+              <strong>{dictionary.profession_field[this.context]}:</strong>{' '}
+              {this.props.profession}
             </p>
           </div>
           {this.getButtons()}
@@ -57,58 +67,86 @@ export class BackofficeUserCard extends React.Component<
     const banButton = (
       <button
         className="btn btn-danger btn-block"
-        onClick={this.props.banHandler}
+        onClick={this.banUserHandler}
       >
-        Ban
+        {dictionary.ban_action[this.context]}
       </button>
     );
     const unbanButton = (
       <button
         className="btn btn-primary btn-block"
-        onClick={this.props.unbanHandler}
+        onClick={this.unbanUserHandler}
       >
-        Unban
+        {dictionary.unban_action[this.context]}
       </button>
     );
     const turnAdminButton = (
       <button
         className="btn btn-info btn-block"
-        onClick={this.props.turnAdminHandler}
+        onClick={this.turnAdminHandler}
       >
-        Turn admin
+        {dictionary.turn_admin[this.context]}
       </button>
     );
     const expelAdminButton = (
       <button
         className="btn btn-primary btn-block"
-        onClick={this.props.expelAdminHandler}
+        onClick={this.expelAdminHandler}
       >
-        Expel admin
+        {dictionary.expel_admin[this.context]}
       </button>
     );
 
-    let userTypeButton;
+    let userTypeButton1;
+    let userTypeButton2;
+
     switch (this.props.userType) {
       case BackofficeUserCard.BANNED_USER:
-        userTypeButton = unbanButton;
+        userTypeButton1 = unbanButton;
         break;
 
       case BackofficeUserCard.ADMIN_USER:
-        userTypeButton = expelAdminButton;
+        userTypeButton1 = banButton;
+        userTypeButton2 = expelAdminButton;
         break;
 
       default:
-        userTypeButton = turnAdminButton;
+        userTypeButton1 = banButton;
+        userTypeButton2 = turnAdminButton;
         break;
     }
 
     return (
       <div className="col-12 col-lg-2 justify-content-lg-center ml-3 ml-lg-0">
         {this.props.userType !== BackofficeUserCard.BANNED_USER && (
-          <div className="row mb-3">{banButton}</div>
+          <div className="row mb-3">{userTypeButton2}</div>
         )}
-        <div className="row">{userTypeButton}</div>
+        <div className="row">{userTypeButton1}</div>
       </div>
     );
+  }
+
+  private turnAdminHandler() {
+    if (this.props.turnAdminHandler) {
+      this.props.turnAdminHandler(this.props.email);
+    }
+  }
+
+  private expelAdminHandler() {
+    if (this.props.expelAdminHandler) {
+      this.props.expelAdminHandler(this.props.email);
+    }
+  }
+
+  private banUserHandler() {
+    if (this.props.banHandler) {
+      this.props.banHandler(this.props.email);
+    }
+  }
+
+  private unbanUserHandler() {
+    if (this.props.unbanHandler) {
+      this.props.unbanHandler(this.props.email);
+    }
   }
 }

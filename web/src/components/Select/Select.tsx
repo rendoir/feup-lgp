@@ -1,10 +1,10 @@
-import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
+import React, { ChangeEvent, Component, MouseEvent, ReactNode } from 'react';
 
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import { ColorTheme } from "../../utils/types";
-import Icon from "../Icon/Icon";
-import styles from "./Select.module.css";
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import { ColorTheme } from '../../utils/types';
+import Icon from '../Icon/Icon';
+import styles from './Select.module.css';
 
 export type Option = {
   value: string;
@@ -31,19 +31,19 @@ export type Props = {
   /** Select theme property */
   theme: ColorTheme;
   /** Select size property */
-  size: "small" | "normal";
+  size: 'small' | 'normal';
   /** Select options */
   options: Option[];
   /** Select placeholder attribute */
   placeholder?: string;
   /** Select onChange event handler attribute */
-  onChange: (value: string) => unknown;
+  onChange: (value: string, event: ChangeEvent<HTMLSelectElement>) => any;
 };
 
 class Select extends Component<Props> {
   public static defaultProps = {
-    size: "normal",
-    theme: "default"
+    size: 'normal',
+    theme: 'default'
   };
 
   private select: HTMLSelectElement | null | undefined;
@@ -73,7 +73,7 @@ class Select extends Component<Props> {
             id={id}
             name={name}
             disabled={disabled}
-            value={this.props.value || ""}
+            value={this.props.value || ''}
             defaultValue={this.props.defaultValue}
             ref={this.setSelect}
             onChange={this.handleChange}
@@ -87,7 +87,7 @@ class Select extends Component<Props> {
   }
 
   private handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
-    this.props.onChange(event.target.value);
+    this.props.onChange(event.target.value, event);
   };
 
   private handleLabelMouseDown = (

@@ -20,14 +20,14 @@ body {
   textarea {
     overflow: hidden !important;
     resize: none !important;
-    height: calc(1.5em + 0.75rem + 2px) !important;
+    //height: calc(1.5em + 0.75rem + 2px) !important;
   }
 
   input:focus,
   textarea:focus {
-    box-shadow: 0 0 0 0.2rem $light-accent-color !important;
-    border-color: $light-accent-color !important;
-    outline: none !important;
+    //box-shadow: 0 0 0 0.2rem $light-accent-color !important;
+    //border-color: $light-accent-color !important;
+    //outline: none !important;
   }
 
   input[type='text']::placeholder,
@@ -96,9 +96,25 @@ body {
       position: absolute;
     }
 
-    #rate p{
-      color: #000000;
-      font-size: small;
+    #update-rate{
+      color: #e7711b;
+      /*unicode-bidi: bidi-override;
+      direction: rtl;*/
     }
+
+    #update-rate span:hover:before,
+    #update-rate span:hover ~ span:before {
+      color: #e7711b;
+      /*content: "\2605";
+      position: absolute;*/
+    }
+
+  }
+
+  #hiddenTalk a{
+    padding-left: 20px;
+    position: center;
+    color: #e7711b;
+
   }
 }

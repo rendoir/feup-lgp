@@ -1,11 +1,7 @@
-import axios from "axios";
-import React, { ChangeEvent, Component, MouseEvent, ReactNode } from "react";
-
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import { ColorTheme } from "../../utils/types";
-import Icon from "../Icon/Icon";
-import styles from "./AddTags.module.css";
+import React, { Component } from 'react';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+import styles from './AddTags.module.css';
 
 export type Option = {};
 
@@ -21,6 +17,8 @@ export interface IState {
 }
 
 class AddTags extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public tagInput: any;
 
   constructor(props: IProps) {
@@ -51,9 +49,9 @@ class AddTags extends Component<IProps, IState> {
           <li id="tags_input" className={styles.input_tag__tags__input}>
             <input
               type="text"
-              className={this.getInputRequiredClass("tags")}
+              className={this.getInputRequiredClass('tags')}
               list="suggested-tags"
-              placeholder="Search for or write a new tag and click enter."
+              placeholder={dictionary.tag_placeholder[this.context]}
               onKeyDown={this.onSpacePress}
               ref={c => {
                 this.tagInput = c;
@@ -61,7 +59,7 @@ class AddTags extends Component<IProps, IState> {
             />
             <datalist id="suggested-tags">
               {this.state.suggested_tags.map((tag, key) => (
-                <option key={"tag_" + key} value={tag.name} />
+                <option key={'tag_' + key} value={tag.name} />
               ))}
             </datalist>
           </li>
@@ -75,30 +73,23 @@ class AddTags extends Component<IProps, IState> {
   }
 
   public getExistentTags() {
-    let getUrl = `${location.protocol}//${location.hostname}`;
-    getUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    getUrl += `/tags`;
-
-    axios
-      .get(getUrl)
+    axiosInstance
+      .get('/tags')
       .then(res => {
         this.setState({
           suggested_tags: res.data,
           tags: this.props.tags
         });
       })
-      .catch(() => console.log("Failed to create comment"));
+      .catch(() => console.log('Failed to create comment'));
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public onSpacePress = (e: any) => {
@@ -113,7 +104,7 @@ class AddTags extends Component<IProps, IState> {
       this.tagInput.value = null;
       this.props.onChange(this.props.tags, [...this.state.tags, val]);
       e.preventDefault();
-    } else if (e.key === "Backspace" && !val) {
+    } else if (e.key === 'Backspace' && !val) {
       this.removeTag(this.state.tags.length - 1);
     }
   };

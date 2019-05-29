@@ -1,0 +1,37 @@
+@import "../../styles/variables";
+
+$tags-color: $color-primary;
+$tags-remove-color: rgba($black, 0.5);
+$tags-background-color: rgba($greyish, 0.25);
+$tags-font-family: $default-font-family;
+$tags-font-size: $default-font-size-small;
+$tags-padding: $default-padding;
+$tags-width: 100px;
+
+.wrapper {
+  display: inline-flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  font-family: $tags-font-family;
+  font-size: $tags-font-size;
+  color: $tags-color;
+  margin: 0 $tags-padding / 3;
+}
+
+.tag {
+  background-color: $tags-background-color;
+  margin: 0;
+  padding: ($tags-padding / 2) $tags-padding;
+  text-transform: capitalize;
+}
+
+.icon {
+  margin-left: $tags-padding;
+  color: $tags-remove-color;
+
+  &:hover {
+    color: $color-danger;
+  }
+}

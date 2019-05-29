@@ -14,7 +14,7 @@ $select-line-height: 26px;
 $select-color: #333;
 $select-background-color: $white;
 $select-label-font-size: $default-font-size-small;
-$select-label-color: $color-labels;
+$select-label-color: $color-primary;
 $select-border-color: #d1d3d8;
 $select-hover-border-color: shade($select-border-color, 10%);
 $select-focus-border-color: $color-primary;
@@ -36,6 +36,8 @@ $select-focus-outline-color: rgba($select-focus-border-color, 0.2);
   justify-content: center;
   width: 100%;
   margin-bottom: $default-padding;
+  margin-left: 0;
+  margin-right: 0;
 
   & .wrapper {
     width: 100%;
@@ -44,14 +46,17 @@ $select-focus-outline-color: rgba($select-focus-border-color, 0.2);
 }
 
 .label {
-  font-family: $select-font-family;
-  font-size: $select-label-font-size;
+  all: initial;
   display: inline-block;
   cursor: pointer;
   user-select: none;
-  line-height: 1.4;
-  margin-bottom: $default-padding-small / 2;
+  text-transform: uppercase;
+  font-family: $select_font-family;
+  font-size: $select-label-font-size;
+  font-weight: 500;
+  line-height: $select-line-height;
   color: $select-label-color;
+  margin-bottom: $default-padding;
 }
 
 .select {

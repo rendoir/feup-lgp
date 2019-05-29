@@ -1,20 +1,12 @@
-import axios from "axios";
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import React, { Component } from 'react';
 
-import createSequence from "../../utils/createSequence";
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
 
-import "./PostModal.css";
+import './PostModal.css';
 
-import Avatar from "../Avatar/Avatar";
-import Button from "../Button/Button";
-
-import { checkPropTypes } from "prop-types";
-import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-
-const CREATE_MODE = "Create";
-const DELETE_MODE = "Delete";
+const CREATE_MODE = 'Create';
+const DELETE_MODE = 'Delete';
 
 interface IProps {
   /* The following attributes are only required for post deletion */
@@ -32,9 +24,9 @@ interface IState {
   redirect: boolean;
 }
 
-const seq = createSequence();
-
 class DeleteModal extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public mode: string;
 
   public image: any = React.createRef();
@@ -48,8 +40,8 @@ class DeleteModal extends Component<IProps, IState> {
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
       redirect: false,
-      text: props.text || "",
-      title: props.title || ""
+      text: props.text || '',
+      title: props.title || ''
     };
 
     // Post manipulation handlers
@@ -59,24 +51,11 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public apiDeletePost() {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/delete";
-    axios
-      .delete(postUrl, {
-        data: {
-          id: this.props.id
-        },
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
+    axiosInstance
+      .delete(`/post/${this.props.id}`)
       .then(res => {
-        console.log("Post deleted - reloading page");
-        if (window.location.pathname === "/post/" + this.props.id) {
+        console.log('Post deleted - reloading page');
+        if (window.location.pathname === '/post/' + this.props.id) {
           this.setState({
             redirect: true
           });
@@ -85,7 +64,7 @@ class DeleteModal extends Component<IProps, IState> {
           window.location.reload();
         }
       })
-      .catch(() => console.log("Failed to delete post"));
+      .catch(() => console.log('Failed to delete post'));
   }
 
   public handlePostDeletion() {
@@ -94,14 +73,14 @@ class DeleteModal extends Component<IProps, IState> {
 
   public renderRedirect() {
     if (this.state.redirect) {
-      window.location.href = "/";
+      window.location.href = '/';
     }
   }
 
   public handleInputChange(event: any) {
     const field = event.target.name;
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     const partialState: any = {};
@@ -110,15 +89,15 @@ class DeleteModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public handleRedirect() {
-    if (window.location.pathname === "/post/" + this.props.id) {
+    if (window.location.pathname === '/post/' + this.props.id) {
       this.renderRedirect();
     }
   }
@@ -133,7 +112,7 @@ class DeleteModal extends Component<IProps, IState> {
           data-dismiss="modal"
           onClick={this.handlePostDeletion}
         >
-          {"Yes"}
+          {dictionary.yes[this.context]}
         </button>
       </div>
     );
@@ -157,7 +136,9 @@ class DeleteModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {`${this.mode} Post`}
+                {`${dictionary[this.mode][this.context]} ${
+                  dictionary.post[this.context]
+                }`}
               </h5>
               <button
                 type="button"
@@ -169,10 +150,7 @@ class DeleteModal extends Component<IProps, IState> {
               </button>
             </div>
             <div className="modal-body">
-              <p>
-                Are you sure you want do delete this post? It can't be retrieved
-                later.
-              </p>
+              <p>{dictionary.confirm_delete_post[this.context]}</p>
             </div>
             <div className="modal-footer">
               <button
@@ -180,7 +158,7 @@ class DeleteModal extends Component<IProps, IState> {
                 className="btn btn-danger"
                 data-dismiss="modal"
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

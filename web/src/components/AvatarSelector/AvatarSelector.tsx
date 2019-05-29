@@ -1,13 +1,12 @@
-import React, { Component } from "react";
-
-import { faCamera, faTimes } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
-import { fileToBase64 } from "../../utils/fileToBase64";
-import { selectFiles } from "../../utils/selectFiles";
-import { AvatarPlaceholder } from "../../utils/types";
-import Avatar from "../Avatar/Avatar";
-import Icon from "../Icon/Icon";
-import styles from "./AvatarSelector.module.css";
+import { faCamera, faTimes } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { selectFiles } from '../../utils/selectFiles';
+import { AvatarPlaceholder } from '../../utils/types';
+import Avatar from '../Avatar/Avatar';
+import Icon from '../Icon/Icon';
+import styles from './AvatarSelector.module.css';
 
 export type Props = {
   className?: string;
@@ -31,7 +30,7 @@ class AvatarSelector extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    if (!props.avatar || typeof props.avatar === "string") {
+    if (!props.avatar || typeof props.avatar === 'string') {
       this.state = {
         avatar: props.avatar
       };
@@ -77,7 +76,7 @@ class AvatarSelector extends Component<Props, State> {
   }
 
   public componentWillReceiveProps(nextProps: Props): void {
-    if (!nextProps.avatar || typeof nextProps.avatar === "string") {
+    if (!nextProps.avatar || typeof nextProps.avatar === 'string') {
       this.setState({ avatar: nextProps.avatar });
     } else {
       fileToBase64(nextProps.avatar, avatar => {
@@ -94,7 +93,7 @@ class AvatarSelector extends Component<Props, State> {
         }
       },
       false,
-      "image/*"
+      'image/*'
     );
   };
 

@@ -1,11 +1,19 @@
-import axios from "axios";
-import * as React from "react";
-import Cookies from "universal-cookie";
-import Avatar from "../components/Avatar/Avatar";
-import Post from "../components/Post/Post";
-import { apiSubscription } from "../utils/apiSubscription";
-import { getApiURL } from "../utils/apiURL";
-import { apiGetUserInteractions } from "../utils/apiUserInteractions";
+import * as React from 'react';
+import { MouseEvent } from 'react';
+
+import Avatar from '../components/Avatar/Avatar';
+import InfiniteScroll from '../components/InfiniteScroll/InfiniteScroll';
+import Post from '../components/Post/Post';
+import { apiSubscription } from '../utils/apiSubscription';
+import { apiGetUserInteractions } from '../utils/apiUserInteractions';
+import AuthHelperMethods from '../utils/AuthHelperMethods';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
+
+import ProfileModal from '../components/ProfileModal/ProfileModal';
+
+import { Request, Step } from '../components/ProfileModal/types';
 
 interface IProps {
   match: {
@@ -17,6 +25,7 @@ interface IProps {
 
 type State = {
   fetchingUserUserInteractions: boolean;
+  isOpen: boolean;
   userRate: number;
   userRateTotal: number;
   userRated: boolean;
@@ -27,24 +36,54 @@ type State = {
   posts: any[];
   user: any;
   fetchingInfo: boolean;
+  request: {
+    avatar?: File;
+    email: string;
+    first_name: string;
+    home_town: string;
+    last_name: string;
+    loading: boolean;
+    old_password: string;
+    password: string;
+    confirm_password: string;
+    university: string;
+    work: string;
+    work_field: string;
+  };
+  step: Step;
 };
 
-const cookies = new Cookies();
-
 class Profile extends React.Component<IProps, State> {
-  public id: number; // Id of the profile's user
-  public observerId: number; // Id of the user visiting the page
+  public static contextType = LanguageContext;
+
+  private id: number; // Id of the profile's user
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
-    this.id = this.props.match.params.id; // Hardcoded while profile page is not complete
-    this.observerId = 2; // cookies.get("user_id"); - change when login fetches user id properly
+    this.id = this.props.match.params.id;
 
     this.state = {
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
+      isOpen: false,
       numberOfRatings: 1,
       posts: [],
+      request: {
+        avatar: undefined,
+        confirm_password: '',
+        email: '',
+        first_name: '',
+        home_town: '',
+        last_name: '',
+        loading: false,
+        old_password: '',
+        password: '',
+        university: '',
+        work: '',
+        work_field: ''
+      },
+      step: 'profile',
       user: {},
       userRate: 50,
       userRateTotal: 50,
@@ -59,7 +98,7 @@ class Profile extends React.Component<IProps, State> {
   }
 
   public componentDidMount() {
-    this.apiGetFeedUser();
+    this.apiGetUser();
     this.apiGetUserUserInteractions();
   }
 
@@ -69,12 +108,18 @@ class Profile extends React.Component<IProps, State> {
     }
 
     const subscribeIcon = this.state.userSubscription
-      ? "fas fa-bell-slash"
-      : "fas fa-bell";
+      ? 'fas fa-bell-slash'
+      : 'fas fa-bell';
     const subscribeBtnText = this.state.userSubscription
-      ? "Unsubscribe"
-      : "Subscribe";
+      ? dictionary.unsubscribe_action[this.context]
+      : dictionary.subscribe_action[this.context];
 
+    let profileUrl = `${location.protocol}//${location.hostname}`;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}/posts`;
+    } else {
+      profileUrl += '/api/users/' + this.id + '/posts';
+    }
     return (
       <div className="Profile">
         <main id="profile" className="container">
@@ -116,30 +161,48 @@ class Profile extends React.Component<IProps, State> {
                 </fieldset>
               </div>
 
-              <div className="mx-5 my-4">
-                <div className="buttonSubscribe">
-                  <button
-                    id="subscribeBtn"
-                    onClick={this.handleUserSubscription}
-                  >
-                    <i className={subscribeIcon} />
-                    <span>{subscribeBtnText}</span>
-                  </button>
+              {!this.auth.isLoggedInUser(this.id) && (
+                <div className="mx-5 my-4">
+                  <div className="buttonSubscribe">
+                    <button
+                      id="subscribeBtn"
+                      onClick={this.handleUserSubscription}
+                    >
+                      <i className={subscribeIcon} />
+                      <span>{subscribeBtnText}</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </aside>
           </div>
           <div id="bottom-div" className="w-100 mt-5">
             <div id="left-div" className="p-3">
+              {this.getEditButton()}
               <ul className="p-0 m-0">
                 {this.getProfileWork()}
                 {this.getProfileUniv()}
                 {this.getProfileTown()}
                 {this.getProfileEmail()}
+                {this.state.isOpen ? (
+                  <ProfileModal
+                    pending={false}
+                    onSubmit={this.apiEditProfile}
+                    onStepChange={step => this.setState({ step })}
+                    maxGroupSize={5}
+                    request={this.state.request}
+                    onRequestChange={request => this.setState({ request })}
+                    onClose={this.resetState}
+                    autoFocus={false}
+                    step={'profile'}
+                  />
+                ) : null}
               </ul>
             </div>
             <div id="right-div">
-              <div className="col-lg-14">{this.getProfilePosts()}</div>
+              <div className={'col-lg-14'}>
+                <InfiniteScroll requestUrl={profileUrl} />
+              </div>
             </div>
           </div>
         </main>
@@ -147,10 +210,31 @@ class Profile extends React.Component<IProps, State> {
     );
   }
 
+  private resetState = () => {
+    this.setState({
+      isOpen: false,
+      request: {
+        avatar: undefined,
+        confirm_password: '',
+        email: this.state.user.email,
+        first_name: this.state.user.first_name,
+        home_town: this.state.user.home_town,
+        last_name: this.state.user.last_name,
+        loading: false,
+        old_password: '',
+        password: '',
+        university: this.state.user.university,
+        work:
+          this.state.user.work_field == null ? '' : this.state.user.work_field,
+        work_field:
+          this.state.user.work_field == null ? '' : this.state.user.work_field
+      },
+      step: 'profile'
+    });
+  };
+
   private handleUserRate(e: any) {
-    if (this.state.userRated) {
-      console.log("You already rated this user");
-    } else {
+    if (!this.state.userRated) {
       const rateTarget = e.target.id;
 
       const incrementRate = Number(this.state.numberOfRatings) + 1;
@@ -162,14 +246,12 @@ class Profile extends React.Component<IProps, State> {
         incrementRate;
       let body = {};
       body = {
-        evaluator: this.observerId,
         newUserRating: userRating,
         rate: parseInt(rateTarget, 10)
       };
 
-      console.log("User Rating updated to: ", userRating);
-      const apiUrl = getApiURL(`/users/${this.id}/rate`);
-      return axios
+      const apiUrl = `/users/${this.id}/rate`;
+      return axiosInstance
         .post(apiUrl, body)
         .then(() => {
           this.setState({
@@ -179,7 +261,7 @@ class Profile extends React.Component<IProps, State> {
           });
         })
         .catch(() => {
-          console.log("Rating system failed");
+          console.log('Rating system failed');
         });
     }
   }
@@ -187,12 +269,12 @@ class Profile extends React.Component<IProps, State> {
   private handleUserSubscription() {
     if (this.state.waitingSubscriptionRequest) {
       console.log(
-        "Error trying subscription action! Waiting for response from last request"
+        'Error trying subscription action! Waiting for response from last request'
       );
       return;
     }
 
-    const endpoint = this.state.userSubscription ? "unsubscribe" : "subscribe";
+    const method = this.state.userSubscription ? 'delete' : 'post';
     const subscriptionState = !this.state.userSubscription;
 
     this.setState({
@@ -200,11 +282,11 @@ class Profile extends React.Component<IProps, State> {
       waitingSubscriptionRequest: true
     });
 
-    this.apiSubscription(endpoint);
+    this.apiSubscription(method);
   }
 
-  private apiSubscription(endpoint: string) {
-    apiSubscription("users", endpoint, this.observerId, this.id)
+  private apiSubscription(method: string) {
+    apiSubscription('users', method, this.id)
       .then(() => {
         this.setState({
           waitingSubscriptionRequest: false
@@ -212,15 +294,86 @@ class Profile extends React.Component<IProps, State> {
       })
       .catch(() => {
         this.setState({
-          userSubscription: endpoint === "unsubscribe",
+          userSubscription: method === 'delete',
           waitingSubscriptionRequest: false
         });
-        console.log("Subscription system failed");
+        console.log('Subscription system failed');
       });
   }
 
+  private apiEditProfile = (request: Request) => {
+    if (this.auth.getUserPayload().id !== this.id) {
+      return;
+    }
+
+    if (request.password !== request.confirm_password) {
+      return;
+    }
+
+    if (request.old_password !== '' && request.password === '') {
+      return;
+    }
+
+    const formData = new FormData();
+
+    if (
+      request.old_password !== '' &&
+      request.password === request.confirm_password
+    ) {
+      formData.append('old_password', request.old_password);
+      formData.append('password', request.password);
+    }
+
+    formData.append('author', String(this.auth.getUserPayload().id));
+
+    formData.append('email', request.email);
+
+    if (request.avatar !== undefined) {
+      formData.append('avatar', request.avatar);
+    }
+
+    formData.append('first_name', request.first_name);
+    formData.append('last_name', request.last_name);
+
+    formData.append('work', request.work);
+    formData.append('work_field', request.work_field);
+    formData.append('home_town', request.home_town);
+    formData.append('university', request.university);
+
+    axiosInstance
+      .post(`/users/${this.id}/edit`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(res => {
+        console.log('Edited user info - reloading page...');
+        window.location.reload();
+        this.resetState();
+      })
+      .catch(
+        error => (
+          console.log(
+            'Failed to edit user info: ' + error.response.data.message
+          ),
+          this.handlePasswordError(error)
+        )
+      );
+  };
+
+  private handlePasswordError(error: any) {
+    if (
+      error.response.data.message ===
+      'The current password inserted is different than the one existent for this user!'
+    ) {
+      const requestCopy = this.state.request;
+      requestCopy.loading = true;
+      this.setState({ request: requestCopy });
+    }
+  }
+
   private apiGetUserUserInteractions() {
-    apiGetUserInteractions("users", this.observerId, this.id)
+    apiGetUserInteractions('users', this.id)
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
@@ -235,14 +388,14 @@ class Profile extends React.Component<IProps, State> {
           });
         }
       })
-      .catch(() => console.log("Failed to get user-user interactions"));
+      .catch(() => console.log('Failed to get user-user interactions'));
   }
 
   private handleStars() {
     const userRate =
       (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
 
-    if (!this.state.userRated) {
+    if (!this.state.userRated && this.auth.getUserPayload().id !== this.id) {
       return (
         <div className="star-ratings-css-top" id="rate">
           <span id="5" onClick={this.handleUserRate}>
@@ -275,45 +428,52 @@ class Profile extends React.Component<IProps, State> {
     }
   }
 
-  private apiGetFeedUser() {
-    let profileUrl = `${location.protocol}//${location.hostname}`;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      profileUrl += `:${process.env.REACT_APP_API_PORT}/users/${this.id}`;
-    } else {
-      profileUrl += "/api/users/" + this.id;
-    }
-    axios
-      .get(profileUrl, {
-        headers: {}
-      })
+  private apiGetUser() {
+    axiosInstance
+      .get(`/users/${this.id}`)
       .then(res => {
-        const postsComing = res.data;
-        console.log(postsComing);
-
-        postsComing.posts.map(
-          (post: any, idx: any) => (
-            (post.comments = postsComing.comments[idx]),
-            (post.likers = postsComing.likers[idx]),
-            (post.tags = postsComing.tags[idx]),
-            (post.files = postsComing.files[idx])
-          )
-        );
-
         this.setState({
-          fetchingInfo: false,
-          posts: postsComing.posts,
-          user: postsComing.user
+          request: {
+            avatar: res.data.user.avatar,
+            confirm_password: '',
+            email: res.data.user.email,
+            first_name: res.data.user.first_name,
+            home_town: res.data.user.home_town,
+            last_name: res.data.user.last_name,
+            loading: false,
+            old_password: '',
+            password: '',
+            university: res.data.user.university,
+            work: res.data.user.work,
+            work_field: res.data.user.work_field
+          },
+          user: res.data.user
         });
       })
-      .catch(() => console.log("Failed to get posts"));
+      .catch(() => console.log('Failed to get user'));
+  }
+
+  private handleEditProfile = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private getEditButton() {
+    if (this.auth.getUserPayload().id === this.id) {
+      return (
+        <span className="edit-icon" onClick={this.handleEditProfile}>
+          <i className="fas fa-pencil-alt" />
+        </span>
+      );
+    }
   }
 
   private getProfileName() {
     if (this.state.user.first_name && this.state.user.last_name) {
       return (
         <span>
-          {" "}
-          {this.state.user.first_name} {this.state.user.last_name}{" "}
+          {' '}
+          {this.state.user.first_name} {this.state.user.last_name}{' '}
         </span>
       );
     }
@@ -333,7 +493,7 @@ class Profile extends React.Component<IProps, State> {
     if (this.state.user.home_town) {
       return (
         <li>
-          <i className="fas fa-home" /> Lives in {this.state.user.home_town}
+          <i className="fas fa-home" /> {this.state.user.home_town}
         </li>
       );
     }
@@ -376,15 +536,13 @@ class Profile extends React.Component<IProps, State> {
         <Post
           key={post.id}
           id={post.id}
-          author={post.first_name + " " + post.last_name}
-          text={post.content}
+          author={post.first_name + ' ' + post.last_name}
+          content={post.content}
           user_id={post.user_id}
-          likes={post.likes}
-          likers={post.likers}
           comments={post.comments || []}
           tags={post.tags}
           title={post.title}
-          date={post.date_created.replace(/T.*/gi, "")}
+          date={post.date_created.replace(/T.*/gi, '')}
           visibility={post.visibility}
           files={post.files}
         />
@@ -395,4 +553,4 @@ class Profile extends React.Component<IProps, State> {
   }
 }
 
-export default Profile;
+export default withAuth(Profile);

@@ -1,0 +1,64 @@
+.btn-primary {
+  color: #fff;
+  background-color: #f69127;
+  border-color: #f69127;
+}
+
+a,
+h1 {
+  color: #f69127;
+  background-color: transparent;
+}
+
+.product_image {
+  max-width: 520px;
+  height: 187px;
+}
+
+.product_image img {
+  width: 100%;
+  max-height: 100%;
+}
+
+.card-title a:hover {
+  color: rgba(246, 145, 39, 0.8);
+}
+
+.post_options {
+  cursor: pointer;
+}
+
+.post_options button {
+  width: 30%;
+  background: none;
+  border: none;
+  height: 100%;
+}
+
+.post_options button:hover {
+  background: rgb(245, 245, 245);
+}
+
+.post_options button:focus {
+  outline: none;
+}
+
+.post_options button {
+  width: 100% !important;
+}
+
+.post_options {
+  float: right;
+  width: 2em;
+  height: 1.5em;
+}
+
+#user-points {
+  color: #f69127;
+}
+
+@media screen and (max-width: 575px) {
+  #card_product {
+    width: 250px;
+  }
+}

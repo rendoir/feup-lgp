@@ -1,14 +1,10 @@
-import axios from "axios";
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-import Cookies from "universal-cookie";
-
-import createSequence from "../../utils/createSequence";
-
-import "./PostModal.css";
-
+import React, { Component } from 'react';
 // - Import utils
-import { apiReportComment, apiReportPost } from "../../utils/apiReport";
+import { apiReportComment, apiReportPost } from '../../utils/apiReport';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import { dictionary, LanguageContext } from '../../utils/language';
+
+import './PostModal.css';
 
 interface IProps {
   /* Only pass one of the parameters according to the content type */
@@ -21,12 +17,13 @@ interface IState {
   reportReason: string;
 }
 
-const cookies = new Cookies();
-
 class ReportModal extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public htmlId: string;
-  public loggedUserId: number;
   public reportDescription: any = React.createRef();
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -34,9 +31,8 @@ class ReportModal extends Component<IProps, IState> {
     this.htmlId = props.postId
       ? `report_post_modal_${props.postId}`
       : `report_comment_modal_${props.commentId}`;
-    this.loggedUserId = 1; // cookies.get("user_id"); - change when login fetches user id properly
 
-    this.state = { reportReason: "" };
+    this.state = { reportReason: '' };
 
     // Report manipulation handlers
     this.handleReportCreation = this.handleReportCreation.bind(this);
@@ -46,23 +42,15 @@ class ReportModal extends Component<IProps, IState> {
 
   public handleReportCreation() {
     if (this.props.postId) {
-      apiReportPost(
-        this.props.postId,
-        this.loggedUserId,
-        this.state.reportReason
-      );
+      apiReportPost(this.props.postId, this.state.reportReason);
     } else if (this.props.commentId) {
-      apiReportComment(
-        this.props.commentId,
-        this.loggedUserId,
-        this.state.reportReason
-      );
+      apiReportComment(this.props.commentId, this.state.reportReason);
     }
   }
 
   public handleInputChange(event: any) {
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     this.setState({ reportReason: value });
@@ -73,23 +61,23 @@ class ReportModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public getReportForm() {
     return (
       <form className="was-validated">
         <div className="mb-3">
-          <h5>Report reason</h5>
+          <h5>{dictionary.report_reason[this.context]}</h5>
           <textarea
             name="text"
             className={this.getInputRequiredClass(this.state.reportReason)}
             onChange={this.handleInputChange}
-            placeholder="Insert report reason"
+            placeholder={dictionary.report_reason[this.context]}
             value={this.state.reportReason}
             required={true}
           />
@@ -97,7 +85,7 @@ class ReportModal extends Component<IProps, IState> {
             className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.reportReason)}
           >
-            Reason must be provided
+            {dictionary.report_reason_required[this.context]}
           </div>
         </div>
       </form>
@@ -113,7 +101,7 @@ class ReportModal extends Component<IProps, IState> {
         onClick={this.handleReportCreation}
         disabled={!this.validReport()}
       >
-        Submit report
+        {dictionary.report_submit[this.context]}
       </button>
     );
   }
@@ -136,7 +124,7 @@ class ReportModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                Content Report
+                {dictionary.content_report[this.context]}
               </h5>
               <button
                 type="button"
@@ -156,7 +144,7 @@ class ReportModal extends Component<IProps, IState> {
                 data-dismiss="modal"
                 onClick={this.props.reportCancelHandler}
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

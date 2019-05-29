@@ -1,7 +1,6 @@
 'use strict';
 import { Router } from 'express';
 import * as controller from '../controllers/post';
-import {usersRouter} from './users';
 
 export const postRouter = Router();
 
@@ -22,7 +21,7 @@ export const postRouter = Router();
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/create', controller.createPost);
+postRouter.post('/', controller.createPost);
 
 /**
  * @api {post} /api/post/edit Edit a post
@@ -43,16 +42,14 @@ postRouter.post('/create', controller.createPost);
  *      message: 'An error ocurred while editing post'
  *     }
  */
-postRouter.post('/edit', controller.editPost);
+postRouter.put('/:id', controller.editPost);
 
 /**
- * @api {delete} /api/post/delete Delete a post
+ * @api {delete} /api/post/:id Delete a post
  * @apiName Delete-A-Post
  * @apiGroup Post
  *
  * @apiParam {String}   id Id of the post.
- * @apiParam {String}   title Title of the post.
- * @apiParam {String}   text Body of the post.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -64,7 +61,7 @@ postRouter.post('/edit', controller.editPost);
  *      message: 'An error ocurred while deleting post'
  *     }
  */
-postRouter.delete('/delete', controller.deletePost);
+postRouter.delete('/:id', controller.deletePost);
 
 /**
  * @api {get} /api/post/:id Get a post
@@ -87,7 +84,6 @@ postRouter.get('/:id', controller.getPost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -98,12 +94,11 @@ postRouter.get('/:id', controller.getPost);
 postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
 
 /**
- * @api {post} /api/post/:id/subscribe Set a post subscription for a given user
+ * @api {post} /api/post/:id/subscription Set a post subscription for a given user
  * @apiName Subscribe-Post
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -111,15 +106,14 @@ postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/subscribe', controller.subscribePost);
+postRouter.post('/:id/subscription', controller.subscribePost);
 
 /**
- * @api {post} /api/post/:id/unsubscribe Remove a post subscription for a given user
+ * @api {delete} /api/post/:id/subscription Remove a post subscription for a given user
  * @apiName Unsubscribe-Post
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post
- * @apiParam {number}   userId   Id of the user
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -127,41 +121,7 @@ postRouter.post('/:id/subscribe', controller.subscribePost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/unsubscribe', controller.unsubscribePost);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.post('/:id/like', controller.addALikeToPost);
-
-/**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
- * @apiName Post-A-Comment
- * @apiGroup Post
- *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'An error message here'
- *     }
- */
-postRouter.delete('/:id/like', controller.deleteALikeToPost);
+postRouter.delete('/:id/subscription', controller.unsubscribePost);
 
 /**
  * @api {post} /api/post/:id/report Report a post
@@ -169,7 +129,6 @@ postRouter.delete('/:id/like', controller.deleteALikeToPost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post being reported
- * @apiParam {number}   reporter   Id of the user issuing the report
  * @apiParam {string}   reason   Reason of the report
  *
  * @apiErrorExample Error-Response:
@@ -186,7 +145,6 @@ postRouter.post('/:id/report', controller.reportPost);
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post whose report we want to verify
- * @apiParam {number}   reporter   Id of the user we want to verify if reported the comment
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -194,7 +152,7 @@ postRouter.post('/:id/report', controller.reportPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/check_report', controller.checkPostUserReport);
+postRouter.get('/:id/report', controller.checkPostUserReport);
 
 /**
  * @api {post} /api/post/:id/:filename Gets the contents of a file
@@ -233,7 +191,6 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
  * @apiName Rate-Post
  * @apiGroup Post
  *
- * @apiParam {String}   evaluator        Id of the user that intends to evaluate
  * @apiParam {Number}   rate             Rate of the User
  * @apiParam {String}   post             Id of the post being rated
  *
@@ -244,3 +201,85 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
  *     }
  */
 postRouter.post('/:id/rate', controller.rate);
+
+/**
+ * @api {post} /api/post/:id/update_rate Updates rate of a post
+ * @apiName Update-Rate-Post
+ * @apiGroup Post
+ *
+ * @apiParam {Number}   rate             Rate of the User
+ * @apiParam {String}   post             Id of the post being rated
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.put('/:id/rate', controller.updateRate);
+
+/**
+ * @api {post} /api/post/:id/invite Invite user to engage in post discussion
+ * @apiName Invite-To-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id    Id of the post the user will be invited to
+ * @apiParam {number}   invited_user    Id of the user being invited
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/invite', controller.inviteUser);
+
+/**
+ * @api {post} /api/post/:id/invite_subscribers Invite subscribers of the inviter user to engage in post discussion
+ * @apiName Invite-Subscribers-To-Post
+ * @apiGroup Post
+ *
+ * @apiParam {number}   id    Id of the post the subscribers will be invited to
+ * The user whose subscribers will be invited to the post is the logged in user.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
+
+/**
+ * @api {post} /api/post/:id/amount_uninvited_subscribers Retrieve post inviter's amount of uninvited subscribers
+ * @apiName Get-Amount-Uninvited-Subscribers
+ * @apiGroup Post
+ *
+ * This endpoint needs to be called through POST due to error when calling GET
+ *
+ * @apiParam {number}   id    Id of the post
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/amount_uninvited_subscribers', controller.amountSubscribersUninvited);
+
+/**
+ * @api {post} /api/post/:id/uninvited_users_info Retrieve the users that haven't been invited to a given post
+ * @apiName Get-Uninvited-Users-Info
+ * @apiGroup Post
+ *
+ * This endpoint needs to be called through POST due to error when calling GET
+ *
+ * @apiParam {number}   id    Id of the post
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+postRouter.post('/:id/uninvited_users_info', controller.getUninvitedUsersInfo);

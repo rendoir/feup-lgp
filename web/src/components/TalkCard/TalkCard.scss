@@ -1,0 +1,26 @@
+@import '../../styles/common';
+
+#talk-card-comp {
+    a {
+        text-decoration: none;
+    }
+
+    .username {
+        color: $glintt;
+    }
+
+    .username:hover {
+        color: $dark-accent-color;
+    }
+
+    .about {
+        color: $black;
+    }
+
+    .about:hover {
+        color: $dark-accent-color;
+    }
+    .noDot {
+        list-style-type: none;
+    }
+}

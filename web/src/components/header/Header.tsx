@@ -1,69 +1,400 @@
-import * as React from "react";
-import "./Header.css";
+import {
+  faBell,
+  faClinicMedical,
+  faExclamationCircle,
+  faPlus,
+  faUserMd,
+  faUserPlus
+} from '@fortawesome/free-solid-svg-icons';
+import React, { MouseEvent, PureComponent } from 'react';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { RouteComponentProps, withRouter } from 'react-router';
 
-import PostModal from "../PostModal/PostModal";
-import SearchSimpleForm from "../SearchSimpleForm/SearchSimpleForm";
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+import CreateNewModal from '../CreateNewModal/CreateNewModal';
+import { Request, Step } from '../CreateNewModal/types';
+import Icon from '../Icon/Icon';
+import SearchSimpleForm from '../SearchSimpleForm/SearchSimpleForm';
+import Select from '../Select/Select';
+import styles from './Header.module.css';
 
-export default class Header extends React.Component {
+import { apiGetNotificationsAmount } from '../../utils/apiInvite';
+import { apiGetReportNotificationsAmount } from '../../utils/apiReport';
+import { getApiURL } from '../../utils/apiURL';
+
+type Props = {
+  title: string;
+  onSearchClick?: (text: string, event: MouseEvent) => any;
+  onProfileClick?: (event: MouseEvent) => any;
+  onLanguageChange: (lang: string) => any;
+};
+
+type State = {
+  search: string;
+  isOpen: boolean;
+  step: Step;
+  request: {
+    type: 'post' | 'talk' | 'conference';
+    title: string;
+    about: string;
+    avatar?: File;
+    privacy: string;
+    files: {
+      docs: File[];
+      videos: File[];
+      images: File[];
+    };
+    tags: string[];
+    dateStart: string;
+    dateEnd: string;
+    local: string;
+    livestream: string;
+    switcher: string;
+  };
+  userFirstName;
+  adminNotifications: number;
+  userNotifications: number;
+};
+
+class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
+  public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
+  private tags: string[];
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      adminNotifications: 0,
+      isOpen: false,
+      request: {
+        about: '',
+        avatar: undefined,
+        dateEnd: '',
+        dateStart: '',
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: '',
+        local: '',
+        privacy: 'public',
+        switcher: 'false',
+        tags: [],
+        title: '',
+        type: 'post'
+      },
+      search: '',
+      step: 'type',
+      userFirstName: 'User',
+      userNotifications: 0
+    };
+
+    this.tags = [];
+  }
+
+  public componentDidMount(): void {
+    if (this.auth.loggedIn()) {
+      this.apiGetUserName();
+      this.getPossibleTags();
+      this.getUserNotificationAmount();
+      this.getAdminNotificationAmount();
+    }
+  }
+
   public render() {
     return (
-      <header>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <a className="navbar-brand" href="/">
-            {" "}
-            <i className="fas fa-clinic-medical fa-lg" />{" "}
-            <span className="notranslate">gNet</span>
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarColor01"
-            aria-controls="navbarColor01"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-
-          <div className="collapse navbar-collapse" id="navbarColor01">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Home <span className="sr-only">(current)</span>
-                </a>
-              </li>
-              <li className="nav-item active">
-                <a className="nav-link" href="/user/1">
-                  Profile <span className="sr-only">(current)</span>
-                </a>
-              </li>
-              <li className="nav-item active">
-                <a className="nav-link" href="/shop">
-                  Shop <span className="sr-only">(current)</span>
-                </a>
-              </li>
-            </ul>
-            <SearchSimpleForm />
-            <a
-              className="nav-link"
-              data-toggle="modal"
-              role="button"
-              data-target="#post_modal_Create"
-            >
-              <span className="text-white h3 pl-3">
-                <i className="fas fa-plus-square" />
-              </span>
-            </a>
-            <PostModal id={0} title="" text="" tags={[]} />
-            <a className="nav-link" href="#">
-              <span className="text-white h3 pl-3">
-                <i className="fas fa-user-md" />
-              </span>
-            </a>
-          </div>
-        </nav>
-      </header>
+      <div className={styles.container}>
+        <Navbar
+          collapseOnSelect={true}
+          className={styles.wrapper}
+          expand={'lg'}
+          variant={'dark'}
+        >
+          {this.renderBrand()}
+          <Navbar.Toggle aria-controls={'navbar-nav'} />
+          <Navbar.Collapse id={'navbar-nav'}>
+            {this.auth.loggedIn() && this.renderLinks()}
+            {this.auth.loggedIn() && <SearchSimpleForm />}
+            {this.renderLanguageSelector()}
+            {this.renderInvite()}
+            {this.auth.loggedIn() && this.renderButtons()}
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
     );
   }
+
+  private renderLanguageSelector() {
+    return (
+      <div className={styles.language_wrapper + ' my-auto'}>
+        <Select
+          className="my-auto"
+          id="language_selector"
+          value={this.context}
+          options={[
+            { value: 'EN', title: 'English' },
+            { value: 'PT', title: 'Português' }
+          ]}
+          onChange={this.props.onLanguageChange}
+        />
+      </div>
+    );
+  }
+
+  private renderInvite() {
+    return (
+      <Navbar.Brand href={'/invite'} className={styles.logo}>
+        <Icon icon={faUserPlus} size={'lg'} className={styles.icon} />
+      </Navbar.Brand>
+    );
+  }
+
+  private renderBrand() {
+    const { title } = this.props;
+
+    return (
+      <Navbar.Brand href={'/'} className={styles.logo}>
+        <Icon icon={faClinicMedical} size={'lg'} className={styles.icon} />
+        {title}
+      </Navbar.Brand>
+    );
+  }
+
+  private renderLinks() {
+    return (
+      <Nav className={'mr-auto'}>
+        <Nav.Link href={'/conferences'} className={styles.link}>
+          {dictionary.conferences[this.context]}
+        </Nav.Link>
+        <Nav.Link href={'/shop'} className={styles.link}>
+          {dictionary.shop[this.context]}
+        </Nav.Link>
+      </Nav>
+    );
+  }
+
+  private apiGetUserName() {
+    const userID = this.auth.getUserPayload().id;
+    axiosInstance
+      .get(`/users/${userID}`)
+      .then(res => {
+        this.setState({
+          userFirstName: res.data.user.first_name
+        });
+      })
+      .catch(() => console.log('Failed to get user'));
+  }
+
+  private getNotificationIcon(type: string = 'user') {
+    const href = type === 'admin' ? '/admin' : '/notifications';
+    const icon = type === 'admin' ? faExclamationCircle : faBell;
+    const notifsAmount =
+      type === 'admin'
+        ? this.state.adminNotifications
+        : this.state.userNotifications;
+    return (
+      <Nav.Link href={href} className={styles.link}>
+        <Icon
+          icon={icon}
+          size={'lg'}
+          inverse={true}
+          theme={'primary'}
+          className={'mr-1'}
+        />
+        {notifsAmount > 0 && (
+          <span className="badge badge-light">{notifsAmount}</span>
+        )}
+      </Nav.Link>
+    );
+  }
+
+  private renderButtons() {
+    return (
+      <Nav>
+        {this.auth.isAdmin() && this.getNotificationIcon('admin')}
+        {this.getNotificationIcon('user')}
+        <Nav.Link href={'#'} onClick={this.handleClick} className={styles.link}>
+          <Icon
+            icon={faPlus}
+            size={'lg'}
+            inverse={true}
+            theme={'primary'}
+            className={'mr-1'}
+          />
+          {dictionary.new[this.context]}
+        </Nav.Link>
+        <NavDropdown
+          alignRight={true}
+          title={
+            <div style={{ display: 'inline-block' }} className={styles.link}>
+              <Icon icon={faUserMd} size={'lg'} className={styles.icon} />{' '}
+              {this.state.userFirstName}
+            </div>
+          }
+          id="header_user_dropdown"
+        >
+          <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
+            {dictionary.profile[this.context]}
+          </NavDropdown.Item>
+          {this.renderAdminDropdown()}
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={this.onClickLogout}>
+            {dictionary.logout[this.context]}
+          </NavDropdown.Item>
+        </NavDropdown>
+        {this.state.isOpen ? (
+          <CreateNewModal
+            pending={false}
+            onSubmit={this.handleSubmit}
+            maxGroupSize={5}
+            request={this.state.request}
+            onStepChange={step => this.setState({ step })}
+            onClose={this.resetState}
+            onRequestChange={request => this.setState({ request })}
+            autoFocus={false}
+            step={this.state.step}
+            tags={this.tags}
+          />
+        ) : null}
+      </Nav>
+    );
+  }
+
+  private renderAdminDropdown() {
+    let isAdmin = false;
+
+    axiosInstance
+      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .then(res => {
+        isAdmin = res.data;
+        if (isAdmin) {
+          return (
+            <div>
+              <NavDropdown.Item href="/admin">
+                {dictionary.admin_area[this.context]}
+              </NavDropdown.Item>
+            </div>
+          );
+        }
+      })
+      .catch(error => console.log('Failed to check if isAdmin. ' + error));
+  }
+
+  private onClickLogout = (event: any) => {
+    this.auth.logout();
+
+    window.location.href = '/';
+  };
+
+  private handleClick = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private handleSubmit = (request: Request) => {
+    if (request.type === 'post') {
+      const formData = new FormData();
+      request.files.images.forEach((file, idx) =>
+        formData.append('images[' + idx + ']', file)
+      );
+      request.files.videos.forEach((file, idx) =>
+        formData.append('videos[' + idx + ']', file)
+      );
+      request.files.docs.forEach((file, idx) =>
+        formData.append('docs[' + idx + ']', file)
+      );
+      request.tags.forEach((tag, i) => formData.append('tags[' + i + ']', tag));
+
+      formData.append('text', request.about);
+      formData.append('title', request.title);
+      formData.append('visibility', request.privacy);
+
+      axiosInstance
+        .post('/post', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(res => {
+          console.log('Post created - reloading page...');
+          window.location.href = '/post/' + res.data.id;
+          this.resetState();
+        })
+        .catch(() => console.log('Failed to create post'));
+    } else {
+      axiosInstance
+        .post('/conference', {
+          about: request.about,
+          avatar: request.avatar,
+          dateEnd: request.dateEnd,
+          dateStart: request.dateStart,
+          local: request.local,
+          privacy: request.privacy,
+          title: request.title
+        })
+        .then(res => {
+          console.log(`conference with id = ${res.data.id} created`);
+          window.location.href = '/conference/' + res.data.id;
+          this.resetState();
+        })
+        .catch(error => console.log('Failed to create conference. ' + error));
+    }
+  };
+
+  private getPossibleTags = (): void => {
+    axiosInstance
+      .get('/tags')
+      .then(res => {
+        res.data.forEach(tag => {
+          this.tags.push(tag.name);
+        });
+      })
+      .catch(() => console.log('Failed to get tags'));
+  };
+
+  private async getUserNotificationAmount() {
+    const userNotifications = await apiGetNotificationsAmount();
+    this.setState({ userNotifications });
+  }
+
+  private async getAdminNotificationAmount() {
+    if (this.auth.isAdmin()) {
+      const adminNotifications = await apiGetReportNotificationsAmount();
+      this.setState({ adminNotifications });
+    }
+  }
+
+  private resetState = () => {
+    this.setState({
+      isOpen: false,
+      request: {
+        about: '',
+        avatar: undefined,
+        dateEnd: '',
+        dateStart: '',
+        files: {
+          docs: [],
+          images: [],
+          videos: []
+        },
+        livestream: '',
+        local: '',
+        privacy: 'public',
+        switcher: 'false',
+        tags: [],
+        title: '',
+        type: 'post'
+      },
+      search: '',
+      step: 'type'
+    });
+  };
 }
+
+export default withRouter(Header);

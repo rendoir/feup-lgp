@@ -1,20 +1,15 @@
-import axios from "axios";
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import "./PostModal.css";
+import axiosInstance from '../../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../../utils/language';
+import AddTags from '../AddTags/AddTags';
+import PostFile from '../PostFile/PostFile';
+import Select from '../Select/Select';
 
-import Avatar from "../Avatar/Avatar";
-import Button from "../Button/Button";
+import './PostModal.css';
 
-import { checkPropTypes } from "prop-types";
-import AddTags from "../AddTags/AddTags";
-import ImagePreloader from "../ImagePreloader/ImagePreloader";
-import PostFile from "../PostFile/PostFile";
-import Select from "../Select/Select";
-import VideoPreloader from "../VideoPreloader/VideoPreloader";
-
-const CREATE_MODE = "Create";
-const EDIT_MODE = "Edit";
+const CREATE_MODE = 'Create';
+const EDIT_MODE = 'Edit';
 
 type MyFile = {
   name: string;
@@ -25,9 +20,9 @@ type MyFile = {
 
 interface IProps {
   /* The following attributes are only required for post edition */
+  content?: string;
   id: number;
   title?: string;
-  text?: string;
   visibility?: string;
 
   files?: MyFile[];
@@ -36,7 +31,7 @@ interface IProps {
 
 interface IState {
   title: string;
-  text: string;
+  content: string;
 
   images: File[];
   videos: File[];
@@ -49,14 +44,12 @@ interface IState {
 }
 
 class PostModal extends Component<IProps, IState> {
+  public static contextType = LanguageContext;
+
   public mode: string;
   public addTags: any;
 
-  private visibilityOptions = [
-    { value: "public", title: "Public" },
-    { value: "followers", title: "Followers" },
-    { value: "private", title: "Private" }
-  ];
+  private visibilityOptions: any;
 
   constructor(props: IProps) {
     super(props);
@@ -65,14 +58,14 @@ class PostModal extends Component<IProps, IState> {
 
     this.state = {
       // Post title and text are stored in state so that we can have a dynamic design on their respective input fields
+      content: props.content || '',
       docs: [],
       images: [],
       removedFiles: [],
       tags: [],
-      text: props.text || "",
-      title: props.title || "",
+      title: props.title || '',
       videos: [],
-      visibility: props.visibility || "private"
+      visibility: props.visibility || 'private'
     };
 
     this.addTags = React.createRef();
@@ -90,100 +83,85 @@ class PostModal extends Component<IProps, IState> {
   public handlePostCancel() {
     // Reset field values
     this.setState({
-      text: this.props.text || "",
-      title: this.props.title || "",
-      visibility: this.props.visibility || "private"
+      content: this.props.content || '',
+      title: this.props.title || '',
+      visibility: this.props.visibility || 'private'
     });
   }
 
   public apiCreatePost() {
     const formData = new FormData();
     this.state.images.forEach((file, i) =>
-      formData.append("images[" + i + "]", file)
+      formData.append('images[' + i + ']', file)
     );
     this.state.videos.forEach((file, i) =>
-      formData.append("videos[" + i + "]", file)
+      formData.append('videos[' + i + ']', file)
     );
     this.state.docs.forEach((file, i) =>
-      formData.append("docs[" + i + "]", file)
+      formData.append('docs[' + i + ']', file)
     );
 
     this.state.tags.forEach((tag, i) =>
-      formData.append("tags[" + i + "]", tag)
+      formData.append('tags[' + i + ']', tag)
     );
 
-    formData.append("author", "1");
-    formData.append("text", this.state.text);
-    formData.append("title", this.state.title);
-    formData.append("visibility", this.state.visibility);
+    formData.append('text', this.state.content);
+    formData.append('title', this.state.title);
+    formData.append('visibility', this.state.visibility);
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/create";
-    axios
-      .post(postUrl, formData, {
+    axiosInstance
+      .post('/post', formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {
-        console.log("Post created - reloading page...");
-        window.location.href = "/post/" + res.data.id;
+        console.log('Post created - reloading page...');
+        window.location.href = '/post/' + res.data.id;
       })
-      .catch(() => console.log("Failed to create post"));
+      .catch(() => console.log('Failed to create post'));
   }
 
   public apiEditPost() {
     const formData = new FormData();
 
     this.state.tags.forEach((tag, i) =>
-      formData.append("tags[" + i + "]", tag)
+      formData.append('tags[' + i + ']', tag)
     );
 
     this.state.images.forEach((file, i) =>
-      formData.append("images[" + i + "]", file)
+      formData.append('images[' + i + ']', file)
     );
     this.state.videos.forEach((file, i) =>
-      formData.append("videos[" + i + "]", file)
+      formData.append('videos[' + i + ']', file)
     );
     this.state.docs.forEach((file, i) =>
-      formData.append("docs[" + i + "]", file)
+      formData.append('docs[' + i + ']', file)
     );
     if (this.state.removedFiles) {
-      formData.append("removed", JSON.stringify(this.state.removedFiles));
+      formData.append('removed', JSON.stringify(this.state.removedFiles));
     }
-    formData.append("id", String(this.props.id));
-    formData.append("author", "1");
-    formData.append("text", this.state.text);
-    formData.append("title", this.state.title);
-    formData.append("visibility", this.state.visibility);
+    formData.append('author', '1');
+    formData.append('text', this.state.content);
+    formData.append('title', this.state.title);
+    formData.append('visibility', this.state.visibility);
 
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += "/post/edit";
-    axios
-      .post(postUrl, formData, {
+    axiosInstance
+      .put(`/post/${this.props.id}`, formData, {
         headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {
-        console.log("Post edited - reloading page...");
+        console.log('Post edited - reloading page...');
         window.location.reload();
       })
-      .catch(() => console.log("Failed to edit post"));
+      .catch(() => console.log('Failed to edit post'));
   }
 
   public validPost() {
     return Boolean(
-      this.state.title && this.state.text && this.state.visibility
+      this.state.title && this.state.content && this.state.visibility
     );
   }
 
@@ -197,8 +175,8 @@ class PostModal extends Component<IProps, IState> {
 
   public handleInputChange(event: any) {
     const field = event.target.name;
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     const partialState: any = {};
@@ -216,9 +194,9 @@ class PostModal extends Component<IProps, IState> {
     const docs: File[] = [];
 
     Array.from(files).forEach(file => {
-      if (file.type.startsWith("image")) {
+      if (file.type.startsWith('image')) {
         images.push(file);
-      } else if (file.type.startsWith("video")) {
+      } else if (file.type.startsWith('video')) {
         videos.push(file);
       } else {
         docs.push(file);
@@ -233,25 +211,34 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public getInputRequiredClass(content: string) {
-    return content === "" ? "empty_required_field" : "post_field";
+    return content === '' ? 'empty_required_field' : 'post_field';
   }
 
   public getInputRequiredStyle(content: string) {
-    return content !== "" ? { display: "none" } : {};
+    return content !== '' ? { display: 'none' } : {};
   }
 
   public getPostForm() {
+    this.visibilityOptions = [
+      { value: 'public', title: dictionary.visibility_public[this.context] },
+      {
+        title: dictionary.visibility_followers[this.context],
+        value: 'followers'
+      },
+      { value: 'private', title: dictionary.visibility_private[this.context] }
+    ];
+
     return (
       <form className="was-validated">
         <div className="mb-3">
-          <h5>Title</h5>
+          <h5>{dictionary.title[this.context]}</h5>
           <input
             name="title"
             type="text"
             autoComplete="off"
             className={this.getInputRequiredClass(this.state.title)}
             onChange={this.handleInputChange}
-            placeholder="Insert title"
+            placeholder={dictionary.insert_title[this.context]}
             value={this.state.title}
             required={true}
           />
@@ -259,47 +246,47 @@ class PostModal extends Component<IProps, IState> {
             className="field_required_warning"
             style={this.getInputRequiredStyle(this.state.title)}
           >
-            Title must be provided
+            {dictionary.title_required[this.context]}
           </div>
         </div>
 
         <div className="mb-3">
-          <h5>Body</h5>
+          <h5>{dictionary.body[this.context]}</h5>
           <textarea
-            name="text"
-            className={this.getInputRequiredClass(this.state.text)}
+            name="content"
+            className={this.getInputRequiredClass(this.state.content)}
             onChange={this.handleInputChange}
-            placeholder="Insert body"
-            value={this.state.text}
+            placeholder={dictionary.insert_body[this.context]}
+            value={this.state.content}
             required={true}
           />
           <div
             className="field_required_warning"
-            style={this.getInputRequiredStyle(this.state.text)}
+            style={this.getInputRequiredStyle(this.state.content)}
           >
-            Body must be provided
+            {dictionary.body_required[this.context]}
           </div>
         </div>
 
         <div className="mb-3">
-          <h5>Visibility</h5>
+          <h5>{dictionary.visibility[this.context]}</h5>
           <Select
             name="visibility_select"
             id="visibility_select"
             onChange={visibility => this.setState({ visibility })}
             value={this.state.visibility}
-            placeholder="Visibility"
+            placeholder={dictionary.visibility[this.context]}
             options={this.visibilityOptions}
           />
         </div>
 
         <div className="mb-3">
-          <h5>Tags</h5>
+          <h5>{dictionary.tags[this.context]}</h5>
           <AddTags onChange={this.handleTagsChange} tags={this.props.tags} />
         </div>
 
         <div>
-          <h5>Files</h5>
+          <h5>{dictionary.files[this.context]}</h5>
         </div>
         {this.getRemovedFiles()}
         <div className="custom-file">
@@ -309,7 +296,7 @@ class PostModal extends Component<IProps, IState> {
             accept="*"
             className="custom-file-input"
             onChange={e => this.handleFileUpload(e.target.files)}
-            defaultValue={""}
+            defaultValue={''}
             multiple={true}
           />
         </div>
@@ -345,14 +332,14 @@ class PostModal extends Component<IProps, IState> {
   }
 
   public getFileLabel() {
-    let label = "";
+    let label = '';
 
-    this.state.images.forEach(file => (label += file.name + " "));
-    this.state.videos.forEach(file => (label += file.name + " "));
-    this.state.docs.forEach(file => (label += file.name + " "));
+    this.state.images.forEach(file => (label += file.name + ' '));
+    this.state.videos.forEach(file => (label += file.name + ' '));
+    this.state.docs.forEach(file => (label += file.name + ' '));
 
-    if (label === "") {
-      label = "Insert images, videos and documents";
+    if (label === '') {
+      label = dictionary.insert_files[this.context];
     }
 
     return label;
@@ -371,7 +358,9 @@ class PostModal extends Component<IProps, IState> {
         }
         disabled={!this.validPost()}
       >
-        {this.mode === CREATE_MODE ? "Create new post" : "Save changes"}
+        {this.mode === CREATE_MODE
+          ? dictionary.create_new_post[this.context]
+          : dictionary.save_changes[this.context]}
       </button>
     );
   }
@@ -403,7 +392,9 @@ class PostModal extends Component<IProps, IState> {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalCenterTitle">
-                {`${this.mode} Post`}
+                {`${dictionary[this.mode][this.context]} ${
+                  dictionary.post_cap[this.context]
+                }`}
               </h5>
               <button
                 type="button"
@@ -422,7 +413,7 @@ class PostModal extends Component<IProps, IState> {
                 data-dismiss="modal"
                 onClick={this.handlePostCancel}
               >
-                Cancel
+                {dictionary.cancel[this.context]}
               </button>
               {this.getActionButton()}
             </div>

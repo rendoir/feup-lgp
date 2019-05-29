@@ -1,7 +1,9 @@
-import axios from "axios";
-import * as React from "react";
+import * as React from 'react';
 
-import Post from "../components/Post/Post";
+import Post from '../components/Post/Post';
+import axiosInstance from '../utils/axiosInstance';
+import { dictionary, LanguageContext } from '../utils/language';
+import withAuth from '../utils/withAuth';
 
 interface IProps {
   match: {
@@ -12,103 +14,100 @@ interface IProps {
 }
 
 interface IState {
-  id: number;
-  post: any;
+  author: string;
   comments: any[];
-  files: any[];
-  likers: any[];
-  tags: any[];
+  content: string;
+  date: string;
+  date_updated: string | null;
   fetchingInfo: boolean;
+  files: any[];
+  id: number;
+  tags: any[];
+  title: string;
+  user_id: number;
+  visibility: string;
 }
 
 class PostView extends React.Component<IProps, IState> {
+  public static contextType = LanguageContext;
+  private readonly id: number;
+  private readonly dateOptions: object;
+
   constructor(props: IProps) {
     super(props);
 
+    this.id = this.props.match.params.id;
+    this.dateOptions = {
+      day: '2-digit',
+      hour: 'numeric',
+      minute: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    };
+
     this.state = {
+      author: '',
       comments: [],
+      content: '',
+      date: '',
+      date_updated: null,
       fetchingInfo: true,
       files: [],
-      id: 1,
-      likers: [],
-      post: {
-        author: "1",
-        content: "",
-        date_created: "",
-        date_updated: "",
-        id: "",
-        title: ""
-      },
-      tags: []
+      id: -1,
+      tags: [],
+      title: '',
+      user_id: -1,
+      visibility: ''
     };
   }
 
   public componentDidMount() {
-    this.apiGetPost(this.props.match.params.id);
+    this.apiGetPost();
   }
 
-  public apiGetPost(id: number) {
-    let postUrl = `${location.protocol}//${location.hostname}`;
-    postUrl +=
-      !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-        ? `:${process.env.REACT_APP_API_PORT}`
-        : "/api";
-    postUrl += `/post/${id}`;
-    axios
-      .get(postUrl, {
-        headers: {
-          /*'Authorization': "Bearer " + getToken()*/
-        }
-      })
+  public apiGetPost() {
+    axiosInstance
+      .get(`/post/${this.id}`)
       .then(res => {
         this.setState({
+          ...res.data.post,
           comments: res.data.comments,
           fetchingInfo: false,
           files: res.data.files,
-          id: res.data.post.id,
-          likers: res.data.likers,
-          post: res.data.post,
           tags: res.data.tags
         });
       })
-      .catch(() => console.log("Failed to get post info"));
-  }
-
-  public date() {
-    if (this.state.post.date_updated != null) {
-      return this.processDate(this.state.post.date_updated);
-    } else {
-      return this.processDate(this.state.post.date_created);
-    }
-  }
-
-  public processDate(dateToProcess: string) {
-    return dateToProcess.split("T")[0];
+      .catch(error => console.log(error.response.data.message));
   }
 
   public render() {
-    if (this.state.fetchingInfo) {
-      return null;
+    let date = '';
+    if (this.state.date_updated != null) {
+      date = new Date(this.state.date_updated).toLocaleDateString(
+        dictionary.date_format[this.context],
+        this.dateOptions
+      );
+    } else {
+      date = new Date(this.state.date).toLocaleDateString(
+        dictionary.date_format[this.context],
+        this.dateOptions
+      );
     }
 
     return (
       <div className="container my-5">
         <div className="w-75 mx-auto">
           <Post
-            id={Number(this.state.post.id)}
-            title={this.state.post.title}
-            author={
-              this.state.post.first_name + " " + this.state.post.last_name
-            }
-            date={this.date()}
-            likes={this.state.post.likes}
-            text={this.state.post.content}
-            user_id={this.state.post.user_id}
+            id={Number(this.state.id)}
+            title={this.state.title}
+            author={this.state.author}
+            date={date}
+            content={this.state.content}
+            user_id={this.state.user_id}
             comments={this.state.comments}
             files={this.state.files}
-            likers={this.state.likers}
             tags={this.state.tags}
-            visibility={this.state.post.visibility}
+            visibility={this.state.visibility}
           />
         </div>
       </div>
@@ -116,4 +115,4 @@ class PostView extends React.Component<IProps, IState> {
   }
 }
 
-export default PostView;
+export default withAuth(PostView);

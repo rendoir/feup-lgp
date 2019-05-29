@@ -1,5 +1,3 @@
-import axios from "axios";
-
 /**
  * Returns the complete API URL for a given route
  *
@@ -7,15 +5,15 @@ import axios from "axios";
  *
  * Route examples:
  * '/post/3'
- * '/users/subscribe'
- * '/post/subscribe'
+ * '/users/subscription'
+ * '/post/subscription'
  */
 export function getApiURL(route: string) {
   let apiURL = `${location.protocol}//${location.hostname}`;
   apiURL +=
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+    !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? `:${process.env.REACT_APP_API_PORT}`
-      : "/api";
+      : '/api';
   apiURL += route;
 
   return apiURL;

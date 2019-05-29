@@ -8,6 +8,7 @@ services:
     image: registry.gitlab.com/alexandreaam/lgp-3a/apitest:$1
     environment:
       - DB_HOST=db
+      - POSTGRES_PASSWORD
     depends_on:
       - db
   " >> docker-compose.yml

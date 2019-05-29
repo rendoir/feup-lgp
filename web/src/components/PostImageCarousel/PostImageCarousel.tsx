@@ -1,11 +1,9 @@
 // - Import react components
-import React, { Component } from "react";
-
-// - Import styles
-import styles from "../Post/Post.module.css";
-
+import React, { Component } from 'react';
 // - Import app components
-import Post from "../Post/Post";
+import Post from '../Post/Post';
+// - Import styles
+import styles from '../Post/Post.module.css';
 
 type MyFile = {
   name: string;
@@ -43,16 +41,16 @@ class PostImageCarousel extends Component<Props, State> {
     for (let i = 0; i < this.props.images.length; i++) {
       items.push(
         <li
-          key={"li_" + this.props.id + "_" + i}
-          data-target={"#imgCarousel" + this.props.id}
+          key={'li_' + this.props.id + '_' + i}
+          data-target={'#imgCarousel' + this.props.id}
           data-slide-to={i}
-          className={i ? "" : "active"}
+          className={i ? '' : 'active'}
         />
       );
       images.push(
         <div
-          key={"div_" + this.props.id + "_" + i}
-          className={"carousel-item " + (i ? "" : "active")}
+          key={'div_' + this.props.id + '_' + i}
+          className={'carousel-item ' + (i ? '' : 'active')}
         >
           <div
             className={styles.post_content_media}
@@ -69,7 +67,7 @@ class PostImageCarousel extends Component<Props, State> {
 
     return (
       <div
-        id={"imgCarousel" + this.props.id}
+        id={'imgCarousel' + this.props.id}
         className="carousel slide"
         data-ride="carousel"
         data-interval="false"
@@ -78,7 +76,7 @@ class PostImageCarousel extends Component<Props, State> {
         <div className="carousel-inner">{images}</div>
         <a
           className="carousel-control-prev"
-          href={"#imgCarousel" + this.props.id}
+          href={'#imgCarousel' + this.props.id}
           role="button"
           data-slide="prev"
         >
@@ -87,7 +85,7 @@ class PostImageCarousel extends Component<Props, State> {
         </a>
         <a
           className="carousel-control-next"
-          href={"#imgCarousel" + this.props.id}
+          href={'#imgCarousel' + this.props.id}
           role="button"
           data-slide="next"
         >

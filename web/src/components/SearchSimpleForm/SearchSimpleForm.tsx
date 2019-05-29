@@ -1,7 +1,9 @@
-import * as React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import "./SearchSimpleForm.scss";
+import { dictionary, LanguageContext } from '../../utils/language';
+
+import './SearchSimpleForm.scss';
 
 type State = {
   search: string;
@@ -28,12 +30,14 @@ class SearchSimpleForm extends React.Component<
   RouteComponentProps<any>,
   State
 > {
+  public static contextType = LanguageContext;
+
   constructor(props: RouteComponentProps<any>) {
     super(props);
     this.state = {
       authorPosts: [],
       posts: [],
-      search: "",
+      search: '',
       users: []
     };
 
@@ -55,7 +59,7 @@ class SearchSimpleForm extends React.Component<
             type="text"
             name="search"
             onChange={this.handleInputChange}
-            placeholder="Search"
+            placeholder={dictionary.search[this.context]}
           />
           <button className="btn btn-secondary my-2 my-sm-0" type="submit">
             <i className="fas fa-search" />
@@ -71,11 +75,11 @@ class SearchSimpleForm extends React.Component<
       .map(k => {
         return (
           encodeURIComponent(k) +
-          "=" +
+          '=' +
           encodeURIComponent(JSON.stringify(params[k]))
         );
       })
-      .join("&");
+      .join('&');
   }
 
   private submitSearch(event: any) {
@@ -100,16 +104,16 @@ class SearchSimpleForm extends React.Component<
     while ((temp = pattern.exec(search)) != null) {
       if (temp[3]) {
         tags.push(temp[3]);
-      } else if (!temp[0].startsWith("--")) {
+      } else if (!temp[0].startsWith('--')) {
         keywords.push(temp[0]);
-      } else if (temp[1] === "type") {
+      } else if (temp[1] === 'type') {
         type = (temp[2] as unknown) as SearchType;
-      } else if (temp[1] === "di") {
+      } else if (temp[1] === 'di') {
         di = temp[2];
-      } else if (temp[1] === "df") {
+      } else if (temp[1] === 'df') {
         df = temp[2];
       } else {
-        console.error("?");
+        console.error('?');
       }
     }
 
@@ -130,8 +134,8 @@ class SearchSimpleForm extends React.Component<
 
   private handleInputChange(event: any) {
     const field = event.target.name;
-    const value = !event.target.value.replace(/\s/g, "").length
-      ? ""
+    const value = !event.target.value.replace(/\s/g, '').length
+      ? ''
       : event.target.value; // Ignore input only containing white spaces
 
     const partialState: any = {};

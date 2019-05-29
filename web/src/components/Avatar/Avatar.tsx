@@ -1,14 +1,14 @@
-import classNames from "classnames";
-import React, { Component } from "react";
-import createSequence from "../../utils/createSequence";
-import getAvatarColor from "../../utils/getAvatarColor";
-import getAvatarText from "../../utils/getAvatarText";
-import { AvatarPlaceholder, UserStatusType } from "../../utils/types";
+import classNames from 'classnames';
+import React, { Component, MouseEvent } from 'react';
+import createSequence from '../../utils/createSequence';
+import { AvatarPlaceholder, UserStatusType } from '../../utils/types';
 import ImagePreloader, {
   State as ImagePreloaderState,
   STATE_SUCCESS
-} from "../ImagePreloader/ImagePreloader";
-import styles from "./Avatar.module.css";
+} from '../ImagePreloader/ImagePreloader';
+import styles from './Avatar.module.css';
+import getAvatarColor from './utils/getAvatarColor';
+import getAvatarText from './utils/getAvatarText';
 
 export type Props = {
   title: string | undefined;
@@ -29,7 +29,7 @@ const seq = createSequence();
 class Avatar extends Component<Props, State> {
   public static defaultProps = {
     image: undefined,
-    placeholder: "empty",
+    placeholder: 'empty',
     size: 32,
     status: null,
     title: undefined
@@ -39,7 +39,7 @@ class Avatar extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.id = "avatar_" + seq.next();
+    this.id = 'avatar_' + seq.next();
     this.state = {
       isHovered: false
     };
@@ -146,7 +146,7 @@ class Avatar extends Component<Props, State> {
   private renderMask() {
     const { status } = this.props;
 
-    if (!status || status === "invisible") {
+    if (!status || status === 'invisible') {
       return (
         <circle
           fill={`url(#${this.id})`}
@@ -170,7 +170,7 @@ class Avatar extends Component<Props, State> {
   private renderStatus() {
     const { status } = this.props;
 
-    if (!status || status === "invisible") {
+    if (!status || status === 'invisible') {
       return null;
     }
 

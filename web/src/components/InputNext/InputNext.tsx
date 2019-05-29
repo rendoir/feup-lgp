@@ -1,9 +1,8 @@
-import React, { Component } from "react";
+import classNames from 'classnames';
+import React, { Component } from 'react';
+import styles from './InputNext.module.css';
 
-import classNames from "classnames";
-import styles from "./InputNext.module.css";
-
-type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
+export type HTMLAbstractInputElement = HTMLInputElement | HTMLTextAreaElement;
 
 export type Props = {
   /** Input class attribute */
@@ -18,16 +17,19 @@ export type Props = {
   id: string;
   /** input type attribute */
   type:
-    | "text"
-    | "number"
-    | "email"
-    | "search"
-    | "tel"
-    | "url"
-    | "password"
-    | "textarea";
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'password'
+    | 'file'
+    | 'datetime-local'
+    | 'url'
+    | 'textarea';
   /** input value attribute */
-  value: string | number;
+  value?: string | number;
   /** input name attribute */
   name?: string;
   /** input label attribute */
@@ -43,7 +45,7 @@ export type Props = {
   /** input hint */
   hint?: string;
   /** input status */
-  status: "normal" | "success" | "error" | "warning";
+  status: 'normal' | 'success' | 'error' | 'warning';
   /** input autoFocus */
   autoFocus?: boolean;
   /** input tabIndex attribute */
@@ -60,6 +62,10 @@ export type Props = {
   readOnly?: boolean;
   /** Input required attribute */
   required?: boolean;
+  /** Input multiple attribute */
+  multiple?: boolean;
+  /** Input list attribute */
+  list?: string;
   /** Textarea rows attribute */
   rows?: number;
   /** Textarea cols attribute */
@@ -75,6 +81,8 @@ export type Props = {
   onFocus?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
   /** input onBlur event attribute */
   onBlur?: (event: React.FocusEvent<HTMLAbstractInputElement>) => any;
+  /** Input onKeyDown event attribute */
+  onKeyUp?: (event: React.KeyboardEvent) => any;
 };
 
 export type State = {
@@ -84,9 +92,9 @@ export type State = {
 class InputNext extends Component<Props, State> {
   public static defaultProps = {
     required: false,
-    spellcheck: "false",
-    status: "normal",
-    type: "text"
+    spellcheck: 'false',
+    status: 'normal',
+    type: 'text'
   };
 
   private input: HTMLInputElement | HTMLTextAreaElement | null | undefined;
@@ -142,6 +150,18 @@ class InputNext extends Component<Props, State> {
     this.autoFocus();
   }
 
+  public focus(): void {
+    if (this.input && document.activeElement !== this.input) {
+      this.input.focus();
+    }
+  }
+
+  public blur(): void {
+    if (this.input) {
+      this.input.blur();
+    }
+  }
+
   private handleChange = (
     event: React.ChangeEvent<HTMLAbstractInputElement>
   ): void => {
@@ -174,6 +194,14 @@ class InputNext extends Component<Props, State> {
     }
   };
 
+  private handleKeyUp = (event: React.KeyboardEvent): void => {
+    const { onKeyUp } = this.props;
+
+    if (onKeyUp) {
+      onKeyUp(event);
+    }
+  };
+
   private isAutoFocus(): boolean {
     return Boolean(this.props.autoFocus) && !this.props.disabled;
   }
@@ -187,18 +215,6 @@ class InputNext extends Component<Props, State> {
       if (document.activeElement !== this.input) {
         this.input.focus();
       }
-    }
-  }
-
-  private focus(): void {
-    if (this.input && document.activeElement !== this.input) {
-      this.input.focus();
-    }
-  }
-
-  private blur(): void {
-    if (this.input) {
-      this.input.blur();
     }
   }
 
@@ -252,7 +268,7 @@ class InputNext extends Component<Props, State> {
 
     return (
       <div className={styles.lengthLimitCounter}>
-        {`${length} ${maxLength ? `/ ${maxLength}` : ""}`}
+        {`${length} ${maxLength ? `/ ${maxLength}` : ''}`}
       </div>
     );
   }
@@ -271,7 +287,10 @@ class InputNext extends Component<Props, State> {
         maxLength,
         spellcheck,
         rows,
-        cols
+        cols,
+        required,
+        multiple,
+        list
       }
     } = this;
 
@@ -279,18 +298,22 @@ class InputNext extends Component<Props, State> {
       className: classNames(styles.input, this.props.inputClassName),
       disabled,
       id,
+      list,
+      multiple,
       name,
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onFocus: this.handleFocus,
-      placeholder: placeholder ? placeholder : "",
+      onKeyUp: this.handleKeyUp,
+      placeholder: placeholder ? placeholder : '',
       ref: this.setInput,
+      required,
       tabIndex,
       type,
       value
     };
 
-    if (type === "textarea") {
+    if (type === 'textarea') {
       return (
         <textarea
           {...props}

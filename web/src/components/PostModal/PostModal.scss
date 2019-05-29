@@ -1,7 +1,9 @@
 @import "../../styles/variables";
 @import "../../styles/colors";
 
-.post_modal_Edit, .post_modal_Create, .report_modal {
+.post_modal_Edit, .post_modal_Create, .report_modal, .invite_modal {
+
+    background-color: rgba(51, 51, 51, 0.45);
 
     textarea {
         overflow-y: scroll !important;
@@ -31,5 +33,25 @@
 
     .field_required_warning {
         color: $color-danger;
+    }
+
+    .invite_subscribers {
+        background-color: $color-primary !important;
+        color: white !important;
+        border-radius: 15px !important;
+        border: none;
+        padding: 0.3em 0.5em;
+    }
+
+    #invite_modal_done {
+        background-color: #428bca !important;
+        border: none;
+    }
+
+    #invite_user_input {
+        border: 1px solid;
+        width: 250px;
+        height: 37px;
+        text-indent: 10px;
     }
 }
