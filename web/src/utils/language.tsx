@@ -193,6 +193,7 @@ export let dictionary: Dictionary = {
   banned_users: { PT: 'Utilizadores banidos', EN: 'Banned users' },
   admin_area: { PT: 'Área de administração', EN: 'Administration area' },
   manage_users: { PT: 'Gerir utilizadores', EN: 'Manage users' },
+  manage_products: { PT: 'Enviar produtos', EN: 'Send products' },
   website_description: {
     PT: 'Rede Social para profissionais e estudantes de saúde',
     EN: 'Social Network for medicine professionals and students'

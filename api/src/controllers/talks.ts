@@ -133,7 +133,7 @@ export async function getTalk(req, res) {
       text: `SELECT *
               FROM challenges
               WHERE talk = $1
-              AND current_timestamp BETWEEN TO_TIMESTAMP(dateStart, 'YYYY-MM-DD HH24:MI') 
+              AND current_timestamp BETWEEN TO_TIMESTAMP(dateStart, 'YYYY-MM-DD HH24:MI')
               AND TO_TIMESTAMP(dateEnd, 'YYYY-MM-DD HH24:MI')
               ORDER BY dateStart DESC`,
       values: [id],
