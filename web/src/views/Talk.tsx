@@ -338,13 +338,11 @@ class Talk extends PureComponent<Props, State> {
                 this.state.inviteFields.success ? (
                   <div className={'col-lg-12'}>{this.renderInviteAlert()}</div>
                 ) : null}
-                <div className={'col-lg-5 order-lg-2'}>
+                <div className={'col-lg-5 order-lg-2'}>{this.renderChat()}</div>
+                <div className={'col-lg-7 order-lg-1'}>
                   {this.state.talk.hasLivestream
                     ? this.renderLivestream()
                     : null}
-                  {this.renderChat()}
-                </div>
-                <div className={'col-lg-7 order-lg-1'}>
                   {this.renderPosts()}
                 </div>
               </div>
