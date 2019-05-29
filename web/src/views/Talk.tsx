@@ -704,7 +704,7 @@ class Talk extends PureComponent<Props, State> {
         className={classNames('carousel-control-prev-icon', styles.arrow)}
       />
     );
-    const handleCardClick = () =>
+    const handleCollapse = () =>
       this.setState({ challengesCardOpen: !this.state.challengesCardOpen });
 
     const handleSelect = eventKey => this.setState({ activeIndex: eventKey });
@@ -716,7 +716,7 @@ class Talk extends PureComponent<Props, State> {
             'd-flex flex-row justify-content-between align-items-center',
             styles.header
           )}
-          onClick={handleCardClick}
+          onClick={handleCollapse}
           aria-controls={'talk_challenges_card'}
           aria-expanded={this.state.challengesCardOpen}
         >
@@ -760,7 +760,10 @@ class Talk extends PureComponent<Props, State> {
                     }
                   };
                   const handleClick = option => {
-                    if (challenge.isComplete) {
+                    if (
+                      challenge.isComplete ||
+                      new Date(challenge.dateEnd) < new Date()
+                    ) {
                       return;
                     }
 
@@ -800,7 +803,6 @@ class Talk extends PureComponent<Props, State> {
                       })
                       .catch(error => console.log(error.response.data.message));
                   };
-
                   return (
                     <Carousel.Item key={challenge.id} className={'h-100'}>
                       <Card border={'light'} className={'px-5 w-100'}>
@@ -810,6 +812,11 @@ class Talk extends PureComponent<Props, State> {
                           </Card.Title>
                         </Card.Header>
                         <Card.Body>
+                          {new Date(challenge.dateend) < new Date() ? (
+                            <Alert variant={'danger'}>
+                              {dictionary.finished[this.context]}
+                            </Alert>
+                          ) : null}
                           <Card.Subtitle className={'w-100 mb-1'}>
                             {dictionary.description[this.context]}
                           </Card.Subtitle>
