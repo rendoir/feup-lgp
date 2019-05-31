@@ -79,7 +79,7 @@ postRouter.delete('/:id', controller.deletePost);
 postRouter.get('/:id', controller.getPost);
 
 /**
- * @api {post} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
+ * @api {get} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
  * @apiName Get-Post-User-Interactions
  * @apiGroup Post
  *
@@ -91,7 +91,7 @@ postRouter.get('/:id', controller.getPost);
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
+postRouter.get('/:id/user_interactions', controller.getPostUserInteractions);
 
 /**
  * @api {post} /api/post/:id/subscription Set a post subscription for a given user

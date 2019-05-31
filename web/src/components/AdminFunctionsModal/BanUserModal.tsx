@@ -22,7 +22,7 @@ class BanUserModal extends Component<IProps, IState> {
     const body = {
       email
     };
-    console.log('this ', email);
+
     axiosInstance
       .post(getApiURL(`/admin/${id}/ban`), body)
       .then(res => onResponse(true))
@@ -106,7 +106,6 @@ class BanUserModal extends Component<IProps, IState> {
       email: this.state.user_email
     };
 
-    console.log('aadsa .', this.state.user_email);
     axiosInstance
       .post(getApiURL(`/admin/${userLoggedIn}/ban`), body)
       .then(res => this.props.onResponse(true))
@@ -114,7 +113,6 @@ class BanUserModal extends Component<IProps, IState> {
   }
 
   private handleBanUser() {
-    console.log('what');
     this.apiBanUser();
   }
 

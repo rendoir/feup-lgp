@@ -726,7 +726,7 @@ INSERT INTO posts (author, title, content, visibility, date_created) VALUES (1, 
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'public', '2018-12-22');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (1, 'Admin post', 'This is a post done by the admin', 'followers', '2018-12-12');
 INSERT INTO posts (author, title, content, visibility, date_created) VALUES (2, 'User post', 'This is a post done by a mere user following the admin', 'public', '2018-12-20');
-INSERT INTO posts (author, title, content, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user', 'public', '2018-12-23');
+INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (3, 'User post', 'This is a post done by a mere user', 3, 'public', '2018-12-23');
 
 /* POSTS IN talk */
 INSERT INTO posts (author, title, content, talk, visibility, date_created) VALUES (2, 'User post', 'This post was created by a user and appears in a talk', 1, 'private', '2018-12-03');
@@ -1025,8 +1025,8 @@ INSERT INTO invites (invited_user, invite_subject_id, invite_type) VALUES (1, 6,
 /**
 * CHALLENGES
 */
-INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, question, answers, talk) VALUES ('Challenge Options 1','This is a multiple choice question challenge!','2019-05-05 23:00','2019-05-05 23:59',10,'question_options','What is the title of this conference?','{"CorrectAnswer: Admin conference 1", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}', 3);
-INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, post, talk) VALUES ('Challenge Comment Post 1','Comment on the owner post to win a lot of points!','2019-05-05 23:00','2019-05-05 23:59',10,'comment_post',25,3);
+INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, question, answers, talk) VALUES ('Challenge Options 1','This is a multiple choice question challenge!','2019-05-05 23:00','2020-05-30 23:59',40,'question_options','What is the title of this conference?','{"CorrectAnswer: Admin conference 1", "Answer: Admin conference 1","Answer: User conference 2","Answer: Admin conference 3", "Answer: Admin conference 4"}', 3);
+INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, post, talk) VALUES ('Challenge Comment Post 1','Comment on the owner post to win a lot of points!','2019-05-05 23:00','2020-05-30 23:59',10,'comment_post',25,3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, talk) VALUES ('Challenge Create Post 1', 'Create a Post in this talk where you explain why it is so important for you!','2019-05-05 23:00','2019-05-05 23:59',10,'create_post',3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, talk) VALUES ('Challenge Create Post 2', 'Create a Post in this talk where you explain why it is so important for you!','2019-05-05 23:00','2020-05-05 23:59',10,'create_post',3);
 INSERT INTO challenges (title, description, dateStart, dateEnd, points, challengeType, talk) VALUES ('Challenge Create Post 3', 'Create a Post in this talk where you explain why it is so important for you!','2020-05-05 23:00','2020-05-05 23:59',10,'create_post',3);
