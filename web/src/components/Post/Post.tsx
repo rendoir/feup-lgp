@@ -791,9 +791,9 @@ class Post extends Component<Props, IState> {
             new Buffer(result.data, 'binary').toString('base64');
 
           this.setState({
+            avatarUserLoggedIn: src,
             nameUserLoggedIn:
-              res.data.user.firstName + ' ' + res.data.user.lastName,
-            avatarUserLoggedIn: src
+              res.data.user.firstName + ' ' + res.data.user.lastName
           });
           this.forceUpdate();
         });
