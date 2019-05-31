@@ -254,7 +254,7 @@ adminRouter.post('/', controller.addAdmin);
  *      message: 'An error ocurred while banning user'
  *     }
  */
-adminRouter.post('/ban', controller.banUser);
+adminRouter.post('/:id/ban', controller.banUser);
 
 /**
  * @api {post} /api/admin/user Change to user
@@ -283,4 +283,4 @@ adminRouter.post('/ban', controller.banUser);
  *      message: 'An error ocurred while changing to a user'
  *     }
  */
-adminRouter.post('/user', controller.makeUser);
+adminRouter.post('/:id/user', controller.makeUser);

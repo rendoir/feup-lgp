@@ -26,7 +26,7 @@ export async function getProducts(req, res) {
         res.send({
             products: result.rows,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         res.status(500).send({
             message: `Error retrieving products: ${error}`,
         });
@@ -86,7 +86,9 @@ export async function updateProduct(req, res) {
         values: [productId, req.body.name, req.body.stock, req.body.points, req.body.image],
     }).then(() => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occurred while editing a comment' });
     });
@@ -100,7 +102,9 @@ export async function deleteProduct(req, res) {
         values: [productId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while deleting a product' });
     });
@@ -114,7 +118,9 @@ export async function exchangeProduct(req, res) {
         values: [productId, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while exchanging a product' });
     });

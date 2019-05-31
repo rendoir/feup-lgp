@@ -15,6 +15,7 @@ let userId = -1;
 let commentId = -1;
 let conferenceId = -1;
 let talkId = -1;
+let userjwt = null;
 
 const admin = {
     email: 'admin@gmail.com',
@@ -41,8 +42,6 @@ const users = [
         password: 'cantlogin',
     }
 ];
-
-let userjwt = null;
 
 const publicPost = {
     author: -1,
@@ -252,17 +251,17 @@ describe('Admin tests', () => {
         it('Should not ban unexisting user', (done) => {
             request(app)
             .post('/admin/ban')
-            .set('authorization', 'Bearer ' + admin.jwt)
             .send({
                 email: 'notanemail'
             })
+            .set('authorization', 'Bearer ' + admin.jwt)
             .expect(400)
             .end((err, res) => {
                 !expect(err).to.be.null;
                 done();
             });
         });
-        
+
         it('Should ban user', (done) => {
             request(app)
                 .post('/admin/ban')
@@ -437,12 +436,11 @@ describe('User tests', () => {
             .set('authorization', 'Bearer ' + userjwt)
             .expect(401)
             .end((err, res) => {
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body.message).to.have.string(`You do not have permissions to ban a user`);
+                !expect(err).to.be.null;
                 done();
             });
     });
-    
+
     it('Should not alow user to add admin permissions', (done) => {
         request(app)
             .post('/admin')
@@ -600,8 +598,7 @@ describe('Post', () => {
             })
             .expect(400)
             .end((err, res) => {
-                expect(res.body).to.be.instanceOf(Object);
-                expect(res.body.message).to.have.string(`An error ocurred while creating a new post: Invalid post.`);
+                !expect(err).to.be.null;
                 done();
             });
     });
@@ -1003,7 +1000,7 @@ describe('Post', () => {
                     done();
                 });
         });
-/*
+
         it('Should not allow to edit a comment', (done) => {
             request(app)
                 .put(`/post/${postId}/comment/${commentId}`)
@@ -1019,7 +1016,7 @@ describe('Post', () => {
                     done();
                 })
         });
-*/
+
         it('Should edit a comment', (done) => {
             request(app)
                 .put(`/post/${postId}/comment/${commentId}`)
@@ -1060,7 +1057,7 @@ describe('Post', () => {
                     done();
                 });
         });
-/*
+
         it('Should not unlike a comment', (done) => {
             request(app)
                 .delete(`/post/${postId}/comment/${commentId}/like`)
@@ -1074,7 +1071,7 @@ describe('Post', () => {
                     done();
                 })
         });
-*/
+
         it('Should unlike a comment', (done) => {
             request(app)
                 .delete(`/post/${postId}/comment/${commentId}/like`)
@@ -1648,7 +1645,7 @@ describe('Conference tests', () => {
                     done();
                 });
         });
-/*
+
         it('Should not invite a user to a talk if not the owner' , (done) => {
             request(app)
                 .post(`/talk/${talkId}/invite`)
@@ -1675,7 +1672,7 @@ describe('Conference tests', () => {
                     expect(err).to.be.null;
                     done();
                 });
-        });*/
+        });
     });
 });
 

@@ -62,7 +62,9 @@ export async function getProductExchangeNotifications(req, res) {
         text: 'SELECT * FROM retrieve_exchange_notifications()',
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
     });
@@ -232,6 +234,7 @@ export async function makeUser(req, res) {
 }
 
 export async function isAdmin(userId): Promise<boolean> {
+    console.log("req.user.id = " + userId);
     try {
         const result = await query({
             text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,

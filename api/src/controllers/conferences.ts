@@ -239,7 +239,7 @@ export async function getAllConferences(req, res) {
     res.send({
       conferences: conferences.rows,
     });
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     console.log(e);
     res.status(500).send(new Error('Error retrieving Conferences'));
   }

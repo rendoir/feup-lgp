@@ -135,7 +135,7 @@ export async function getFeed(req, res) {
             size: totalSize.rows[0].count,
             talks: talks.rows,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         res.status(500).send({
             message: 'Error retrieving posts',
         });
