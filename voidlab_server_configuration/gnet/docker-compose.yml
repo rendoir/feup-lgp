@@ -1,16 +1,6 @@
 version: '3.7'
 
 services:
-  reverseproxy:
-    image: registry.gitlab.com/alexandreaam/lgp-3a/reverseproxy:stable
-    restart: always
-    depends_on:
-      - webprod
-      - webstaging
-    ports:
-      # - 443:443
-      - 80:80
-
   webprod:
     image: registry.gitlab.com/alexandreaam/lgp-3a/web:stable
     restart: always
