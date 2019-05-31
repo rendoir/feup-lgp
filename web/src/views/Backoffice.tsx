@@ -47,7 +47,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       banUserSuccess: false,
       fetchingNotifications: true,
       fetchingProductExchangeNotifications: true,
-      notifAreaActive: false,
+      notifAreaActive: true,
       notifications: [],
       notificationsAmount: 0,
       productExchangeNotifications: [],
