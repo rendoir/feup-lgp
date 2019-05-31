@@ -478,7 +478,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}
-              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              avatar={user.avatar}
+              avatar_mimeType={user.avatar_mimeType}
+              id={user.id}
               email={user.email}
               institution={user.work}
               userType={user.permissions}
@@ -497,7 +499,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}
-              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              avatar={user.avatar}
+              avatar_mimeType={user.avatar_mimeType}
+              id={user.id}
               email={user.email}
               institution={user.work}
               userType={user.permissions}
@@ -516,7 +520,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}
-              image="https://sunlimetech.com/portfolio/boot4menu/assets/imgs/team/img_01.png"
+              avatar={user.avatar}
+              avatar_mimeType={user.avatar_mimeType}
+              id={user.id}
               email={user.email}
               institution={user.work}
               userType={user.permissions}

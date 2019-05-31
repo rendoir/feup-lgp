@@ -15,6 +15,8 @@ interface IProps {
 
 interface IState {
   author: string;
+  avatar?: string;
+  avatar_mimetype?: string;
   comments: any[];
   content: string;
   date: string;
@@ -47,6 +49,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       author: '',
+      avatar: '',
+      avatar_mimetype: '',
       comments: [],
       content: '',
       date: '',
@@ -101,6 +105,8 @@ class PostView extends React.Component<IProps, IState> {
             id={Number(this.state.id)}
             title={this.state.title}
             author={this.state.author}
+            avatar={this.state.avatar}
+            avatar_mimeType={this.state.avatar_mimetype}
             date={date}
             content={this.state.content}
             user_id={this.state.user_id}

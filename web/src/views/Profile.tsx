@@ -202,7 +202,7 @@ class Profile extends React.Component<IProps, State> {
                     request={this.state.request}
                     onRequestChange={request => this.setState({ request })}
                     onClose={this.resetState}
-                    autoFocus={false}
+                    autoFocus={true}
                     step={'profile'}
                   />
                 ) : null}
@@ -359,7 +359,7 @@ class Profile extends React.Component<IProps, State> {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(res => {
+      .then(() => {
         console.log('Edited user info - reloading page...');
         this.resetState();
         window.location.reload();
@@ -593,6 +593,8 @@ class Profile extends React.Component<IProps, State> {
           key={post.id}
           id={post.id}
           author={post.first_name + ' ' + post.last_name}
+          avatar={post.avatar}
+          avatar_mimeType={post.avatar_mimeType}
           content={post.content}
           user_id={post.user_id}
           comments={post.comments || []}

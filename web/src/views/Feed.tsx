@@ -161,6 +161,8 @@ class Feed extends React.Component<Props, State> {
           this.dateOptions
         )}
         author={post.author}
+        avatar={post.avatar}
+        avatar_mimeType={post.avatar_mimeType}
         content={post.content}
         visibility={post.visibility}
         comments={post.comments}

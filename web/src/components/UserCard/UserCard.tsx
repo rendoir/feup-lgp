@@ -1,4 +1,5 @@
 import React from 'react';
+import axiosInstance from '../../utils/axiosInstance';
 import Avatar from '../Avatar/Avatar';
 
 import './UserCard.scss';
@@ -7,13 +8,27 @@ export type Props = {
   id: number;
   first_name: string;
   last_name: string;
+  avatar?: string;
+  avatar_mimeType?: string;
   rate: any;
   date_created: any;
 };
 
-class UserCard extends React.Component<Props> {
+export type State = {
+  avatar?: string;
+};
+
+class UserCard extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+
+    this.state = {
+      avatar: ''
+    };
+  }
+
+  public componentDidMount() {
+    this.updateAvatarSrc();
   }
 
   public render() {
@@ -25,7 +40,7 @@ class UserCard extends React.Component<Props> {
               title={this.props.first_name + ' ' + this.props.last_name}
               placeholder="empty"
               size={50}
-              image="https://picsum.photos/200/200?image=52"
+              image={this.state.avatar}
             />
             <div className="ml-3 username">
               {this.props.first_name + ' ' + this.props.last_name}
@@ -57,6 +72,29 @@ class UserCard extends React.Component<Props> {
       //     </div>
       // </div>
     );
+  }
+
+  private updateAvatarSrc() {
+    console.log(this.props.avatar);
+
+    if (this.props.avatar === undefined) {
+      return;
+    }
+
+    axiosInstance
+      .get(`/users/${this.props.id}/avatar/${this.props.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          this.props.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+        this.forceUpdate();
+      });
   }
 }
 

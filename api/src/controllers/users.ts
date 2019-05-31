@@ -205,7 +205,7 @@ export async function getProfilePosts(req, res) {
     const offset = req.query.offset;
     try {
         const result = await query({
-            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
+            text: `SELECT p.id, a.first_name, a.last_name, a.avatar, a.avatar_mimeType, p.title, p.content,
                 p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON (p.author = a.id)
@@ -237,7 +237,8 @@ export async function getProfilePosts(req, res) {
         });
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                        a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -360,6 +361,7 @@ export async function updateProfile(req, res) {
                     req.body.university, req.body.email, hashedPassword],
                 }));
                 saveAvatar(req, res);
+                res.status(200).send();
             } catch (error) {
                 console.log('\n\nERROR:', error);
                 res.status(400).send({ message: 'An error occured while updating the user profile' });

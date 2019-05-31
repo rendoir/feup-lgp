@@ -435,7 +435,11 @@ class Talk extends PureComponent<Props, State> {
   }
 
   private apiGetTalkAvatar(talk: any) {
-    if (talk.avatar === undefined || talk.avatar === null) {
+    if (
+      talk.avatar === undefined ||
+      talk.avatar === null ||
+      talk.avatar === ''
+    ) {
       return;
     }
 
@@ -455,7 +459,7 @@ class Talk extends PureComponent<Props, State> {
         this.forceUpdate();
       })
       .catch(() => {
-        console.log('Failed to get conference avatar');
+        console.log('Failed to get talk avatar');
       });
   }
 
@@ -481,10 +485,11 @@ class Talk extends PureComponent<Props, State> {
         const user = res.data.user;
         if (
           res.data.user.avatar !== null &&
-          res.data.user.avatar !== undefined
+          res.data.user.avatar !== undefined &&
+          res.data.user.avatar !== ''
         ) {
           await axiosInstance
-            .get(`/users/${Number(user.id)}/avatar/${user.avatar}`, {
+            .get(`/users/${user.id}/avatar/${user.avatar}`, {
               responseType: 'arraybuffer'
             })
             // tslint:disable-next-line: no-shadowed-variable
