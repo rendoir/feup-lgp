@@ -206,11 +206,12 @@ adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
 adminRouter.post('/', controller.addAdmin);
 
 /**
- * @api {post} /api/admin/ban Ban a user
+ * @api {post} /api/admin/:id/ban Ban a user
  * @apiName Ban-user
  * @apiGroup Admin
  *
  * @apiParam {String} email Email of the user to be banned
+ * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL to avoid route problems.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -232,7 +233,7 @@ adminRouter.post('/', controller.addAdmin);
  *      message: 'An error ocurred while banning user'
  *     }
  */
-adminRouter.post('/ban', controller.banUser);
+adminRouter.post('/:id/ban', controller.banUser);
 
 /**
  * @api {post} /api/admin/user Change to user

@@ -23,7 +23,7 @@ class BanUserModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL('/admin/ban'), body)
+      .post(getApiURL('/admin/1/ban'), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }

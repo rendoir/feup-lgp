@@ -178,6 +178,7 @@ export async function banUser(req, res) {
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
+                console.log("BANIU");
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
         }).catch((error) => {
             console.log(error);
