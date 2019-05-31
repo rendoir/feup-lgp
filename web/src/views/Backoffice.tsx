@@ -38,6 +38,7 @@ type BackofficeState = {
 
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -59,7 +60,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       showTurnAdminAlert: false,
       showUnbanUserAlert: false,
       unbanUserSuccess: false,
-      usersAreaActive: false,
+      usersAreaActive: true,
       usersSearchResult: [],
       usersTypeSearch: 'all'
     };
@@ -224,11 +225,19 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private handleUserCardBan(email: string) {
-    BanUserModal.OnBanUser(email, this.onBanUserResponse);
+    BanUserModal.OnBanUser(
+      email,
+      this.onBanUserResponse,
+      this.auth.getUserPayload().id
+    );
   }
 
   private handleUserCardUnban(email: string) {
-    UnbanUserModal.OnUnbanUser(email, this.onUnbanUserResponse);
+    UnbanUserModal.OnUnbanUser(
+      email,
+      this.onUnbanUserResponse,
+      this.auth.getUserPayload().id
+    );
   }
 
   private handleUserCardTurnAdmin(email: string) {
@@ -236,7 +245,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private handleUserCardExpelAdmin(email: string) {
-    RemoveAdminModal.OnExpelAdmin(email, this.onRemoveAdminResponse);
+    RemoveAdminModal.OnExpelAdmin(
+      email,
+      this.onRemoveAdminResponse,
+      this.auth.getUserPayload().id
+    );
   }
 
   private getAddAdminModal() {
@@ -495,11 +508,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     const users: any[] = [];
 
     for (const user of this.state.usersSearchResult) {
-      console.log(new AuthHelperMethods().getUserPayload().id);
       if (new AuthHelperMethods().getUserPayload().id !== user.id) {
         if (this.state.usersTypeSearch === 'all') {
           users.push(
-            console.log(user.email + ' ' + user.permissions),
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}

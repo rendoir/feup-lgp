@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './AdminFunctionsModal.css';
 
 import { getApiURL } from '../../utils/apiURL';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
@@ -17,16 +18,18 @@ interface IState {
 class UnbanUserModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnUnbanUser(email: string, onResponse: any) {
+  public static OnUnbanUser(email: string, onResponse: any, id: number) {
     const body = {
       email
     };
 
     axiosInstance
-      .post(getApiURL('/admin/user'), body)
+      .post(getApiURL(`/admin/${id}/user`), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -97,12 +100,14 @@ class UnbanUserModal extends Component<IProps, IState> {
   }
 
   public apiUnbanUser() {
+    const userLoggedIn = this.auth.getUserPayload().id;
+
     const body = {
       email: this.state.user_email
     };
 
     axiosInstance
-      .post(getApiURL('/admin/user'), body)
+      .post(getApiURL(`/admin/${userLoggedIn}/user`), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

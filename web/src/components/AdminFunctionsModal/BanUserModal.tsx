@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './AdminFunctionsModal.css';
 
 import { getApiURL } from '../../utils/apiURL';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
@@ -17,16 +18,18 @@ interface IState {
 class BanUserModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnBanUser(email: string, onResponse: any) {
+  public static OnBanUser(email: string, onResponse: any, id: number) {
     const body = {
       email
     };
-
+    console.log('this ', email);
     axiosInstance
-      .post(getApiURL('/admin/ban'), body)
+      .post(getApiURL(`/admin/${id}/ban`), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -97,17 +100,21 @@ class BanUserModal extends Component<IProps, IState> {
   }
 
   public apiBanUser() {
+    const userLoggedIn = this.auth.getUserPayload().id;
+
     const body = {
       email: this.state.user_email
     };
 
+    console.log('aadsa .', this.state.user_email);
     axiosInstance
-      .post(getApiURL('/admin/ban'), body)
+      .post(getApiURL(`/admin/${userLoggedIn}/ban`), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }
 
   private handleBanUser() {
+    console.log('what');
     this.apiBanUser();
   }
 
