@@ -10,6 +10,7 @@ export function jwtMiddleware() {
             // public routes that don't require authentication
             '/login',
             '/users',
+            '/',
         ],
     });
 }
