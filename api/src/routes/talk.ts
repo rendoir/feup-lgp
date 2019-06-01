@@ -38,12 +38,12 @@ talkRouter.post('/', controller.createTalk);
  *
  * @apiParam {Number}   id          Id of the talk
  * @apiParam {String}   title       Title of the talk
- * @apiParam {String}   about       Talk description
+ * @apiParam {String}   description Talk description
  * @apiParam {String}   local       Local where the talk will take place
  * @apiParam {string}   dateStart   Date when the talk starts
  * @apiParam {string}   dateEnd     Date when the talk ends
  * @apiParam {Object}   avatar      Talk image
- * @apiParam {string}   livestream   livestream link
+ * @apiParam {string}   livestream  Livestream link
  * @apiParam {String}   privacy     Visibility of the talk: public | followers | private
  *
  * @apiSuccessExample Success-Response:
@@ -160,7 +160,7 @@ talkRouter.post('/:id/join', controller.joinTalk);
 talkRouter.delete('/:id/leave', controller.leaveTalk);
 
 /**
- * @api {get} /api/talk/:id/check_participant Check if a user is participating in a talk
+ * @api {get} /api/talk/:id/check_participation Check if a user is participating in a talk
  * @apiName Check-talk-Participation
  * @apiGroup talk
  *

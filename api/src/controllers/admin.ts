@@ -234,7 +234,6 @@ export async function makeUser(req, res) {
 }
 
 export async function isAdmin(userId): Promise<boolean> {
-    console.log("req.user.id = " + userId);
     try {
         const result = await query({
             text: `SELECT id FROM users WHERE id = $1 AND permissions = 'admin'`,

@@ -83,23 +83,17 @@ postRouter.delete('/:id', controller.deletePost);
 postRouter.get('/:id', controller.getPost);
 
 /**
- * @api {post} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
+ * @api {get} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
  * @apiName Get-Post-User-Interactions
  * @apiGroup Post
  *
- * @apiParam {number}   id   Id of the post
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *      message: 'An error message here'
  *     }
  */
-postRouter.post('/:id/user_interactions', controller.getPostUserInteractions);
+postRouter.get('/:id/user_interactions', controller.getPostUserInteractions);
 
 /**
  * @api {post} /api/post/:id/subscription Set a post subscription for a given user

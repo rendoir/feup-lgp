@@ -207,13 +207,6 @@ adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -228,21 +221,15 @@ adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
 adminRouter.post('/', controller.addAdmin);
 
 /**
- * @api {post} /api/admin/ban Ban a user
+ * @api {post} /api/admin/:id/ban Ban a user
  * @apiName Ban-user
  * @apiGroup Admin
  *
  * @apiParam {String} email Email of the user to be banned
+ * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL to avoid route problems.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -257,21 +244,15 @@ adminRouter.post('/', controller.addAdmin);
 adminRouter.post('/:id/ban', controller.banUser);
 
 /**
- * @api {post} /api/admin/user Change to user
+ * @api {post} /api/admin/:id/user Change to user
  * @apiName Change-user
  * @apiGroup Admin
  *
  * @apiParam {String} email Email of the user
+ * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL to avoid route problems.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {

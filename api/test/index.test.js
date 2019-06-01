@@ -250,7 +250,7 @@ describe('Admin tests', () => {
     describe('Ban/unban user', () => {
         it('Should not ban unexisting user', (done) => {
             request(app)
-            .post('/admin/ban')
+            .post('/admin/0/ban')
             .send({
                 email: 'notanemail'
             })
@@ -264,7 +264,7 @@ describe('Admin tests', () => {
 
         it('Should ban user', (done) => {
             request(app)
-                .post('/admin/ban')
+                .post('/admin/0/ban')
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     email: 'baduser@lgp.com'
@@ -292,7 +292,7 @@ describe('Admin tests', () => {
 
         it('Should unban', (done) => {
             request(app)
-                .post('/admin/user')
+                .post('/admin/0/user')
                 .send({ email: users[0].email })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
@@ -304,7 +304,7 @@ describe('Admin tests', () => {
 
         it('Should not unban unexistent user', (done) => {
             request(app)
-                .post('/admin/user')
+                .post('/admin/0/user')
                 .send({ email: "notanemail" })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(400)
@@ -429,7 +429,7 @@ describe('User tests', () => {
 
     it('Should not allow user to ban', (done) => {
         request(app)
-            .post('/admin/ban')
+            .post('/admin/0/ban')
             .send({
                 email: 'dontmatternotadmin'
             })
@@ -603,6 +603,23 @@ describe('Post', () => {
             });
     });
 
+    it('Should not submit an empty post', (done) => {
+        request(app)
+            .post('/post')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                author: publicPost.author,
+                title: 'title',
+                text: '',
+                visibility: publicPost.visibility
+            })
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
     it('Should submit a new public post', (done) => {
         request(app)
             .post('/post')
@@ -664,7 +681,7 @@ describe('Post', () => {
 
     it('Should get user-post interaction', (done) => {
         request(app)
-            .post(`/post/${postId}/user_interactions`)
+            .get(`/post/${postId}/user_interactions`)
             .set('authorization', 'Bearer ' + userjwt)
             .send({
                 id: postId
@@ -1001,22 +1018,6 @@ describe('Post', () => {
                 });
         });
 
-        it('Should not allow to edit a comment', (done) => {
-            request(app)
-                .put(`/post/${postId}/comment/${commentId}`)
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .send({
-                    comment: 'cannot edit'
-                })
-                .expect(400)
-                .end((err, res) => {
-                    expect(res.body).to.be.instanceOf(Object);
-                    expect(res.body.newComment).to.have.string(`cannot edit`);
-                    !expect(err).to.be.null;
-                    done();
-                })
-        });
-
         it('Should edit a comment', (done) => {
             request(app)
                 .put(`/post/${postId}/comment/${commentId}`)
@@ -1056,20 +1057,6 @@ describe('Post', () => {
                     expect(err).to.be.null;
                     done();
                 });
-        });
-
-        it('Should not unlike a comment', (done) => {
-            request(app)
-                .delete(`/post/${postId}/comment/${commentId}/like`)
-                .set('authorization', 'Bearer ' + userjwt)
-                .send({
-                    id: commentId
-                })
-                .expect(400)
-                .end((err, res) => {
-                    !expect(err).to.be.null;
-                    done();
-                })
         });
 
         it('Should unlike a comment', (done) => {
@@ -1412,6 +1399,17 @@ describe('Conference tests', () => {
     });
 
     describe('Talk tests', () => {
+        it('Should not get an unexisting talk' , (done) => {
+            request(app)
+                .get(`/talk/${talkId}`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(400)
+                .end((err, res) => {
+                    !expect(err).to.be.null;
+                    done();
+                });
+        });
+
         it('Should not create a talk without a title' , (done) => {
             request(app)
                 .post(`/talk`)
@@ -1525,6 +1523,7 @@ describe('Conference tests', () => {
                     expect(err).to.be.null;
                     expect(res.body).to.have.property('id');
                     talkId = res.body.id;
+                    console.log("THE TALK ID IS = TO: " + talkId);
                     done();
                 });
         });
@@ -1535,7 +1534,7 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + userjwt)
                 .send({
                     title: '',
-                    about: 'about',
+                    description: 'description',
                     local: 'local',
                     dateStart: '2020-1-31',
                     dateEnd: '2020-3-1',
@@ -1554,7 +1553,7 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + userjwt)
                 .send({
                     title: 'title',
-                    about: '',
+                    description: '',
                     local: 'local',
                     dateStart: '2020-1-31',
                     dateEnd: '2020-3-1',
@@ -1573,7 +1572,7 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + userjwt)
                 .send({
                     title: 'title',
-                    about: 'about',
+                    description: 'description',
                     local: '',
                     dateStart: '2020-1-31',
                     dateEnd: '2020-3-31',
@@ -1592,7 +1591,7 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + userjwt)
                 .send({
                     title: 'title',
-                    about: 'about',
+                    description: 'description',
                     local: 'local',
                     dateStart: '',
                     dateEnd: '2020-3-31',
@@ -1611,7 +1610,7 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + userjwt)
                 .send({
                     title: 'title',
-                    about: 'about',
+                    description: 'description',
                     local: 'local',
                     dateStart: '2020-1-31',
                     dateEnd: '1999-1-1',
@@ -1630,42 +1629,12 @@ describe('Conference tests', () => {
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     title: 'title2',
-                    about: 'about2',
+                    description: 'description',
                     local: 'local2',
                     dateStart: '2020-1-30',
                     dateEnd: '2020-3-2',
                     livestream: 'https://www.youtube.com/watch?v=tNkZsRW7h2c',
                     privacy: 'public',
-                })
-                .expect(200)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res.body).to.have.property('id');
-                    talkId = res.body.id;
-                    done();
-                });
-        });
-
-        it('Should not invite a user to a talk if not the owner' , (done) => {
-            request(app)
-                .post(`/talk/${talkId}/invite`)
-                .set('authorization', 'Bearer ' + admin.jwt)
-                .send({
-                    invited_user: userId+2,
-                })
-                .expect(400)
-                .end((err, res) => {
-                    !expect(err).to.be.null;
-                    done();
-                });
-        });
-
-        it('Should invite a user to a talk' , (done) => {
-            request(app)
-                .post(`/talk/${talkId}/invite`)
-                .set('authorization', 'Bearer ' + userjwt)
-                .send({
-                    invited_user: userId+2,
                 })
                 .expect(200)
                 .end((err, res) => {

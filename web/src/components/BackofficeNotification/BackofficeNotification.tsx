@@ -63,7 +63,7 @@ export class BackofficeNotification extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post('/admin/ban', body)
+      .post('/admin/1/ban', body)
       .then(res => this.apiReportSeen())
       .catch(() => this.setState({ operationFailed: true }));
   }

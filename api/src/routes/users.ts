@@ -72,7 +72,7 @@ usersRouter.get('/:id', controller.getUser);
 usersRouter.get('/:id/name', controller.getUserName);
 
 /**
- * @api {post} /api/users/{id} Get user posts
+ * @api {get} /api/users/{id} Get user posts
  * @apiName Profile Posts
  * @apiGroup Users
  *
