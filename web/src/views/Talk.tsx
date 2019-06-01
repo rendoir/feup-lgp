@@ -1191,6 +1191,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <>
         <ListGroup.Item
+          className="pointer"
           onClick={handleOpen}
           disabled={this.state.isArchived || this.state.isHidden}
         >
@@ -1743,7 +1744,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleOpen}
+          disabled={this.state.isArchived}
+        >
           <i className={'fas fa-puzzle-piece mr-2'} />
           {dictionary.create_challenge_talk[this.context]}
         </ListGroup.Item>
@@ -2076,7 +2081,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleShow}
+          disabled={this.state.isArchived}
+        >
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -2396,7 +2405,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
+        <ListGroup.Item className="pointer" onClick={handleShow}>
           <i className={'fas fa-archive mr-2'} />
           {this.state.isArchived
             ? dictionary.restore_talk[this.context]
@@ -2480,7 +2489,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleShow}
+          disabled={this.state.isArchived}
+        >
           <i
             className={`fas ${
               this.state.isHidden ? 'fa-eye' : 'fa-eye-slash'
@@ -2638,9 +2651,13 @@ class Talk extends PureComponent<Props, State> {
         }
       });
     };
-    const buttonClassName = classNames('pt-2 pb-2 pl-3 pr-3', styles.button, {
-      [styles.disabled]: this.state.isHidden || this.state.isArchived
-    });
+    const buttonClassName = classNames(
+      'pt-2 pb-2 pl-3 pr-3 pointer',
+      styles.button,
+      {
+        [styles.disabled]: this.state.isHidden || this.state.isArchived
+      }
+    );
 
     return (
       <>
