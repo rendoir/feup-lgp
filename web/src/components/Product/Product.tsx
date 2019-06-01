@@ -142,14 +142,14 @@ class Product extends Component<Props, IState> {
         <button
           id="edit_product"
           data-toggle="modal"
-          data-target={`#edit_product_modal`}
+          data-target={`#edit_product_modal_${this.props.id}`}
         >
           {dictionary.edit_product[this.context]}
         </button>
         <button
           id="remove_product"
           data-toggle="modal"
-          data-target={`#remove_product_modal`}
+          data-target={`#remove_product_modal_${this.props.id}`}
         >
           {dictionary.remove_product[this.context]}
         </button>
