@@ -19,3 +19,7 @@ export async function deleteProduct(req, res) {
 export async function exchangeProduct(req, res) {
     shop.exchangeProduct(req, res);
 }
+
+export async function getProducts(req, res) {
+    shop.getProducts(req, res);
+}

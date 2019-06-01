@@ -141,8 +141,8 @@ class Shop extends React.Component<Props, State> {
 
   private apiGetProducts = () => {
     const url = this.isConferenceShop
-      ? `/conference/${this.conferenceId}/shop`
-      : '/shop';
+      ? `/conference/${this.conferenceId}/products`
+      : '/products';
 
     this.setState({ isLoading: true }, () => {
       axiosInstance
