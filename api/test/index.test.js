@@ -315,9 +315,6 @@ describe('Admin tests', () => {
         });
     });
 
-    describe('Report tests', () => {
-    });
-
     describe('Whitelist tests', () => {
         it('Shouldn\'t add bad email to the whitelist', (done) => {
             request(app)
