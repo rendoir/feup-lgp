@@ -60,7 +60,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       showTurnAdminAlert: false,
       showUnbanUserAlert: false,
       unbanUserSuccess: false,
-      usersAreaActive: true,
+      usersAreaActive: false,
       usersSearchResult: [],
       usersTypeSearch: 'all'
     };
@@ -108,13 +108,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               </h6>
               <div className="dropdown-divider" />
               <a
-                id="manage_users"
-                className="dropdown-item"
-                onClick={this.handleUsersArea}
-              >
-                {dictionary.manage_users[this.context]}
-              </a>
-              <a
                 id="notifications"
                 className="dropdown-item"
                 onClick={this.handleNotifArea}
@@ -123,6 +116,13 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 <span className="badge badge-light">
                   {this.state.notificationsAmount}
                 </span>
+              </a>
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
+                {dictionary.manage_users[this.context]}
               </a>
               <a
                 id="manage_shop"
