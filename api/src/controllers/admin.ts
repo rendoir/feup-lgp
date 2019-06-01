@@ -169,8 +169,6 @@ export async function addAdmin(req, res) {
 }
 
 export async function banUser(req, res) {
-    console.log('-------------')
-    console.log(req.user)
     const isRequesterAdmin = await isAdmin(req.user.id);
 
     if (isRequesterAdmin) {
