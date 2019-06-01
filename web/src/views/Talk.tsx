@@ -595,7 +595,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_info_card'}
           aria-expanded={this.state.infoCardOpen}
@@ -645,7 +645,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_admin_card'}
           aria-expanded={this.state.adminCardOpen}
@@ -713,7 +713,7 @@ class Talk extends PureComponent<Props, State> {
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
           className={classNames(
-            'd-flex flex-row justify-content-between align-items-center',
+            'd-flex flex-row justify-content-between align-items-center pointer',
             styles.header
           )}
           onClick={handleCollapse}
@@ -1003,7 +1003,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_chat_card'}
           aria-expanded={this.state.chatCardOpen}
