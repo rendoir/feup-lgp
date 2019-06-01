@@ -18,13 +18,13 @@ interface IState {
 class RemoveAdminModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnExpelAdmin(email: string, onResponse: any, id: number) {
+  public static OnExpelAdmin(email: string, onResponse: any) {
     const body = {
       email
     };
 
     axiosInstance
-      .post(getApiURL(`/admin/${id}/user`), body)
+      .post(getApiURL(`/admin/user`), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -100,14 +100,12 @@ class RemoveAdminModal extends Component<IProps, IState> {
   }
 
   public apiRemoveAdmin() {
-    const userLoggedIn = this.auth.getUserPayload().id;
-
     const body = {
       email: this.state.admin_email
     };
 
     axiosInstance
-      .post(getApiURL(`/admin/${userLoggedIn}/user`), body)
+      .post(getApiURL(`/admin/user`), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

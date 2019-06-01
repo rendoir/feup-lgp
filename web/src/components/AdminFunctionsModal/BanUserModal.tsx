@@ -18,13 +18,13 @@ interface IState {
 class BanUserModal extends Component<IProps, IState> {
   public static contextType = LanguageContext;
 
-  public static OnBanUser(email: string, onResponse: any, id: number) {
+  public static OnBanUser(email: string, onResponse: any) {
     const body = {
       email
     };
 
     axiosInstance
-      .post(getApiURL(`/admin/${id}/ban`), body)
+      .post(getApiURL(`/admin/ban`), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
@@ -100,14 +100,12 @@ class BanUserModal extends Component<IProps, IState> {
   }
 
   public apiBanUser() {
-    const userLoggedIn = this.auth.getUserPayload().id;
-
     const body = {
       email: this.state.user_email
     };
 
     axiosInstance
-      .post(getApiURL(`/admin/${userLoggedIn}/ban`), body)
+      .post(getApiURL(`/admin/ban`), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

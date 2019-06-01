@@ -225,19 +225,11 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private handleUserCardBan(email: string) {
-    BanUserModal.OnBanUser(
-      email,
-      this.onBanUserResponse,
-      this.auth.getUserPayload().id
-    );
+    BanUserModal.OnBanUser(email, this.onBanUserResponse);
   }
 
   private handleUserCardUnban(email: string) {
-    UnbanUserModal.OnUnbanUser(
-      email,
-      this.onUnbanUserResponse,
-      this.auth.getUserPayload().id
-    );
+    UnbanUserModal.OnUnbanUser(email, this.onUnbanUserResponse);
   }
 
   private handleUserCardTurnAdmin(email: string) {
@@ -245,11 +237,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
   }
 
   private handleUserCardExpelAdmin(email: string) {
-    RemoveAdminModal.OnExpelAdmin(
-      email,
-      this.onRemoveAdminResponse,
-      this.auth.getUserPayload().id
-    );
+    RemoveAdminModal.OnExpelAdmin(email, this.onRemoveAdminResponse);
   }
 
   private getAddAdminModal() {
