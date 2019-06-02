@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import styles from "./Livestream.module.scss";
+import styles from './Livestream.module.scss';
 
 export type Props = {
   src: string;

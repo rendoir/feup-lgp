@@ -1,6 +1,6 @@
-import classNames from "classnames";
-import React from "react";
-import styles from "./Modal.module.css";
+import classNames from 'classnames';
+import React from 'react';
+import styles from './Modal.module.css';
 
 export type Props = {
   className?: string;

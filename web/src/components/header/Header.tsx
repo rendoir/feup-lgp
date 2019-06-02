@@ -122,7 +122,6 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
             {this.auth.loggedIn() && this.renderLinks()}
             {this.auth.loggedIn() && <SearchSimpleForm />}
             {this.renderLanguageSelector()}
-            {this.renderInvite()}
             {this.auth.loggedIn() && this.renderButtons()}
           </Navbar.Collapse>
         </Navbar>
@@ -144,14 +143,6 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           onChange={this.props.onLanguageChange}
         />
       </div>
-    );
-  }
-
-  private renderInvite() {
-    return (
-      <Navbar.Brand href={'/invite'} className={styles.logo}>
-        <Icon icon={faUserPlus} size={'lg'} className={styles.icon} />
-      </Navbar.Brand>
     );
   }
 
@@ -241,6 +232,9 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         >
           <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
             {dictionary.profile[this.context]}
+          </NavDropdown.Item>
+          <NavDropdown.Item href={`/invite`}>
+            {dictionary.invite_users[this.context]}
           </NavDropdown.Item>
           {this.renderAdminDropdown()}
           <NavDropdown.Divider />
