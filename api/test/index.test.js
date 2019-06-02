@@ -1328,6 +1328,21 @@ describe('Post', () => {
                     done();
                 });
         });
+
+        it('Should update the rate of a post', (done) => {
+            request(app)
+                .put(`/post/${postId}/rate`)
+                .send({
+                    rate: 5,
+                    newUserRating: 4
+                })
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
     });
 });
 

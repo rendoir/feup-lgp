@@ -268,7 +268,7 @@ export function rate(req, res) {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the post' });
         });
-    }).catch((error) => {
+    }).catch((error) => /* istanbul ignore next */{
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an post' });
     });
@@ -289,7 +289,7 @@ export function updateRate(req, res) {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the post' });
         });
-    }).catch((error) => {
+    }).catch((error) => /* istanbul ignore next */{
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an post' });
     });
@@ -370,7 +370,7 @@ export function saveFiles(req, res, id) {
                         values: [filename, filetype, filesize, id],
                     }).then(() => {
                         return;
-                    }).catch((error) => {
+                    }).catch((error) => /* istanbul ignore next */{
                         console.log('\n\nERROR:', error);
                         res.status(400).send({ message: 'An error ocurred while creating/editing post: Adding file to database.' });
                     });
@@ -405,7 +405,7 @@ export async function saveTags(req, res, id) {
             text: `SELECT t.id, t.name FROM tags t INNER JOIN posts_tags pt ON pt.tag = t.id WHERE pt.post = $1`,
             values: [id],
         });
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */{
         console.error(err);
         res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
         return;
@@ -427,7 +427,7 @@ export async function saveTags(req, res, id) {
             values: [id, tag.id],
         }).then(() => {
             return;
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
         });
@@ -466,7 +466,7 @@ export async function saveTags(req, res, id) {
                 values: [id, tagID],
             }).then(() => {
                 return;
-            }).catch((error) => {
+            }).catch((error) => /* istanbul ignore next */{
                 console.log('\n\nERROR:', error);
                 res.status(400).send({ message: 'An error ocurred while creating post: Adding tags to post.' });
             });
@@ -568,18 +568,4 @@ export async function getUninvitedUsersInfo(req, res) {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post uninvited users info'));
     }
-}
-
-export function updateRelevancy(req, res) {
-    query({
-        text: `UPDATE posts
-                SET relevancy = $2
-                WHERE id = $1`,
-        values: [req.params.id, req.body.relevancy],
-    }).then((result) => {
-        res.status(200).send();
-    }).catch((error) => {
-        console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while updating relevancy' });
-    });
 }
