@@ -54,7 +54,7 @@ const editedPublicPost = {
     title: 'Edited Title 1',
     text: 'Edited Content 1',
     visibility: 'followers',
-}
+};
 function assignAuthorsToPosts(adminId) {
     publicPost.author = adminId;
     editedPublicPost.author = adminId;
@@ -67,9 +67,9 @@ function assignAuthorsToPosts(adminId) {
  * @param {*} p2 
  */
 function equalPosts(p1, p2) {
-    return p1.title == p2.title
-        && p1.text == p2.content
-        && p1.visibility == p2.visibility;
+    return p1.title === p2.title
+        && p1.text === p2.content
+        && p1.visibility === p2.visibility;
 }
 
 function loadEnvironment() {
@@ -852,7 +852,6 @@ describe('Post', () => {
     });
 
     it('Should invite user', (done) => {
-        console.log('userID = ' + userId)
         request(app)
             .post(`/post/${postId}/invite`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -870,7 +869,7 @@ describe('Post', () => {
     it('Should invite subscribers', (done) => {
         request(app)
             .post(`/post/${postId}/invite_subscribers`)
-            .set('authorization', 'Bearer ' + admin.jwt)
+            .set('authorization', 'Bearer ' + userjwt)
             .send({
                 post: postId,
             })
@@ -884,7 +883,7 @@ describe('Post', () => {
     it('Should return amount of subscribers uninvited', (done) => {
         request(app)
             .post(`/post/${postId}/amount_uninvited_subscribers`)
-            .set('authorization', 'Bearer ' + admin.jwt)
+            .set('authorization', 'Bearer ' + userjwt)
             .send({
                 post: postId,
             })
@@ -1445,7 +1444,7 @@ describe('Conference tests', () => {
                 });
         });
 
-        it('Should not create a talk without a place discription' , (done) => {
+        it('Should not create a talk without a place description' , (done) => {
             request(app)
                 .post(`/talk`)
                 .set('authorization', 'Bearer ' + userjwt)
@@ -1563,7 +1562,7 @@ describe('Conference tests', () => {
                 });
         });
 
-        it('Should not edit a talk without a place discription' , (done) => {
+        it('Should not edit a talk without a place description' , (done) => {
             request(app)
                 .put(`/talk/${talkId}`)
                 .set('authorization', 'Bearer ' + userjwt)
@@ -1639,6 +1638,144 @@ describe('Conference tests', () => {
                     done();
                 });
         });
+
+        it('Should change the privacy of a talk' , (done) => {
+            request(app)
+                .post(`/talk/${talkId}/change_privacy`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .send({
+                    id: talkId,
+                    privacy: 'private',
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should open talk', (done) => {
+            request(app)
+                .put(`/talk/${talkId}/hide`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    value: true
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should archive talk', (done) => {
+            request(app)
+                .put(`/talk/${talkId}/archive`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    value: true
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should join talk', (done) => {
+            request(app)
+                .post(`/talk/${talkId}/join`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .send({
+                    id: userId
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should invite user to talk', (done) => {
+            request(app)
+                .post(`/talk/${talkId}/invite`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    selected: [userId]
+                })
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should invite subscribers to talk', (done) => {
+            request(app)
+                .post(`/talk/${talkId}/invite_subscribers`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should return the amount of uninvited subscribers', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/amount_uninvited_subscribers`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should return the uninvited users', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/uninvited_users_info`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should be participating in a talk', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/check_participation`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should leave talk', (done) => {
+            request(app)
+                .delete(`/talk/${talkId}/leave`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should allow user to join talk', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/check_user_access`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
     });
 });
 

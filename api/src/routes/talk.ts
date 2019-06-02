@@ -64,7 +64,7 @@ talkRouter.put('/:id', controller.editTalk);
  * @apiGroup talk
  *
  * @apiParam {number}   id    Id of the talk the user will be invited to
- * @apiParam {number}   invited_user    Id of the user being invited
+ * @apiParam {number}   selected    Id of the user being invited
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
