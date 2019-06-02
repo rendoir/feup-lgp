@@ -2012,8 +2012,6 @@ class Talk extends PureComponent<Props, State> {
     formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
 
-    console.log(fields.dateStart);
-
     axiosInstance
       .post(`/talk/${this.id}/challenge/create`, formData, {
         headers: {
