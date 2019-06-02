@@ -2001,8 +2001,8 @@ class Talk extends PureComponent<Props, State> {
     formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
-    formData.append('dateEnd', fields.dateEnd);
-    formData.append('dateStart', fields.dateStart);
+    formData.append('dateStart', new Date(fields.dateStart).toISOString());
+    formData.append('dateEnd', new Date(fields.dateEnd).toISOString());
     formData.append('points', fields.points.toString());
     formData.append('question', fields.question!);
     formData.append('correctAnswer', fields.correctAnswer!);
@@ -2011,6 +2011,8 @@ class Talk extends PureComponent<Props, State> {
     );
     formData.append('post', fields.post!);
     formData.append('talk_id', this.id.toString());
+
+    console.log(fields.dateStart);
 
     axiosInstance
       .post(`/talk/${this.id}/challenge/create`, formData, {
