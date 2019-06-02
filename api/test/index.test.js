@@ -2133,6 +2133,13 @@ describe('Tag tests', () => {
 describe('Feed tests', () => {
     it('Should get feed' , (done) => {
         request(app)
+            .post('/post')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send(publicPost)
+            .end((err, res) => {
+                expect(err).to.be.null;
+            });
+        request(app)
             .get('/feed')
             .send({
                 offset: 10,
@@ -2146,33 +2153,68 @@ describe('Feed tests', () => {
                 expect(res.body).to.have.property('posts');
                 expect(res.body).to.have.property('size');
                 expect(res.body).to.have.property('following');
+                expect(res.body).to.have.property('conferences');
+                expect(res.body).to.have.property('talks');
                 done();
             });
     });
-});
-/*
-describe('Search tests', () => {
-    it('Should get feed' , (done) => {
+
+    it('Should get feed posts' , (done) => {
         request(app)
-            .get('/search')
+            .post('/post')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send(publicPost)
+            .end((err, res) => {
+                expect(err).to.be.null;
+            });
+        request(app)
+            .get('/feed/posts')
             .send({
-                k: 'word',
-                t: 'post',
-                di: 5,
-                df: 5,
-                0: 10
+                offset: 10,
+                limit: 10,
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                expect(res.body).to.have.property('conferences');
-                expect(res.body).to.have.property('following');
                 done();
             });
     });
 });
-*/
+
+describe('Search tests', () => {
+    it('Should search posts' , (done) => {
+        request(app)
+            .get('/search')
+            .send({
+                k: ['word'],
+                tags: [],
+                t: 1,
+                di: '2018-05-05T21:30',
+                df: '2020-05-05T21:30'
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+});
+/*
+describe('Invite tests', () => {
+    it('Should send email' , (done) => {
+        request(app)
+            .get('/tags')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+});*/
+
 
 describe('Product tests', () => {
     it('Should create a product' , (done) => {

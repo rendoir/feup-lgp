@@ -236,35 +236,3 @@ export async function getPosts(req, res) {
         res.status(500).send(new Error('Error retrieving feed'));
     }
 }
-
-export async function getFeedStuff(req, res) {
-    const userId = req.user.id;
-    try {
-        const following = await query({
-            text: `SELECT a.id, a.first_name, a.last_name
-                        FROM users a
-                            INNER JOIN follows f ON a.id=f.followed
-                            LEFT JOIN posts p ON a.id = p.author
-                        WHERE f.follower=$1
-                            AND (p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
-                                OR p.date_created IS NULL)
-                        ORDER BY p.date_created DESC NULLS LAST
-                        LIMIT 15`,
-            values: [userId],
-        });
-        const conferences = await query({
-            text: `SELECT c.id, c.title, c.dateStart
-                        FROM conferences c
-                        WHERE c.privacy = 'public'
-                        ORDER BY c.dateStart DESC
-                        LIMIT 15`,
-        });
-        res.send({
-            conferences: conferences.rows,
-            following: following.rows,
-        });
-    } catch (error) /* istanbul ignore next */ {
-        console.error(error);
-        res.status(500).send(new Error('Error retrieving feed '));
-    }
-}
