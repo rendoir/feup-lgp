@@ -5,5 +5,5 @@ export async function apiGetUserInteractions(
   subjectId: number
 ) {
   const apiUrl = `/${apiGroup}/${subjectId}/user_interactions`;
-  return axiosInstance.post(apiUrl);
+  return axiosInstance.get(apiUrl);
 }

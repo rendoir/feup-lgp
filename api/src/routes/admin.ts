@@ -79,35 +79,6 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
 adminRouter.get('/users', controller.getAllUsers);
 
 /**
- * @api {post} /api/admin/isAdmin Know if user is admin
- * @apiName Is-admin
- * @apiGroup Admin
- *
- * @apiParam {number} is ID of the user
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 401 Unauthorized
- *     {
- *      message: 'You do not have permissions to add a admin'
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *      message: 'An error ocurred while adding admin'
- *     }
- */
-adminRouter.post('/:id', controller.isUserAdmin);
-
-/**
  * @api {get} /api/admin/product_exchange_notifications Get list of products exchanged by users
  * @apiName Get-Product-Exchange-Notifications
  * @apiGroup Admin
@@ -206,7 +177,7 @@ adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
 adminRouter.post('/', controller.addAdmin);
 
 /**
- * @api {post} /api/admin/ban Ban a user
+ * @api {post} /api/admin/:id/ban Ban a user
  * @apiName Ban-user
  * @apiGroup Admin
  *
@@ -235,7 +206,7 @@ adminRouter.post('/', controller.addAdmin);
 adminRouter.post('/ban', controller.banUser);
 
 /**
- * @api {post} /api/admin/user Change to user
+ * @api {post} /api/admin/:id/user Change to user
  * @apiName Change-user
  * @apiGroup Admin
  *
@@ -262,3 +233,32 @@ adminRouter.post('/ban', controller.banUser);
  *     }
  */
 adminRouter.post('/user', controller.makeUser);
+
+/**
+ * @api {post} /api/admin/isAdmin Know if user is admin
+ * @apiName Is-admin
+ * @apiGroup Admin
+ *
+ * @apiParam {number} is ID of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'The email does not belong to a user'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *      message: 'You do not have permissions to add a admin'
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *      message: 'An error ocurred while adding admin'
+ *     }
+ */
+adminRouter.get('/:id', controller.isUserAdmin);

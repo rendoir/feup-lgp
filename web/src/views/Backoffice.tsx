@@ -38,6 +38,7 @@ type BackofficeState = {
 
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -47,7 +48,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       banUserSuccess: false,
       fetchingNotifications: true,
       fetchingProductExchangeNotifications: true,
-      notifAreaActive: false,
+      notifAreaActive: true,
       notifications: [],
       notificationsAmount: 0,
       productExchangeNotifications: [],
@@ -107,13 +108,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               </h6>
               <div className="dropdown-divider" />
               <a
-                id="manage_users"
-                className="dropdown-item"
-                onClick={this.handleUsersArea}
-              >
-                {dictionary.manage_users[this.context]}
-              </a>
-              <a
                 id="notifications"
                 className="dropdown-item"
                 onClick={this.handleNotifArea}
@@ -122,6 +116,13 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 <span className="badge badge-light">
                   {this.state.notificationsAmount}
                 </span>
+              </a>
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
+                {dictionary.manage_users[this.context]}
               </a>
               <a
                 id="manage_shop"
@@ -495,11 +496,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     const users: any[] = [];
 
     for (const user of this.state.usersSearchResult) {
-      console.log(new AuthHelperMethods().getUserPayload().id);
       if (new AuthHelperMethods().getUserPayload().id !== user.id) {
         if (this.state.usersTypeSearch === 'all') {
           users.push(
-            console.log(user.email + ' ' + user.permissions),
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}
