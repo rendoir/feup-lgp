@@ -62,8 +62,7 @@ export async function createChallenge(req, res) {
         ],
     }).then((challenge) => {
         res.status(200).send({ challenge: challenge.rows[0].id });
-    }).catch((error) => {
-        /* istanbul ignore next */
+    }).catch((error) => /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occurred while adding a challenge to a conference' });
     });

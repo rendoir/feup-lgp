@@ -15,6 +15,7 @@ let userId = -1;
 let commentId = -1;
 let conferenceId = -1;
 let talkId = -1;
+let challengeId = -1;
 let productId = -1;
 let userjwt = null;
 let administratorId;
@@ -2201,20 +2202,117 @@ describe('Search tests', () => {
             });
     });
 });
-/*
-describe('Invite tests', () => {
-    it('Should send email' , (done) => {
+
+describe('Challenge tests', () => {
+    it('Should not submit a challenge with empty post' , (done) => {
         request(app)
-            .get('/tags')
+            .post(`/talk/${talkId}/challenge/create`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                type: 'create_post',
+                title: '',
+                description: 'Challenge description',
+                dateStart: '2019-07-07 23:00',
+                dateEnd: '2019-08-08 23:00',
+                points: 5
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should submit not submit a challenge with invalid points' , (done) => {
+        request(app)
+            .post(`/talk/${talkId}/challenge/create`)
             .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                type: 'create_post',
+                title: 'CreatePost',
+                description: 'Challenge description',
+                dateStart: '2019-07-07 23:00',
+                dateEnd: '2019-08-08 23:00',
+                points: -5,
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should submit a create a post challenge' , (done) => {
+        request(app)
+            .post(`/talk/${talkId}/challenge/create`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                talk_id: talkId,
+                type: 'create_post',
+                title: 'CreatePost',
+                description: 'Challenge description',
+                dateStart: '2019-07-07 23:00',
+                dateEnd: '2019-08-08 23:00',
+                points: 5
+            })
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
                 done();
             });
     });
-});*/
 
+    it('Should submit a create a multiple question challenge' , (done) => {
+        request(app)
+            .post(`/talk/${talkId}/challenge/create`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .send({
+                talk_id: talkId,
+                type: 'question_options',
+                title: 'Multiple Options',
+                description: 'Challenge description',
+                dateStart: '2019-07-07 23:00',
+                dateEnd: '2019-08-08 23:00',
+                points: 5,
+                question: 'What is the answer',
+                correctAnswer: 'This one',
+                options: ['This one', 'Not this one']
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not solve a unexisting challenge' , (done) => {
+        request(app)
+            .post(`/talk/${talkId}/challenge/solve`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                author: userId,
+                challenge: challengeId,
+                challenge_answer: 'answer',
+                completion: true
+            })
+            .expect(400)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should return solved state', (done) => {
+        request(app)
+            .get(`/talk/${talkId}/challenge/solvedState`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+});
 
 describe('Product tests', () => {
     it('Should create a product' , (done) => {
