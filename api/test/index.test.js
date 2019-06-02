@@ -17,6 +17,7 @@ let conferenceId = -1;
 let talkId = -1;
 let productId = -1;
 let userjwt = null;
+let administratorId;
 
 const admin = {
     email: 'admin@gmail.com',
@@ -147,6 +148,7 @@ before(function(done) {
     .then(insertUsers)
     .then(insertAdminUser)
     .then((adminId) => {
+        administratorId = adminId;
         assignAuthorsToPosts(adminId);
         return done();
     })
@@ -293,6 +295,30 @@ describe('Admin tests', () => {
             });
     });
 
+    it('Should return isAdmin', (done) => {
+        request(app)
+            .get(`/admin/${administratorId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.true;
+                done();
+            });
+    });
+
+    it('Should not be admin', (done) => {
+        request(app)
+            .get(`/admin/${userId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.body).to.be.false;
+                done();
+            });
+    });
+
     it('Should get all users', (done) => {
         request(app)
             .get('/admin/users')
@@ -304,6 +330,17 @@ describe('Admin tests', () => {
                 expect(res.body[0]).to.have.property('email');
                 expect(res.body[0]).to.have.property('date_created');
                 expect(res.body[0]).to.have.property('isactive');
+                done();
+            });
+    });
+
+    it('Should get list of products to send', (done) => {
+        request(app)
+            .get('/admin/product_exchange_notifications')
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
                 done();
             });
     });
@@ -626,11 +663,22 @@ describe('User tests', () => {
 
     it('Should not allow user to unban/unadmin', (done) => {
         request(app)
-            .post('/admin/user')
+            .post('/admin/0/user')
             .send({ email: users[0].email })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(401)
             .end((err, res) => {
+                done();
+            });
+    });
+
+    it('Should not get list of products to send', (done) => {
+        request(app)
+            .get('/admin/product_exchange_notifications')
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(403)
+            .end((err, res) => {
+                expect(err).to.be.null;
                 done();
             });
     });
@@ -983,7 +1031,7 @@ describe('Post', () => {
 
         it('Should not allow non admin users to get report reasons', (done) => {
             request(app)
-                .post('/admin/report_reasons')
+                .post('/admin/0/report_reasons')
                 .set('authorization', 'Bearer ' + userjwt)
                 .expect(400)
                 .end((err, res) => {
@@ -1004,7 +1052,7 @@ describe('Post', () => {
 
         it('Should not allow non admin users to ignore report', (done) => {
             request(app)
-                .post('/admin/ignore_reports')
+                .post('/admin/0/ignore_reports')
                 .set('authorization', 'Bearer ' + userjwt)
                 .expect(400)
                 .end((err, res) => {
