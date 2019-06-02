@@ -321,6 +321,7 @@ export let dictionary: Dictionary = {
   error_occurred: { PT: 'Ocorreu um erro', EN: 'An error occurred' },
   next: { PT: 'Continuar', EN: 'Next' },
   finish: { PT: 'Concluir', EN: 'Finish' },
+  finished: { PT: 'Finalizada', EN: 'Finished' },
   edit_avatar: { PT: 'Editar Avatar', EN: 'Edit Avatar' },
   new_talk_post: {
     PT: 'Nova publicação de palestra',
