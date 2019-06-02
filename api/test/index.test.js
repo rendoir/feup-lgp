@@ -15,6 +15,7 @@ let userId = -1;
 let commentId = -1;
 let conferenceId = -1;
 let talkId = -1;
+let productId = -1;
 let userjwt = null;
 
 const admin = {
@@ -1347,7 +1348,7 @@ describe('Post', () => {
 });
 
 describe('Conference tests', () => {
-    it('Should not create conferece without title parameter' , (done) => {
+    it('Should not create conference without title parameter' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1367,7 +1368,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not create conferece without about parameter' , (done) => {
+    it('Should not create conference without about parameter' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1387,7 +1388,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not create conferece without local parameter' , (done) => {
+    it('Should not create conference without local parameter' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1406,7 +1407,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not create conferece without dateStart parameter' , (done) => {
+    it('Should not create conference without dateStart parameter' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1425,7 +1426,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not create conferece without dateEnd parameter' , (done) => {
+    it('Should not create conference without dateEnd parameter' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1444,7 +1445,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should create conferece' , (done) => {
+    it('Should create conference' , (done) => {
         request(app)
             .post(`/conference`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1465,7 +1466,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not edit conferece without title parameter' , (done) => {
+    it('Should not edit conference without title parameter' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1485,7 +1486,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not edit conferece without about parameter' , (done) => {
+    it('Should not edit conference without about parameter' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1505,7 +1506,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not edit conferece without local parameter' , (done) => {
+    it('Should not edit conference without local parameter' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1524,7 +1525,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not edit conferece without dateStart parameter' , (done) => {
+    it('Should not edit conference without dateStart parameter' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1543,7 +1544,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should not edit conferece without dateEnd parameter' , (done) => {
+    it('Should not edit conference without dateEnd parameter' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1562,7 +1563,7 @@ describe('Conference tests', () => {
             });
     });
 
-    it('Should edit conferece' , (done) => {
+    it('Should edit conference' , (done) => {
         request(app)
             .put(`/conference/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
@@ -1574,6 +1575,93 @@ describe('Conference tests', () => {
                 dateEnd: '2020-3-31',
                 privacy: 'public',
             })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should retrieve conference' , (done) => {
+        request(app)
+            .get(`/conference/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should retrieve all conferences' , (done) => {
+        request(app)
+            .get(`/conference/`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should retrieve conference products' , (done) => {
+        request(app)
+            .get(`/conference/${conferenceId}/shop`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should create a product in conference' , (done) => {
+        request(app)
+            .post(`/conference/${conferenceId}/products/`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                name: 'productName',
+                stock: 1,
+                points: 1
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should retrieve conference product' , (done) => {
+        request(app)
+            .get(`/conference/${conferenceId}/products/${productId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should edit a product in conference' , (done) => {
+        request(app)
+            .put(`/conference/${conferenceId}/products/${productId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                name: 'productNewName',
+                stock: 2,
+                points: 3
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should delete a product in conference' , (done) => {
+        request(app)
+            .delete(`/conference/${conferenceId}/products/${productId}`)
+            .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;

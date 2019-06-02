@@ -52,7 +52,7 @@ export async function getProduct(req, res) {
 export async function createProduct(req, res) {
     const conferenceId = req.params.conf_id;
     let imageURL = req.body.image;
-    if (imageURL.length === 0) {
+    if (imageURL === undefined || imageURL.length === 0) {
         imageURL = 'http://placehold.it/700x400';
     }
     if (conferenceId === undefined) {
