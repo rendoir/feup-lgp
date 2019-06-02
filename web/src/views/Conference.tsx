@@ -57,6 +57,7 @@ type State = {
     place: boolean;
     dateStart: boolean;
     dateEnd: boolean;
+    livestream: boolean;
   };
 };
 
@@ -113,6 +114,7 @@ class Conference extends PureComponent<Props, State> {
         dateEnd: false,
         dateStart: false,
         description: false,
+        livestream: false,
         place: false,
         title: false
       },
@@ -163,7 +165,6 @@ class Conference extends PureComponent<Props, State> {
             dateStart: conference.datestart,
             description: conference.about,
             place: conference.local,
-            talks: res.data.talks,
             title: conference.title
           },
           isHidden: conference.privacy === 'closed',

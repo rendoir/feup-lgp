@@ -716,6 +716,14 @@ export let dictionary: Dictionary = {
     EN:
       'Invalid field. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00'
   },
+  date_from_now_error: {
+    PT: 'Campo inválido. A data deve ser superior ou igual a data atual',
+    EN: 'Invalid field. Date must be later than or equal to current date'
+  },
+  date_end_invalid_field: {
+    PT: 'Campo inválido. A data de término deve ser superior a data de início',
+    EN: 'Invalid field. Ending date must be later than starting date'
+  },
   description_invalid_field: {
     PT:
       "Campo inválido. A descrição só pode conter caracteres alfanuméricos, -, !, ?, %, @, #, '.', ',', ), (",
@@ -763,6 +771,12 @@ export let dictionary: Dictionary = {
       "Campo inválido. O tipo tem de ser um dos seguintes: 'question_options', 'create_post', ou 'comment_post'",
     EN:
       "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'"
+  },
+  visibility_invalid_field: {
+    PT:
+      "Campo inválido. A visibilidade tem de ser um dos seguintes: 'público', 'seguidores', ou 'privado'",
+    EN:
+      "Invalid field. Visibility must be one of 'public', 'followers', or 'private'"
   },
   livestream_invalid_field: {
     PT: 'Campo inválido. A url da livestream tem de ser um link embed',
