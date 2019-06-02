@@ -30,12 +30,15 @@ type BackofficeState = {
   showUnbanUserAlert: boolean;
   unbanUserSuccess: boolean;
   usersAreaActive: boolean;
+  notifAreaActive: boolean;
+  shopAreaActive: boolean;
   usersSearchResult: any[];
   usersTypeSearch: string;
 };
 
 class Backoffice extends React.Component<{}, BackofficeState> {
   public static contextType = LanguageContext;
+  private auth = new AuthHelperMethods();
 
   constructor(props: any) {
     super(props);
@@ -45,11 +48,13 @@ class Backoffice extends React.Component<{}, BackofficeState> {
       banUserSuccess: false,
       fetchingNotifications: true,
       fetchingProductExchangeNotifications: true,
+      notifAreaActive: true,
       notifications: [],
       notificationsAmount: 0,
       productExchangeNotifications: [],
       removeAdminSuccess: false,
       search: '',
+      shopAreaActive: false,
       showBanUserAlert: false,
       showExpelAdminAlert: false,
       showTurnAdminAlert: false,
@@ -63,6 +68,7 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     // Admin menu handlers
     this.handleUsersArea = this.handleUsersArea.bind(this);
     this.handleNotifArea = this.handleNotifArea.bind(this);
+    this.handleShopArea = this.handleShopArea.bind(this);
     this.onAddAdminResponse = this.onAddAdminResponse.bind(this);
     this.onBanUserResponse = this.onBanUserResponse.bind(this);
     this.onRemoveAdminResponse = this.onRemoveAdminResponse.bind(this);
@@ -102,13 +108,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
               </h6>
               <div className="dropdown-divider" />
               <a
-                id="manage_users"
-                className="dropdown-item"
-                onClick={this.handleUsersArea}
-              >
-                {dictionary.manage_users[this.context]}
-              </a>
-              <a
                 id="notifications"
                 className="dropdown-item"
                 onClick={this.handleNotifArea}
@@ -117,6 +116,20 @@ class Backoffice extends React.Component<{}, BackofficeState> {
                 <span className="badge badge-light">
                   {this.state.notificationsAmount}
                 </span>
+              </a>
+              <a
+                id="manage_users"
+                className="dropdown-item"
+                onClick={this.handleUsersArea}
+              >
+                {dictionary.manage_users[this.context]}
+              </a>
+              <a
+                id="manage_shop"
+                className="dropdown-item"
+                onClick={this.handleShopArea}
+              >
+                {dictionary.manage_products[this.context]}
               </a>
               <a
                 id="add_admin"
@@ -153,7 +166,8 @@ class Backoffice extends React.Component<{}, BackofficeState> {
             </div>
           </div>
           {this.state.usersAreaActive && this.getUsersArea()}
-          {!this.state.usersAreaActive && this.getNotifications()}
+          {this.state.notifAreaActive && this.getNotifications()}
+          {this.state.shopAreaActive && this.getShopBuyers()}
           {this.getAddAdminModal()}
           {this.getBanUserModal()}
           {this.getRemoveAdminModal()}
@@ -188,12 +202,24 @@ class Backoffice extends React.Component<{}, BackofficeState> {
 
   private handleUsersArea() {
     this.setState({
+      notifAreaActive: false,
+      shopAreaActive: false,
       usersAreaActive: true
     });
   }
 
   private handleNotifArea() {
     this.setState({
+      notifAreaActive: true,
+      shopAreaActive: false,
+      usersAreaActive: false
+    });
+  }
+
+  private handleShopArea() {
+    this.setState({
+      notifAreaActive: false,
+      shopAreaActive: true,
       usersAreaActive: false
     });
   }
@@ -470,11 +496,9 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     const users: any[] = [];
 
     for (const user of this.state.usersSearchResult) {
-      console.log(new AuthHelperMethods().getUserPayload().id);
       if (new AuthHelperMethods().getUserPayload().id !== user.id) {
         if (this.state.usersTypeSearch === 'all') {
           users.push(
-            console.log(user.email + ' ' + user.permissions),
             <BackofficeUserCard
               key={'user_search_result_' + user.id}
               name={user.first_name + ' ' + user.last_name}
@@ -534,6 +558,17 @@ class Backoffice extends React.Component<{}, BackofficeState> {
     return <div className="col">{users}</div>;
   }
 
+  private getShopBuyers() {
+    return (
+      <div
+        id="backoffice_notifications_area"
+        className="col-12 col-md-9 mt-2 mt-md-0"
+      >
+        {this.getProductExchangeNotifications()}
+      </div>
+    );
+  }
+
   private getNotifications() {
     return (
       <div
@@ -541,7 +576,6 @@ class Backoffice extends React.Component<{}, BackofficeState> {
         className="col-12 col-md-9 mt-2 mt-md-0"
       >
         {this.getReportNotifications()}
-        {this.getProductExchangeNotifications()}
       </div>
     );
   }

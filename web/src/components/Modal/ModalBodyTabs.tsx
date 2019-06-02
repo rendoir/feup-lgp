@@ -1,7 +1,7 @@
-import React, { PureComponent, ReactNode } from "react";
-import Tabs, { TabVariant } from "../Tabs/Tabs";
-import styles from "./Modal.module.css";
-import ModalBody from "./ModalBody";
+import React, { PureComponent, ReactNode } from 'react';
+import Tabs, { TabVariant } from '../Tabs/Tabs';
+import styles from './Modal.module.css';
+import ModalBody from './ModalBody';
 
 export type Props<T> = {
   className?: string;

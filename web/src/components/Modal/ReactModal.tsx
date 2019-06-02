@@ -1,6 +1,6 @@
-import React, { MouseEvent, PureComponent, ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { ModalContext } from "./ModalContext";
+import React, { MouseEvent, PureComponent, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { ModalContext } from './ModalContext';
 
 export type Props = {
   className?: string;

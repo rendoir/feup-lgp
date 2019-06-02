@@ -33,41 +33,54 @@ class ChallengeCarousel extends Component<Props, State> {
     const items: any[] = [];
 
     for (let i = 0; i < this.props.challenges.length; i++) {
-      items.push(
-        <li
-          key={'li_' + this.props.id + '_' + i}
-          data-target={'#challengeCarousel' + this.props.id}
-          data-slide-to={i}
-          className={i ? '' : 'active'}
-        />
+      console.log(
+        'challeng ',
+        i,
+        ' now ',
+        Date.now(),
+        ' and start ',
+        Date.parse(this.props.challenges[i].dateStart)
       );
-      challenges.push(
-        <div
-          key={'div_' + this.props.id + '_' + i}
-          className={'carousel-item ' + (i ? '' : 'active')}
-        >
+      if (
+        Date.now() >= Date.parse(this.props.challenges[i].dateStart) &&
+        Date.now() <= Date.parse(this.props.challenges[i].dateEnd)
+      ) {
+        items.push(
+          <li
+            key={'li_' + this.props.id + '_' + i}
+            data-target={'#challengeCarousel' + this.props.id}
+            data-slide-to={i}
+            className={i ? '' : 'active'}
+          />
+        );
+        challenges.push(
           <div
-            className="post_content_media"
-            onClick={this.props.handleChallengeClick.bind(
-              this,
-              this.props.challenges[i].id
-            )}
+            key={'div_' + this.props.id + '_' + i}
+            className={'carousel-item ' + (i ? '' : 'active')}
           >
-            <Challenge
-              talkID={this.props.id}
-              id={this.props.challenges[i].id}
-              title={this.props.challenges[i].title}
-              challengeType={this.props.challenges[i].challengetype}
-              datestart={this.props.challenges[i].datestart}
-              dateend={this.props.challenges[i].dateend}
-              prize={this.props.challenges[i].prize}
-              pointsPrize={Number(this.props.challenges[i].points_prize)}
-              content={this.props.challenges[i].content}
-              userId={this.props.userId}
-            />
+            <div
+              className="post_content_media"
+              onClick={this.props.handleChallengeClick.bind(
+                this,
+                this.props.challenges[i].id
+              )}
+            >
+              <Challenge
+                talkID={this.props.id}
+                id={this.props.challenges[i].id}
+                title={this.props.challenges[i].title}
+                challengeType={this.props.challenges[i].challengetype}
+                datestart={this.props.challenges[i].datestart}
+                dateend={this.props.challenges[i].dateend}
+                prize={this.props.challenges[i].prize}
+                pointsPrize={Number(this.props.challenges[i].points_prize)}
+                content={this.props.challenges[i].content}
+                userId={this.props.userId}
+              />
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
 
     return (

@@ -193,6 +193,7 @@ export let dictionary: Dictionary = {
   banned_users: { PT: 'Utilizadores banidos', EN: 'Banned users' },
   admin_area: { PT: 'Área de administração', EN: 'Administration area' },
   manage_users: { PT: 'Gerir utilizadores', EN: 'Manage users' },
+  manage_products: { PT: 'Enviar produtos', EN: 'Send products' },
   website_description: {
     PT: 'Rede Social para profissionais e estudantes de saúde',
     EN: 'Social Network for medicine professionals and students'
@@ -320,6 +321,7 @@ export let dictionary: Dictionary = {
   error_occurred: { PT: 'Ocorreu um erro', EN: 'An error occurred' },
   next: { PT: 'Continuar', EN: 'Next' },
   finish: { PT: 'Concluir', EN: 'Finish' },
+  finished: { PT: 'Finalizada', EN: 'Finished' },
   edit_avatar: { PT: 'Editar Avatar', EN: 'Edit Avatar' },
   new_talk_post: {
     PT: 'Nova publicação de palestra',
@@ -665,6 +667,106 @@ export let dictionary: Dictionary = {
   product_stock_error_message: {
     PT: 'Introduza uma quantidade válida em stock que o produto tem',
     EN: 'Insert a valid stock quantity for the product'
+  },
+  title_empty_error_message: {
+    PT: 'Título introduzido não pode estar vazio!',
+    EN: 'Field title can not be empty!'
+  },
+  description_empty_error_message: {
+    PT: 'Descrição introduzida não pode estar vazia!',
+    EN: 'Field description can not be empty!'
+  },
+  date_empty_error_message: {
+    PT: 'Data introduzida não pode estar vazia!',
+    EN: 'Field date can not be empty!'
+  },
+  invalid_date_error_message: {
+    PT: 'A data inicial não pode começar antes da data atual!',
+    EN: 'The start date cannot begin before current date!'
+  },
+  end_date_error_message: {
+    PT: 'A data final não pode começar antes da data inicial!',
+    EN: 'End date cannot be before start date!'
+  },
+  local_empty_error_message: {
+    PT: 'Local introduzido não pode estar vazio!',
+    EN: 'Field local can not be empty!'
+  },
+  question_empty_error_message: {
+    PT: 'Questão introduzida não pode estar vazia!',
+    EN: 'Field question can not be empty!'
+  },
+  options_empty_error_message: {
+    PT: 'Precisa de haver pelo menos duas opções!',
+    EN: 'Field options must have at least two values!'
+  },
+  correct_answer_empty_error_message: {
+    PT: 'A resposta introduzida não pode estar vazia!',
+    EN: 'Field correct answer can not be empty!'
+  },
+  answer_invalid_field: {
+    PT:
+      "Campo inválido. A resposta só pode conter caracteres alfanuméricos, -, !, ?, %, @, #, '.', ','",
+    EN:
+      "Invalid field. Answer can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','"
+  },
+  date_invalid_field: {
+    PT:
+      'Campo inválido. A data tem ter o formato DD-MM-AAAAThh:mm, e.g., 01-01-2019T00:00',
+    EN:
+      'Invalid field. Date must have the format DD-MM-YYYYThh:mm, e.g., 01-01-2019T00:00'
+  },
+  description_invalid_field: {
+    PT:
+      "Campo inválido. A descrição só pode conter caracteres alfanuméricos, -, !, ?, %, @, #, '.', ',', ), (",
+    EN:
+      "Invalid field. Description can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ',', ), ("
+  },
+  local_invalid_field: {
+    PT:
+      "Campo inválido. O local só pode conter caracteres alfanuméricos, -, ',', '.' e tem de ter pelo menos 2 caracteres",
+    EN:
+      "Invalid field. Local can only contain alphanumerical characters, -, ',', '.' and must have at least 2 characters"
+  },
+  options_invalid_field: {
+    PT:
+      "Campo inválido. A opção só pode conter caracteres alfanuméricos, -, !, ?, %, @, #, '.', ','\"",
+    EN:
+      "Invalid field. Option can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','\""
+  },
+  points_invalid_field: {
+    PT:
+      'Campo inválido. Os pontos atribuídos tem de ser positivos e menores que 100',
+    EN:
+      'Invalid field. Points must be a positive integer with at maximum 2 digits'
+  },
+  question_invalid_field: {
+    PT:
+      "Campo inválido. A questão só pode conter caracteres alfanuméricos, -, !, ?, %, @, #, '.', ','\"",
+    EN:
+      "Invalid field.  Question can only contain alphanumerical characters, -, !, ?, %, @, #, '.', ','\""
+  },
+  tag_invalid_field: {
+    PT:
+      'Campo inválido. A tag só pode conter caracteres alfanuméricos ou entre 2 a 150 caracteres',
+    EN:
+      'Invalid field. Tag can only contain alphanumerical characters or - and must have 2 to 150 characters'
+  },
+  title_invalid_field: {
+    PT:
+      'Campo inválido. O título só pode conter caracteres alfanuméricos ou entre 2 a 150 caracteres',
+    EN:
+      'Invalid field. Title can only contain alphanumerical characters or - and must have 2 to 150 characters'
+  },
+  type_invalid_field: {
+    PT:
+      "Campo inválido. O tipo tem de ser um dos seguintes: 'question_options', 'create_post', ou 'comment_post'",
+    EN:
+      "Invalid field. Type must be one of 'question_options', 'create_post', or 'comment_post'"
+  },
+  livestream_invalid_field: {
+    PT: 'Campo inválido. A url da livestream tem de ser um link embed',
+    EN: "Invalid field. Livestream's url must be an embed link"
   },
   empty: { PT: '', EN: '' }
 };
