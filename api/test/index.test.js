@@ -394,7 +394,7 @@ describe('Admin tests', () => {
 
         it('Should remove admin (200)', (done) => {
             request(app)
-                .post('/admin/user')
+                .post('/admin/0/user')
                 .send({ email: users[0].email })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
@@ -820,7 +820,7 @@ describe('Post', () => {
 
         it('Should get report reasons for admin', (done) => {
             request(app)
-                .post('/admin/report_reasons')
+                .post('/admin/0/report_reasons')
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
                 .end((err, res) => {
@@ -841,7 +841,7 @@ describe('Post', () => {
 
         it('Admin should ignore report', (done) => {
             request(app)
-                .post('/admin/ignore_reports')
+                .post('/admin/0/ignore_reports')
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
                 .end((err, res) => {
