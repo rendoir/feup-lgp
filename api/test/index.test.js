@@ -2125,3 +2125,70 @@ describe('Search tests', () => {
     });
 });
 */
+
+describe('Product tests', () => {
+    it('Should create a product' , (done) => {
+        request(app)
+            .post(`/products/`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                name: 'productName',
+                stock: 1,
+                points: 1
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should edit a product' , (done) => {
+        request(app)
+            .put(`/products/${productId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                name: 'productNewName',
+                stock: 2,
+                points: 3
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should delete a product' , (done) => {
+        request(app)
+            .delete(`/products/${productId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should get the product', (done) => {
+        request(app)
+            .get(`/products/${productId}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not exchange the product because the user doesnt have points', (done) => {
+        request(app)
+            .post(`/products/${productId}/exchange`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+});
