@@ -465,7 +465,7 @@ describe('User tests', () => {
     describe('User interactions', () => {
         it('Get user interactions', (done) => {
             request(app)
-                .post(`/users/${userId}/user_interactions`)
+                .get(`/users/${userId}/user_interactions`)
                 .send({
                     observer: 8,
                     id: userId
