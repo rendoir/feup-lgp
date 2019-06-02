@@ -44,7 +44,7 @@ export async function getProduct(req, res) {
             values: [req.body.id, conferenceId],
         });
         res.send({ products: products.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */{
         console.log('Error getting products. Error: ' + e.message);
     }
 }
@@ -61,7 +61,7 @@ export async function createProduct(req, res) {
             values: [req.body.name, req.body.stock, req.body.points, imageURL],
         }).then(() => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while adding a new product' });
         });
@@ -71,7 +71,7 @@ export async function createProduct(req, res) {
             values: [req.body.name, req.body.stock, req.body.points, req.body.image, conferenceId],
         }).then(() => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while adding a new product' });
         });
