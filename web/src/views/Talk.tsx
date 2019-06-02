@@ -595,7 +595,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_info_card'}
           aria-expanded={this.state.infoCardOpen}
@@ -645,7 +645,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_admin_card'}
           aria-expanded={this.state.adminCardOpen}
@@ -713,7 +713,7 @@ class Talk extends PureComponent<Props, State> {
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
           className={classNames(
-            'd-flex flex-row justify-content-between align-items-center',
+            'd-flex flex-row justify-content-between align-items-center pointer',
             styles.header
           )}
           onClick={handleCollapse}
@@ -1003,7 +1003,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <Card className={classNames('mb-3', styles.border)}>
         <Card.Header
-          className={styles.header}
+          className={styles.header + ' pointer'}
           onClick={handleClick}
           aria-controls={'talk_chat_card'}
           aria-expanded={this.state.chatCardOpen}
@@ -1191,6 +1191,7 @@ class Talk extends PureComponent<Props, State> {
     return (
       <>
         <ListGroup.Item
+          className="pointer"
           onClick={handleOpen}
           disabled={this.state.isArchived || this.state.isHidden}
         >
@@ -1743,7 +1744,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleOpen} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleOpen}
+          disabled={this.state.isArchived}
+        >
           <i className={'fas fa-puzzle-piece mr-2'} />
           {dictionary.create_challenge_talk[this.context]}
         </ListGroup.Item>
@@ -1893,9 +1898,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.dateEnd = '';
     }
     if (
-      fields.question === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.question!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.question === undefined || fields.question!.length === 0)
     ) {
       this.setState({
         error: {
@@ -1939,9 +1943,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.options = '';
     }
     if (
-      fields.correctAnswer === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.correctAnswer!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.correctAnswer === undefined || fields.correctAnswer!.length === 0)
     ) {
       this.setState({
         error: {
@@ -1996,8 +1999,8 @@ class Talk extends PureComponent<Props, State> {
     formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
-    formData.append('dateEnd', fields.dateEnd);
-    formData.append('dateStart', fields.dateStart);
+    formData.append('dateStart', new Date(fields.dateStart).toISOString());
+    formData.append('dateEnd', new Date(fields.dateEnd).toISOString());
     formData.append('points', fields.points.toString());
     formData.append('question', fields.question!);
     formData.append('correctAnswer', fields.correctAnswer!);
@@ -2076,7 +2079,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleShow}
+          disabled={this.state.isArchived}
+        >
           <i className={'fas fa-pen mr-2'} />
           {dictionary.edit_talk[this.context]}
         </ListGroup.Item>
@@ -2396,7 +2403,7 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow}>
+        <ListGroup.Item className="pointer" onClick={handleShow}>
           <i className={'fas fa-archive mr-2'} />
           {this.state.isArchived
             ? dictionary.restore_talk[this.context]
@@ -2480,7 +2487,11 @@ class Talk extends PureComponent<Props, State> {
 
     return (
       <>
-        <ListGroup.Item onClick={handleShow} disabled={this.state.isArchived}>
+        <ListGroup.Item
+          className="pointer"
+          onClick={handleShow}
+          disabled={this.state.isArchived}
+        >
           <i
             className={`fas ${
               this.state.isHidden ? 'fa-eye' : 'fa-eye-slash'
@@ -2638,9 +2649,13 @@ class Talk extends PureComponent<Props, State> {
         }
       });
     };
-    const buttonClassName = classNames('pt-2 pb-2 pl-3 pr-3', styles.button, {
-      [styles.disabled]: this.state.isHidden || this.state.isArchived
-    });
+    const buttonClassName = classNames(
+      'pt-2 pb-2 pl-3 pr-3 pointer',
+      styles.button,
+      {
+        [styles.disabled]: this.state.isHidden || this.state.isArchived
+      }
+    );
 
     return (
       <>
