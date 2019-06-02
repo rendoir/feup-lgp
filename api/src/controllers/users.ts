@@ -99,7 +99,7 @@ export async function getUserName(req, res) {
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */{
         console.log('Error getting user name. Error: ' + e.message);
     }
 }
@@ -195,7 +195,7 @@ export function rate(req, res) {
             values: [req.body.newUserRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the user' });
         });
@@ -230,7 +230,7 @@ export async function getProfilePosts(req, res) {
                     OFFSET $4`,
             values: [userId, userloggedId, limit, offset],
         });
-        if (result == null) {
+        if (result == null) /* istanbul ignore next */ {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
         }
@@ -407,7 +407,7 @@ export async function getGeneralPoints(req, res) {
         values: [userId],
       });
       res.status(200).send({ points: pointsQuery.rows[0].points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
@@ -423,7 +423,7 @@ export async function getConferencePoints(req, res) {
       });
       const points = pointsQuery.rows[0] ? pointsQuery.rows[0].points : 0;
       res.status(200).send({ points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */{
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }

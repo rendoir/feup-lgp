@@ -192,6 +192,66 @@ describe('Register tests', () => {
                 done();
             });
     });
+
+    it('Registers new user without first name', (done) => {
+        request(app)
+            .post('/users')
+            .send({
+                email: 'newuser3@lgp.com',
+                password: 'Lepassword1',
+                first_name: '',
+                last_name: 'Last',
+                work: '',
+                work_field: '',
+                home_town: '',
+                university: ''
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Registers new user without last name', (done) => {
+        request(app)
+            .post('/users')
+            .send({
+                email: 'newuser4@lgp.com',
+                password: 'Lepassword1',
+                first_name: 'First',
+                last_name: '',
+                work: '',
+                work_field: '',
+                home_town: '',
+                university: ''
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Registers new user without name', (done) => {
+        request(app)
+            .post('/users')
+            .send({
+                email: 'newuser5@lgp.com',
+                password: 'Lepassword1',
+                first_name: '',
+                last_name: '',
+                work: '',
+                work_field: '',
+                home_town: '',
+                university: ''
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
     
     it('Cannot register already registered user', (done) => {
         request(app)
@@ -424,6 +484,118 @@ describe('User tests', () => {
             });
     });
 
+    it('Should get user name', (done) => {
+        request(app)
+            .get(`/users/${userId}/name`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should get profile posts', (done) => {
+        request(app)
+            .get(`/users/${userId}/posts`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should get user notifications', (done) => {
+        request(app)
+            .get(`/users/${userId}/amount_notifications`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not update profile of different user', (done) => {
+        request(app)
+            .post(`/users/${userId}/edit`)
+            .send({
+                author: 1,
+                email: 'user155@lgp.com',
+                first_name: 'my',
+                last_name: 'user',
+                password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+                oldPassword: 'umlemelhorquecertascoisas96',
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not update profile with already existing email', (done) => {
+        request(app)
+            .post(`/users/${userId}/edit`)
+            .send({
+                author: userId,
+                email: 'newuser@lgp.com',
+                first_name: 'my',
+                last_name: 'user',
+                password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+                oldPassword: 'umlemelhorqsdsuecertascoisas96',
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should update profile', (done) => {
+        request(app)
+            .post(`/users/${userId}/edit`)
+            .send({
+                author: userId,
+                email: 'user155@lgp.com',
+                first_name: 'my',
+                last_name: 'user',
+                password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+                oldPassword: 'umlemelhorquecertascoisas96',
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should get user general points', (done) => {
+        request(app)
+            .get(`/users/${userId}/points`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should get user conference points', (done) => {
+        request(app)
+            .get(`/users/${userId}/conference_points/${conferenceId}`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(404)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
     it('Should not allow user to ban', (done) => {
         request(app)
             .post('/admin/0/ban')
@@ -505,22 +677,22 @@ describe('User tests', () => {
                     done();
                 });
         });
-/*
+
         it('Rate a user', (done) => {
             request(app)
                 .post(`/users/${userId}/rate`)
                 .send({
                     rate: 4,
-                    id: userId
+                    newUserRating: 3
                 })
                 .set('authorization', 'Bearer ' + userjwt)
-                .expect(400)
+                .expect(200)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
                 });
         });
-*/
+
         it('Get profile', (done) => {
             request(app)
                 .get(`/users/${userId}`)
