@@ -1898,9 +1898,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.dateEnd = '';
     }
     if (
-      fields.question === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.question!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.question === undefined || fields.question!.length === 0)
     ) {
       this.setState({
         error: {
@@ -1944,9 +1943,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.options = '';
     }
     if (
-      fields.correctAnswer === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.correctAnswer!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.correctAnswer === undefined || fields.correctAnswer!.length === 0)
     ) {
       this.setState({
         error: {
