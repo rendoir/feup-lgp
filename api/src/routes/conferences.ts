@@ -5,7 +5,7 @@ import * as controller from '../controllers/conferences';
 export const conferenceRouter = Router();
 
 /**
- * @api {get} /api/conference Get a conference
+ * @api {get} /api/conferences Get a conference
  * @apiName Get-A-Conference
  * @apiGroup Conference
  *
@@ -20,7 +20,7 @@ export const conferenceRouter = Router();
 conferenceRouter.get('/:id', controller.getConference);
 
 /**
- * @api {post} /api/users/:id/:filename Gets the contents of a conference avatar
+ * @api {post} /api/conferences/:id/:filename Gets the contents of a conference avatar
  * @apiName Get-File
  * @apiGroup Post
  *
@@ -36,7 +36,7 @@ conferenceRouter.get('/:id', controller.getConference);
 conferenceRouter.get('/:id/avatar/:filename', controller.getAvatar);
 
 /**
- * @api {get} /api/conference Get all conferences
+ * @api {get} /api/conferences Get all conferences
  * @apiName Get-All-Conferences
  * @apiGroup Conference
  *
@@ -51,7 +51,7 @@ conferenceRouter.get('/:id/avatar/:filename', controller.getAvatar);
 conferenceRouter.get('/', controller.getAllConferences);
 
 /**
- * @api {post} /api/conference Create a conference
+ * @api {post} /api/conferences Create a conference
  * @apiName Create-A-Conference
  * @apiGroup Conference
  *
@@ -73,7 +73,7 @@ conferenceRouter.get('/', controller.getAllConferences);
 conferenceRouter.post('/', controller.createConference);
 
 /**
- * @api {put} /api/conference Update a conference
+ * @api {put} /api/conferences Update a conference
  * @apiName Update-A-Conference
  * @apiGroup Conference
  *

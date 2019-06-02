@@ -160,7 +160,7 @@ class Conference extends PureComponent<Props, State> {
 
   public getConference() {
     axiosInstance
-      .get(`/conference/${this.id}`, {
+      .get(`/conferences/${this.id}`, {
         params: {
           user: this.props.user.id
         }
@@ -255,7 +255,7 @@ class Conference extends PureComponent<Props, State> {
     }
 
     axiosInstance
-      .get(`/conference/${this.id}/avatar/${conference.avatar}`, {
+      .get(`/conferences/${this.id}/avatar/${conference.avatar}`, {
         responseType: 'arraybuffer'
       })
       .then(res => {
@@ -884,7 +884,7 @@ class Conference extends PureComponent<Props, State> {
       return;
     } else {
       axiosInstance
-        .put(`/conference/${this.id}`, formData, {
+        .put(`/conferences/${this.id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

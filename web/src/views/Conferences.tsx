@@ -64,53 +64,52 @@ class Conferences extends PureComponent<Props, State> {
     );
   }
 
-  private getConferences = () => {
-    axiosInstance
-      .get('/conference/', {
+  private async getConferences() {
+    try {
+      let { conferences } = (await axiosInstance.get('/conferences/', {
         params: {
           user: this.props.user.id
         }
-      })
-      .then(res => {
-        this.apiGetConferencesAvatars(res.data.conferences);
-        this.setState({
-          error: '',
-          orderBy: 'title',
-          orderDirection: 'ASC',
-          orderTitle: dictionary.title[this.context]
-        });
-      })
-      .catch(error => {
-        this.setState({
-          error: error.message
-        });
+      })).data;
+      conferences = await this.apiGetConferencesAvatars(conferences);
+      this.setState({
+        conferences,
+        error: '',
+        orderBy: 'title',
+        orderDirection: 'ASC',
+        orderTitle: dictionary.title[this.context]
       });
-  };
+    } catch (error) {
+      this.setState({
+        error: error.message
+      });
+    }
+  }
 
-  private apiGetConferencesAvatars(conferences: any) {
+  private async apiGetConferencesAvatars(conferences: any[]) {
     for (const conference of conferences) {
       if (conference.avatar === undefined || conference.avatar === null) {
         conference.avatar_src = '';
       } else {
-        axiosInstance
-          .get(`/conference/${conference.id}/avatar/${conference.avatar}`, {
-            responseType: 'arraybuffer'
-          })
-          .then(res => {
-            const src =
-              'data:' +
-              conference.avatar_mimeType +
-              ';base64, ' +
-              new Buffer(res.data, 'binary').toString('base64');
-            conference.avatar_src = src;
-            this.setState({ conferences });
-            this.forceUpdate();
-          })
-          .catch(() => {
-            console.log('Failed to get conference avatar');
-          });
+        try {
+          const avatars = (await axiosInstance.get(
+            `/conferences/${conference.id}/avatar/${conference.avatar}`,
+            {
+              responseType: 'arraybuffer'
+            }
+          )).data;
+          const src =
+            'data:' +
+            conference.avatar_mimeType +
+            ';base64, ' +
+            new Buffer(avatars, 'binary').toString('base64');
+          conference.avatar_src = src;
+        } catch {
+          console.log('Failed to get conference avatar');
+        }
       }
     }
+    return conferences;
   }
 
   private renderNavbar = () => {

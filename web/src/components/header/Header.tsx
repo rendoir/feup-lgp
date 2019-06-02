@@ -342,14 +342,14 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       formData.append('title', request.title);
 
       axiosInstance
-        .post('/conference', formData, {
+        .post('/conferences', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         })
         .then(res => {
           console.log(`conference with id = ${res.data.id} created`);
-          window.location.href = '/conference/' + res.data.id;
+          window.location.href = '/conferences/' + res.data.id;
           this.resetState();
         })
         .catch(error => console.log('Failed to create conference. ' + error));

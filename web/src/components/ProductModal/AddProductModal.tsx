@@ -175,7 +175,7 @@ class AddProductModal extends Component<IProps, IState> {
       url = '/products/';
     } else {
       conferenceId = this.props.conference_id;
-      url = `/conference/${this.props.conference_id}/products/`;
+      url = `/conferences/${this.props.conference_id}/products/`;
     }
     const body = {
       image: this.state.product_image,
