@@ -343,7 +343,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         })
         .then(res => {
           console.log(`conference with id = ${res.data.id} created`);
-          window.location.href = '/conferences/' + res.data.id;
+          window.location.href = '/conference/' + res.data.id;
           this.resetState();
         })
         .catch(error => console.log('Failed to create conference. ' + error));

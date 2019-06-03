@@ -538,7 +538,7 @@ class Conference extends PureComponent<Props, State> {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className={'d-flex flex-column'}>
-            <div id="avatarEditTalk" className={styles.avatarEdit}>
+            <div id="avatarCreateTalk" className={styles.avatarEdit}>
               {this.renderAvatarTalk()}
             </div>
             <InputNext
@@ -847,10 +847,10 @@ class Conference extends PureComponent<Props, State> {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.handleEditSubmission} theme={'success'}>
-              Save
+              {dictionary.save[this.context]}
             </Button>
             <Button onClick={handleHide} theme={'danger'}>
-              Cancel
+              {dictionary.cancel[this.context]}
             </Button>
           </Modal.Footer>
         </Modal>

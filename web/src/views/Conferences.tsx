@@ -218,6 +218,7 @@ class Conferences extends PureComponent<Props, State> {
     return (
       <CardGroup className={'mt-3'}>
         {this.state.conferences.map(conference => {
+          console.log(conference);
           const dateStart = new Date(conference.datestart).toLocaleDateString(
             dictionary.date_format[this.context],
             this.dateOptions
