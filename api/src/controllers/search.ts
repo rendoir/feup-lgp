@@ -193,6 +193,9 @@ async function runQueries(type, keywords, tags, limit, offset, initialDate, fina
             users = results.users;
             size = results.size;
             return { users, size };
+        default:
+            console.error('Invalid search type');
+            return { posts: [], users: [], size: 0 };
     }
 }
 
@@ -207,7 +210,7 @@ export async function search(req, res) {
 
     const keywords: string[] = req.query.k ? JSON.parse(req.query.k) : [];
     const tags: string[] = req.query.tags ? JSON.parse(req.query.tags) : [];
-    const type: string = req.query.t ? JSON.parse(req.query.t) : null;
+    const type: string = req.query.t ? JSON.parse(req.query.t) : 1; // default is post content search
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
         ? new Date(req.query.df).getTime() / 1000
