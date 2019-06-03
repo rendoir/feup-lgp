@@ -2061,11 +2061,25 @@ describe('Conference tests', () => {
         it('Should invite user to talk', (done) => {
             request(app)
                 .post(`/talk/${talkId}/invite`)
-                .set('authorization', 'Bearer ' + userjwt)
+                .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     selected: [userId]
                 })
                 .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should not invite user to not owned talk', (done) => {
+            request(app)
+                .post(`/talk/${talkId}/invite`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .send({
+                    selected: [userId]
+                })
+                .expect(400)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     done();
@@ -2138,6 +2152,38 @@ describe('Conference tests', () => {
                 });
         });
 
+        it('Should get talk user null points', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/user/${userId}/points`)
+                .set('authorization', 'Bearer ' + userjwt)
+                .expect(400)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should get talk user posts', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/user/${userId}/posts`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should get talk post comments', (done) => {
+            request(app)
+                .get(`/talk/${talkId}/post/${-1}/comments_author`)
+                .set('authorization', 'Bearer ' + admin.jwt)
+                .expect(200)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
     });
 });
 
