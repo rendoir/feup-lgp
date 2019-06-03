@@ -264,7 +264,7 @@ export function rate(req, res) {
             values: [req.body.newPostRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the post' });
         });
@@ -285,7 +285,7 @@ export function updateRate(req, res) {
             values: [req.body.newPostRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the post' });
         });

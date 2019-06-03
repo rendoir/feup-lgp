@@ -51,6 +51,7 @@ const publicPost = {
     title: 'Test Title 1',
     text: 'Test Content 1',
     visibility: 'public',
+    tags: 'tag'
 };
 const editedPublicPost = {
     author: -1,
@@ -952,6 +953,43 @@ describe('Post', () => {
             .end((err, res) => {
                 expect(res.body).to.be.instanceOf(Object);
                 expect(res.body.message).to.have.string(`An error ocurred while creating a new post report`);
+                done();
+            });
+    });
+
+    it('Rate a post', (done) => {
+        request(app)
+            .post(`/post/${postId}/rate`)
+            .send({
+                rate: 4,
+                newPostRating: 36
+            })
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should return an unexisting file', (done) => {
+        request(app)
+            .get(`/post/${postId}/${-1}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(500)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should download an unexisting file', (done) => {
+        request(app)
+            .get(`/post/download/${postId}/${-1}`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(500)
+            .end((err, res) => {
+                expect(err).to.be.null;
                 done();
             });
     });
@@ -2144,7 +2182,7 @@ describe('Feed tests', () => {
             .get('/feed')
             .send({
                 offset: 10,
-                limit: 10,
+                limit: 100,
                 userId: userId
             })
             .set('authorization', 'Bearer ' + userjwt)
@@ -2280,7 +2318,7 @@ describe('Challenge tests', () => {
             });
     });
 
-    it('Should submit not submit a challenge with invalid points' , (done) => {
+    it('Should not submit a challenge with invalid points' , (done) => {
         request(app)
             .post(`/talk/${talkId}/challenge/create`)
             .set('authorization', 'Bearer ' + admin.jwt)
@@ -2308,7 +2346,7 @@ describe('Challenge tests', () => {
                 type: 'create_post',
                 title: 'CreatePost',
                 description: 'Challenge description',
-                dateStart: '2019-07-07 23:00',
+                dateStart: '2018-07-07 23:00',
                 dateEnd: '2019-08-08 23:00',
                 points: 5
             })
@@ -2328,7 +2366,7 @@ describe('Challenge tests', () => {
                 type: 'question_options',
                 title: 'Multiple Options',
                 description: 'Challenge description',
-                dateStart: '2019-07-07 23:00',
+                dateStart: '2018-07-07 23:00',
                 dateEnd: '2019-08-08 23:00',
                 points: 5,
                 question: 'What is the answer',
