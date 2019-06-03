@@ -2184,15 +2184,72 @@ describe('Feed tests', () => {
 });
 
 describe('Search tests', () => {
-    it('Should search posts' , (done) => {
+    it('Should search posts by content' , (done) => {
         request(app)
             .get('/search')
+            .query({
+                k: JSON.stringify(['']),
+                t: '1'
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should search posts by author' , (done) => {
+        request(app)
+            .get('/search')
+            .set('authorization', 'Bearer ' + userjwt)
+            .query({
+                k: JSON.stringify(['word']),
+                tags: JSON.stringify(['tag']),
+                t: '2'
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should search users' , (done) => {
+        request(app)
+            .get('/search')
+            .set('authorization', 'Bearer ' + userjwt)
+            .query({
+                k: JSON.stringify(['word']),
+                t: '3'
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not return anything' , (done) => {
+        request(app)
+            .get('/search')
+            .set('authorization', 'Bearer ' + userjwt)
+            .query({
+                k: JSON.stringify(['word']),
+                t: '4'
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should search user email' , (done) => {
+        request(app)
+            .get('/search/user/email')
             .send({
-                k: ['word'],
-                tags: [],
-                t: 1,
-                di: '2018-05-05T21:30',
-                df: '2020-05-05T21:30'
+                email: 'user1@lgp.com'
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
