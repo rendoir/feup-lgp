@@ -604,7 +604,44 @@ describe('User tests', () => {
                 first_name: 'my',
                 last_name: 'user',
                 password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
-                oldPassword: 'umlemelhorquecertascoisas96',
+                old_password: 'umlemelhorquecertascoisas96',
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(200)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should not update profile with wrong password', (done) => {
+        request(app)
+            .post(`/users/${userId}/edit`)
+            .send({
+                author: userId,
+                email: 'user155@lgp.com',
+                first_name: 'my',
+                last_name: 'user',
+                password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
+                old_password: 'dsds',
+            })
+            .set('authorization', 'Bearer ' + userjwt)
+            .expect(400)
+            .end((err, res) => {
+                !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should update profile with undefined password', (done) => {
+        request(app)
+            .post(`/users/${userId}/edit`)
+            .send({
+                author: userId,
+                email: 'user155@lgp.com',
+                first_name: 'my',
+                last_name: 'user',
+                password: '9f0448841901d1c7ecf548ccd859b7f80e9716de5fda7518d0923c898b4b7cce',
             })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
@@ -627,11 +664,25 @@ describe('User tests', () => {
 
     it('Should get user conference points', (done) => {
         request(app)
-            .get(`/users/${userId}/conference_points/${conferenceId}`)
+            .get(`/users/conference_points/${conferenceId}`)
             .set('authorization', 'Bearer ' + userjwt)
-            .expect(404)
+            .expect(200)
             .end((err, res) => {
                 !expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('Should mark invite as notified', (done) => {
+        request(app)
+            .put(`/users/${userId}/invite_notified`)
+            .set('authorization', 'Bearer ' + userjwt)
+            .send({
+                inviteId: -1
+            })
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
                 done();
             });
     });
