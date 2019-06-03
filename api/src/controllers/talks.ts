@@ -96,8 +96,9 @@ export async function getTalk(req, res) {
      */
     const talk = await query({
       text: `
-              SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name, t.title, t.conference as conference_id,
-              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.avatar_mimeType, t.privacy, t.archived, t.hidden,
+              SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name,
+              t.title, t.conference as conference_id, t.about, t.livestream_url, t.local,
+              t.dateStart, t.dateEnd, t.avatar, t.avatar_mimeType, t.privacy, t.archived, t.hidden,
               c.title as conference_title
               FROM talks t
               INNER JOIN users a ON t.author = a.id
@@ -178,7 +179,7 @@ export async function getTalk(req, res) {
       }
     }
     const posts = await query({
-      text: `SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+      text: `SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, users.id AS user_id
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
@@ -196,7 +197,7 @@ export async function getTalk(req, res) {
     });
     for (const post of posts.rows) {
       const comment = await query({
-        text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+        text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -602,7 +603,7 @@ export function getPostsAuthor(req, res) {
 
 export async function getCommentsOfPostAndAuthor(req, res) {
   query({
-    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name, a.avatar, a.avatar_mimeType
               FROM posts p
                   LEFT JOIN comments c ON p.id = c.post
                   INNER JOIN users a ON c.author = a.id

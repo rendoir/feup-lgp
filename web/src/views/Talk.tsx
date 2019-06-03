@@ -1008,6 +1008,8 @@ class Talk extends PureComponent<Props, State> {
                 dictionary.date_format[this.context],
                 this.postDateOptions
               )}
+              avatar={post.avatar}
+              avatar_mimeType={post.avatar_mimeType}
               author={post.author}
               content={post.content}
               visibility={post.visibility}

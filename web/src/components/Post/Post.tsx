@@ -779,6 +779,20 @@ class Post extends Component<Props, IState> {
     const id = this.auth.getUserPayload().id;
 
     axiosInstance.get(`/users/${id}/`).then(res => {
+      if (!res.data.user) {
+        return;
+      } else if (
+        res.data.user.avatar === null ||
+        res.data.user.avatar === undefined
+      ) {
+        this.setState({
+          nameUserLoggedIn:
+            res.data.user.first_name + ' ' + res.data.user.last_name
+        });
+        this.forceUpdate();
+        return;
+      }
+
       axiosInstance
         .get(`/users/${id}/avatar/${res.data.user.avatar}`, {
           responseType: 'arraybuffer'
@@ -793,7 +807,7 @@ class Post extends Component<Props, IState> {
           this.setState({
             avatarUserLoggedIn: src,
             nameUserLoggedIn:
-              res.data.user.firstName + ' ' + res.data.user.lastName
+              res.data.user.first_name + ' ' + res.data.user.last_name
           });
           this.forceUpdate();
         });
@@ -801,6 +815,9 @@ class Post extends Component<Props, IState> {
   }
 
   private updateAvatarSrc() {
+    console.log('id:' + this.props.user_id);
+    console.log('avatar:' + this.props.avatar);
+
     axiosInstance
       .get(`/users/${this.props.user_id}/avatar/${this.props.avatar}`, {
         responseType: 'arraybuffer'

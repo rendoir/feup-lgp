@@ -1,9 +1,13 @@
 import * as React from 'react';
 
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import Icon from '../components/Icon/Icon';
 import Post from '../components/Post/Post';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
+
+import styles from '../components/InfiniteScroll/InfiniteScroll.module.css';
 
 interface IProps {
   match: {
@@ -98,9 +102,26 @@ class PostView extends React.Component<IProps, IState> {
       );
     }
 
+    if (this.state.id === -1) {
+      return (
+        <div className="container my-5">
+          <div className="w-100 mx-auto">
+            <div className={styles.spinner}>
+              <Icon
+                icon={faSpinner}
+                pulse={true}
+                size={'2x'}
+                theme={'primary'}
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="container my-5">
-        <div className="w-75 mx-auto">
+        <div className="w-100 mx-auto">
           <Post
             id={this.id}
             title={this.state.title}

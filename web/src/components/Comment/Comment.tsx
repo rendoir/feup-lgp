@@ -35,6 +35,7 @@ export type Props = {
 
 export type State = {
   avatar?: string;
+  avatarUserLoggedIn?: string;
   commentID: number;
   commentText: string | undefined;
   commentValue: string;
@@ -43,6 +44,7 @@ export type State = {
   isHovered: boolean;
   likers: any[];
   likes: number;
+  nameUserLoggedIn: string;
   redirect: boolean;
   userReport: boolean; // Tells if the logged user has reported this post
 };
@@ -60,6 +62,7 @@ class Comment extends Component<Props, State> {
 
     this.state = {
       avatar: '',
+      avatarUserLoggedIn: '',
       commentID: 0,
       commentText: this.props.text,
       commentValue: '',
@@ -68,6 +71,7 @@ class Comment extends Component<Props, State> {
       isHovered: false,
       likers: [],
       likes: 0,
+      nameUserLoggedIn: '',
       redirect: false,
       userReport: false
     };
@@ -91,6 +95,7 @@ class Comment extends Component<Props, State> {
     this.apiGetWhoLikedComment(Number(this.props.id));
     this.apiGetCommentUserReport(Number(this.props.id));
     this.updateAvatarSrc();
+    this.getUserAvatarSrc();
   }
 
   public render() {
@@ -151,10 +156,10 @@ class Comment extends Component<Props, State> {
                       onSubmit={this.handleAddComment}
                     >
                       <Avatar
-                        title={this.props.author.name}
+                        title={this.state.nameUserLoggedIn}
                         placeholder="empty"
                         size={30}
-                        image="https://picsum.photos/200/200?image=52"
+                        image={this.state.avatarUserLoggedIn}
                       />
                       <textarea
                         className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
@@ -711,6 +716,45 @@ class Comment extends Component<Props, State> {
         this.setState({ avatar: src });
         this.forceUpdate();
       });
+  }
+
+  private getUserAvatarSrc() {
+    const id = this.auth.getUserPayload().id;
+
+    axiosInstance.get(`/users/${id}/`).then(res => {
+      if (!res.data.user) {
+        return;
+      } else if (
+        res.data.user.avatar === null ||
+        res.data.user.avatar === undefined
+      ) {
+        this.setState({
+          nameUserLoggedIn:
+            res.data.user.first_name + ' ' + res.data.user.last_name
+        });
+        this.forceUpdate();
+        return;
+      }
+
+      axiosInstance
+        .get(`/users/${id}/avatar/${res.data.user.avatar}`, {
+          responseType: 'arraybuffer'
+        })
+        .then(result => {
+          const src =
+            'data:' +
+            res.data.user.avatar_mimeType +
+            ';base64, ' +
+            new Buffer(result.data, 'binary').toString('base64');
+
+          this.setState({
+            avatarUserLoggedIn: src,
+            nameUserLoggedIn:
+              res.data.user.firstName + ' ' + res.data.user.lastName
+          });
+          this.forceUpdate();
+        });
+    });
   }
 }
 
