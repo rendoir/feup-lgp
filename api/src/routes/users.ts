@@ -88,7 +88,7 @@ usersRouter.get('/:id/avatar/:filename', controller.getAvatar);
 usersRouter.get('/:id/name', controller.getUserName);
 
 /**
- * @api {post} /api/users/{id} Get user posts
+ * @api {get} /api/users/{id} Get user posts
  * @apiName Profile Posts
  * @apiGroup Users
  *
@@ -125,7 +125,7 @@ usersRouter.get('/:id/posts', controller.getProfilePosts);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/:id/user_interactions', controller.getUserUserInteractions);
+usersRouter.get('/:id/user_interactions', controller.getUserUserInteractions);
 
 /**
  * @api {post} /api/users/:id/subscription Set a user subscription

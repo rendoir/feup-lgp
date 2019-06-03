@@ -264,7 +264,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     let isAdmin = false;
 
     axiosInstance
-      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .get(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
       .then(res => {
         isAdmin = res.data;
         if (isAdmin) {

@@ -1972,9 +1972,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.dateEnd = '';
     }
     if (
-      fields.question === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.question!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.question === undefined || fields.question!.length === 0)
     ) {
       this.setState({
         error: {
@@ -2018,9 +2017,8 @@ class Talk extends PureComponent<Props, State> {
       this.errorMessages.options = '';
     }
     if (
-      fields.correctAnswer === undefined ||
-      (fields.challengetype === 'question_options' &&
-        fields.correctAnswer!.length === 0)
+      fields.challengetype === 'question_options' &&
+      (fields.correctAnswer === undefined || fields.correctAnswer!.length === 0)
     ) {
       this.setState({
         error: {
@@ -2075,8 +2073,8 @@ class Talk extends PureComponent<Props, State> {
     formData.append('type', fields.challengetype);
     formData.append('title', fields.title);
     formData.append('description', fields.description);
-    formData.append('dateEnd', fields.dateEnd);
-    formData.append('dateStart', fields.dateStart);
+    formData.append('dateStart', new Date(fields.dateStart).toISOString());
+    formData.append('dateEnd', new Date(fields.dateEnd).toISOString());
     formData.append('points', fields.points.toString());
     formData.append('question', fields.question!);
     formData.append('correctAnswer', fields.correctAnswer!);

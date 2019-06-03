@@ -102,7 +102,7 @@ class PostView extends React.Component<IProps, IState> {
       <div className="container my-5">
         <div className="w-75 mx-auto">
           <Post
-            id={Number(this.state.id)}
+            id={this.id}
             title={this.state.title}
             author={this.state.author}
             avatar={this.state.avatar}

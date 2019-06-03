@@ -1,7 +1,7 @@
 import axiosInstance from './axiosInstance';
 
 export async function apiUserJoinTalk(talkId: number): Promise<boolean> {
-  const apiURL = `/talk/${talkId}/add_participant`;
+  const apiURL = `/talk/${talkId}/join`;
   try {
     await axiosInstance.post(apiURL);
     return true;
@@ -12,7 +12,7 @@ export async function apiUserJoinTalk(talkId: number): Promise<boolean> {
 }
 
 export async function apiUserLeaveTalk(talkId: number): Promise<boolean> {
-  const apiURL = `/talk/${talkId}/remove_participant`;
+  const apiURL = `/talk/${talkId}/leave`;
   try {
     await axiosInstance.delete(apiURL);
     return true;

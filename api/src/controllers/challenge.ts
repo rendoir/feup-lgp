@@ -69,7 +69,6 @@ export async function createChallenge(req, res) {
 }
 
 export function solveChallenge(req, res) {
-
     query({
         text: `INSERT INTO user_challenge
                 (challenged, challenge, answer, complete)

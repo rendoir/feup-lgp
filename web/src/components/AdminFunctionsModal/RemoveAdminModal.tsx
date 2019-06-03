@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './AdminFunctionsModal.css';
 
 import { getApiURL } from '../../utils/apiURL';
+import AuthHelperMethods from '../../utils/AuthHelperMethods';
 import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
@@ -23,10 +24,12 @@ class RemoveAdminModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL('/admin/user'), body)
+      .post(getApiURL(`/admin/user`), body)
       .then(res => onResponse(true))
       .catch(() => onResponse(false));
   }
+
+  private auth = new AuthHelperMethods();
 
   constructor(props: IProps) {
     super(props);
@@ -102,7 +105,7 @@ class RemoveAdminModal extends Component<IProps, IState> {
     };
 
     axiosInstance
-      .post(getApiURL('/admin/user'), body)
+      .post(getApiURL(`/admin/user`), body)
       .then(res => this.props.onResponse(true))
       .catch(() => this.props.onResponse(false));
   }

@@ -116,10 +116,6 @@ export async function getFeed(req, res) {
                     INNER JOIN talk_participants tp ON t.id = tp.talk
                   WHERE (
                     tp.participant_user = $1
-                    AND (
-                        t.author = $1
-                        OR t.author IN (SELECT followed FROM follows WHERE follower = $1)
-                    )
                     AND t.privacy IN ('public', 'followers')
                     AND t.dateEnd::timestamp with time zone > NOW()
                   )

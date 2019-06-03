@@ -161,7 +161,7 @@ talkRouter.post('/:id/join', controller.joinTalk);
 talkRouter.delete('/:id/leave', controller.leaveTalk);
 
 /**
- * @api {get} /api/talk/:id/check_participant Check if a user is participating in a talk
+ * @api {get} /api/talk/:id/check_participation Check if a user is participating in a talk
  * @apiName Check-talk-Participation
  * @apiGroup talk
  *

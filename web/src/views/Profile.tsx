@@ -390,7 +390,7 @@ class Profile extends React.Component<IProps, State> {
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
-          numberOfRatings: res.data.totalRatingsNumber,
+          numberOfRatings: Number(res.data.totalRatingsNumber),
           userRate: res.data.rate,
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
@@ -406,7 +406,9 @@ class Profile extends React.Component<IProps, State> {
 
   private handleStars() {
     const userRate =
-      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+      this.state.numberOfRatings !== 0
+        ? (this.state.userRateTotal / this.state.numberOfRatings) * 1.1
+        : 0;
 
     if (!this.state.userRated && this.auth.getUserPayload().id !== this.id) {
       return (
