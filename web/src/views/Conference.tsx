@@ -195,7 +195,6 @@ class Conference extends PureComponent<Props, State> {
             dateStart: conference.datestart,
             description: conference.about,
             place: conference.local,
-            talks,
             title: conference.title
           },
           isHidden: conference.privacy === 'closed',
@@ -1135,7 +1134,6 @@ class Conference extends PureComponent<Props, State> {
         dateEnd: false,
         dateStart: false,
         description: false,
-        livestream: false,
         place: false,
         title: false
       },
