@@ -178,6 +178,13 @@ class Talk extends PureComponent<Props, State> {
     question: string;
     title: string;
   };
+  private readonly errorMessagesTalk: {
+    title;
+    description;
+    local;
+    dateStart;
+    dateEnd;
+  };
   private tags: any[];
   private messageIndex: number;
   private auth = new AuthHelperMethods();
@@ -211,6 +218,17 @@ class Talk extends PureComponent<Props, State> {
       points: '',
       question: '',
       title: ''
+    };
+
+    this.errorMessagesTalk = {
+      dateEnd: 'Dates of End must follow the format YYYY-MM-DDThh:mm',
+      dateStart: 'Date of Start must follow the format YYYY-MM-DDThh:mm',
+      description:
+        'Description must contain at least one alphanumerical character, ' +
+        "! , ? , - , ',' , . , @ , # , % ",
+      local:
+        "Local must contain only 2 to 150 alphanumerical characters, ',' , . , -",
+      title: 'title must contain only 2 to 150 alphanumerical characters'
     };
     this.tags = [];
 
@@ -2304,7 +2322,9 @@ class Talk extends PureComponent<Props, State> {
                 value={editFields.title}
                 required={true}
                 status={this.state.error.title ? 'error' : 'normal'}
-                hint={this.state.error.title ? this.errorMessages.title : ''}
+                hint={
+                  this.state.error.title ? this.errorMessagesTalk.title : ''
+                }
               />
               <InputNext
                 onChange={handleChange}
@@ -2320,7 +2340,7 @@ class Talk extends PureComponent<Props, State> {
                 status={this.state.error.description ? 'error' : 'normal'}
                 hint={
                   this.state.error.description
-                    ? this.errorMessages.description
+                    ? this.errorMessagesTalk.description
                     : ''
                 }
               />
@@ -2332,7 +2352,9 @@ class Talk extends PureComponent<Props, State> {
                 placeholder={dictionary.talk_local[this.context]}
                 value={editFields.local}
                 status={this.state.error.local ? 'error' : 'normal'}
-                hint={this.state.error.local ? this.errorMessages.local : ''}
+                hint={
+                  this.state.error.local ? this.errorMessagesTalk.local : ''
+                }
               />
               <div className={styles.Wrapper}>
                 <Select
@@ -2358,7 +2380,7 @@ class Talk extends PureComponent<Props, State> {
                   status={this.state.error.dateStart ? 'error' : 'normal'}
                   hint={
                     this.state.error.dateStart
-                      ? this.errorMessages.dateStart
+                      ? this.errorMessagesTalk.dateStart
                       : ''
                   }
                 />
@@ -2371,7 +2393,9 @@ class Talk extends PureComponent<Props, State> {
                   type={'datetime-local'}
                   status={this.state.error.dateEnd ? 'error' : 'normal'}
                   hint={
-                    this.state.error.dateEnd ? this.errorMessages.dateEnd : ''
+                    this.state.error.dateEnd
+                      ? this.errorMessagesTalk.dateEnd
+                      : ''
                   }
                 />
               </div>
@@ -2395,9 +2419,12 @@ class Talk extends PureComponent<Props, State> {
                 <InputNext
                   onChange={handleChange}
                   id={`talk_livestream_url_field`}
-                  value={editFields.livestreamURL}
+                  value={
+                    editFields.livestreamURL === null
+                      ? ''
+                      : editFields.livestreamURL
+                  }
                   name={'livestreamURL'}
-                  label={dictionary.livestream_url[this.context]}
                   type={'url'}
                   placeholder={'https://www.youtube.com/embed/<id>'}
                   disabled={!(editFields.hasLivestream === 'true')}
