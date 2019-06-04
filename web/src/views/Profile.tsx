@@ -203,7 +203,7 @@ class Profile extends React.Component<IProps, State> {
                     onRequestChange={request => this.setState({ request })}
                     onClose={this.resetState}
                     autoFocus={true}
-                    step={'profile'}
+                    step={this.state.step}
                   />
                 ) : null}
               </ul>

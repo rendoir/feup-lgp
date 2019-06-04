@@ -2180,6 +2180,7 @@ class Talk extends PureComponent<Props, State> {
 
   private renderEditForm = () => {
     const editFields = this.state.editFields;
+
     const handleHide = () => {
       this.setState({
         editFields: {
@@ -2194,9 +2195,24 @@ class Talk extends PureComponent<Props, State> {
           privacy: this.state.talk.privacy,
           title: this.state.talk.title
         },
-        editFormOpen: false
+        editFormOpen: false,
+        error: {
+          answer: false,
+          correctAnswer: false,
+          dateEnd: false,
+          dateStart: false,
+          description: false,
+          livestreamURL: false,
+          local: false,
+          options: false,
+          points: false,
+          question: false,
+          tags: false,
+          title: false
+        }
       });
     };
+
     const handleShow = () => {
       this.setState({
         editFormOpen: true
@@ -2211,16 +2227,6 @@ class Talk extends PureComponent<Props, State> {
         }
       });
       this.validateField(event.target.name, value);
-    };
-
-    const handleSwitcher = value => {
-      this.setState({
-        editFields: {
-          ...editFields,
-          hasLivestream: value,
-          livestreamURL: value ? this.state.talk.livestreamURL : ''
-        }
-      });
     };
 
     const options = [
@@ -2502,6 +2508,8 @@ class Talk extends PureComponent<Props, State> {
       })
       .then(() => {
         this.setState({
+          ...this.state,
+          // ...editFields,
           editFormOpen: false
         });
         window.location.reload();
