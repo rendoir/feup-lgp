@@ -197,7 +197,6 @@ adminRouter.post('/', controller.addAdmin);
  * @apiGroup Admin
  *
  * @apiParam {String} email Email of the user to be banned
- * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL to avoid route problems.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -212,7 +211,7 @@ adminRouter.post('/', controller.addAdmin);
  *      message: 'An error ocurred while banning user'
  *     }
  */
-adminRouter.post('/:id/ban', controller.banUser);
+adminRouter.post('/ban', controller.banUser);
 
 /**
  * @api {post} /api/admin/:id/user Change to user
@@ -220,7 +219,6 @@ adminRouter.post('/:id/ban', controller.banUser);
  * @apiGroup Admin
  *
  * @apiParam {String} email Email of the user
- * @apiParam {number}   id    This id can be set to any value, since it will not be used. It's in the URL to avoid route problems.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -235,7 +233,7 @@ adminRouter.post('/:id/ban', controller.banUser);
  *      message: 'An error ocurred while changing to a user'
  *     }
  */
-adminRouter.post('/:id/user', controller.makeUser);
+adminRouter.post('/user', controller.makeUser);
 
 /**
  * @api {post} /api/admin/isAdmin Know if user is admin

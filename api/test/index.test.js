@@ -350,7 +350,7 @@ describe('Admin tests', () => {
     describe('Ban/unban user', () => {
         it('Should not ban unexisting user', (done) => {
             request(app)
-            .post('/admin/0/ban')
+            .post('/admin/ban')
             .send({
                 email: 'notanemail'
             })
@@ -364,7 +364,7 @@ describe('Admin tests', () => {
 
         it('Should ban user', (done) => {
             request(app)
-                .post('/admin/0/ban')
+                .post('/admin/ban')
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .send({
                     email: 'baduser@lgp.com'
@@ -392,7 +392,7 @@ describe('Admin tests', () => {
 
         it('Should unban', (done) => {
             request(app)
-                .post('/admin/0/user')
+                .post('/admin/user')
                 .send({ email: users[0].email })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
@@ -404,7 +404,7 @@ describe('Admin tests', () => {
 
         it('Should not unban unexistent user', (done) => {
             request(app)
-                .post('/admin/0/user')
+                .post('/admin/user')
                 .send({ email: "notanemail" })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(400)
@@ -494,7 +494,7 @@ describe('Admin tests', () => {
 
         it('Should remove admin (200)', (done) => {
             request(app)
-                .post('/admin/0/user')
+                .post('/admin/user')
                 .send({ email: users[0].email })
                 .set('authorization', 'Bearer ' + admin.jwt)
                 .expect(200)
@@ -689,7 +689,7 @@ describe('User tests', () => {
 
     it('Should not allow user to ban', (done) => {
         request(app)
-            .post('/admin/0/ban')
+            .post('/admin/ban')
             .send({
                 email: 'dontmatternotadmin'
             })
@@ -716,7 +716,7 @@ describe('User tests', () => {
 
     it('Should not allow user to unban/unadmin', (done) => {
         request(app)
-            .post('/admin/0/user')
+            .post('/admin/user')
             .send({ email: users[0].email })
             .set('authorization', 'Bearer ' + userjwt)
             .expect(401)
