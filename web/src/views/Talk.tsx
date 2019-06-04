@@ -1,3 +1,4 @@
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import moment from 'moment';
 import React, { PureComponent } from 'react';
@@ -14,6 +15,9 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import openSocket from 'socket.io-client';
 import { Avatar, AvatarSelector, Select } from '../components';
+import stylesModal from '../components/CreateNewModal/CreateNewModal.module.css';
+import IconButton from '../components/IconButton/IconButton';
+import ImageEdit from '../components/ImageEdit/ImageEdit';
 import InputNext from '../components/InputNext/InputNext';
 import Post from '../components/Post/Post';
 import Switcher from '../components/Switcher/Switcher';
@@ -130,6 +134,7 @@ export type State = {
   };
   postFormOpen: boolean;
   posts: any[];
+  stepTalk: string;
   talk: {
     avatar?: string;
     avatar_mimeType?: string;
@@ -320,6 +325,7 @@ class Talk extends PureComponent<Props, State> {
       },
       postFormOpen: false,
       posts: [],
+      stepTalk: 'Talk',
       talk: {
         avatar: '',
         avatar_mimeType: '',
@@ -406,6 +412,8 @@ class Talk extends PureComponent<Props, State> {
 
         this.apiGetTalkAvatar(talk);
 
+        const hasLivestream = talk.livestream_url !== '' ? 'true' : 'false';
+
         this.setState({
           challengeFields: {
             ...this.state.challengeFields,
@@ -418,7 +426,7 @@ class Talk extends PureComponent<Props, State> {
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
-            hasLivestream: String(talk.livestream_url !== ''),
+            hasLivestream,
             livestreamURL: talk.livestream_url,
             local: talk.local,
             privacy: talk.privacy,
@@ -437,7 +445,7 @@ class Talk extends PureComponent<Props, State> {
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
-            hasLivestream: String(talk.livestream_url !== ''),
+            hasLivestream,
             livestreamURL: talk.livestream_url,
             local: talk.local,
             privacy: talk.privacy,
@@ -460,6 +468,13 @@ class Talk extends PureComponent<Props, State> {
       talk.avatar === null ||
       talk.avatar === ''
     ) {
+      return;
+    }
+
+    if (talk.avatar.startsWith('http')) {
+      talk.avatar_src = talk.avatar;
+      this.setState({ talk });
+      this.forceUpdate();
       return;
     }
 
@@ -512,13 +527,12 @@ class Talk extends PureComponent<Props, State> {
             .get(`/users/${user.id}/avatar/${user.avatar}`, {
               responseType: 'arraybuffer'
             })
-            // tslint:disable-next-line: no-shadowed-variable
-            .then(res => {
+            .then(result => {
               const src =
                 'data:' +
                 user.avatar_mimeType +
                 ';base64, ' +
-                new Buffer(res.data, 'binary').toString('base64');
+                new Buffer(result.data, 'binary').toString('base64');
 
               this.user = {
                 avatar: src,
@@ -2132,7 +2146,8 @@ class Talk extends PureComponent<Props, State> {
       const editFields = this.state.editFields;
       editFields.avatar = avatar;
       this.setState({
-        editFields
+        editFields,
+        stepTalk: 'avatar'
       });
       this.forceUpdate();
     };
@@ -2190,7 +2205,9 @@ class Talk extends PureComponent<Props, State> {
           dateStart: this.state.talk.dateStart,
           description: this.state.talk.description,
           hasLivestream: this.state.talk.hasLivestream,
-          livestreamURL: this.state.talk.livestreamURL,
+          livestreamURL: this.state.talk.livestreamURL
+            ? this.state.talk.livestreamURL
+            : '',
           local: this.state.talk.local,
           privacy: this.state.talk.privacy,
           title: this.state.talk.title
@@ -2213,7 +2230,8 @@ class Talk extends PureComponent<Props, State> {
       });
     };
 
-    const handleShow = () => {
+    const handleShow = event => {
+      event.preventDefault();
       this.setState({
         editFormOpen: true
       });
@@ -2244,138 +2262,199 @@ class Talk extends PureComponent<Props, State> {
       }
     ];
 
-    return (
-      <>
-        <ListGroup.Item
-          className="pointer"
-          onClick={handleShow}
-          disabled={this.state.isArchived}
-        >
-          <i className={'fas fa-pen mr-2'} />
-          {dictionary.edit_talk[this.context]}
-        </ListGroup.Item>
+    const onAvatarChange = (avatar: File) => {
+      editFields.avatar = avatar;
 
-        <Modal show={this.state.editFormOpen} onHide={handleHide}>
-          <Modal.Header closeButton={true}>
-            <Modal.Title>{dictionary.edit_talk[this.context]}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div id="avatarEditTalk" className={styles.avatarEdit}>
-              {this.renderAvatarTalk()}
-            </div>
-            <InputNext
-              onChange={handleChange}
-              id={`talk_title_field`}
-              name={'title'}
-              label={dictionary.title[this.context]}
-              placeholder={dictionary.insert_title[this.context]}
-              value={editFields.title}
-              required={true}
-              status={this.state.error.title ? 'error' : 'normal'}
-              hint={this.state.error.title ? this.errorMessages.title : ''}
-            />
-            <InputNext
-              onChange={handleChange}
-              id={`talk_description_field`}
-              name={'about'}
-              label={dictionary.description[this.context]}
-              placeholder={dictionary.description_placeholder[this.context]}
-              value={editFields.description}
-              required={true}
-              type={'textarea'}
-              rows={5}
-              maxLength={3000}
-              status={this.state.error.description ? 'error' : 'normal'}
-              hint={
-                this.state.error.description
-                  ? this.errorMessages.description
-                  : ''
-              }
-            />
-            <InputNext
-              onChange={handleChange}
-              id={`talk_local_field`}
-              name={'local'}
-              label={dictionary.location[this.context]}
-              placeholder={dictionary.talk_local[this.context]}
-              value={editFields.local}
-              status={this.state.error.local ? 'error' : 'normal'}
-              hint={this.state.error.local ? this.errorMessages.local : ''}
-            />
-            <div className={styles.Wrapper}>
-              <Select
-                id={'talk_privacy_field'}
-                name={'privacy'}
-                value={editFields.privacy}
-                label={dictionary.visibility[this.context]}
-                options={options}
-                onChange={handleChange}
-              />
-            </div>
-            <div id={`talk_dates_field`}>
-              <label htmlFor={`talk_dates_field`} className={styles.dates}>
-                {dictionary.dates[this.context]}
-              </label>
+      this.setState({
+        editFields,
+        stepTalk: 'Talk'
+      });
+
+      this.forceUpdate();
+    };
+
+    console.log(this.state.error);
+
+    if (this.state.stepTalk === 'Talk') {
+      return (
+        <>
+          <ListGroup.Item
+            className="pointer"
+            onClick={handleShow}
+            disabled={this.state.isArchived}
+          >
+            <i className={'fas fa-pen mr-2'} />
+            {dictionary.edit_talk[this.context]}
+          </ListGroup.Item>
+
+          <Modal show={this.state.editFormOpen} onHide={handleHide}>
+            <Modal.Header closeButton={true}>
+              <Modal.Title>{dictionary.edit_talk[this.context]}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div id="avatarEditTalk" className={styles.avatarEdit}>
+                {this.renderAvatarTalk()}
+              </div>
               <InputNext
                 onChange={handleChange}
-                id={`talk_date_start_field`}
-                name={'dateStart'}
-                label={dictionary.date_start[this.context]}
-                value={editFields.dateStart}
-                type={'datetime-local'}
-                status={this.state.error.dateStart ? 'error' : 'normal'}
+                id={`talk_title_field`}
+                name={'title'}
+                label={dictionary.title[this.context]}
+                placeholder={dictionary.insert_title[this.context]}
+                value={editFields.title}
+                required={true}
+                status={this.state.error.title ? 'error' : 'normal'}
+                hint={this.state.error.title ? this.errorMessages.title : ''}
+              />
+              <InputNext
+                onChange={handleChange}
+                id={`talk_description_field`}
+                name={'description'}
+                label={dictionary.description[this.context]}
+                placeholder={dictionary.description_placeholder[this.context]}
+                value={editFields.description}
+                required={true}
+                type={'textarea'}
+                rows={5}
+                maxLength={3000}
+                status={this.state.error.description ? 'error' : 'normal'}
                 hint={
-                  this.state.error.dateStart ? this.errorMessages.dateStart : ''
+                  this.state.error.description
+                    ? this.errorMessages.description
+                    : ''
                 }
               />
               <InputNext
                 onChange={handleChange}
-                id={`talk_date_end_field`}
-                name={'dateEnd'}
-                label={dictionary.date_end[this.context]}
-                value={editFields.dateEnd}
-                type={'datetime-local'}
-                status={this.state.error.dateEnd ? 'error' : 'normal'}
-                hint={
-                  this.state.error.dateEnd ? this.errorMessages.dateEnd : ''
-                }
+                id={`talk_local_field`}
+                name={'local'}
+                label={dictionary.location[this.context]}
+                placeholder={dictionary.talk_local[this.context]}
+                value={editFields.local}
+                status={this.state.error.local ? 'error' : 'normal'}
+                hint={this.state.error.local ? this.errorMessages.local : ''}
               />
-            </div>
-            <div id={`talk_livestream_field`}>
-              <label htmlFor={`talk_livestream_field`} className={styles.dates}>
-                {dictionary.livestream[this.context]}
-              </label>
-              <Switcher
-                id={`talk_switcher`}
-                name={'switcher'}
-                label={dictionary.livestream[this.context]}
-                onChange={(value, event) => handleChange(String(value), event)}
-                value={editFields.hasLivestream === 'true'}
-                className={styles.switcher}
-              />
-              <InputNext
-                onChange={handleChange}
-                id={`talk_livestream_url_field`}
-                value={editFields.livestreamURL}
-                name={'livestream'}
-                label={dictionary.livestream_url[this.context]}
-                type={'url'}
-                placeholder={'https://www.youtube.com/embed/<id>'}
-                disabled={!(editFields.hasLivestream === 'true')}
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={handleHide} variant={'danger'}>
-              {dictionary.cancel[this.context]}
-            </Button>
-            <Button onClick={this.handleEditSubmission} variant={'success'}>
-              {dictionary.save[this.context]}
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+              <div className={styles.Wrapper}>
+                <Select
+                  id={'talk_privacy_field'}
+                  name={'privacy'}
+                  value={editFields.privacy}
+                  label={dictionary.visibility[this.context]}
+                  options={options}
+                  onChange={handleChange}
+                />
+              </div>
+              <div id={`talk_dates_field`}>
+                <label htmlFor={`talk_dates_field`} className={styles.dates}>
+                  {dictionary.dates[this.context]}
+                </label>
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_date_start_field`}
+                  name={'dateStart'}
+                  label={dictionary.date_start[this.context]}
+                  value={editFields.dateStart}
+                  type={'datetime-local'}
+                  status={this.state.error.dateStart ? 'error' : 'normal'}
+                  hint={
+                    this.state.error.dateStart
+                      ? this.errorMessages.dateStart
+                      : ''
+                  }
+                />
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_date_end_field`}
+                  name={'dateEnd'}
+                  label={dictionary.date_end[this.context]}
+                  value={editFields.dateEnd}
+                  type={'datetime-local'}
+                  status={this.state.error.dateEnd ? 'error' : 'normal'}
+                  hint={
+                    this.state.error.dateEnd ? this.errorMessages.dateEnd : ''
+                  }
+                />
+              </div>
+              <div id={`talk_livestream_field`}>
+                <label
+                  htmlFor={`talk_livestream_field`}
+                  className={styles.dates}
+                >
+                  {dictionary.livestream[this.context]}
+                </label>
+                <Switcher
+                  id={`talk_switcher`}
+                  name={'hasLivestream'}
+                  label={dictionary.livestream[this.context]}
+                  onChange={(value, event) =>
+                    handleChange(String(value), event)
+                  }
+                  value={editFields.hasLivestream === 'true'}
+                  className={styles.switcher}
+                />
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_livestream_url_field`}
+                  value={editFields.livestreamURL}
+                  name={'livestreamURL'}
+                  label={dictionary.livestream_url[this.context]}
+                  type={'url'}
+                  placeholder={'https://www.youtube.com/embed/<id>'}
+                  disabled={!(editFields.hasLivestream === 'true')}
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={handleHide} variant={'danger'}>
+                {dictionary.cancel[this.context]}
+              </Button>
+              <Button onClick={this.handleEditSubmission} variant={'success'}>
+                {dictionary.save[this.context]}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      );
+    } else {
+      const handleCancelAvatarEdit = (): void => {
+        editFields.avatar = undefined;
+        this.setState({
+          editFields,
+          stepTalk: 'Talk'
+        });
+      };
+
+      const {
+        editFields: { avatar }
+      } = this.state;
+
+      if (avatar) {
+        return (
+          <>
+            <Modal show={this.state.editFormOpen} onHide={handleHide}>
+              <Modal.Header closeButton={true}>
+                <IconButton
+                  glyph={faArrowLeft}
+                  onClick={handleCancelAvatarEdit}
+                  className={stylesModal.back}
+                  id={`${this.id}_back_button`}
+                />
+                {dictionary.edit_avatar[this.context]}
+              </Modal.Header>
+              <Modal.Body>
+                <ImageEdit
+                  image={avatar}
+                  type={'circle'}
+                  size={250}
+                  height={400}
+                  onSubmit={onAvatarChange}
+                />
+              </Modal.Body>
+            </Modal>
+          </>
+        );
+      }
+    }
   };
 
   private validateField = (field, value) => {
@@ -2495,7 +2574,13 @@ class Talk extends PureComponent<Props, State> {
     formData.append('description', editFields.description.trim());
     formData.append('dateEnd', editFields.dateEnd.trim());
     formData.append('dateStart', editFields.dateStart.trim());
-    formData.append('livestream', editFields.livestreamURL.trim());
+
+    if (editFields.hasLivestream === 'true') {
+      formData.append('livestream', editFields.livestreamURL.trim());
+    } else {
+      formData.append('livestream', '');
+    }
+
     formData.append('privacy', editFields.privacy.trim());
     formData.append('title', editFields.title.trim());
     formData.append('local', editFields.local.trim());

@@ -14,7 +14,6 @@ import {
 import stylesModal from '../components/CreateNewModal/CreateNewModal.module.css';
 import IconButton from '../components/IconButton/IconButton';
 import ImageEdit from '../components/ImageEdit/ImageEdit';
-import { ModalClose } from '../components/Modal/index';
 import Switcher from '../components/Switcher/Switcher';
 import styles from '../styles/Feed.module.css';
 
