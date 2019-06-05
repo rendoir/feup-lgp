@@ -41,6 +41,7 @@ import {
     postRouter,
     productsRouter,
     searchRouter,
+    shopRouter,
     tagsRouter,
     talkRouter,
     usersRouter,
@@ -82,6 +83,7 @@ app.use('/post/:post_id/comment', commentRouter);
 app.use('/talk', talkRouter);
 app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
+app.use('/shop', shopRouter);
 app.use('/conference', conferenceRouter);
 app.use('/products', productsRouter);
 app.use('/invite', inviteRouter);

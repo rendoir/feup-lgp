@@ -1744,7 +1744,7 @@ describe('Conference tests', () => {
 
     it('Should retrieve conference products' , (done) => {
         request(app)
-            .get(`/conference/${conferenceId}/shop`)
+            .get(`/conference/${conferenceId}/products`)
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
             .end((err, res) => {
