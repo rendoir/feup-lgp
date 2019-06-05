@@ -17,6 +17,7 @@ import * as controller from '../controllers/admin';
  * @apiGroup Admin
  *
  * @apiParam {String} email Email to whitelist.
+ * @apiParam {String} userLevel The permissions this user should have.
  *
  * @apiSuccess {String} email Email added to the whitelist
  * @apiSuccessExample Success-Response:
@@ -56,8 +57,8 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
  * @apiGroup Admin
  *
  * @apiSuccess {String} email           The email of the account.
- * @apiSuccess {String} dateCreated     The date in which the account was whitelisted.
- * @apiSuccess {String} isActive        yes if the account has been activated, false otherwise.
+ * @apiSuccess {String} date_created     The date in which the account was whitelisted.
+ * @apiSuccess {String} isactive        yes if the account has been activated, false otherwise.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -65,8 +66,8 @@ adminRouter.delete('/users', controller.deleteUserFromWhiteList);
  *      [
  *          {
  *          email: 'a@gmail.com',
- *          dateCreated: '18/05/2018',
- *          isActive: yes
+ *          date_created: '18/05/2018',
+ *          isactive: yes
  *          }
  *      ]
  *     }
@@ -96,10 +97,19 @@ adminRouter.get('/product_exchange_notifications', controller.getProductExchange
  * @apiName Get-Report-Notifications
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *      message: 'An error ocurred fetching report notifications: You are not an admin.'
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report notifications'
  *     }
  */
 adminRouter.get('/notifications', controller.getReportNotifications);
@@ -109,10 +119,14 @@ adminRouter.get('/notifications', controller.getReportNotifications);
  * @apiName Get-Amount-Report-Notifications
  * @apiGroup Admin
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'Error retrieving report notifications count'
  *     }
  */
 adminRouter.get('/amount_notifications', controller.amountReportNotifications);
@@ -124,10 +138,14 @@ adminRouter.get('/amount_notifications', controller.amountReportNotifications);
  *
  * The id paramater is in the URL to avoid routing errors
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error ocurred while gettting users'
+ *      message: 'An error ocurred while fetching report reasons'
  *     }
  */
 adminRouter.post('/:id/report_reasons', controller.getReportReasons);
@@ -139,6 +157,10 @@ adminRouter.post('/:id/report_reasons', controller.getReportReasons);
  *
  * The id paramater is in the URL to avoid routing errors
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -156,13 +178,6 @@ adminRouter.post('/:id/ignore_reports', controller.ignoreContentReports);
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -185,13 +200,6 @@ adminRouter.post('/', controller.addAdmin);
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -214,13 +222,6 @@ adminRouter.post('/ban', controller.banUser);
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *     }
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      message: 'The email does not belong to a user'
- *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {

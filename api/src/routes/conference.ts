@@ -64,10 +64,14 @@ conferenceRouter.get('/', controller.getAllConferences);
  * @apiParam {Object}   avatar      Image of the conference
  * @apiParam {String}   privacy     Visibility of the conference: public | followers | private
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error message here'
+ *      message: 'An error occurred while crating a new conference.'
  *     }
  */
 conferenceRouter.post('/', controller.createConference);
@@ -85,6 +89,10 @@ conferenceRouter.post('/', controller.createConference);
  * @apiParam {string}   dateEnd     Date when the conference ends
  * @apiParam {Object}   avatar      Image of the conference
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

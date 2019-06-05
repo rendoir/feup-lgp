@@ -30,15 +30,18 @@ export function register(req, res) {
             values: [req.body.email, hashedPassword, firstName, lastName,
             req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
-        }).catch((error) => {
+            res.status(200).send();
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error occured while registering a new user' });
+            res.status(500).send({ message: 'An error occured while registering a new user' });
         });
-        res.status(200).send();
-
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while checking register permissions' });
+        res.status(500).send({ message: 'An error ocurred while checking register permissions' });
     });
 }
 
@@ -80,8 +83,9 @@ export async function getUser(req, res) {
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */ {
         console.log('Error getting user info. Error: ' + e.message);
+        res.status(500).send({ message: 'An error ocurred while getting user' });
     }
 }
 
@@ -96,7 +100,7 @@ export async function getUserName(req, res) {
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */{
         console.log('Error getting user name. Error: ' + e.message);
     }
 }
@@ -144,7 +148,7 @@ export async function getUserUserInteractions(req, res) {
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user-user interactions'));
     }
@@ -157,7 +161,9 @@ export function subscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while subscribing user' });
     });
@@ -170,7 +176,9 @@ export function unsubscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while unsubscribing user' });
     });
@@ -188,11 +196,13 @@ export function rate(req, res) {
             values: [req.body.newUserRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the user' });
         });
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an user' });
     });
@@ -221,7 +231,7 @@ export async function getProfilePosts(req, res) {
                     OFFSET $4`,
             values: [userId, userloggedId, limit, offset],
         });
-        if (result == null) {
+        if (result == null) /* istanbul ignore next */ {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
         }
@@ -274,7 +284,7 @@ export async function getProfilePosts(req, res) {
             posts: result.rows,
             size: totalSize.rows[0].count,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
     }
@@ -288,7 +298,7 @@ export async function getNotifications(req, res) {
         values: [userId],
       });
       res.status(200).send({ notifications: unseenInvitesQuery.rows });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user notifications'));
     }
@@ -302,7 +312,7 @@ export async function amountNotifications(req, res) {
         values: [userId],
       });
       res.status(200).send({ amountNotifications: amountNotificationsQuery.rows[0].count });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user notifications'));
     }
@@ -317,7 +327,9 @@ export function inviteNotified(req, res) {
         values: [req.body.inviteId, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while setting invite as notified' });
     });
@@ -362,11 +374,11 @@ export async function updateProfile(req, res) {
                 }));
                 saveAvatar(req, res);
                 res.status(200).send();
-            } catch (error) {
+            } catch (error) /* istanbul ignore next */ {
                 console.log('\n\nERROR:', error);
                 res.status(400).send({ message: 'An error occured while updating the user profile' });
             }
-        } catch (error) {
+        } catch (error) /* istanbul ignore next */ {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
         }
@@ -382,7 +394,8 @@ export async function updateProfile(req, res) {
                 req.body.university, req.body.email],
             }));
             saveAvatar(req, res);
-        } catch (error) {
+            res.status(200).send();
+        } catch (error) /* istanbul ignore next */ {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the user profile' });
         }
@@ -397,7 +410,7 @@ export async function getGeneralPoints(req, res) {
         values: [userId],
       });
       res.status(200).send({ points: pointsQuery.rows[0].points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
@@ -413,7 +426,7 @@ export async function getConferencePoints(req, res) {
       });
       const points = pointsQuery.rows[0] ? pointsQuery.rows[0].points : 0;
       res.status(200).send({ points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */{
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
