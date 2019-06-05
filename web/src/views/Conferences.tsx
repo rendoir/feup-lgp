@@ -66,7 +66,7 @@ class Conferences extends PureComponent<Props, State> {
 
   private async getConferences() {
     try {
-      let { conferences } = (await axiosInstance.get('/conferences/', {
+      let { conferences } = (await axiosInstance.get('/conference/', {
         params: {
           user: this.props.user.id
         }
@@ -93,7 +93,7 @@ class Conferences extends PureComponent<Props, State> {
       } else {
         try {
           const avatars = (await axiosInstance.get(
-            `/conferences/${conference.id}/avatar/${conference.avatar}`,
+            `/conference/${conference.id}/avatar/${conference.avatar}`,
             {
               responseType: 'arraybuffer'
             }

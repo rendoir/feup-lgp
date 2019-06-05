@@ -166,7 +166,7 @@ class Conference extends PureComponent<Props, State> {
 
   public getConference() {
     axiosInstance
-      .get(`/conferences/${this.id}`, {
+      .get(`/conference/${this.id}`, {
         params: {
           user: this.props.user.id
         }
@@ -272,7 +272,7 @@ class Conference extends PureComponent<Props, State> {
     }
 
     axiosInstance
-      .get(`/conferences/${this.id}/avatar/${conference.avatar}`, {
+      .get(`/conference/${this.id}/avatar/${conference.avatar}`, {
         responseType: 'arraybuffer'
       })
       .then(res => {

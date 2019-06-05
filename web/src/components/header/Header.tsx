@@ -310,19 +310,31 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     } else {
       const formData = new FormData();
 
+      formData.append('about', request.description.trim());
+      formData.append('title', request.title.trim());
+      formData.append('privacy', request.visibility.trim());
+
+      if (request.local === undefined) {
+        request.local = '';
+      }
+      formData.append('local', request.local.trim());
+
+      if (request.dateStart === undefined) {
+        request.dateStart = '';
+      }
+      formData.append('dateStart', request.dateStart.trim());
+
+      if (request.dateEnd === undefined) {
+        request.dateEnd = '';
+      }
+      formData.append('dateEnd', request.dateEnd.trim());
+
       if (request.avatar !== undefined) {
         formData.append('avatar', request.avatar);
       }
 
-      formData.append('about', request.description);
-      formData.append('dateEnd', request.dateEnd);
-      formData.append('dateStart', request.dateStart);
-      formData.append('local', request.local);
-      formData.append('privacy', request.visibility);
-      formData.append('title', request.title);
-
       axiosInstance
-        .post('/conferences', formData, {
+        .post('/conference', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

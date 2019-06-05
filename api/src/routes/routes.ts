@@ -8,6 +8,6 @@ export * from './talk';
 export * from './search';
 export * from './tags';
 export * from './challenge';
-export * from './conferences';
+export * from './conference';
 export * from './products';
 export * from './invite';

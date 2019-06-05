@@ -82,7 +82,7 @@ app.use('/post/:post_id/comment', commentRouter);
 app.use('/talk', talkRouter);
 app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
-app.use('/conferences', conferenceRouter);
+app.use('/conference', conferenceRouter);
 app.use('/products', productsRouter);
 app.use('/invite', inviteRouter);
 app.get('/', (req, res) => {

@@ -1,6 +1,6 @@
 'use strict';
 import { Router } from 'express';
-import * as controller from '../controllers/conferences';
+import * as controller from '../controllers/conference';
 
 export const conferenceRouter = Router();
 

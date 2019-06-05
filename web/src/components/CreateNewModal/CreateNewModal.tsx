@@ -6,6 +6,10 @@ import Modal from 'react-bootstrap/Modal';
 import { dictionary, LanguageContext } from '../../utils/language';
 import Tag from '../Tags/Tag';
 import { Request, Step } from './types';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { IconButton, AvatarSelector } from '../../components';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import ImageEdit from '../ImageEdit/ImageEdit';
 
 export type Props = {
   id: string;
@@ -21,6 +25,7 @@ export type Props = {
 };
 
 export type State = {
+  avatar?: string;
   error: {
     dateEnd: boolean;
     dateEndStart: boolean;
@@ -82,6 +87,22 @@ class CreateNewModal extends PureComponent<Props, State> {
     };
   }
 
+  public componentDidMount(): void {
+    if (this.props.request.avatar) {
+      fileToBase64(this.props.request.avatar, (avatar: string) =>
+        this.setState({ avatar })
+      );
+    }
+  }
+
+  public componentDidUpdate(): void {
+    if (this.props.request.avatar) {
+      fileToBase64(this.props.request.avatar, (avatar: string) =>
+        this.setState({ avatar })
+      );
+    }
+  }
+
   public render() {
     return (
       <Modal
@@ -107,6 +128,8 @@ class CreateNewModal extends PureComponent<Props, State> {
     } = this.props;
 
     switch (step) {
+      case 'avatar':
+        return this.renderAvatarStep();
       case 'type':
         return this.renderTypeStep();
       case 'info':
@@ -144,6 +167,44 @@ class CreateNewModal extends PureComponent<Props, State> {
       </Modal.Header>
     );
   };
+
+  private renderAvatarStep() {
+    const {
+      request: { avatar }
+    } = this.props;
+
+    if (avatar) {
+      return (
+        <div>
+          <Modal
+            show={this.props.show}
+            onHide={this.props.onClose}
+            centered={this.props.centered}
+          >
+            <Modal.Header closeButton={true}>
+              <IconButton
+                glyph={faArrowLeft}
+                onClick={this.handleCancelAvatarEdit}
+                id={`${this.props.id}_back_button`}
+              />
+              {dictionary.edit_avatar[this.context]}
+            </Modal.Header>
+            <Modal.Body>
+              <ImageEdit
+                image={avatar}
+                type={'circle'}
+                size={250}
+                height={400}
+                onSubmit={this.handleAvatarChange}
+              />
+            </Modal.Body>
+          </Modal>
+        </div>
+      );
+    }
+
+    return null;
+  }
 
   private renderTypeStep = () => {
     const {
@@ -308,6 +369,7 @@ class CreateNewModal extends PureComponent<Props, State> {
 
     return (
       <Form id={`${id}_conference`}>
+        {this.renderAvatar()}
         <Form.Group controlId={`${id}_conference.title`}>
           <Form.Label column={false}>
             {dictionary.title[this.context]}
@@ -477,6 +539,24 @@ class CreateNewModal extends PureComponent<Props, State> {
       </Modal.Footer>
     );
   };
+
+  private renderAvatar() {
+    const { title } = this.props.request;
+    const { avatar } = this.state;
+
+    return (
+      <div className="d-flex justify-content-center">
+        <AvatarSelector
+          title={title}
+          placeholder={'empty'}
+          avatar={avatar}
+          size={140}
+          onRemove={this.handleAvatarRemove}
+          onChange={this.handleAvatarEdit}
+        />
+      </div>
+    );
+  }
 
   /**
    * Handlers
@@ -659,6 +739,32 @@ class CreateNewModal extends PureComponent<Props, State> {
       }
     });
   };
-}
 
+  private handleAvatarChange = (avatar: File): void => {
+    this.props.onChange({
+      ...this.props.request,
+      avatar
+    });
+    this.props.onStepChange('info');
+  };
+
+  private handleAvatarRemove = (): void => {
+    this.props.onChange({
+      ...this.props.request,
+      avatar: undefined
+    });
+  };
+
+  private handleAvatarEdit = (avatar: File): void => {
+    this.props.onChange({
+      ...this.props.request,
+      avatar
+    });
+    this.props.onStepChange('avatar');
+  };
+
+  private handleCancelAvatarEdit = (): void => {
+    this.props.onStepChange('info');
+  };
+}
 export default CreateNewModal;

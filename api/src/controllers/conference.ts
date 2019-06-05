@@ -3,6 +3,7 @@ import { query } from '../db/db';
 import * as shop from './shop';
 
 export function createConference(req, res) {
+
   if (!req.body.title.trim()) {
     console.log('\n\nError: conference title cannot be empty');
     res.status(400).send({
@@ -45,8 +46,8 @@ export function createConference(req, res) {
   }
   const userId = req.user.id;
   query({
-    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, privacy) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: [
       userId,
       req.body.title,
@@ -54,7 +55,6 @@ export function createConference(req, res) {
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
-      req.body.avatar,
       req.body.privacy,
     ],
   }).then((result) => {
