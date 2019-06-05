@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Spinner from 'react-bootstrap/Spinner';
 
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 import Icon from '../components/Icon/Icon';
@@ -102,43 +103,34 @@ class PostView extends React.Component<IProps, IState> {
       );
     }
 
-    if (this.state.id === -1) {
+    if (!this.state.fetchingInfo) {
       return (
         <div className="container my-5">
-          <div className="w-100 mx-auto">
-            <div className={styles.spinner}>
-              <Icon
-                icon={faSpinner}
-                pulse={true}
-                size={'2x'}
-                theme={'primary'}
-              />
-            </div>
+          <div className="w-75 mx-auto">
+            <Post
+              id={this.id}
+              title={this.state.title}
+              author={this.state.author}
+              date={date}
+              content={this.state.content}
+              user_id={this.state.user_id}
+              comments={this.state.comments}
+              files={this.state.files}
+              tags={this.state.tags}
+              visibility={this.state.visibility}
+            />
           </div>
         </div>
       );
-    }
-
-    return (
-      <div className="container my-5">
-        <div className="w-100 mx-auto">
-          <Post
-            id={this.id}
-            title={this.state.title}
-            author={this.state.author}
-            avatar={this.state.avatar}
-            avatar_mimeType={this.state.avatar_mimetype}
-            date={date}
-            content={this.state.content}
-            user_id={this.state.user_id}
-            comments={this.state.comments}
-            files={this.state.files}
-            tags={this.state.tags}
-            visibility={this.state.visibility}
-          />
+    } else {
+      return (
+        <div className="container my-5">
+          <Spinner animation={'border'} role={'status'}>
+            <span className={'sr-only'}>Loading...</span>
+          </Spinner>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 
