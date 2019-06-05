@@ -306,6 +306,7 @@ export function editTalk(req, res) {
     return;
   }
 
+  console.log(data.livestreamURL);
   query({
     text: `UPDATE talks
            SET (title, about, local, datestart, dateend, livestream_url) =
@@ -321,7 +322,7 @@ export function editTalk(req, res) {
       data.livestreamURL,
     ],
   })
-    .then((response) => {
+    .then(() => {
       saveAvatar(req, res);
       res.status(200).send();
     })

@@ -1,15 +1,18 @@
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { Request, Step } from './types';
+
 import React, { PureComponent } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
-import { dictionary, LanguageContext } from '../../utils/language';
-import Tag from '../Tags/Tag';
-import { Request, Step } from './types';
-import { fileToBase64 } from '../../utils/fileToBase64';
-import { IconButton, AvatarSelector } from '../../components';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
 import ImageEdit from '../ImageEdit/ImageEdit';
+import Tag from '../Tags/Tag';
+
+import { AvatarSelector, IconButton } from '../../components';
+import { fileToBase64 } from '../../utils/fileToBase64';
+import { dictionary, LanguageContext } from '../../utils/language';
 
 export type Props = {
   id: string;

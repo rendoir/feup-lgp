@@ -51,6 +51,7 @@ export type Props = {
 };
 
 export type State = {
+  avatar_src: string;
   activeIndex: number;
   adminCardOpen: boolean;
   archiveModalOpen: boolean;
@@ -138,7 +139,6 @@ export type State = {
   talk: {
     avatar?: string;
     avatar_mimeType?: string;
-    avatar_src?: string;
     title: string;
     description: string;
     dateStart: string;
@@ -263,6 +263,7 @@ class Talk extends PureComponent<Props, State> {
       activeIndex: 0,
       adminCardOpen: false,
       archiveModalOpen: false,
+      avatar_src: '',
       challengeFields: {
         answer: undefined,
         challengetype: 'question_options',
@@ -347,7 +348,6 @@ class Talk extends PureComponent<Props, State> {
       talk: {
         avatar: '',
         avatar_mimeType: '',
-        avatar_src: '',
         dateEnd: '',
         dateStart: '',
         description: '',
@@ -428,9 +428,11 @@ class Talk extends PureComponent<Props, State> {
         this.privacy = talk.privacy;
         this.tags = tags;
 
+        const hasLivestream =
+          talk.livestream_url !== '' && talk.livestream_url !== null
+            ? 'true'
+            : 'false';
         this.apiGetTalkAvatar(talk);
-
-        const hasLivestream = talk.livestream_url !== '' ? 'true' : 'false';
 
         this.setState({
           challengeFields: {
@@ -440,7 +442,7 @@ class Talk extends PureComponent<Props, State> {
           challenges,
           editFields: {
             avatar: undefined,
-            avatar_str: talk.avatar_src,
+            avatar_str: this.state.avatar_src,
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
@@ -458,8 +460,7 @@ class Talk extends PureComponent<Props, State> {
           posts,
           talk: {
             avatar: talk.avatar,
-            avatar_mimeType: talk.avatar_mimeType,
-            avatar_src: talk.avatar_src,
+            avatar_mimeType: talk.mimeType,
             dateEnd: talk.dateend,
             dateStart: talk.datestart,
             description: talk.about,
@@ -490,8 +491,7 @@ class Talk extends PureComponent<Props, State> {
     }
 
     if (talk.avatar.startsWith('http')) {
-      talk.avatar_src = talk.avatar;
-      this.setState({ talk });
+      this.setState({ avatar_src: talk.avatar });
       this.forceUpdate();
       return;
     }
@@ -507,8 +507,7 @@ class Talk extends PureComponent<Props, State> {
           ';base64, ' +
           new Buffer(res.data, 'binary').toString('base64');
 
-        talk.avatar_src = src;
-        this.setState({ talk });
+        this.setState({ avatar_src: src });
         this.forceUpdate();
       })
       .catch(() => {
@@ -717,7 +716,7 @@ class Talk extends PureComponent<Props, State> {
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
             <div className={'d-flex align-items-center'}>
-              <Avatar image={talk.avatar_src} title={talk.title} /> &nbsp;
+              <Avatar image={this.state.avatar_src} title={talk.title} /> &nbsp;
               <strong>{talk.title}</strong>
             </div>
             {this.renderTalkStatus()}
@@ -2218,7 +2217,7 @@ class Talk extends PureComponent<Props, State> {
       this.setState({
         editFields: {
           avatar: undefined,
-          avatar_str: this.state.talk.avatar_src,
+          avatar_str: this.state.avatar_src,
           dateEnd: this.state.talk.dateEnd,
           dateStart: this.state.talk.dateStart,
           description: this.state.talk.description,
@@ -2251,6 +2250,20 @@ class Talk extends PureComponent<Props, State> {
     const handleShow = event => {
       event.preventDefault();
       this.setState({
+        editFields: {
+          avatar: undefined,
+          avatar_str: this.state.avatar_src,
+          dateEnd: this.state.talk.dateEnd,
+          dateStart: this.state.talk.dateStart,
+          description: this.state.talk.description,
+          hasLivestream: this.state.talk.hasLivestream,
+          livestreamURL: this.state.talk.livestreamURL
+            ? this.state.talk.livestreamURL
+            : '',
+          local: this.state.talk.local,
+          privacy: this.state.talk.privacy,
+          title: this.state.talk.title
+        },
         editFormOpen: true
       });
     };
@@ -2290,8 +2303,6 @@ class Talk extends PureComponent<Props, State> {
 
       this.forceUpdate();
     };
-
-    console.log(this.state.error);
 
     if (this.state.stepTalk === 'Talk') {
       return (
@@ -2409,13 +2420,13 @@ class Talk extends PureComponent<Props, State> {
                 <Switcher
                   id={`talk_switcher`}
                   name={'hasLivestream'}
-                  label={dictionary.livestream[this.context]}
                   onChange={(value, event) =>
                     handleChange(String(value), event)
                   }
                   value={editFields.hasLivestream === 'true'}
                   className={styles.switcher}
                 />
+                <br />
                 <InputNext
                   onChange={handleChange}
                   id={`talk_livestream_url_field`}
@@ -2603,9 +2614,9 @@ class Talk extends PureComponent<Props, State> {
     formData.append('dateStart', editFields.dateStart.trim());
 
     if (editFields.hasLivestream === 'true') {
-      formData.append('livestream', editFields.livestreamURL.trim());
+      formData.append('livestreamURL', editFields.livestreamURL.trim());
     } else {
-      formData.append('livestream', '');
+      formData.append('livestreamURL', '');
     }
 
     formData.append('privacy', editFields.privacy.trim());

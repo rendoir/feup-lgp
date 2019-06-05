@@ -666,6 +666,7 @@ class Conference extends PureComponent<Props, State> {
                   value={this.state.request.switcher === 'true'}
                   className={styles.switcher}
                 />
+                <br />
                 <InputNext
                   onChange={handleChange}
                   id={`talk_livestream_url_field`}
