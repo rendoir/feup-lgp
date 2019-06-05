@@ -660,7 +660,6 @@ class Conference extends PureComponent<Props, State> {
                 <Switcher
                   id={`talk_switcher`}
                   name={'switcher'}
-                  label={dictionary.livestream[this.context]}
                   onChange={(value, event) =>
                     handleChange(String(value), event)
                   }
@@ -1029,7 +1028,7 @@ class Conference extends PureComponent<Props, State> {
       return;
     } else {
       axiosInstance
-        .put(`/conferences/${this.id}`, formData, {
+        .put(`/conference/${this.id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
