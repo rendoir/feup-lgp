@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Spinner from 'react-bootstrap/Spinner';
 
 import Post from '../components/Post/Post';
 import axiosInstance from '../utils/axiosInstance';
@@ -94,24 +95,34 @@ class PostView extends React.Component<IProps, IState> {
       );
     }
 
-    return (
-      <div className="container my-5">
-        <div className="w-75 mx-auto">
-          <Post
-            id={this.id}
-            title={this.state.title}
-            author={this.state.author}
-            date={date}
-            content={this.state.content}
-            user_id={this.state.user_id}
-            comments={this.state.comments}
-            files={this.state.files}
-            tags={this.state.tags}
-            visibility={this.state.visibility}
-          />
+    if (!this.state.fetchingInfo) {
+      return (
+        <div className="container my-5">
+          <div className="w-75 mx-auto">
+            <Post
+              id={this.id}
+              title={this.state.title}
+              author={this.state.author}
+              date={date}
+              content={this.state.content}
+              user_id={this.state.user_id}
+              comments={this.state.comments}
+              files={this.state.files}
+              tags={this.state.tags}
+              visibility={this.state.visibility}
+            />
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="container my-5">
+          <Spinner animation={'border'} role={'status'}>
+            <span className={'sr-only'}>Loading...</span>
+          </Spinner>
+        </div>
+      );
+    }
   }
 }
 
