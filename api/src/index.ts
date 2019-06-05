@@ -104,7 +104,7 @@ app.use((err, req, res, next) => {
         res.status(401).send({ message: err.message });
     } else if (err.name === 'NotFoundError') {
         res.status(404).send({ message: 'Endpoint not found' });
-    } else {
+    } else /* istanbul ignore next */ {
         console.error('API UNCAUGHT ERROR:', err);
         res.status(500).send({ message: 'Internal server error'});
     }

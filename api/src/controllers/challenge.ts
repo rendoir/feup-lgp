@@ -62,7 +62,7 @@ export async function createChallenge(req, res) {
         ],
     }).then((challenge) => {
         res.status(200).send({ challenge: challenge.rows[0].id });
-    }).catch((error) => {
+    }).catch((error) => /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occurred while adding a challenge to a conference' });
     });
@@ -81,7 +81,7 @@ export function solveChallenge(req, res) {
         ],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch((error) => /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'Could not update challenge state. Error: ' + error });
     });
@@ -109,7 +109,7 @@ export async function getSolvedStateForUser(req, res) {
 
         res.send({state: result.rows, title});
 
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating a post' });
     }

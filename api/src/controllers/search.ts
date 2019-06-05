@@ -218,7 +218,7 @@ export async function search(req, res) {
     try {
         const result = await runQueries(type, keywords, tags, limit, offset, initialDate, finalDate);
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send('Search error');
     }

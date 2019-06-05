@@ -70,6 +70,10 @@ postRouter.delete('/:id', controller.deletePost);
  *
  * @apiParam {String}   post.id   Number of the post to get info
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -82,8 +86,6 @@ postRouter.get('/:id', controller.getPost);
  * @api {get} /api/post/:id/user_interactions Get post-user one-click interactions such as rate or subscription
  * @apiName Get-Post-User-Interactions
  * @apiGroup Post
- *
- * @apiParam {number}   id   Id of the post
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -100,6 +102,10 @@ postRouter.get('/:id/user_interactions', controller.getPostUserInteractions);
  *
  * @apiParam {number}   id   Id of the post
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -115,6 +121,10 @@ postRouter.post('/:id/subscription', controller.subscribePost);
  *
  * @apiParam {number}   id   Id of the post
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -131,6 +141,11 @@ postRouter.delete('/:id/subscription', controller.unsubscribePost);
  * @apiParam {number}   id   Id of the post being reported
  * @apiParam {string}   reason   Reason of the report
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      report: true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -140,12 +155,17 @@ postRouter.delete('/:id/subscription', controller.unsubscribePost);
 postRouter.post('/:id/report', controller.reportPost);
 
 /**
- * @api {post} /api/post/:id/check_report Check if a post as been reported by a given user
+ * @api {get} /api/post/:id/report Check if a post as been reported by a given user
  * @apiName Check-Post-Report
  * @apiGroup Post
  *
  * @apiParam {number}   id   Id of the post whose report we want to verify
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      report: true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -194,6 +214,10 @@ postRouter.get('/download/:id/:filename', controller.downloadFile);
  * @apiParam {Number}   rate             Rate of the User
  * @apiParam {String}   post             Id of the post being rated
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -226,6 +250,10 @@ postRouter.put('/:id/rate', controller.updateRate);
  * @apiParam {number}   id    Id of the post the user will be invited to
  * @apiParam {number}   invited_user    Id of the user being invited
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -242,6 +270,10 @@ postRouter.post('/:id/invite', controller.inviteUser);
  * @apiParam {number}   id    Id of the post the subscribers will be invited to
  * The user whose subscribers will be invited to the post is the logged in user.
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -259,6 +291,11 @@ postRouter.post('/:id/invite_subscribers', controller.inviteSubscribers);
  *
  * @apiParam {number}   id    Id of the post
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      amountUninvitedSubscribers: 1
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -276,6 +313,11 @@ postRouter.post('/:id/amount_uninvited_subscribers', controller.amountSubscriber
  *
  * @apiParam {number}   id    Id of the post
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      uninvitedUsers: { ... }
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

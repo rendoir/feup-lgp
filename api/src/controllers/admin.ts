@@ -1,7 +1,7 @@
 import { query } from '../db/db';
 
 export function getAllUsers(req, res) {
-    const sql = `SELECT email, dateCreated, permissions, pass FROM users where users.email != $1`;
+    const sql = `SELECT email, date_created, permissions, pass FROM users where users.email != $1`;
     query({ text: sql, values: [req.user.email] }).then((result) => {
         for (const x of result.rows) {
             if (x.pass === null) {
@@ -10,7 +10,9 @@ export function getAllUsers(req, res) {
             delete x.pass;
         }
         res.send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: `An error ocurred while gettting users` });
     });
@@ -27,7 +29,9 @@ export function addUserToWhiteList(req, res) {
         values: [req.body.email, null, req.body.userLevel],
     }).then((result) => {
         res.status(200).json(result.rows[0]);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while inserting user email' });
     });
@@ -39,7 +43,9 @@ export function deleteUserFromWhiteList(req, res) {
         text: 'DELETE FROM users WHERE email = $1', values: [req.query.email],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log(error);
         res.status(400).send({ message: 'An error ocurred while deleting user' });
     });
@@ -56,16 +62,19 @@ export async function getProductExchangeNotifications(req, res) {
         text: 'SELECT * FROM retrieve_exchange_notifications()',
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
     });
 }
 
 export async function getReportNotifications(req, res) {
+    /* istanbul ignore next */
     if (!await isAdmin(req.user.id)) {
-        console.log('\n\nERROR: You cannot retrieve report notifications if you are not an admin');
-        res.status(403).send({ message: 'An error ocurred fetching report notifications: You are not an admin.' });
+        console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
+        res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
         return;
     }
 
@@ -73,13 +82,17 @@ export async function getReportNotifications(req, res) {
         text: 'SELECT * FROM retrieve_admin_notifications()',
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report notifications' });
     });
+
 }
 
 export async function amountReportNotifications(req, res) {
+    /* istanbul ignore next */
     if (!await isAdmin(req.user.id)) {
         console.log('\n\nERROR: You cannot retrieve report notifications amount if you are not an admin');
         res.status(403).send({ message: 'An error ocurred fetching report notifications amount: You are not an admin.' });
@@ -91,7 +104,7 @@ export async function amountReportNotifications(req, res) {
             text: `SELECT COUNT(*) FROM retrieve_admin_notifications()`,
         });
         res.status(200).send({ amountReportNotifications: amountReportNotificationsQuery.rows[0].count });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving report notifications count'));
     }
@@ -115,7 +128,9 @@ export async function getReportReasons(req, res) {
         values: [req.body.content_id, req.body.content_type],
     }).then((result) => {
         res.status(200).send(result.rows);
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while fetching report reasons' });
     });
@@ -135,7 +150,9 @@ export async function ignoreContentReports(req, res) {
         values: [req.body.content_id, req.body.content_type],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(500).send({ message: 'An error ocurred while ignoring reports' });
     });
@@ -161,11 +178,15 @@ export async function addAdmin(req, res) {
             if (result.rowCount > 0) {
                 res.status(200).send();
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while adding admin' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to add an admin' }); }
+    } else {
+        res.status(401).send({ message: 'You do not have permissions to add an admin' });
+    }
 }
 
 export async function banUser(req, res) {
@@ -173,17 +194,23 @@ export async function banUser(req, res) {
 
     if (isRequesterAdmin) {
         query({
-            text: 'UPDATE users SET permissions = \'banned\' WHERE email = $1',
+            text: `UPDATE users SET permissions = 'banned' WHERE email = $1`,
             values: [req.body.email],
         }).then((result) => {
             if (result.rowCount > 0) {
                 res.status(200).send();
-            } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+            } else {
+                res.status(400).send({ message: 'The email does not belong to a user' });
+            }
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while banning a user' });
         });
-    } else { res.status(401).send({ message: 'You do not have permissions to ban a user' }); }
+    } else {
+        res.status(401).send({ message: 'You do not have permissions to ban a user' });
+    }
 }
 
 export async function makeUser(req, res) {
@@ -197,7 +224,9 @@ export async function makeUser(req, res) {
             if (result.rowCount > 0) {
                 res.status(200).send();
             } else { res.status(400).send({ message: 'The email does not belong to a user' }); }
-        }).catch((error) => {
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log(error);
             res.status(500).send({ message: 'An error ocurred while changing to a user' });
         });
@@ -211,7 +240,7 @@ export async function isAdmin(userId): Promise<boolean> {
             values: [userId],
         });
         return result.rowCount > 0;
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         return false;
     }
