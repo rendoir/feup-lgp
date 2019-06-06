@@ -2571,15 +2571,4 @@ describe('Product tests', () => {
                 done();
             });
     });
-
-    it('Should get all products', (done) => {
-        request(app)
-            .get(`/shop`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
-            .end((err, res) => {
-                !expect(err).to.be.null;
-                done();
-            });
-    });
 });
