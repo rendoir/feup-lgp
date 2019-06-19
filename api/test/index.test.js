@@ -2523,6 +2523,17 @@ describe('Product tests', () => {
             });
     });
 
+    it('Should get all products', (done) => {
+        request(app)
+            .get(`/products`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
     it('Should edit a product' , (done) => {
         request(app)
             .put(`/products/${productId}`)
