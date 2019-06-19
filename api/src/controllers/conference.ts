@@ -1,7 +1,9 @@
+import * as fs from 'fs';
 import { query } from '../db/db';
 import * as shop from './shop';
 
 export function createConference(req, res) {
+
   if (!req.body.title.trim()) {
     console.log('\n\nError: conference title cannot be empty');
     res.status(400).send({
@@ -43,8 +45,8 @@ export function createConference(req, res) {
   }
   const userId = req.user.id;
   query({
-    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, avatar, privacy) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    text: 'INSERT INTO conferences (author, title, about, local, datestart, dateend, privacy) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: [
       userId,
       req.body.title,
@@ -52,10 +54,11 @@ export function createConference(req, res) {
       req.body.local,
       req.body.dateStart,
       req.body.dateEnd,
-      req.body.avatar,
       req.body.privacy,
     ],
   }).then((result) => {
+    req.params.id = result.rows[0].id;
+    saveAvatar(req, res);
     res.status(200).send({
       id: result.rows[0].id,
     });
@@ -131,6 +134,7 @@ export function editConference(req, res) {
       data.dateEnd,
     ],
   }).then((response) => {
+    saveAvatar(req, res);
     res.status(200).send({
       id: response.rows[0].id,
     });
@@ -156,7 +160,7 @@ export async function getConference(req, res) {
     const conference = await query({
       text: `
                 SELECT c.id, a.id as user_id, a.first_name, a.last_name, c.title,
-                c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.privacy
+                c.about, c.local, c.dateStart, c.dateEnd, c.avatar, c.avatar_mimeType, c.privacy
                 FROM conferences c
                 INNER JOIN users a ON c.author = a.id
                 WHERE c.id = $1
@@ -180,6 +184,7 @@ export async function getConference(req, res) {
                     t.id,
                     t.author,
                     t.avatar,
+                    t.avatar_mimeType,
                     t.privacy,
                     t.title,
                     t.about,
@@ -215,6 +220,65 @@ export async function getConference(req, res) {
   }
 }
 
+export async function getAvatar(req, res) {
+  res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
+}
+
+export async function saveAvatar(req, res) {
+
+  if (!req.files || !req.files.avatar) {
+    return;
+  }
+
+  const file = req.files.avatar;
+  const filename = file.name;
+  const mimetype = file.mimetype;
+
+  const filetype = filename.split('.');
+  const savedFileName = 'conference_' + req.params.id + '.' + filetype[filetype.length - 1];
+
+  if (fs.existsSync('uploads/avatars/' + savedFileName)) {
+    fs.unlinkSync('uploads/avatars/' + savedFileName);
+  }
+
+  file.mv('./uploads/avatars/' + savedFileName, (err) => {
+    if (err) {
+      res.status(400).send({ message: 'An error ocurred while editing user: Moving avatar.' });
+    } else {
+      query({
+        text: `UPDATE conferences SET avatar = $2, avatar_mimeType = $3
+                    WHERE id = $1`,
+        values: [req.params.id, savedFileName, mimetype],
+      }).then(() => {
+        return;
+      }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing user: Adding avatar to database.' });
+      });
+    }
+  });
+}
+
+export async function getProducts(req, res) {
+  shop.getProducts(req, res);
+}
+
+export async function getProduct(req, res) {
+  shop.getProduct(req, res);
+}
+
+export async function createProduct(req, res) {
+  shop.createProduct(req, res);
+}
+
+export async function updateProduct(req, res) {
+  shop.updateProduct(req, res);
+}
+
+export async function deleteProduct(req, res) {
+  shop.deleteProduct(req, res);
+}
+
 export async function getAllConferences(req, res) {
   const user = req.query.user;
   try {
@@ -243,24 +307,4 @@ export async function getAllConferences(req, res) {
     console.log(e);
     res.status(500).send(new Error('Error retrieving Conferences'));
   }
-}
-
-export async function getProducts(req, res) {
-  shop.getProducts(req, res);
-}
-
-export async function getProduct(req, res) {
-  shop.getProduct(req, res);
-}
-
-export async function createProduct(req, res) {
-  shop.createProduct(req, res);
-}
-
-export async function updateProduct(req, res) {
-  shop.updateProduct(req, res);
-}
-
-export async function deleteProduct(req, res) {
-  shop.deleteProduct(req, res);
 }

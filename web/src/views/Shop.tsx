@@ -95,8 +95,8 @@ class Shop extends React.Component<Props, State> {
 
   private apiGetProducts = () => {
     const url = this.isConferenceShop
-      ? `/conference/${this.conferenceId}/shop`
-      : '/shop';
+      ? `/conferences/${this.conferenceId}/products`
+      : '/products';
 
     this.setState({ isLoading: true }, () => {
       axiosInstance
@@ -141,7 +141,7 @@ class Shop extends React.Component<Props, State> {
 
   private apiGetConfOwner = () => {
     axiosInstance
-      .get(`/conference/${this.conferenceId}`, {
+      .get(`/conferences/${this.conferenceId}`, {
         params: {
           user: this.props.user.id
         }

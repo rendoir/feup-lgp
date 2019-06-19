@@ -9,6 +9,7 @@ import styles from './CreateNewModal.module.css';
 export type Props = {
   id: string;
   avatar?: File;
+  avatar_str?: string;
   confirm_password: string;
   email: string;
   first_name: string;
@@ -178,13 +179,12 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               placeholder={dictionary.university[this.context]}
               label={dictionary.university[this.context]}
               value={this.props.university}
-              htmlAutoFocus={true}
               required={true}
             />
           </div>
           <div className="form-group mt-3">
             <InputNext
-              className={styles.input}
+              className={styles.input_email}
               id={`${id}_email`}
               name={'email'}
               type="email"
@@ -192,7 +192,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
               placeholder={'E-mail'}
               label={'E-mail'}
               value={this.props.email}
-              htmlAutoFocus={true}
               required={true}
             />
             <p id="emailErrorMessage">
@@ -214,7 +213,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
                 placeholder={dictionary.old_password[this.context]}
                 label={dictionary.old_password[this.context]}
                 value={this.props.old_password}
-                htmlAutoFocus={true}
                 required={true}
               />
               {this.renderErrorOldPassword()}
@@ -229,7 +227,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
                 placeholder={dictionary.new_password[this.context]}
                 label={dictionary.new_password[this.context]}
                 value={this.props.password}
-                htmlAutoFocus={true}
                 required={true}
               />
               <p id="passwordErrorMessage">
@@ -246,7 +243,6 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
                 placeholder={dictionary.confirm_password[this.context]}
                 label={dictionary.confirm_password[this.context]}
                 value={this.props.confirm_password}
-                htmlAutoFocus={true}
                 required={true}
               />
               <p id="confirmPasswordErrorMessage">
@@ -302,20 +298,35 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
 
   private renderAvatar() {
     const { avatar } = this.state;
-    const { email } = this.props;
+    const { email, avatar_str } = this.props;
 
-    return (
-      <div className={styles.avatarBlock}>
-        <AvatarSelector
-          title={email}
-          placeholder={'empty'}
-          avatar={avatar}
-          size={140}
-          onRemove={this.props.onAvatarRemove}
-          onChange={this.props.onAvatarChange}
-        />
-      </div>
-    );
+    if (avatar_str !== '' && avatar === undefined) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={email}
+            placeholder={'empty'}
+            avatar={avatar_str}
+            size={140}
+            onRemove={this.props.onAvatarRemove}
+            onChange={this.props.onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={email}
+            placeholder={'empty'}
+            avatar={avatar}
+            size={140}
+            onRemove={this.props.onAvatarRemove}
+            onChange={this.props.onAvatarChange}
+          />
+        </div>
+      );
+    }
   }
 
   private validate(value, type) {
@@ -361,6 +372,22 @@ class CreateGroupInfoForm extends PureComponent<Props, State> {
         this.setState(() => ({ passwordError: true }));
         if (passwordError !== null) {
           passwordError.style.display = 'block';
+        }
+      }
+      if (this.props.confirm_password !== '') {
+        const confirmPasswordError = document.getElementById(
+          'confirmPasswordErrorMessage'
+        );
+        if (this.props.confirm_password === value) {
+          this.setState(() => ({ confirmPasswordError: false }));
+          if (confirmPasswordError !== null) {
+            confirmPasswordError.style.display = 'none';
+          }
+        } else {
+          this.setState(() => ({ confirmPasswordError: true }));
+          if (confirmPasswordError !== null) {
+            confirmPasswordError.style.display = 'block';
+          }
         }
       }
       this.setState(() => ({ passwordHadInteraction: true }));

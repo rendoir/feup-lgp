@@ -318,6 +318,7 @@ export let dictionary: Dictionary = {
     EN: 'Conferences are formal meetings for discussion of a particular topic.'
   },
   new_f: { PT: 'Nova', EN: 'New' },
+  feed_error: { PT: 'Erro ao adquirir o feed', EN: 'Error retrieving feed' },
   error_occurred: { PT: 'Ocorreu um erro', EN: 'An error occurred' },
   next: { PT: 'Continuar', EN: 'Next' },
   finish: { PT: 'Concluir', EN: 'Finish' },

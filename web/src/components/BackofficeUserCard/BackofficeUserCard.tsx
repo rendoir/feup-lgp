@@ -1,9 +1,14 @@
 import React from 'react';
+import axiosInstance from '../../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../../utils/language';
 
+import Avatar from '../Avatar/Avatar';
+
 type BackofficeUserCardProps = {
+  id?: number;
   name: string;
-  image: string;
+  avatar?: string;
+  avatar_mimeType?: string;
   email: string;
   institution: string;
   profession: string;
@@ -14,9 +19,13 @@ type BackofficeUserCardProps = {
   expelAdminHandler?: any; // Admin users require this handler
 };
 
+type BackofficeUserCardState = {
+  avatar: string;
+};
+
 export class BackofficeUserCard extends React.Component<
   BackofficeUserCardProps,
-  {}
+  BackofficeUserCardState
 > {
   public static contextType = LanguageContext;
 
@@ -26,10 +35,18 @@ export class BackofficeUserCard extends React.Component<
   constructor(props: any) {
     super(props);
 
+    this.state = {
+      avatar: ''
+    };
+
     this.turnAdminHandler = this.turnAdminHandler.bind(this);
     this.expelAdminHandler = this.expelAdminHandler.bind(this);
     this.banUserHandler = this.banUserHandler.bind(this);
     this.unbanUserHandler = this.unbanUserHandler.bind(this);
+  }
+
+  public componentDidMount() {
+    this.updateAvatarSrc();
   }
 
   public render() {
@@ -38,10 +55,11 @@ export class BackofficeUserCard extends React.Component<
         <div className="card-header">{this.props.name}</div>
         <div className="card-body row col-md d-flex align-items-center pr-lg-2 pr-xl-4">
           <div className="col-12 col-lg-2 d-flex justify-content-center">
-            <img
-              className="img-fluid img-thumbnail rounded-circle"
-              src={this.props.image}
-              alt="card image"
+            <Avatar
+              title={this.props.name}
+              placeholder="empty"
+              size={80}
+              image={this.state.avatar}
             />
           </div>
           <div className="col-12 col-lg-8 mb-2 mb-lg-0">
@@ -148,5 +166,26 @@ export class BackofficeUserCard extends React.Component<
     if (this.props.unbanHandler) {
       this.props.unbanHandler(this.props.email);
     }
+  }
+
+  private updateAvatarSrc() {
+    if (this.props.avatar === undefined || this.props.avatar === null) {
+      return;
+    }
+
+    axiosInstance
+      .get(`/users/${this.props.id}/avatar/${this.props.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          this.props.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+        this.forceUpdate();
+      });
   }
 }

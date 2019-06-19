@@ -41,6 +41,8 @@ export type Props = {
   title: string;
   date: string;
   author: string;
+  avatar?: string;
+  avatar_mimeType?: string;
   content: string | undefined;
   visibility: string;
   comments: any[];
@@ -51,6 +53,8 @@ export type Props = {
 
 interface IState {
   activePage: number;
+  avatar?: string;
+  avatarUserLoggedIn?: string;
   commentValue: string;
   clickedImage: string | undefined;
   data: any;
@@ -62,6 +66,7 @@ interface IState {
   fetchingPostUserInteractions: boolean;
   isFetching: boolean;
   isHovered: boolean;
+  nameUserLoggedIn: string;
   numberOfRatings: number;
   postID: number;
   postRated: boolean;
@@ -84,6 +89,8 @@ class Post extends Component<Props, IState> {
 
     this.state = {
       activePage: 1,
+      avatar: '',
+      avatarUserLoggedIn: '',
       clickedImage: undefined,
       commentValue: '',
       data: '',
@@ -92,6 +99,7 @@ class Post extends Component<Props, IState> {
       images: [],
       isFetching: true,
       isHovered: false,
+      nameUserLoggedIn: '',
       numberOfRatings: 1,
       postID: 0,
       postRated: false,
@@ -132,7 +140,7 @@ class Post extends Component<Props, IState> {
               title={this.props.author}
               placeholder="empty"
               size={30}
-              image="https://picsum.photos/200/200?image=52"
+              image={this.state.avatar}
             />
             <a
               className={styles.post_author}
@@ -210,10 +218,10 @@ class Post extends Component<Props, IState> {
               onSubmit={this.handleAddComment}
             >
               <Avatar
-                title={this.props.author}
+                title={this.state.nameUserLoggedIn}
                 placeholder="empty"
                 size={30}
-                image="http://cosmicgirlgames.com/images/games/morty.gif"
+                image={this.state.avatarUserLoggedIn}
               />
               <textarea
                 className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
@@ -245,6 +253,7 @@ class Post extends Component<Props, IState> {
   public componentDidMount() {
     this.apiGetPostUserInteractions();
     this.apiGetPostUserReport();
+    this.getUserAvatarSrc();
 
     let currentPage;
     if (this.props.comments === [] || this.props.comments === undefined) {
@@ -510,6 +519,8 @@ class Post extends Component<Props, IState> {
           id={comment.id}
           postID={comment.post}
           author={{
+            avatar: comment.avatar,
+            avatar_mimeType: comment.avatar_mimeType,
             id: comment.author_id,
             name: comment.first_name + ' ' + comment.last_name
           }}
@@ -764,6 +775,65 @@ class Post extends Component<Props, IState> {
       });
   }
 
+  private getUserAvatarSrc() {
+    const id = this.auth.getUserPayload().id;
+
+    axiosInstance.get(`/users/${id}/`).then(res => {
+      if (!res.data.user) {
+        return;
+      } else if (
+        res.data.user.avatar === null ||
+        res.data.user.avatar === undefined
+      ) {
+        this.setState({
+          nameUserLoggedIn:
+            res.data.user.first_name + ' ' + res.data.user.last_name
+        });
+        this.forceUpdate();
+        return;
+      }
+
+      axiosInstance
+        .get(`/users/${id}/avatar/${res.data.user.avatar}`, {
+          responseType: 'arraybuffer'
+        })
+        .then(result => {
+          const src =
+            'data:' +
+            res.data.user.avatar_mimeType +
+            ';base64, ' +
+            new Buffer(result.data, 'binary').toString('base64');
+
+          this.setState({
+            avatarUserLoggedIn: src,
+            nameUserLoggedIn:
+              res.data.user.first_name + ' ' + res.data.user.last_name
+          });
+          this.forceUpdate();
+        });
+    });
+  }
+
+  private updateAvatarSrc() {
+    console.log('id:' + this.props.user_id);
+    console.log('avatar:' + this.props.avatar);
+
+    axiosInstance
+      .get(`/users/${this.props.user_id}/avatar/${this.props.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          this.props.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+        this.forceUpdate();
+      });
+  }
+
   private initFiles() {
     if (this.props.files) {
       Array.from(this.props.files).forEach(file => {
@@ -777,6 +847,14 @@ class Post extends Component<Props, IState> {
           this.state.docs.push(file);
         }
       });
+    }
+
+    if (
+      this.props.avatar !== undefined &&
+      this.props.avatar !== null &&
+      this.props.avatar !== ''
+    ) {
+      this.updateAvatarSrc();
     }
   }
 

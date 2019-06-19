@@ -1,10 +1,14 @@
 import * as React from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import Icon from '../components/Icon/Icon';
 import Post from '../components/Post/Post';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
+
+import styles from '../components/InfiniteScroll/InfiniteScroll.module.css';
 
 interface IProps {
   match: {
@@ -16,6 +20,8 @@ interface IProps {
 
 interface IState {
   author: string;
+  avatar?: string;
+  avatar_mimetype?: string;
   comments: any[];
   content: string;
   date: string;
@@ -48,6 +54,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       author: '',
+      avatar: '',
+      avatar_mimetype: '',
       comments: [],
       content: '',
       date: '',

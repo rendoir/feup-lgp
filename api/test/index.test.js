@@ -1744,7 +1744,7 @@ describe('Conference tests', () => {
 
     it('Should retrieve conference products' , (done) => {
         request(app)
-            .get(`/conference/${conferenceId}/shop`)
+            .get(`/conference/${conferenceId}/products`)
             .set('authorization', 'Bearer ' + userjwt)
             .expect(200)
             .end((err, res) => {
@@ -2523,6 +2523,17 @@ describe('Product tests', () => {
             });
     });
 
+    it('Should get all products', (done) => {
+        request(app)
+            .get(`/products`)
+            .set('authorization', 'Bearer ' + admin.jwt)
+            .expect(200)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
     it('Should edit a product' , (done) => {
         request(app)
             .put(`/products/${productId}`)
@@ -2566,17 +2577,6 @@ describe('Product tests', () => {
             .post(`/products/${productId}/exchange`)
             .set('authorization', 'Bearer ' + admin.jwt)
             .expect(400)
-            .end((err, res) => {
-                !expect(err).to.be.null;
-                done();
-            });
-    });
-
-    it('Should get all products', (done) => {
-        request(app)
-            .get(`/shop`)
-            .set('authorization', 'Bearer ' + admin.jwt)
-            .expect(200)
             .end((err, res) => {
                 !expect(err).to.be.null;
                 done();

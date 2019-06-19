@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as fs from 'fs';
 import { query } from '../db/db';
 
 export function register(req, res) {
@@ -75,7 +76,7 @@ export async function getUser(req, res) {
     const id = req.params.id;
     try {
         const user = await query({
-            text: `SELECT id, avatar, first_name, last_name, email, bio, home_town, university, work, work_field
+            text: `SELECT avatar, avatar_mimeType, first_name, last_name, email, bio, home_town, university, work, work_field
                     FROM users
                     WHERE id = $1
                     `,
@@ -214,7 +215,7 @@ export async function getProfilePosts(req, res) {
     const offset = req.query.offset;
     try {
         const result = await query({
-            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
+            text: `SELECT p.id, a.first_name, a.last_name, a.avatar, a.avatar_mimeType, p.title, p.content,
                 p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON (p.author = a.id)
@@ -246,7 +247,8 @@ export async function getProfilePosts(req, res) {
         });
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                        a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -334,6 +336,7 @@ export function inviteNotified(req, res) {
 }
 
 export async function updateProfile(req, res) {
+
     if (req.params.id !== req.body.author) {
         res.status(400).send({ message: 'This account can\'t be edited by anyone but its owner!' });
         return;
@@ -369,7 +372,7 @@ export async function updateProfile(req, res) {
                     req.body.work, req.body.work_field, req.body.home_town,
                     req.body.university, req.body.email, hashedPassword],
                 }));
-                // saveAvatar(req, res, req.params.id);
+                saveAvatar(req, res);
                 res.status(200).send();
             } catch (error) /* istanbul ignore next */ {
                 console.log('\n\nERROR:', error);
@@ -390,7 +393,7 @@ export async function updateProfile(req, res) {
                 req.body.work, req.body.work_field, req.body.home_town,
                 req.body.university, req.body.email],
             }));
-            // saveAvatar(req, res, req.params.id);
+            saveAvatar(req, res);
             res.status(200).send();
         } catch (error) /* istanbul ignore next */ {
             console.log('\n\nERROR:', error);
@@ -427,4 +430,43 @@ export async function getConferencePoints(req, res) {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
+}
+
+export async function getAvatar(req, res) {
+    res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
+}
+
+export async function saveAvatar(req, res) {
+
+    if (!req.files || !req.files.avatar) {
+        return;
+    }
+
+    const file = req.files.avatar;
+    const filename = file.name;
+    const mimetype = file.mimetype;
+
+    const filetype = filename.split('.');
+    const savedFileName = 'user_' + req.params.id + '.' + filetype[filetype.length - 1];
+
+    if (fs.existsSync('uploads/avatars/' + savedFileName)) {
+        fs.unlinkSync('uploads/avatars/' + savedFileName);
+    }
+
+    file.mv('./uploads/avatars/' + savedFileName, (err) => {
+        if (err) {
+            res.status(400).send({ message: 'An error ocurred while editing user: Moving avatar.' });
+        } else {
+            query({
+                text: `UPDATE users SET avatar = $2, avatar_mimeType = $3
+                    WHERE id = $1`,
+                values: [req.params.id, savedFileName, mimetype],
+            }).then(() => {
+                return;
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error ocurred while editing user: Adding avatar to database.' });
+            });
+        }
+    });
 }

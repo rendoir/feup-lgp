@@ -1,7 +1,7 @@
 import { query } from '../db/db';
 
 export function getAllUsers(req, res) {
-    const sql = `SELECT email, date_created, permissions, pass FROM users where users.email != $1`;
+    const sql = `SELECT avatar, avatar_mimeType, email, date_created, permissions, pass FROM users where users.email != $1`;
     query({ text: sql, values: [req.user.email] }).then((result) => {
         for (const x of result.rows) {
             if (x.pass === null) {

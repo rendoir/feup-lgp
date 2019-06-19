@@ -59,6 +59,22 @@ talkRouter.post('/', controller.createTalk);
 talkRouter.put('/:id', controller.editTalk);
 
 /**
+ * @api {post} /api/users/:id/:filename Gets the contents of a talk avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the talk
+ * @apiParam {String}   filename   Name of the avatar of the talk
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+talkRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
  * @api {post} /api/talk/:id/invite Invite user to talk
  * @apiName Invite-To-talk
  * @apiGroup talk

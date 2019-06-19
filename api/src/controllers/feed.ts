@@ -7,7 +7,7 @@ export async function getFeed(req, res) {
     const userId = req.user.id;
     try {
         const result = await query({
-            text: `(SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+            text: `(SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
@@ -19,7 +19,7 @@ export async function getFeed(req, res) {
                         ORDER BY date DESC
                         LIMIT 80)
                     UNION
-                    (SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+                    (SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
@@ -58,7 +58,7 @@ export async function getFeed(req, res) {
         for (const post of result.rows) {
             const comment = await query({
                 text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
-                            a.first_name, a.last_name, a.id AS author_id
+                            a.first_name, a.last_name, a.avatar, a.avatar_mimeType, a.id AS author_id
                         FROM posts p
                             LEFT JOIN comments c ON (p.id = c.post)
                             INNER JOIN users a ON (c.author = a.id)
@@ -144,7 +144,7 @@ export async function getPosts(req, res) {
     const userId = req.user.id;
     try {
         const result = await query({
-            text: `(SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+            text: `(SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
@@ -156,7 +156,7 @@ export async function getPosts(req, res) {
                         ORDER BY date DESC
                         LIMIT 80)
                     UNION
-                    (SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+                    (SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, p.talk, users.id AS user_id
                         FROM posts p
                             INNER JOIN users ON (users.id = p.author)
@@ -195,7 +195,8 @@ export async function getPosts(req, res) {
         });
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                        a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -230,6 +231,39 @@ export async function getPosts(req, res) {
         res.send({
             posts: result.rows,
             size: totalSize.rows[0].count,
+        });
+    } catch (error) /* istanbul ignore next */ {
+        res.status(500).send({
+            message: `Error retrieving posts: ${error}`,
+        });
+    }
+}
+
+export async function getFeedStuff(req, res) {
+    const userId = req.user.id;
+    try {
+        const following = await query({
+            text: `SELECT a.id, a.first_name, a.last_name, a.avatar, a.avatar_mimeType
+                        FROM users a
+                            INNER JOIN follows f ON a.id=f.followed
+                            LEFT JOIN posts p ON a.id = p.author
+                        WHERE f.follower=$1
+                            AND (p.date_created=(SELECT MAX(date_created) FROM posts p WHERE a.id=p.author)
+                                OR p.date_created IS NULL)
+                        ORDER BY p.date_created DESC NULLS LAST
+                        LIMIT 15`,
+            values: [userId],
+        });
+        const conferences = await query({
+            text: `SELECT c.id, c.title, c.dateStart
+                        FROM conferences c
+                        WHERE c.privacy = 'public'
+                        ORDER BY c.dateStart DESC
+                        LIMIT 15`,
+        });
+        res.send({
+            conferences: conferences.rows,
+            following: following.rows,
         });
     } catch (error) /* istanbul ignore next */ {
         console.error(error);

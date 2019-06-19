@@ -1,11 +1,11 @@
 'use strict';
 import { Router } from 'express';
-import * as controller from '../controllers/conferences';
+import * as controller from '../controllers/conference';
 
 export const conferenceRouter = Router();
 
 /**
- * @api {get} /api/conference Get a conference
+ * @api {get} /api/conferences Get a conference
  * @apiName Get-A-Conference
  * @apiGroup Conference
  *
@@ -20,7 +20,23 @@ export const conferenceRouter = Router();
 conferenceRouter.get('/:id', controller.getConference);
 
 /**
- * @api {get} /api/conference Get all conferences
+ * @api {post} /api/conferences/:id/:filename Gets the contents of a conference avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the conference
+ * @apiParam {String}   filename   Name of the avatar of the conference
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+conferenceRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
+ * @api {get} /api/conferences Get all conferences
  * @apiName Get-All-Conferences
  * @apiGroup Conference
  *
@@ -35,7 +51,7 @@ conferenceRouter.get('/:id', controller.getConference);
 conferenceRouter.get('/', controller.getAllConferences);
 
 /**
- * @api {post} /api/conference Create a conference
+ * @api {post} /api/conferences Create a conference
  * @apiName Create-A-Conference
  * @apiGroup Conference
  *
@@ -61,7 +77,7 @@ conferenceRouter.get('/', controller.getAllConferences);
 conferenceRouter.post('/', controller.createConference);
 
 /**
- * @api {put} /api/conference Update a conference
+ * @api {put} /api/conferences Update a conference
  * @apiName Update-A-Conference
  * @apiGroup Conference
  *
@@ -85,7 +101,7 @@ conferenceRouter.post('/', controller.createConference);
  */
 conferenceRouter.put('/:id', controller.editConference);
 
-conferenceRouter.get('/:id/shop', controller.getProducts);
+conferenceRouter.get('/:id/products', controller.getProducts);
 
 conferenceRouter.get('/:conf_id/products/:prod_id', controller.getProduct);
 

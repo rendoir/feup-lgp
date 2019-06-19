@@ -1,4 +1,4 @@
-export type Step = 'type' | 'info';
+export type Step = 'avatar' | 'type' | 'info';
 
 export type Request = {
   avatar?: File;

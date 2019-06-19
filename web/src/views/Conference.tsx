@@ -1,12 +1,22 @@
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
-import { Avatar, Button, Icon, InputNext, Select } from '../components';
-
+import {
+  Avatar,
+  AvatarSelector,
+  Button,
+  Icon,
+  InputNext,
+  Select
+} from '../components';
+import stylesModal from '../components/CreateNewModal/CreateNewModal.module.css';
+import IconButton from '../components/IconButton/IconButton';
+import ImageEdit from '../components/ImageEdit/ImageEdit';
 import Switcher from '../components/Switcher/Switcher';
 import styles from '../styles/Feed.module.css';
+
 // - Import utils
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
@@ -22,6 +32,7 @@ type Props = {
 };
 
 type State = {
+  avatar?: string;
   talks: any[];
   title: string;
   description: string;
@@ -34,6 +45,7 @@ type State = {
   points: number;
   postModalOpen: boolean;
   request: {
+    avatar?: File;
     title: string;
     about: string;
     privacy: string;
@@ -45,6 +57,8 @@ type State = {
   };
   editFormOpen: boolean;
   editFields: {
+    avatar?: File;
+    avatar_str?: string;
     title: string;
     description: string;
     place: string;
@@ -58,6 +72,8 @@ type State = {
     dateStart: boolean;
     dateEnd: boolean;
   };
+  stepConference: string;
+  stepTalk: string;
 };
 
 class Conference extends PureComponent<Props, State> {
@@ -98,10 +114,13 @@ class Conference extends PureComponent<Props, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
+      avatar: undefined,
       dateEnd: '',
       dateStart: '',
       description: '',
       editFields: {
+        avatar: undefined,
+        avatar_str: '',
         dateEnd: '',
         dateStart: '',
         description: '',
@@ -124,6 +143,7 @@ class Conference extends PureComponent<Props, State> {
       privacy: '',
       request: {
         about: '',
+        avatar: undefined,
         dateEnd: '',
         dateStart: '',
         livestream: '',
@@ -132,6 +152,8 @@ class Conference extends PureComponent<Props, State> {
         switcher: 'false',
         title: ''
       },
+      stepConference: 'Conference',
+      stepTalk: 'Talk',
       talks: [],
       title: ''
     };
@@ -154,11 +176,21 @@ class Conference extends PureComponent<Props, State> {
         this.ownerId = conference.user_id;
         this.ownerName = `${conference.first_name} ${conference.last_name}`;
 
+        const talks: any[] = [];
+
+        this.apiGetConferenceAvatar(conference);
+
+        for (let i = 0; i < res.data.talks.length; i++) {
+          talks.push(this.apiGetTalkAvatar(res.data.talks[i], i));
+        }
+
         this.setState({
           dateEnd: conference.dateend,
           dateStart: conference.datestart,
           description: conference.about,
           editFields: {
+            avatar: undefined,
+            avatar_str: this.state.avatar,
             dateEnd: conference.dateend,
             dateStart: conference.datestart,
             description: conference.about,
@@ -168,7 +200,7 @@ class Conference extends PureComponent<Props, State> {
           isHidden: conference.privacy === 'closed',
           place: conference.local,
           privacy: conference.privacy,
-          talks: res.data.talks,
+          talks,
           title: conference.title
         });
       })
@@ -228,6 +260,36 @@ class Conference extends PureComponent<Props, State> {
     }
   }
 
+  private apiGetConferenceAvatar(conference: any) {
+    if (conference.avatar === undefined || conference.avatar === null) {
+      return;
+    }
+
+    if (conference.avatar.startsWith('http')) {
+      this.setState({ avatar: conference.avatar });
+      this.forceUpdate();
+      return;
+    }
+
+    axiosInstance
+      .get(`/conference/${this.id}/avatar/${conference.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          conference.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+        this.forceUpdate();
+      })
+      .catch(() => {
+        console.log('Failed to get conference avatar');
+      });
+  }
+
   private renderBreadcrumb = () => {
     return (
       <nav aria-label={'breadcrumb'} className={'col-lg-12'}>
@@ -265,7 +327,8 @@ class Conference extends PureComponent<Props, State> {
             className={'d-flex justify-content-between align-items-center mb-1'}
           >
             <div className={'d-flex align-items-center'}>
-              <Avatar image={''} title={this.state.title} /> &nbsp;
+              <Avatar image={this.state.avatar} title={this.state.title} />{' '}
+              &nbsp;
               <strong>{this.state.title}</strong>
             </div>
             {this.ownerId === this.props.user.id ? this.renderEditForm() : null}
@@ -293,6 +356,33 @@ class Conference extends PureComponent<Props, State> {
       </Card>
     );
   };
+
+  private apiGetTalkAvatar(talk: any, index: number) {
+    if (talk.avatar !== undefined && talk.avatar !== null) {
+      if (talk.avatar.startsWith('http')) {
+        talk.avatar_src = talk.avatar;
+      } else {
+        axiosInstance
+          .get(`/talk/${this.id}/avatar/${talk.avatar}`, {
+            responseType: 'arraybuffer'
+          })
+          .then(res => {
+            const src =
+              'data:' +
+              talk.avatar_mimeType +
+              ';base64, ' +
+              new Buffer(res.data, 'binary').toString('base64');
+
+            talk.avatar_src = src;
+          })
+          .catch(() => {
+            console.log('Failed to get talk avatar');
+          });
+      }
+    }
+
+    return talk;
+  }
 
   private renderStoreCard = () => {
     return (
@@ -339,7 +429,7 @@ class Conference extends PureComponent<Props, State> {
         </div>
         <hr />
         <div>
-          {this.state.talks.map(talk => {
+          {this.state.talks.map((talk, index) => {
             const dateEnd = new Date(talk.dateend).toLocaleDateString(
               dictionary.date_format[this.context],
               this.dateOptions
@@ -364,7 +454,7 @@ class Conference extends PureComponent<Props, State> {
                         className={'d-flex align-items-center mb-1 mt-1'}
                       >
                         <Avatar
-                          image={talk.avatar}
+                          image={talk.avatar_src}
                           title={talk.title}
                           className={'mr-1'}
                         />
@@ -389,6 +479,39 @@ class Conference extends PureComponent<Props, State> {
       </div>
     );
   };
+
+  private renderAvatarTalkCreate() {
+    const onAvatarChange = (avatar: File) => {
+      const request = this.state.request;
+      request.avatar = avatar;
+      this.setState({
+        request,
+        stepTalk: 'avatar'
+      });
+      this.forceUpdate();
+    };
+
+    const onAvatarRemove = () => {
+      const request = this.state.request;
+      request.avatar = undefined;
+      this.setState({
+        request
+      });
+    };
+
+    return (
+      <div className={styles.avatarBlock}>
+        <AvatarSelector
+          title={this.state.request.title}
+          placeholder={'empty'}
+          avatar={this.state.request.avatar}
+          size={140}
+          onRemove={onAvatarRemove}
+          onChange={onAvatarChange}
+        />
+      </div>
+    );
+  }
 
   private renderTalkForm = () => {
     const handleShow = event => {
@@ -420,130 +543,194 @@ class Conference extends PureComponent<Props, State> {
       }
     ];
 
-    return (
-      <>
-        <a href={'#'} onClick={handleShow} style={{ marginBottom: '0.5rem' }}>
-          <Icon icon={faPlus} size={'2x'} />
-        </a>
+    const onAvatarChange = (avatar: File) => {
+      const { request } = this.state;
+      request.avatar = avatar;
 
-        <Modal show={this.state.postModalOpen} onHide={handleHide}>
-          <Modal.Header closeButton={true}>
-            <Modal.Title>
-              {dictionary.create_new_talk[this.context]}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className={'d-flex flex-column'}>
-            <InputNext
-              onChange={handleChange}
-              id={`talk_title_field`}
-              name={'title'}
-              label={dictionary.title[this.context]}
-              placeholder={dictionary.insert_title[this.context]}
-              value={this.state.request.title}
-              required={true}
-              status={this.state.errors.title ? 'error' : 'normal'}
-              hint={this.state.errors.title ? this.errorMessages.title : ''}
-            />
-            <InputNext
-              onChange={handleChange}
-              id={`talk_description_field`}
-              name={'about'}
-              label={dictionary.description[this.context]}
-              placeholder={dictionary.description_placeholder[this.context]}
-              value={this.state.request.about}
-              required={true}
-              type={'textarea'}
-              rows={5}
-              maxLength={3000}
-              status={this.state.errors.description ? 'error' : 'normal'}
-              hint={
-                this.state.errors.description
-                  ? this.errorMessages.description
-                  : ''
-              }
-            />
-            <InputNext
-              onChange={handleChange}
-              id={`talk_local_field`}
-              name={'local'}
-              label={dictionary.location[this.context]}
-              placeholder={dictionary.talk_local[this.context]}
-              value={this.state.request.local}
-              status={this.state.errors.place ? 'error' : 'normal'}
-              hint={this.state.errors.place ? this.errorMessages.local : ''}
-            />
-            <div className={styles.Wrapper}>
-              <Select
-                id={'talk_privacy_field'}
-                name={'privacy'}
-                value={this.state.request.privacy}
-                label={dictionary.visibility[this.context]}
-                options={options}
-                onChange={handleChange}
-              />
-            </div>
-            <div id={`talk_dates_field`}>
-              <label htmlFor={`talk_dates_field`} className={styles.dates}>
-                {dictionary.dates[this.context]}
-              </label>
+      this.setState({
+        request,
+        stepTalk: 'Talk'
+      });
+
+      this.forceUpdate();
+    };
+
+    if (this.state.stepTalk === 'Talk') {
+      return (
+        <>
+          <a href={'#'} onClick={handleShow} style={{ marginBottom: '0.5rem' }}>
+            <Icon icon={faPlus} size={'2x'} />
+          </a>
+
+          <Modal show={this.state.postModalOpen} onHide={handleHide}>
+            <Modal.Header closeButton={true}>
+              <Modal.Title>
+                {dictionary.create_new_talk[this.context]}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body className={'d-flex flex-column'}>
+              <div id="avatarCreateTalk" className={styles.avatarEdit}>
+                {this.renderAvatarTalkCreate()}
+              </div>
               <InputNext
                 onChange={handleChange}
-                id={`talk_date_start_field`}
-                name={'dateStart'}
-                label={dictionary.date_start[this.context]}
-                value={this.state.request.dateStart}
-                type={'datetime-local'}
-                status={this.state.errors.dateStart ? 'error' : 'normal'}
+                id={`talk_title_field`}
+                name={'title'}
+                label={dictionary.title[this.context]}
+                placeholder={dictionary.insert_title[this.context]}
+                value={this.state.request.title}
+                required={true}
+                status={this.state.errors.title ? 'error' : 'normal'}
+                hint={this.state.errors.title ? this.errorMessages.title : ''}
+              />
+              <InputNext
+                onChange={handleChange}
+                id={`talk_description_field`}
+                name={'about'}
+                label={dictionary.description[this.context]}
+                placeholder={dictionary.description_placeholder[this.context]}
+                value={this.state.request.about}
+                required={true}
+                type={'textarea'}
+                rows={5}
+                maxLength={3000}
+                status={this.state.errors.description ? 'error' : 'normal'}
                 hint={
-                  this.state.errors.dateStart ? this.errorMessages.dates : ''
+                  this.state.errors.description
+                    ? this.errorMessages.description
+                    : ''
                 }
               />
               <InputNext
                 onChange={handleChange}
-                id={`talk_date_end_field`}
-                name={'dateEnd'}
-                label={dictionary.date_end[this.context]}
-                value={this.state.request.dateEnd}
-                type={'datetime-local'}
-                status={this.state.errors.dateEnd ? 'error' : 'normal'}
-                hint={this.state.errors.dateEnd ? this.errorMessages.dates : ''}
+                id={`talk_local_field`}
+                name={'local'}
+                label={dictionary.location[this.context]}
+                placeholder={dictionary.talk_local[this.context]}
+                value={this.state.request.local}
+                status={this.state.errors.place ? 'error' : 'normal'}
+                hint={this.state.errors.place ? this.errorMessages.local : ''}
               />
-            </div>
-            <div id={`talk_livestream_field`}>
-              <label htmlFor={`talk_livestream_field`} className={styles.dates}>
-                {dictionary.livestream[this.context]}
-              </label>
-              <Switcher
-                id={`talk_switcher`}
-                name={'switcher'}
-                label={dictionary.livestream[this.context]}
-                onChange={(value, event) => handleChange(String(value), event)}
-                value={this.state.request.switcher === 'true'}
-                className={styles.switcher}
-              />
-              <InputNext
-                onChange={handleChange}
-                id={`talk_livestream_url_field`}
-                value={this.state.request.livestream}
-                name={'livestream'}
-                label={dictionary.livestream_url[this.context]}
-                type={'url'}
-                placeholder={'https://www.youtube.com/embed/<id>'}
-                disabled={!(this.state.request.switcher === 'true')}
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.handleTalkSubmission} theme={'success'}>
-              Save
-            </Button>
-            <Button onClick={handleHide} theme={'danger'}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+              <div className={styles.Wrapper}>
+                <Select
+                  id={'talk_privacy_field'}
+                  name={'privacy'}
+                  value={this.state.request.privacy}
+                  label={dictionary.visibility[this.context]}
+                  options={options}
+                  onChange={handleChange}
+                />
+              </div>
+              <div id={`talk_dates_field`}>
+                <label htmlFor={`talk_dates_field`} className={styles.dates}>
+                  {dictionary.dates[this.context]}
+                </label>
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_date_start_field`}
+                  name={'dateStart'}
+                  label={dictionary.date_start[this.context]}
+                  value={this.state.request.dateStart}
+                  type={'datetime-local'}
+                  status={this.state.errors.dateStart ? 'error' : 'normal'}
+                  hint={
+                    this.state.errors.dateStart ? this.errorMessages.dates : ''
+                  }
+                />
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_date_end_field`}
+                  name={'dateEnd'}
+                  label={dictionary.date_end[this.context]}
+                  value={this.state.request.dateEnd}
+                  type={'datetime-local'}
+                  status={this.state.errors.dateEnd ? 'error' : 'normal'}
+                  hint={
+                    this.state.errors.dateEnd ? this.errorMessages.dates : ''
+                  }
+                />
+              </div>
+              <div id={`talk_livestream_field`}>
+                <label
+                  htmlFor={`talk_livestream_field`}
+                  className={styles.dates}
+                >
+                  {dictionary.livestream[this.context]}
+                </label>
+                <Switcher
+                  id={`talk_switcher`}
+                  name={'switcher'}
+                  onChange={(value, event) =>
+                    handleChange(String(value), event)
+                  }
+                  value={this.state.request.switcher === 'true'}
+                  className={styles.switcher}
+                />
+                <br />
+                <InputNext
+                  onChange={handleChange}
+                  id={`talk_livestream_url_field`}
+                  value={this.state.request.livestream}
+                  name={'livestream'}
+                  label={dictionary.livestream_url[this.context]}
+                  type={'url'}
+                  placeholder={'https://www.youtube.com/embed/<id>'}
+                  disabled={!(this.state.request.switcher === 'true')}
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.handleTalkSubmission} theme={'success'}>
+                {dictionary.save[this.context]}
+              </Button>
+              <Button onClick={handleHide} theme={'danger'}>
+                {dictionary.cancel[this.context]}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      );
+    } else {
+      const handleCancelAvatarEdit = (): void => {
+        const { request } = this.state;
+        request.avatar = undefined;
+        this.setState({
+          request,
+          stepTalk: 'Talk'
+        });
+      };
+
+      const {
+        request: { avatar }
+      } = this.state;
+
+      if (avatar) {
+        return (
+          <>
+            <Modal show={this.state.postModalOpen} onHide={handleHide}>
+              <Modal.Header closeButton={true}>
+                <IconButton
+                  glyph={faArrowLeft}
+                  onClick={handleCancelAvatarEdit}
+                  className={stylesModal.back}
+                  id={`${this.props.match.params.id}_back_button`}
+                />
+                {dictionary.edit_avatar[this.context]}
+              </Modal.Header>
+              <Modal.Body>
+                <ImageEdit
+                  image={avatar}
+                  type={'circle'}
+                  size={250}
+                  height={400}
+                  onSubmit={onAvatarChange}
+                />
+              </Modal.Body>
+            </Modal>
+          </>
+        );
+      }
+    }
   };
 
   private handleTalkSubmission = () => {
@@ -554,17 +741,27 @@ class Conference extends PureComponent<Props, State> {
       return;
     }
 
+    const formData = new FormData();
+
+    if (this.state.request.avatar !== undefined) {
+      formData.append('avatar', this.state.request.avatar);
+    }
+
+    formData.append('about', request.about.trim());
+    formData.append('author', String(this.props.user.id));
+    formData.append('conference', String(this.id));
+    formData.append('dateEnd', request.dateEnd.trim());
+    formData.append('dateStart', request.dateStart.trim());
+    formData.append('livestream', request.livestream.trim());
+    formData.append('privacy', request.privacy.trim());
+    formData.append('title', request.title.trim());
+    formData.append('local', request.local.trim());
+
     axiosInstance
-      .post('/talk', {
-        about: request.about.trim(),
-        author: this.props.user.id,
-        conference: this.id,
-        dateEnd: request.dateEnd.trim(),
-        dateStart: request.dateStart.trim(),
-        livestream: request.livestream.trim(),
-        local: request.local.trim(),
-        privacy: request.privacy.trim(),
-        title: request.title.trim()
+      .post('/talk', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
       .then(res => {
         this.resetState();
@@ -573,11 +770,65 @@ class Conference extends PureComponent<Props, State> {
       .catch(error => console.log(error));
   };
 
+  private renderAvatarConference() {
+    const onAvatarChange = (avatar: File) => {
+      const editFields = this.state.editFields;
+      editFields.avatar = avatar;
+      this.setState({
+        editFields,
+        stepConference: 'avatar'
+      });
+      this.forceUpdate();
+    };
+
+    const onAvatarRemove = () => {
+      const editFields = this.state.editFields;
+      editFields.avatar = undefined;
+      this.setState({
+        editFields
+      });
+    };
+
+    if (
+      this.state.editFields.avatar_str !== '' &&
+      this.state.editFields.avatar_str !== undefined &&
+      this.state.editFields.avatar === undefined
+    ) {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar_str}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.avatarBlock}>
+          <AvatarSelector
+            title={this.state.title}
+            placeholder={'empty'}
+            avatar={this.state.editFields.avatar}
+            size={140}
+            onRemove={onAvatarRemove}
+            onChange={onAvatarChange}
+          />
+        </div>
+      );
+    }
+  }
+
   private renderEditForm = () => {
     const editFields = this.state.editFields;
     const handleHide = () =>
       this.setState({
         editFields: {
+          avatar: undefined,
+          avatar_str: this.state.avatar,
           dateEnd: this.state.dateEnd.trim(),
           dateStart: this.state.dateStart.trim(),
           description: this.state.description.trim(),
@@ -588,7 +839,18 @@ class Conference extends PureComponent<Props, State> {
       });
     const handleShow = event => {
       event.preventDefault();
-      this.setState({ editFormOpen: true });
+      this.setState({
+        editFields: {
+          avatar: undefined,
+          avatar_str: this.state.avatar,
+          dateEnd: this.state.dateEnd.trim(),
+          dateStart: this.state.dateStart.trim(),
+          description: this.state.description.trim(),
+          place: this.state.place.trim(),
+          title: this.state.title.trim()
+        },
+        editFormOpen: true
+      });
     };
     const handleChange = (value, event) => {
       this.setState({
@@ -600,88 +862,145 @@ class Conference extends PureComponent<Props, State> {
       this.validateField(event.target.name, value);
     };
 
-    return (
-      <>
-        <a href={'#'} onClick={handleShow}>
-          <Icon icon={faEdit} size={'lg'} />
-        </a>
+    const onAvatarChange = (avatar: File) => {
+      editFields.avatar = avatar;
 
-        <Modal show={this.state.editFormOpen} onHide={handleHide}>
-          <Modal.Header closeButton={true}>
-            <Modal.Title>
-              {dictionary.edit_conference[this.context]}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <InputNext
-              onChange={handleChange}
-              id={'conference_edit_title_field'}
-              name={'title'}
-              value={editFields.title}
-              label={dictionary.title[this.context]}
-              placeholder={dictionary.insert_title[this.context]}
-              status={this.state.errors.title ? 'error' : 'normal'}
-              hint={this.state.errors.title ? this.errorMessages.title : ''}
-            />
-            <InputNext
-              onChange={handleChange}
-              id={'conference_edit_description_field'}
-              name={'description'}
-              value={editFields.description}
-              label={dictionary.description[this.context]}
-              placeholder={dictionary.description_placeholder[this.context]}
-              type={'textarea'}
-              rows={5}
-              maxLength={3000}
-              status={this.state.errors.description ? 'error' : 'normal'}
-              hint={
-                this.state.errors.description
-                  ? this.errorMessages.description
-                  : ''
-              }
-            />
-            <InputNext
-              onChange={handleChange}
-              id={'conference_edit_place_field'}
-              name={'place'}
-              value={editFields.place}
-              label={dictionary.location[this.context]}
-              placeholder={dictionary.conference_local[this.context]}
-              status={this.state.errors.place ? 'error' : 'normal'}
-              hint={this.state.errors.place ? this.errorMessages.local : ''}
-            />
-            <InputNext
-              onChange={handleChange}
-              id={'conference_edit_date_start_field'}
-              name={'dateStart'}
-              value={editFields.dateStart}
-              label={dictionary.date_start[this.context]}
-              type={'datetime-local'}
-              status={this.state.errors.dateStart ? 'error' : 'normal'}
-              hint={this.state.errors.dateStart ? this.errorMessages.dates : ''}
-            />
-            <InputNext
-              onChange={handleChange}
-              id={'conference_edit_date_end_field'}
-              name={'dateEnd'}
-              value={editFields.dateEnd}
-              label={dictionary.date_end[this.context]}
-              type={'datetime-local'}
-              status={this.state.errors.dateEnd ? 'error' : 'normal'}
-              hint={this.state.errors.dateEnd ? this.errorMessages.dates : ''}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.handleEditSubmission} theme={'success'}>
-              Save
-            </Button>
-            <Button onClick={handleHide} theme={'danger'}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+      this.setState({
+        editFields,
+        stepConference: 'Conference'
+      });
+
+      this.forceUpdate();
+    };
+
+    if (this.state.stepConference === 'Conference') {
+      return (
+        <>
+          <a href={'#'} onClick={handleShow}>
+            <Icon icon={faEdit} size={'lg'} />
+          </a>
+
+          <Modal show={this.state.editFormOpen} onHide={handleHide}>
+            <Modal.Header closeButton={true}>
+              <Modal.Title>
+                {dictionary.edit_conference[this.context]}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div id="avatarEdit" className={styles.avatarEdit}>
+                {this.renderAvatarConference()}
+              </div>
+              <InputNext
+                onChange={handleChange}
+                id={'conference_edit_title_field'}
+                name={'title'}
+                value={editFields.title}
+                label={dictionary.title[this.context]}
+                placeholder={dictionary.insert_title[this.context]}
+                status={this.state.errors.title ? 'error' : 'normal'}
+                hint={this.state.errors.title ? this.errorMessages.title : ''}
+              />
+              <InputNext
+                onChange={handleChange}
+                id={'conference_edit_description_field'}
+                name={'description'}
+                value={editFields.description}
+                label={dictionary.description[this.context]}
+                placeholder={dictionary.description_placeholder[this.context]}
+                type={'textarea'}
+                rows={5}
+                maxLength={3000}
+                status={this.state.errors.description ? 'error' : 'normal'}
+                hint={
+                  this.state.errors.description
+                    ? this.errorMessages.description
+                    : ''
+                }
+              />
+              <InputNext
+                onChange={handleChange}
+                id={'conference_edit_place_field'}
+                name={'place'}
+                value={editFields.place}
+                label={dictionary.location[this.context]}
+                placeholder={dictionary.conference_local[this.context]}
+                status={this.state.errors.place ? 'error' : 'normal'}
+                hint={this.state.errors.place ? this.errorMessages.local : ''}
+              />
+              <InputNext
+                onChange={handleChange}
+                id={'conference_edit_date_start_field'}
+                name={'dateStart'}
+                value={editFields.dateStart}
+                label={dictionary.date_start[this.context]}
+                type={'datetime-local'}
+                status={this.state.errors.dateStart ? 'error' : 'normal'}
+                hint={
+                  this.state.errors.dateStart ? this.errorMessages.dates : ''
+                }
+              />
+              <InputNext
+                onChange={handleChange}
+                id={'conference_edit_date_end_field'}
+                name={'dateEnd'}
+                value={editFields.dateEnd}
+                label={dictionary.date_end[this.context]}
+                type={'datetime-local'}
+                status={this.state.errors.dateEnd ? 'error' : 'normal'}
+                hint={this.state.errors.dateEnd ? this.errorMessages.dates : ''}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.handleEditSubmission} theme={'success'}>
+                {dictionary.save[this.context]}
+              </Button>
+              <Button onClick={handleHide} theme={'danger'}>
+                {dictionary.cancel[this.context]}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      );
+    } else {
+      const handleCancelAvatarEdit = (): void => {
+        editFields.avatar = undefined;
+        this.setState({
+          editFields,
+          stepConference: 'Conference'
+        });
+      };
+
+      const {
+        editFields: { avatar }
+      } = this.state;
+
+      if (avatar) {
+        return (
+          <>
+            <Modal show={this.state.editFormOpen} onHide={handleHide}>
+              <Modal.Header closeButton={true}>
+                <IconButton
+                  glyph={faArrowLeft}
+                  onClick={handleCancelAvatarEdit}
+                  className={stylesModal.back}
+                  id={`${this.props.match.params.id}_back_button`}
+                />
+                {dictionary.edit_avatar[this.context]}
+              </Modal.Header>
+              <Modal.Body>
+                <ImageEdit
+                  image={avatar}
+                  type={'circle'}
+                  size={250}
+                  height={400}
+                  onSubmit={onAvatarChange}
+                />
+              </Modal.Body>
+            </Modal>
+          </>
+        );
+      }
+    }
   };
 
   private handleEditSubmission = () => {
@@ -694,23 +1013,35 @@ class Conference extends PureComponent<Props, State> {
     editFields.dateEnd = editFields.dateEnd.trim();
     editFields.place = editFields.place.trim();
 
+    const formData = new FormData();
+
+    if (this.state.editFields.avatar !== undefined) {
+      formData.append('avatar', this.state.editFields.avatar);
+    }
+
+    formData.append('about', editFields.description);
+    formData.append('dateEnd', editFields.dateEnd);
+    formData.append('dateStart', editFields.dateStart);
+    formData.append('title', editFields.title);
+    formData.append('local', editFields.place);
+
     if (Object.values(errors).includes(true)) {
       return;
     } else {
       axiosInstance
-        .put(`/conference/${this.id}`, {
-          about: editFields.description,
-          dateEnd: editFields.dateEnd,
-          dateStart: editFields.dateStart,
-          local: editFields.place,
-          title: editFields.title
+        .put(`/conference/${this.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
         .then(() => {
           this.setState({
             ...this.state,
-            ...editFields,
+            // ...editFields,
             editFormOpen: false
           });
+
+          window.location.reload();
         })
         .catch(err => {
           console.log(err);
