@@ -39,7 +39,7 @@ export let dictionary: Dictionary = {
   },
   no_upcoming_conferences: {
     PT: 'Não há conferencias próximas',
-    EN: 'There is no upcoming conferences'
+    EN: 'There are no upcoming conferences'
   },
   view_more: { PT: 'Ver mais', EN: 'View more' },
   like_action: { PT: 'Gostar', EN: 'Like' },
