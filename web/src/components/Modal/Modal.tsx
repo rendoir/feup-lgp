@@ -1,7 +1,7 @@
-import classNames from "classnames";
-import React, { PureComponent, ReactNode } from "react";
-import styles from "./Modal.module.css";
-import ReactModal from "./ReactModal";
+import classNames from 'classnames';
+import React, { PureComponent, ReactNode } from 'react';
+import styles from './Modal.module.css';
+import ReactModal from './ReactModal';
 
 export type Props = {
   className?: string;

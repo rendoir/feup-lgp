@@ -14,6 +14,7 @@ import withAuth from '../utils/withAuth';
 import ProfileModal from '../components/ProfileModal/ProfileModal';
 
 import { Request, Step } from '../components/ProfileModal/types';
+import { fileToBase64 } from '../utils/fileToBase64';
 
 interface IProps {
   match: {
@@ -24,6 +25,7 @@ interface IProps {
 }
 
 type State = {
+  avatar?: string;
   fetchingUserUserInteractions: boolean;
   isOpen: boolean;
   userRate: number;
@@ -38,6 +40,7 @@ type State = {
   fetchingInfo: boolean;
   request: {
     avatar?: File;
+    avatar_str?: string;
     email: string;
     first_name: string;
     home_town: string;
@@ -64,6 +67,7 @@ class Profile extends React.Component<IProps, State> {
     this.id = this.props.match.params.id;
 
     this.state = {
+      avatar: '',
       fetchingInfo: true,
       fetchingUserUserInteractions: true,
       isOpen: false,
@@ -71,6 +75,7 @@ class Profile extends React.Component<IProps, State> {
       posts: [],
       request: {
         avatar: undefined,
+        avatar_str: '',
         confirm_password: '',
         email: '',
         first_name: '',
@@ -132,10 +137,14 @@ class Profile extends React.Component<IProps, State> {
                 />
                 <div id="avatar-img">
                   <Avatar
-                    title="Admin Admino"
+                    title={
+                      this.state.user.first_name +
+                      ' ' +
+                      this.state.user.last_name
+                    }
                     placeholder="empty"
                     size={250}
-                    image="http://cosmicgirlgames.com/images/games/morty.gif"
+                    image={this.state.avatar}
                   />
                 </div>
                 <h1>{this.getProfileName()}</h1>
@@ -193,8 +202,8 @@ class Profile extends React.Component<IProps, State> {
                     request={this.state.request}
                     onRequestChange={request => this.setState({ request })}
                     onClose={this.resetState}
-                    autoFocus={false}
-                    step={'profile'}
+                    autoFocus={true}
+                    step={this.state.step}
                   />
                 ) : null}
               </ul>
@@ -215,6 +224,7 @@ class Profile extends React.Component<IProps, State> {
       isOpen: false,
       request: {
         avatar: undefined,
+        avatar_str: '',
         confirm_password: '',
         email: this.state.user.email,
         first_name: this.state.user.first_name,
@@ -303,14 +313,17 @@ class Profile extends React.Component<IProps, State> {
 
   private apiEditProfile = (request: Request) => {
     if (this.auth.getUserPayload().id !== this.id) {
+      console.log('Not this user');
       return;
     }
 
     if (request.password !== request.confirm_password) {
+      console.log('Password is not equal to the confirmation password');
       return;
     }
 
     if (request.old_password !== '' && request.password === '') {
+      console.log('Changing password for a empty one is not possib');
       return;
     }
 
@@ -346,10 +359,10 @@ class Profile extends React.Component<IProps, State> {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(res => {
+      .then(() => {
         console.log('Edited user info - reloading page...');
-        window.location.reload();
         this.resetState();
+        window.location.reload();
       })
       .catch(
         error => (
@@ -377,7 +390,7 @@ class Profile extends React.Component<IProps, State> {
       .then(res => {
         this.setState({
           fetchingUserUserInteractions: false,
-          numberOfRatings: res.data.totalRatingsNumber,
+          numberOfRatings: Number(res.data.totalRatingsNumber),
           userRate: res.data.rate,
           userRateTotal: res.data.totalRatingAmount,
           userSubscription: res.data.subscription
@@ -393,7 +406,9 @@ class Profile extends React.Component<IProps, State> {
 
   private handleStars() {
     const userRate =
-      (this.state.userRateTotal / this.state.numberOfRatings) * 1.1;
+      this.state.numberOfRatings !== 0
+        ? (this.state.userRateTotal / this.state.numberOfRatings) * 1.1
+        : 0;
 
     if (!this.state.userRated && this.auth.getUserPayload().id !== this.id) {
       return (
@@ -432,25 +447,68 @@ class Profile extends React.Component<IProps, State> {
     axiosInstance
       .get(`/users/${this.id}`)
       .then(res => {
+        this.apiGetUserAvatar(res.data);
+      })
+      .catch(() => console.log('Failed to get user'));
+  }
+
+  private apiGetUserAvatar(userData: any) {
+    if (userData.user.avatar === undefined || userData.user.avatar === null) {
+      this.setState({
+        request: {
+          avatar: undefined,
+          avatar_str: '',
+          confirm_password: '',
+          email: userData.user.email,
+          first_name: userData.user.first_name,
+          home_town: userData.user.home_town,
+          last_name: userData.user.last_name,
+          loading: false,
+          old_password: '',
+          password: '',
+          university: userData.user.university,
+          work: userData.user.work,
+          work_field: userData.user.work_field
+        },
+        user: userData.user
+      });
+      return;
+    }
+
+    axiosInstance
+      .get(`/users/${this.id}/avatar/${userData.user.avatar}`, {
+        responseType: 'arraybuffer'
+      })
+      .then(res => {
+        const src =
+          'data:' +
+          userData.user.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
         this.setState({
+          avatar: src,
           request: {
-            avatar: res.data.user.avatar,
+            avatar: undefined,
+            avatar_str: src,
             confirm_password: '',
-            email: res.data.user.email,
-            first_name: res.data.user.first_name,
-            home_town: res.data.user.home_town,
-            last_name: res.data.user.last_name,
+            email: userData.user.email,
+            first_name: userData.user.first_name,
+            home_town: userData.user.home_town,
+            last_name: userData.user.last_name,
             loading: false,
             old_password: '',
             password: '',
-            university: res.data.user.university,
-            work: res.data.user.work,
-            work_field: res.data.user.work_field
+            university: userData.user.university,
+            work: userData.user.work,
+            work_field: userData.user.work_field
           },
-          user: res.data.user
+          user: userData.user
         });
       })
-      .catch(() => console.log('Failed to get user'));
+      .catch(() => {
+        console.log('Failed to get user avatar');
+      });
   }
 
   private handleEditProfile = (event: MouseEvent) => {
@@ -537,6 +595,8 @@ class Profile extends React.Component<IProps, State> {
           key={post.id}
           id={post.id}
           author={post.first_name + ' ' + post.last_name}
+          avatar={post.avatar}
+          avatar_mimeType={post.avatar_mimeType}
           content={post.content}
           user_id={post.user_id}
           comments={post.comments || []}

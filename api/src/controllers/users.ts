@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as fs from 'fs';
 import { query } from '../db/db';
 
 export function register(req, res) {
@@ -29,15 +30,18 @@ export function register(req, res) {
             values: [req.body.email, hashedPassword, firstName, lastName,
             req.body.work, req.body.work_field, req.body.home_town, req.body.university],
         }).then((result2) => {
-        }).catch((error) => {
+            res.status(200).send();
+        }).catch(
+            /* istanbul ignore next */
+            (error) => {
             console.log('\n\nERROR:', error);
-            res.status(400).send({ message: 'An error occured while registering a new user' });
+            res.status(500).send({ message: 'An error occured while registering a new user' });
         });
-        res.status(200).send();
-
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
-        res.status(400).send({ message: 'An error ocurred while checking register permissions' });
+        res.status(500).send({ message: 'An error ocurred while checking register permissions' });
     });
 }
 
@@ -72,15 +76,16 @@ export async function getUser(req, res) {
     const id = req.params.id;
     try {
         const user = await query({
-            text: `SELECT id, avatar, first_name, last_name, email, bio, home_town, university, work, work_field
+            text: `SELECT avatar, avatar_mimeType, first_name, last_name, email, bio, home_town, university, work, work_field
                     FROM users
                     WHERE id = $1
                     `,
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */ {
         console.log('Error getting user info. Error: ' + e.message);
+        res.status(500).send({ message: 'An error ocurred while getting user' });
     }
 }
 
@@ -95,7 +100,7 @@ export async function getUserName(req, res) {
             values: [id],
         });
         res.send({ user: user.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */{
         console.log('Error getting user name. Error: ' + e.message);
     }
 }
@@ -143,7 +148,7 @@ export async function getUserUserInteractions(req, res) {
             subscription: Boolean(subscriptionQuery.rows[0]),
         };
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user-user interactions'));
     }
@@ -156,7 +161,9 @@ export function subscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while subscribing user' });
     });
@@ -169,7 +176,9 @@ export function unsubscribeUser(req, res) {
         values: [userId, req.params.id],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while unsubscribing user' });
     });
@@ -187,11 +196,13 @@ export function rate(req, res) {
             values: [req.body.newUserRating, req.params.id],
         }).then((result2) => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the rating of the user' });
         });
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while rating an user' });
     });
@@ -204,7 +215,7 @@ export async function getProfilePosts(req, res) {
     const offset = req.query.offset;
     try {
         const result = await query({
-            text: `SELECT p.id, a.first_name, a.last_name, p.title, p.content,
+            text: `SELECT p.id, a.first_name, a.last_name, a.avatar, a.avatar_mimeType, p.title, p.content,
                 p.visibility, p.date_created, p.date_updated, a.id AS user_id
                     FROM posts p
                         INNER JOIN users a ON (p.author = a.id)
@@ -220,7 +231,7 @@ export async function getProfilePosts(req, res) {
                     OFFSET $4`,
             values: [userId, userloggedId, limit, offset],
         });
-        if (result == null) {
+        if (result == null) /* istanbul ignore next */ {
             res.status(400).send(new Error(`Post either does not exist or you do not have the required permissions.`));
             return;
         }
@@ -236,7 +247,8 @@ export async function getProfilePosts(req, res) {
         });
         for (const post of result.rows) {
             const comment = await query({
-                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+                text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                        a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -272,7 +284,7 @@ export async function getProfilePosts(req, res) {
             posts: result.rows,
             size: totalSize.rows[0].count,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving post'));
     }
@@ -286,7 +298,7 @@ export async function getNotifications(req, res) {
         values: [userId],
       });
       res.status(200).send({ notifications: unseenInvitesQuery.rows });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send(new Error('Error retrieving user notifications'));
     }
@@ -300,7 +312,7 @@ export async function amountNotifications(req, res) {
         values: [userId],
       });
       res.status(200).send({ amountNotifications: amountNotificationsQuery.rows[0].count });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user notifications'));
     }
@@ -315,13 +327,16 @@ export function inviteNotified(req, res) {
         values: [req.body.inviteId, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while setting invite as notified' });
     });
 }
 
 export async function updateProfile(req, res) {
+
     if (req.params.id !== req.body.author) {
         res.status(400).send({ message: 'This account can\'t be edited by anyone but its owner!' });
         return;
@@ -357,13 +372,13 @@ export async function updateProfile(req, res) {
                     req.body.work, req.body.work_field, req.body.home_town,
                     req.body.university, req.body.email, hashedPassword],
                 }));
-                // saveAvatar(req, res, req.params.id);
+                saveAvatar(req, res);
                 res.status(200).send();
-            } catch (error) {
+            } catch (error) /* istanbul ignore next */ {
                 console.log('\n\nERROR:', error);
                 res.status(400).send({ message: 'An error occured while updating the user profile' });
             }
-        } catch (error) {
+        } catch (error) /* istanbul ignore next */ {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the user profile with password update' });
         }
@@ -378,9 +393,9 @@ export async function updateProfile(req, res) {
                 req.body.work, req.body.work_field, req.body.home_town,
                 req.body.university, req.body.email],
             }));
-            // saveAvatar(req, res, req.params.id);
+            saveAvatar(req, res);
             res.status(200).send();
-        } catch (error) {
+        } catch (error) /* istanbul ignore next */ {
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error occured while updating the user profile' });
         }
@@ -395,7 +410,7 @@ export async function getGeneralPoints(req, res) {
         values: [userId],
       });
       res.status(200).send({ points: pointsQuery.rows[0].points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
@@ -411,8 +426,47 @@ export async function getConferencePoints(req, res) {
       });
       const points = pointsQuery.rows[0] ? pointsQuery.rows[0].points : 0;
       res.status(200).send({ points });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */{
       console.error(error);
       res.status(500).send(new Error('Error retrieving user general points'));
     }
+}
+
+export async function getAvatar(req, res) {
+    res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
+}
+
+export async function saveAvatar(req, res) {
+
+    if (!req.files || !req.files.avatar) {
+        return;
+    }
+
+    const file = req.files.avatar;
+    const filename = file.name;
+    const mimetype = file.mimetype;
+
+    const filetype = filename.split('.');
+    const savedFileName = 'user_' + req.params.id + '.' + filetype[filetype.length - 1];
+
+    if (fs.existsSync('uploads/avatars/' + savedFileName)) {
+        fs.unlinkSync('uploads/avatars/' + savedFileName);
+    }
+
+    file.mv('./uploads/avatars/' + savedFileName, (err) => {
+        if (err) {
+            res.status(400).send({ message: 'An error ocurred while editing user: Moving avatar.' });
+        } else {
+            query({
+                text: `UPDATE users SET avatar = $2, avatar_mimeType = $3
+                    WHERE id = $1`,
+                values: [req.params.id, savedFileName, mimetype],
+            }).then(() => {
+                return;
+            }).catch((error) => {
+                console.log('\n\nERROR:', error);
+                res.status(400).send({ message: 'An error ocurred while editing user: Adding avatar to database.' });
+            });
+        }
+    });
 }

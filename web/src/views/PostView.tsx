@@ -1,9 +1,14 @@
 import * as React from 'react';
+import Spinner from 'react-bootstrap/Spinner';
 
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import Icon from '../components/Icon/Icon';
 import Post from '../components/Post/Post';
 import axiosInstance from '../utils/axiosInstance';
 import { dictionary, LanguageContext } from '../utils/language';
 import withAuth from '../utils/withAuth';
+
+import styles from '../components/InfiniteScroll/InfiniteScroll.module.css';
 
 interface IProps {
   match: {
@@ -15,6 +20,8 @@ interface IProps {
 
 interface IState {
   author: string;
+  avatar?: string;
+  avatar_mimetype?: string;
   comments: any[];
   content: string;
   date: string;
@@ -47,6 +54,8 @@ class PostView extends React.Component<IProps, IState> {
 
     this.state = {
       author: '',
+      avatar: '',
+      avatar_mimetype: '',
       comments: [],
       content: '',
       date: '',
@@ -94,24 +103,34 @@ class PostView extends React.Component<IProps, IState> {
       );
     }
 
-    return (
-      <div className="container my-5">
-        <div className="w-75 mx-auto">
-          <Post
-            id={Number(this.state.id)}
-            title={this.state.title}
-            author={this.state.author}
-            date={date}
-            content={this.state.content}
-            user_id={this.state.user_id}
-            comments={this.state.comments}
-            files={this.state.files}
-            tags={this.state.tags}
-            visibility={this.state.visibility}
-          />
+    if (!this.state.fetchingInfo) {
+      return (
+        <div className="container my-5">
+          <div className="w-75 mx-auto">
+            <Post
+              id={this.id}
+              title={this.state.title}
+              author={this.state.author}
+              date={date}
+              content={this.state.content}
+              user_id={this.state.user_id}
+              comments={this.state.comments}
+              files={this.state.files}
+              tags={this.state.tags}
+              visibility={this.state.visibility}
+            />
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="container my-5">
+          <Spinner animation={'border'} role={'status'}>
+            <span className={'sr-only'}>Loading...</span>
+          </Spinner>
+        </div>
+      );
+    }
   }
 }
 

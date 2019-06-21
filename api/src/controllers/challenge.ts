@@ -46,7 +46,8 @@ export async function createChallenge(req, res) {
     query({
         text: `INSERT INTO challenges
                 (title, description, dateStart, dateEnd, points, challengeType, question, answers, post, talk)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                RETURNING id`,
         values: [
             req.body.title,
             req.body.description,
@@ -59,16 +60,15 @@ export async function createChallenge(req, res) {
             post,
             Number(req.body.talk_id),
         ],
-    }).then(() => {
-        res.status(200).send();
-    }).catch((error) => {
+    }).then((challenge) => {
+        res.status(200).send({ challenge: challenge.rows[0].id });
+    }).catch((error) => /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occurred while adding a challenge to a conference' });
     });
 }
 
 export function solveChallenge(req, res) {
-
     query({
         text: `INSERT INTO user_challenge
                 (challenged, challenge, answer, complete)
@@ -81,7 +81,7 @@ export function solveChallenge(req, res) {
         ],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch((error) => /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'Could not update challenge state. Error: ' + error });
     });
@@ -109,7 +109,7 @@ export async function getSolvedStateForUser(req, res) {
 
         res.send({state: result.rows, title});
 
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while creating a post' });
     }

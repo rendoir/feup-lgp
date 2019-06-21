@@ -181,6 +181,7 @@ class ProfileModal extends PureComponent<Props, CreateNewModalState> {
             vertical={true}
             id={id}
             avatar={request.avatar}
+            avatar_str={request.avatar_str}
             email={request.email}
             first_name={request.first_name}
             home_town={request.home_town}

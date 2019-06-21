@@ -1,7 +1,7 @@
-import React, { MouseEvent } from "react";
-import { PeerInfo, UserStatusType } from "../../utils/types";
-import Avatar from "../Avatar/Avatar";
-import getAvatarPlaceholder from "../Avatar/utils/getAvatarPlaceholder";
+import React, { MouseEvent } from 'react';
+import { PeerInfo, UserStatusType } from '../../utils/types';
+import Avatar from '../Avatar/Avatar';
+import getAvatarPlaceholder from '../Avatar/utils/getAvatarPlaceholder';
 
 export type Props = {
   className?: string;

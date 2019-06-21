@@ -41,7 +41,6 @@ import {
     postRouter,
     productsRouter,
     searchRouter,
-    shopRouter,
     tagsRouter,
     talkRouter,
     usersRouter,
@@ -83,7 +82,6 @@ app.use('/post/:post_id/comment', commentRouter);
 app.use('/talk', talkRouter);
 app.use('/talk/:talk_id/challenge', challengeRouter);
 app.use('/search', searchRouter);
-app.use('/shop', shopRouter);
 app.use('/conference', conferenceRouter);
 app.use('/products', productsRouter);
 app.use('/invite', inviteRouter);
@@ -104,7 +102,7 @@ app.use((err, req, res, next) => {
         res.status(401).send({ message: err.message });
     } else if (err.name === 'NotFoundError') {
         res.status(404).send({ message: 'Endpoint not found' });
-    } else {
+    } else /* istanbul ignore next */ {
         console.error('API UNCAUGHT ERROR:', err);
         res.status(500).send({ message: 'Internal server error'});
     }

@@ -1,5 +1,5 @@
-import React, { ChangeEvent, PureComponent, ReactNode } from "react";
-import { RadioGroupContext } from "./RadioGroupContext";
+import React, { ChangeEvent, PureComponent, ReactNode } from 'react';
+import { RadioGroupContext } from './RadioGroupContext';
 
 export type RadioGroupProps = {
   className?: string;

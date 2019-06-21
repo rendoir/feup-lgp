@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { query } from '../db/db';
 
 export function createTalk(req, res) {
@@ -33,17 +34,15 @@ export function createTalk(req, res) {
     });
     return;
   }
-  if (req.body.dateEnd.trim()) {
-    if (Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) {
-      console.log(
-        '\n\nError: talk ending date cannot be previous to starting date',
-      );
-      res.status(400).send({
-        message: 'An error occurred while crating a new talk. ' +
-          'The field date end cannot be a date previous to date start',
-      });
-      return;
-    }
+  if (!req.body.dateEnd.trim() || (req.body.dateEnd.trim() && Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) ) {
+    console.log(
+      '\n\nError: talk ending date cannot be previous to starting date',
+    );
+    res.status(400).send({
+      message: 'An error occurred while crating a new talk. ' +
+        'The field date end cannot be empty or be a date previous to date start',
+    });
+    return;
   }
 
   let livestreamURL = req.body.livestream;
@@ -69,12 +68,16 @@ export function createTalk(req, res) {
       true,
     ],
   }).then((result) => {
-    res.send({
+    req.params.id = result.rows[0].id;
+    saveAvatar(req, res);
+    res.status(200).send({
       id: result.rows[0].id,
     });
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR: ', error);
-    res.status(400).send({
+    res.status(500).send({
       message: 'An error occurred while crating a new talk. Error: ' + error.toString(),
     });
   });
@@ -93,8 +96,9 @@ export async function getTalk(req, res) {
      */
     const talk = await query({
       text: `
-              SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name, t.title, t.conference as conference_id,
-              t.about, t.livestream_url, t.local, t.dateStart, t.dateEnd, t.avatar, t.privacy, t.archived, t.hidden,
+              SELECT t.id, a.id as user_id, (a.first_name || ' ' || a.last_name) as user_name,
+              t.title, t.conference as conference_id, t.about, t.livestream_url, t.local,
+              t.dateStart, t.dateEnd, t.avatar, t.avatar_mimeType, t.privacy, t.archived, t.hidden,
               c.title as conference_title
               FROM talks t
               INNER JOIN users a ON t.author = a.id
@@ -133,6 +137,7 @@ export async function getTalk(req, res) {
       text: `SELECT *
               FROM challenges
               WHERE talk = $1
+              AND current_timestamp BETWEEN dateStart AND dateEnd
               ORDER BY dateStart DESC`,
       values: [id],
     });
@@ -174,7 +179,7 @@ export async function getTalk(req, res) {
       }
     }
     const posts = await query({
-      text: `SELECT p.id, (first_name || ' ' || last_name) as author, p.title, p.content,
+      text: `SELECT p.id, (first_name || ' ' || last_name) as author, avatar, avatar_mimeType, p.title, p.content,
                         p.visibility, p.date_created as date, p.date_updated, users.id AS user_id
                     FROM posts p
                         INNER JOIN users ON (users.id = p.author)
@@ -192,7 +197,7 @@ export async function getTalk(req, res) {
     });
     for (const post of posts.rows) {
       const comment = await query({
-        text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+        text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name, a.avatar, a.avatar_mimeType
                         FROM posts p
                         LEFT JOIN comments c
                         ON p.id = c.post
@@ -249,7 +254,7 @@ export async function getTalk(req, res) {
       userPoints,
     };
     res.send(result);
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     res.status(500).send({
       message: 'Error retrieving talk. Error: ' + error,
     });
@@ -292,15 +297,18 @@ export function editTalk(req, res) {
     });
     return;
   }
-  if (!data.dateEnd.trim()) {
-    console.log('\n\nError: talk ending date cannot be empty');
+  if (!req.body.dateEnd.trim() || (req.body.dateEnd.trim() && Date.parse(req.body.dateEnd) < Date.parse(req.body.dateStart)) ) {
+    console.log(
+      '\n\nError: talk ending date cannot be previous to starting date',
+    );
     res.status(400).send({
-      message: `An error occurred while updating talk #${talk}: ` +
-        'The field ending date cannot be empty',
+      message: 'An error occurred while crating a new talk. ' +
+        'The field date end cannot be empty or be a date previous to date start',
     });
     return;
   }
 
+  console.log(data.livestreamURL);
   query({
     text: `UPDATE talks
            SET (title, about, local, datestart, dateend, livestream_url) =
@@ -317,9 +325,13 @@ export function editTalk(req, res) {
     ],
   })
     .then(() => {
+      saveAvatar(req, res);
       res.status(200).send();
     })
-    .catch((error) => {
+    .catch(
+      /* istanbul ignore next */
+      (error) => {
+      console.log(`Error: ${error}`);
       res.status(400).send({
         message: `An error occurred while updating a talk. Error: ${error.toString()}`,
       });
@@ -349,7 +361,9 @@ export async function inviteUser(req, res) {
       values: [talk],
     }).then(() => {
       res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+      /* istanbul ignore next */
+      (error) => {
       res.status(400).send({ message: `An error occurred while inviting user to talk. Error ${error}` });
     });
   } catch (e) {
@@ -375,7 +389,9 @@ export async function inviteSubscribers(req, res) {
     values: [req.params.id],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
       console.log('\n\nERROR:', error);
       res.status(400).send({ message: 'An error ocurred while inviting subscribers to talk' });
   });
@@ -396,7 +412,7 @@ export async function amountSubscribersUninvited(req, res) {
       values: [req.params.id],
     });
     res.status(200).send({ amountUninvitedSubscribers: amountUninvitedSubscribersQuery.rows[0].count });
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     console.error(error);
     res.status(500).send(new Error('Error retrieving user participation in talk'));
   }
@@ -425,7 +441,7 @@ export async function getUninvitedUsers(req, res) {
       values: [talk, user],
     });
     res.status(200).send({ uninvitedUsers: uninvitedUsers.rows });
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     res.status(500).send({
       message: 'Error retrieving user participation in talk',
     });
@@ -440,7 +456,9 @@ export async function joinTalk(req, res) {
     values: [talk, user],
   }).then(() => {
     res.status(200).send();
-  }).catch(() => {
+  }).catch(
+    /* istanbul ignore next */
+    () => {
     res.status(400).send({
       message: 'An error occurred while adding participant to talk',
     });
@@ -455,7 +473,9 @@ export async function leaveTalk(req, res) {
     values: [talk, user],
   }).then(() => {
     res.status(200).send();
-  }).catch(() => {
+  }).catch(
+    /* istanbul ignore next */
+    () => {
     res.status(400).send({
       message: 'An error occurred while removing participant from talk',
     });
@@ -472,7 +492,7 @@ export async function checkUserParticipation(req, res) {
           values: [userId, req.params.id],
       });
       res.status(200).send({ participant: Boolean(userParticipantQuery.rows[0]) });
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user participation in talk'));
   }
@@ -487,7 +507,7 @@ export async function checkUserCanJoin(req, res) {
       });
       const canJoin = userCanJoinQuery.rows[0].user_can_join_talk;
       res.status(200).send({ canJoin });
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
       console.error(error);
       res.status(500).send(new Error('Error retrieving user participation in talk'));
   }
@@ -501,7 +521,7 @@ async function loggedUserOwnsTalk(talk, user): Promise<boolean> {
     });
 
     return isOwner.rows[0].count !== 0;
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     console.error(error);
     return false;
   }
@@ -517,7 +537,9 @@ export function changePrivacy(req, res) {
     values: [req.body.id, req.body.privacy, userId],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while changing the privacy of a talk' });
   });
@@ -535,7 +557,9 @@ export async function archiveTalk(req, res) {
     values: [id, user, value],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     res.status(500).send({
       message: `Error ${value ? 'archiving' : 'restoring'} talk. Error: ${error}`,
     });
@@ -553,7 +577,9 @@ export async function hideTalk(req, res) {
     values: [id, user, value],
   }).then(() => {
     res.status(200).send();
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     res.status(500).send({
       message: `Error ${value ? 'hiding' : 'opening'} talk. Error: ${error}`,
     });
@@ -570,7 +596,9 @@ export function getPointsUserTalk(req, res) {
       results.points = result.rows[0].points;
     }
     res.send(results);
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
   });
@@ -589,7 +617,9 @@ export function getPostsAuthor(req, res) {
     values: [req.params.id, req.params.user_id],
   }).then((result) => {
     res.send(result.rows);
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
   });
@@ -597,7 +627,7 @@ export function getPostsAuthor(req, res) {
 
 export async function getCommentsOfPostAndAuthor(req, res) {
   query({
-    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+    text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name, a.avatar, a.avatar_mimeType
               FROM posts p
                   LEFT JOIN comments c ON p.id = c.post
                   INNER JOIN users a ON c.author = a.id
@@ -613,8 +643,49 @@ export async function getCommentsOfPostAndAuthor(req, res) {
     values: [req.params.post_id, req.query.author],
   }).then((result) => {
     res.send(result.rows);
-  }).catch((error) => {
+  }).catch(
+    /* istanbul ignore next */
+    (error) => {
     console.log('\n\nERROR:', error);
     res.status(400).send({ message: 'An error ocurred while subscribing post' });
+  });
+}
+
+export async function getAvatar(req, res) {
+  res.sendFile(process.cwd() + '/uploads/avatars/' + req.params.filename);
+}
+
+export async function saveAvatar(req, res) {
+
+  if (!req.files || !req.files.avatar) {
+    return;
+  }
+
+  const file = req.files.avatar;
+  const filename = file.name;
+  const mimetype = file.mimetype;
+
+  const filetype = filename.split('.');
+  const savedFileName = 'talk_' + req.params.id + '.' + filetype[filetype.length - 1];
+
+  if (fs.existsSync('uploads/avatars/' + savedFileName)) {
+    fs.unlinkSync('uploads/avatars/' + savedFileName);
+  }
+
+  file.mv('./uploads/avatars/' + savedFileName, (err) => {
+    if (err) {
+      res.status(400).send({ message: 'An error ocurred while editing user: Moving avatar.' });
+    } else {
+      query({
+        text: `UPDATE talks SET avatar = $2, avatar_mimeType = $3
+                    WHERE id = $1`,
+        values: [req.params.id, savedFileName, mimetype],
+      }).then(() => {
+        return;
+      }).catch((error) => {
+        console.log('\n\nERROR:', error);
+        res.status(400).send({ message: 'An error ocurred while editing user: Adding avatar to database.' });
+      });
+    }
   });
 }

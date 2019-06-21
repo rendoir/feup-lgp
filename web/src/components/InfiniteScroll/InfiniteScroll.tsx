@@ -84,6 +84,8 @@ class InfiniteScroll extends Component<Props, State> {
                   title={post.title}
                   date={post.date}
                   author={post.author}
+                  avatar={post.avatar}
+                  avatar_mimeType={post.avatar_mimeType}
                   content={post.content}
                   visibility={post.visibility}
                   comments={post.comments}
@@ -99,6 +101,8 @@ class InfiniteScroll extends Component<Props, State> {
                   id={user.id}
                   first_name={user.first_name}
                   last_name={user.last_name}
+                  avatar={user.avatar}
+                  avatar_mimeType={user.avatar_mimeType}
                   rate={user.rate}
                   date_created={user.date_created}
                 />
@@ -140,6 +144,8 @@ class InfiniteScroll extends Component<Props, State> {
               incoming.posts[idx].first_name +
               ' ' +
               incoming.posts[idx].last_name;
+            post.avatar = incoming.posts[idx].avatar;
+            post.avatar_mimeType = incoming.posts[idx].avatar_mimeType;
             post.date = incoming.posts[idx].date_created.replace(/T.*/gi, '');
             post.comments = incoming.posts[idx].comments;
             post.tags = incoming.posts[idx].tags;

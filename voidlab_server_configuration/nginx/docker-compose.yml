@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  reverseproxy:
+    image: nginx:alpine
+    restart: always
+    networks:
+      - gnet_default
+      - voidlab_default
+    ports:
+      # - 443:443
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+networks:
+  gnet_default:
+    external:
+      name: gnet_default
+  voidlab_default:
+    external:
+      name: voidlab_default
+  

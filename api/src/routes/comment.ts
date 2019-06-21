@@ -12,39 +12,47 @@ export const commentRouter = Router();
  * @apiParam {String}   post_id   Associated post's ID
  * @apiParam {String}   comment   Text to write in the comment
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      id: 1
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error message here'
+ *      message: 'An error ocurred while adding a comment to a post'
  *     }
  */
 commentRouter.post('/', controller.createComment);
 
 /**
- * @api {post} /api/post/comment/:id/ Create a new 2nd level comment on the post
+ * @api {post} /api/post/:id/comment/:id/ Create a new 2nd level comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post_id   Associated post's ID
  * @apiParam {String}   comment Text to write in the comment
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error message here'
+ *      message: 'An error ocurred while adding a comment to a post'
  *     }
  */
 commentRouter.post('/:id', controller.createNewCommentForComment);
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @api {get} /api/post/:id/comment/:id Create a new comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -54,7 +62,7 @@ commentRouter.post('/:id', controller.createNewCommentForComment);
 commentRouter.get('/:id', controller.getCommentsOfComment);
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @api {post} /api/post/:id/like Create a new comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
@@ -70,14 +78,17 @@ commentRouter.get('/:id', controller.getCommentsOfComment);
 commentRouter.post('/:id/like', controller.addALikeToComment);
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @api {delete} /api/post/:id/new_comment Create a new comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
  * @apiParam {String}   post.id   Number of the post
  * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -87,14 +98,15 @@ commentRouter.post('/:id/like', controller.addALikeToComment);
 commentRouter.delete('/:id/like', controller.deleteALikeToComment);
 
 /**
- * @api {post} /api/post/:id/new_comment Create a new comment on the post
+ * @api {get} /api/post/:id/comment/:id/likes Create a new comment on the post
  * @apiName Post-A-Comment
  * @apiGroup Post
  *
- * @apiParam {String}   post.id   Number of the post
- * @apiParam {String}   author.id   Author of the comment
- * @apiParam {String}   comment Text to write in the comment
- *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      [result.rows]
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -104,7 +116,7 @@ commentRouter.delete('/:id/like', controller.deleteALikeToComment);
 commentRouter.get('/:id/likes', controller.getWhoLikedComment);
 
 /**
- * @api {post} /api/post/:id/delete_comment Delete a comment
+ * @api {delete} /api/post/:id/comment/:id Delete a comment
  * @apiName Delete-A-Comment
  * @apiGroup Post
  *
@@ -124,16 +136,18 @@ commentRouter.get('/:id/likes', controller.getWhoLikedComment);
 commentRouter.delete('/:id', controller.deleteComment);
 
 /**
- * @api {put} /api/post/:id/edit_comment Edit a comment
+ * @api {put} /api/comment/:id Edit a comment
  * @apiName Edit-A-Comment
  * @apiGroup Put
  *
  * @apiParam {String}   post.id   Number of the post this comment is related to
  * @apiParam {String}   comment.id   Number of the comment
+ * @apiParam {String}   comment   Text to write in comment
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
+ *      newComment: 'edited comment'
  *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -153,10 +167,15 @@ commentRouter.put('/:id', controller.editComment);
  * (post_id parameter is useless, it's only required due to the comment api route URL)
  * @apiParam {string}   reason   Reason of the report
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *      message: 'An error message here'
+ *      message: 'An error ocurred while creating a new comment report'
  *     }
  */
 commentRouter.post('/:id/report', controller.reportComment);
@@ -171,6 +190,11 @@ commentRouter.post('/:id/report', controller.reportComment);
  * (post_id parameter is useless, it's only required due to the comment api route URL)
  * @apiParam {number}   reporter   Id of the user we want to verify if reported the comment
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      true
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

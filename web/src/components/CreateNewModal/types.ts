@@ -1,66 +1,18 @@
-import { List, OrderedSet } from 'immutable';
-
-export interface ISelectorState<T> {
-  hasQuery(): boolean;
-  getQuery(): string;
-  setQuery(query: string): ISelectorState<T>;
-  getShow(): boolean;
-  setShow(show: boolean): ISelectorState<T>;
-  getItems(): List<T>;
-  getItem(index: number): T;
-  replaceItems(items: Iterable<T>): ISelectorState<T>;
-  getHovered(): T;
-  getHoverIndex(): number;
-  setHoverIndex(index: number): ISelectorState<T>;
-  getSelected(): OrderedSet<T>;
-  isSelected(item: T): boolean;
-  addSelected(item: T): ISelectorState<T>;
-  clearSelection(): ISelectorState<T>;
-  deleteSelected(item: T): ISelectorState<T>;
-  toggleSelected(item: T): ISelectorState<T>;
-  handleKeyboardEvent(event: KeyboardEvent): ISelectorState<T>;
-}
-
-export type SelectorStateCreator<T> = {
-  create(items: T[]): ISelectorState<T>;
-};
+export type Step = 'avatar' | 'type' | 'info';
 
 export type Request = {
-  type: 'post' | 'talk' | 'conference';
-  title: string;
-  about: string;
   avatar?: File;
-  privacy: string;
-  files: {
-    videos: File[];
-    images: File[];
+  dateEnd?: string;
+  dateStart?: string;
+  description: string;
+  files?: {
     docs: File[];
+    images: File[];
+    videos: File[];
   };
-  dateStart: string;
-  dateEnd: string;
-  local: string;
-  tags: string[];
-  switcher: string;
-  livestream: string;
-};
-
-export type Step = 'type' | 'info' | 'avatar' | 'postConf' | 'talkConf';
-
-export type Props = {
-  id: string;
-  className?: string;
-  step: Step;
-  error?: string | null;
-  pending: boolean;
+  local?: string;
+  visibility: string;
   tags?: string[];
-  request: Request;
-  shortnamePrefix?: string;
-  autoFocus: boolean;
-  maxGroupSize: number;
-  isPublicGroupEnabled: boolean;
-  onClose: () => any;
-  onSubmit: (request: Request) => any;
-  onStepChange: (step: Step) => any;
-  onRequestChange: (request: Request) => any;
-  isMaxGroupSizeVisible: boolean;
+  title: string;
+  type: 'post' | 'conference';
 };

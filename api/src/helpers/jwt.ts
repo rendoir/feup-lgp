@@ -10,6 +10,7 @@ export function jwtMiddleware() {
             // public routes that don't require authentication
             '/login',
             '/users',
+            '/',
         ],
     });
 }
@@ -37,7 +38,7 @@ async function isRevoked(req, payload, done) {
 
         // continue
         done(null, false);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.log(error);
         return done(error, false);
     }

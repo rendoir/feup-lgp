@@ -26,7 +26,7 @@ export async function getProducts(req, res) {
         res.send({
             products: result.rows,
         });
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         res.status(500).send({
             message: `Error retrieving products: ${error}`,
         });
@@ -44,7 +44,7 @@ export async function getProduct(req, res) {
             values: [req.body.id, conferenceId],
         });
         res.send({ products: products.rows[0] });
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */{
         console.log('Error getting products. Error: ' + e.message);
     }
 }
@@ -52,7 +52,7 @@ export async function getProduct(req, res) {
 export async function createProduct(req, res) {
     const conferenceId = req.params.conf_id;
     let imageURL = req.body.image;
-    if (imageURL.length === 0) {
+    if (imageURL === undefined || imageURL.length === 0) {
         imageURL = 'http://placehold.it/700x400';
     }
     if (conferenceId === undefined) {
@@ -61,7 +61,7 @@ export async function createProduct(req, res) {
             values: [req.body.name, req.body.stock, req.body.points, imageURL],
         }).then(() => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while adding a new product' });
         });
@@ -71,7 +71,7 @@ export async function createProduct(req, res) {
             values: [req.body.name, req.body.stock, req.body.points, req.body.image, conferenceId],
         }).then(() => {
             res.status(200).send();
-        }).catch((error) => {
+        }).catch((error) => /* istanbul ignore next */{
             console.log('\n\nERROR:', error);
             res.status(400).send({ message: 'An error ocurred while adding a new product' });
         });
@@ -86,7 +86,9 @@ export async function updateProduct(req, res) {
         values: [productId, req.body.name, req.body.stock, req.body.points, req.body.image],
     }).then(() => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error occurred while editing a comment' });
     });
@@ -100,7 +102,9 @@ export async function deleteProduct(req, res) {
         values: [productId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while deleting a product' });
     });
@@ -114,7 +118,9 @@ export async function exchangeProduct(req, res) {
         values: [productId, userId],
     }).then((result) => {
         res.status(200).send();
-    }).catch((error) => {
+    }).catch(
+        /* istanbul ignore next */
+        (error) => {
         console.log('\n\nERROR:', error);
         res.status(400).send({ message: 'An error ocurred while exchanging a product' });
     });

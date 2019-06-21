@@ -105,6 +105,16 @@ $modal-create-new-label-font-size: $default-font-size-large;
   }
 }
 
+.input_email {
+  div {
+    padding-left: 0;
+  }
+  input {
+    border-radius: 0;
+    border: 0;
+  }
+}
+
 .footer {
   padding: 0;
 }

@@ -35,7 +35,6 @@ class InviteNotification extends Component<IProps, IState> {
   public async handleAcceptInvite() {
     let joinSuccess: boolean = true;
 
-    // Joining posts is yet to be implemented
     if (this.props.subjectType === 'talk') {
       joinSuccess = await apiUserJoinTalk(this.props.subjectId);
     } else if (this.props.subjectType === 'post') {

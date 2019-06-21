@@ -53,6 +53,22 @@ usersRouter.post('/', controller.register);
 usersRouter.get('/:id', controller.getUser);
 
 /**
+ * @api {post} /api/users/:id/:filename Gets the contents of a user avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the user
+ * @apiParam {String}   filename   Name of the avatar of the user
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+usersRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
  * @api {get} /api/users/{id}/name Get user name
  * @apiName User-Name
  * @apiGroup Users
@@ -72,7 +88,7 @@ usersRouter.get('/:id', controller.getUser);
 usersRouter.get('/:id/name', controller.getUserName);
 
 /**
- * @api {post} /api/users/{id} Get user posts
+ * @api {get} /api/users/{id} Get user posts
  * @apiName Profile Posts
  * @apiGroup Users
  *
@@ -109,7 +125,7 @@ usersRouter.get('/:id/posts', controller.getProfilePosts);
  *      message: 'An error message here'
  *     }
  */
-usersRouter.post('/:id/user_interactions', controller.getUserUserInteractions);
+usersRouter.get('/:id/user_interactions', controller.getUserUserInteractions);
 
 /**
  * @api {post} /api/users/:id/subscription Set a user subscription
@@ -142,7 +158,7 @@ usersRouter.post('/:id/subscription', controller.subscribeUser);
 usersRouter.delete('/:id/subscription', controller.unsubscribeUser);
 
 /**
- * @api {post} /api/users/rate Rate a user
+ * @api {post} /api/users/:id/rate Rate a user
  * @apiName Rate-User
  * @apiGroup Users
  *
@@ -164,6 +180,10 @@ usersRouter.post('/:id/rate', controller.rate);
  *
  * @apiParam {number}   id  This id can be set to any value, since it will not be used. It's in the URL due to route problems.
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {

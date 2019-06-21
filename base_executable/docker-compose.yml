@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  reverseproxy:
+    image: nginx:alpine
+    restart: always
+    ports:
+      # - 443:443
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web
+
+  web:
+    build: ../web
+    restart: always
+    expose: [5000]
+    depends_on:
+      - api
+  db:
+    build: ../db
+    restart: always
+    expose: [5432]
+  api:
+    build: ../api
+    restart: always
+    expose: [8443]
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db

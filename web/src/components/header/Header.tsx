@@ -37,24 +37,7 @@ type State = {
   search: string;
   isOpen: boolean;
   step: Step;
-  request: {
-    type: 'post' | 'talk' | 'conference';
-    title: string;
-    about: string;
-    avatar?: File;
-    privacy: string;
-    files: {
-      docs: File[];
-      videos: File[];
-      images: File[];
-    };
-    tags: string[];
-    dateStart: string;
-    dateEnd: string;
-    local: string;
-    livestream: string;
-    switcher: string;
-  };
+  request: Request;
   userFirstName;
   adminNotifications: number;
   userNotifications: number;
@@ -72,22 +55,20 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
       adminNotifications: 0,
       isOpen: false,
       request: {
-        about: '',
         avatar: undefined,
         dateEnd: '',
         dateStart: '',
+        description: '',
         files: {
           docs: [],
           images: [],
           videos: []
         },
-        livestream: '',
         local: '',
-        privacy: 'public',
-        switcher: 'false',
         tags: [],
         title: '',
-        type: 'post'
+        type: 'post',
+        visibility: 'public'
       },
       search: '',
       step: 'type',
@@ -122,7 +103,6 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
             {this.auth.loggedIn() && this.renderLinks()}
             {this.auth.loggedIn() && <SearchSimpleForm />}
             {this.renderLanguageSelector()}
-            {this.renderInvite()}
             {this.auth.loggedIn() && this.renderButtons()}
           </Navbar.Collapse>
         </Navbar>
@@ -144,14 +124,6 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           onChange={this.props.onLanguageChange}
         />
       </div>
-    );
-  }
-
-  private renderInvite() {
-    return (
-      <Navbar.Brand href={'/invite'} className={styles.logo}>
-        <Icon icon={faUserPlus} size={'lg'} className={styles.icon} />
-      </Navbar.Brand>
     );
   }
 
@@ -242,6 +214,9 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
           <NavDropdown.Item href={`/user/${this.auth.getUserPayload().id}`}>
             {dictionary.profile[this.context]}
           </NavDropdown.Item>
+          <NavDropdown.Item href={`/invite`}>
+            {dictionary.invite_users[this.context]}
+          </NavDropdown.Item>
           {this.renderAdminDropdown()}
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={this.onClickLogout}>
@@ -250,14 +225,12 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         </NavDropdown>
         {this.state.isOpen ? (
           <CreateNewModal
-            pending={false}
-            onSubmit={this.handleSubmit}
-            maxGroupSize={5}
-            request={this.state.request}
-            onStepChange={step => this.setState({ step })}
+            onChange={request => this.setState({ request })}
             onClose={this.resetState}
-            onRequestChange={request => this.setState({ request })}
-            autoFocus={false}
+            onStepChange={step => this.setState({ step })}
+            onSubmit={this.handleSubmit}
+            request={this.state.request}
+            show={this.state.isOpen}
             step={this.state.step}
             tags={this.tags}
           />
@@ -270,7 +243,7 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     let isAdmin = false;
 
     axiosInstance
-      .post(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
+      .get(getApiURL(`/admin/${this.auth.getUserPayload().id}`))
       .then(res => {
         isAdmin = res.data;
         if (isAdmin) {
@@ -300,20 +273,27 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
   private handleSubmit = (request: Request) => {
     if (request.type === 'post') {
       const formData = new FormData();
-      request.files.images.forEach((file, idx) =>
-        formData.append('images[' + idx + ']', file)
-      );
-      request.files.videos.forEach((file, idx) =>
-        formData.append('videos[' + idx + ']', file)
-      );
-      request.files.docs.forEach((file, idx) =>
-        formData.append('docs[' + idx + ']', file)
-      );
-      request.tags.forEach((tag, i) => formData.append('tags[' + i + ']', tag));
+      if (request.files) {
+        request.files.images.forEach((file, idx) =>
+          formData.append('images[' + idx + ']', file)
+        );
+        request.files.videos.forEach((file, idx) =>
+          formData.append('videos[' + idx + ']', file)
+        );
+        request.files.docs.forEach((file, idx) =>
+          formData.append('docs[' + idx + ']', file)
+        );
+      }
 
-      formData.append('text', request.about);
+      if (request.tags) {
+        request.tags.forEach((tag, i) =>
+          formData.append('tags[' + i + ']', tag)
+        );
+      }
+
+      formData.append('text', request.description);
       formData.append('title', request.title);
-      formData.append('visibility', request.privacy);
+      formData.append('visibility', request.visibility);
 
       axiosInstance
         .post('/post', formData, {
@@ -328,15 +308,36 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
         })
         .catch(() => console.log('Failed to create post'));
     } else {
+      const formData = new FormData();
+
+      formData.append('about', request.description.trim());
+      formData.append('title', request.title.trim());
+      formData.append('privacy', request.visibility.trim());
+
+      if (request.local === undefined) {
+        request.local = '';
+      }
+      formData.append('local', request.local.trim());
+
+      if (request.dateStart === undefined) {
+        request.dateStart = '';
+      }
+      formData.append('dateStart', request.dateStart.trim());
+
+      if (request.dateEnd === undefined) {
+        request.dateEnd = '';
+      }
+      formData.append('dateEnd', request.dateEnd.trim());
+
+      if (request.avatar !== undefined) {
+        formData.append('avatar', request.avatar);
+      }
+
       axiosInstance
-        .post('/conference', {
-          about: request.about,
-          avatar: request.avatar,
-          dateEnd: request.dateEnd,
-          dateStart: request.dateStart,
-          local: request.local,
-          privacy: request.privacy,
-          title: request.title
+        .post('/conference', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
         .then(res => {
           console.log(`conference with id = ${res.data.id} created`);
@@ -374,22 +375,20 @@ class Header extends PureComponent<RouteComponentProps<{}> & Props, State> {
     this.setState({
       isOpen: false,
       request: {
-        about: '',
         avatar: undefined,
         dateEnd: '',
         dateStart: '',
+        description: '',
         files: {
           docs: [],
           images: [],
           videos: []
         },
-        livestream: '',
         local: '',
-        privacy: 'public',
-        switcher: 'false',
         tags: [],
         title: '',
-        type: 'post'
+        type: 'post',
+        visibility: 'public'
       },
       search: '',
       step: 'type'

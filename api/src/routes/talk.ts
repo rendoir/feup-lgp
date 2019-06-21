@@ -15,8 +15,14 @@ export const talkRouter = Router();
  * @apiParam {string}   dateStart   date when the talk starts
  * @apiParam {string}   dateEnd   date when the talk ends
  * @apiParam {Object}   avatar      talk image
+ * @apiParam {string}   livestream   livestream link
  * @apiParam {String}   privacy     Visibility of the post: public/followers/private
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      id: 28
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -32,13 +38,18 @@ talkRouter.post('/', controller.createTalk);
  *
  * @apiParam {Number}   id          Id of the talk
  * @apiParam {String}   title       Title of the talk
- * @apiParam {String}   about       Talk description
+ * @apiParam {String}   description Talk description
  * @apiParam {String}   local       Local where the talk will take place
  * @apiParam {string}   dateStart   Date when the talk starts
  * @apiParam {string}   dateEnd     Date when the talk ends
  * @apiParam {Object}   avatar      Talk image
+ * @apiParam {string}   livestream  Livestream link
  * @apiParam {String}   privacy     Visibility of the talk: public | followers | private
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -48,13 +59,33 @@ talkRouter.post('/', controller.createTalk);
 talkRouter.put('/:id', controller.editTalk);
 
 /**
+ * @api {post} /api/users/:id/:filename Gets the contents of a talk avatar
+ * @apiName Get-File
+ * @apiGroup Post
+ *
+ * @apiParam {String}   id         ID of the talk
+ * @apiParam {String}   filename   Name of the avatar of the talk
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      message: 'An error message here'
+ *     }
+ */
+talkRouter.get('/:id/avatar/:filename', controller.getAvatar);
+
+/**
  * @api {post} /api/talk/:id/invite Invite user to talk
  * @apiName Invite-To-talk
  * @apiGroup talk
  *
  * @apiParam {number}   id    Id of the talk the user will be invited to
- * @apiParam {number}   invited_user    Id of the user being invited
+ * @apiParam {number}   selected    Id of the user being invited
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
@@ -145,7 +176,7 @@ talkRouter.post('/:id/join', controller.joinTalk);
 talkRouter.delete('/:id/leave', controller.leaveTalk);
 
 /**
- * @api {get} /api/talk/:id/check_participant Check if a user is participating in a talk
+ * @api {get} /api/talk/:id/check_participation Check if a user is participating in a talk
  * @apiName Check-talk-Participation
  * @apiGroup talk
  *

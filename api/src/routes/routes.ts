@@ -6,7 +6,6 @@ export * from './admin';
 export * from './comment';
 export * from './talk';
 export * from './search';
-export * from './shop';
 export * from './tags';
 export * from './challenge';
 export * from './conference';

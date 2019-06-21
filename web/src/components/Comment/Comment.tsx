@@ -27,11 +27,15 @@ export type Props = {
   author: {
     id: number;
     name: string | undefined;
+    avatar?: string;
+    avatar_mimeType?: string;
   };
   secondLevel: boolean;
 };
 
 export type State = {
+  avatar?: string;
+  avatarUserLoggedIn?: string;
   commentID: number;
   commentText: string | undefined;
   commentValue: string;
@@ -40,6 +44,7 @@ export type State = {
   isHovered: boolean;
   likers: any[];
   likes: number;
+  nameUserLoggedIn: string;
   redirect: boolean;
   userReport: boolean; // Tells if the logged user has reported this post
 };
@@ -56,6 +61,8 @@ class Comment extends Component<Props, State> {
     this.id = 'comment_' + this.props.id;
 
     this.state = {
+      avatar: '',
+      avatarUserLoggedIn: '',
       commentID: 0,
       commentText: this.props.text,
       commentValue: '',
@@ -64,6 +71,7 @@ class Comment extends Component<Props, State> {
       isHovered: false,
       likers: [],
       likes: 0,
+      nameUserLoggedIn: '',
       redirect: false,
       userReport: false
     };
@@ -86,6 +94,8 @@ class Comment extends Component<Props, State> {
     this.apiGetCommentsOfComment(Number(this.props.id));
     this.apiGetWhoLikedComment(Number(this.props.id));
     this.apiGetCommentUserReport(Number(this.props.id));
+    this.updateAvatarSrc();
+    this.getUserAvatarSrc();
   }
 
   public render() {
@@ -96,7 +106,7 @@ class Comment extends Component<Props, State> {
             title={this.props.author.name}
             placeholder="empty"
             size={30}
-            image="https://picsum.photos/200/200?image=52"
+            image={this.state.avatar}
           />
           <div>
             <div className={styles.comment_text}>
@@ -146,10 +156,10 @@ class Comment extends Component<Props, State> {
                       onSubmit={this.handleAddComment}
                     >
                       <Avatar
-                        title={this.props.author.name}
+                        title={this.state.nameUserLoggedIn}
                         placeholder="empty"
                         size={30}
-                        image="https://picsum.photos/200/200?image=52"
+                        image={this.state.avatarUserLoggedIn}
                       />
                       <textarea
                         className={`form-control ml-4 mr-3 ${this.getInputRequiredClass(
@@ -633,6 +643,8 @@ class Comment extends Component<Props, State> {
           postID={comment.post}
           id={comment.id}
           author={{
+            avatar: comment.avatar,
+            avatar_mimeType: comment.avatar_mimeType,
             id: comment.author_id,
             name: comment.first_name + ' ' + comment.last_name
           }}
@@ -680,6 +692,69 @@ class Comment extends Component<Props, State> {
 
   private getInputRequiredStyle(content: string) {
     return content !== '' ? { display: 'none' } : {};
+  }
+
+  private updateAvatarSrc() {
+    if (this.props.author.avatar === undefined) {
+      return;
+    }
+
+    axiosInstance
+      .get(
+        `/users/${this.props.author.id}/avatar/${this.props.author.avatar}`,
+        {
+          responseType: 'arraybuffer'
+        }
+      )
+      .then(res => {
+        const src =
+          'data:' +
+          this.props.author.avatar_mimeType +
+          ';base64, ' +
+          new Buffer(res.data, 'binary').toString('base64');
+
+        this.setState({ avatar: src });
+        this.forceUpdate();
+      });
+  }
+
+  private getUserAvatarSrc() {
+    const id = this.auth.getUserPayload().id;
+
+    axiosInstance.get(`/users/${id}/`).then(res => {
+      if (!res.data.user) {
+        return;
+      } else if (
+        res.data.user.avatar === null ||
+        res.data.user.avatar === undefined
+      ) {
+        this.setState({
+          nameUserLoggedIn:
+            res.data.user.first_name + ' ' + res.data.user.last_name
+        });
+        this.forceUpdate();
+        return;
+      }
+
+      axiosInstance
+        .get(`/users/${id}/avatar/${res.data.user.avatar}`, {
+          responseType: 'arraybuffer'
+        })
+        .then(result => {
+          const src =
+            'data:' +
+            res.data.user.avatar_mimeType +
+            ';base64, ' +
+            new Buffer(result.data, 'binary').toString('base64');
+
+          this.setState({
+            avatarUserLoggedIn: src,
+            nameUserLoggedIn:
+              res.data.user.firstName + ' ' + res.data.user.lastName
+          });
+          this.forceUpdate();
+        });
+    });
   }
 }
 

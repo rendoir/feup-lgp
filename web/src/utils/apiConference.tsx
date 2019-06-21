@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance';
 export async function apiUserJoinConference(
   conferenceId: number
 ): Promise<boolean> {
-  const apiURL = `/conference/${conferenceId}/add_participant`;
+  const apiURL = `/conferences/${conferenceId}/add_participant`;
   try {
     await axiosInstance.post(apiURL);
     return true;
@@ -16,7 +16,7 @@ export async function apiUserJoinConference(
 export async function apiUserLeaveConference(
   conferenceId: number
 ): Promise<boolean> {
-  const apiURL = `/conference/${conferenceId}/remove_participant`;
+  const apiURL = `/conferences/${conferenceId}/remove_participant`;
   try {
     await axiosInstance.delete(apiURL);
     return true;
@@ -29,7 +29,7 @@ export async function apiUserLeaveConference(
 export async function apiCheckUserConferenceParticipation(
   conferenceId: number
 ): Promise<boolean> {
-  const apiURL = `/conference/${conferenceId}/check_participation`;
+  const apiURL = `/conferences/${conferenceId}/check_participation`;
   try {
     const res = await axiosInstance.get(apiURL);
     return res.data.participant;
@@ -42,7 +42,7 @@ export async function apiCheckUserConferenceParticipation(
 export async function apiCheckUserCanJoinConference(
   conferenceId: number
 ): Promise<boolean> {
-  const apiURL = `/conference/${conferenceId}/check_user_access`;
+  const apiURL = `/conferences/${conferenceId}/check_user_access`;
   try {
     const res = await axiosInstance.get(apiURL);
     return res.data.canJoin;

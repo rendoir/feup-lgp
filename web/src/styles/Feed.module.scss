@@ -1,5 +1,8 @@
 @import './variables';
 
+$modal-create-new-font-family: $default-font-family;
+$modal-create-new-font-size: $default-font-size;
+
 .cardsLeft {
 	position: fixed;
 	top: 6rem;
@@ -108,3 +111,26 @@
 		//color: $white;
 	}
 }
+
+.avatarBlock {
+	width: 140px;
+	margin-right: 34px;
+	flex: 0 0 auto;
+  }
+
+.avatarEdit {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.dates {
+	display: block;
+	color: $color-primary;
+	margin-bottom: $default-padding / 2;
+	font-family: $modal-create-new-font-family;
+	font-size: $modal-create-new-font-size;
+	font-weight: 500;
+	text-transform: uppercase;
+  }

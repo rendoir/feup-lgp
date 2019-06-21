@@ -28,6 +28,7 @@ export type SelectorStateCreator<T> = {
 
 export type Request = {
   avatar?: File;
+  avatar_str?: string;
   email: string;
   first_name: string;
   home_town: string;

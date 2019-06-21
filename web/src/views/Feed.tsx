@@ -117,7 +117,7 @@ class Feed extends React.Component<Props, State> {
         .catch(error => {
           this.setState({
             error: true,
-            errorMessage: error.response.data.message,
+            errorMessage: dictionary.feed_error[this.context],
             isLoading: false
           });
         });
@@ -143,7 +143,7 @@ class Feed extends React.Component<Props, State> {
         .catch(error => {
           this.setState({
             error: true,
-            errorMessage: error.response.data.message,
+            errorMessage: dictionary.feed_error[this.context],
             isLoading: false
           });
         });
@@ -161,6 +161,8 @@ class Feed extends React.Component<Props, State> {
           this.dateOptions
         )}
         author={post.author}
+        avatar={post.avatar}
+        avatar_mimeType={post.avatar_mimeType}
         content={post.content}
         visibility={post.visibility}
         comments={post.comments}

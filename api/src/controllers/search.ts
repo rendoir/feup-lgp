@@ -10,7 +10,7 @@ async function postQuery(keywords: string[], tags: string[], limit: number, offs
     const loggedInUser = 1;
     const queryKeywords = keywords.join(' & ');
     const posts = await query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content,
+        text: `SELECT p.id, first_name, last_name, avatar, avatar_mimeType, p.title, p.content,
             p.visibility, p.date_created, p.date_updated, users.id AS user_id
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
@@ -57,7 +57,7 @@ async function authorQuery(keywords: string[], tags: string[], limit: number, of
     const loggedInUser = 1;
     const queryKeywords = keywords.join('|');
     const posts = await query({
-        text: `SELECT p.id, first_name, last_name, p.title, p.content, p.visibility, p.date_created, p.date_updated
+        text: `SELECT p.id, first_name, last_name, avatar, avatar_mimeType, p.title, p.content, p.visibility, p.date_created, p.date_updated
                 FROM posts p
                     INNER JOIN users ON (users.id = p.author)
                 WHERE
@@ -103,7 +103,7 @@ async function authorQuery(keywords: string[], tags: string[], limit: number, of
 async function userQuery(keywords: string[], limit: number, offset: number, initialDate: number, finalDate: number) {
     const queryKeywords = keywords.join('|');
     const users = await query({
-        text: `SELECT id, first_name, last_name, rate, date_created, work, work_field, email, permissions
+        text: `SELECT id, first_name, last_name, avatar, avatar_mimeType, rate, date_created, work, work_field, email, permissions
                 FROM users
                 WHERE
                     (first_name ~* ($3)
@@ -134,7 +134,8 @@ async function userQuery(keywords: string[], limit: number, offset: number, init
 async function addPostDetails(posts: any[]) {
     for (const post of posts) {
         const comments = await query({
-            text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created, a.first_name, a.last_name
+            text: `SELECT c.id, c.post, c.comment, c.date_updated, c.date_created,
+                    a.first_name, a.last_name, avatar, avatar_mimeType
                     FROM posts p
                     LEFT JOIN comments c
                     ON p.id = c.post
@@ -192,6 +193,9 @@ async function runQueries(type, keywords, tags, limit, offset, initialDate, fina
             users = results.users;
             size = results.size;
             return { users, size };
+        default:
+            console.error('Invalid search type');
+            return { posts: [], users: [], size: 0 };
     }
 }
 
@@ -206,7 +210,7 @@ export async function search(req, res) {
 
     const keywords: string[] = req.query.k ? JSON.parse(req.query.k) : [];
     const tags: string[] = req.query.tags ? JSON.parse(req.query.tags) : [];
-    const type: string = req.query.t ? JSON.parse(req.query.t) : null;
+    const type: string = req.query.t ? JSON.parse(req.query.t) : 1; // default is post content search
     const initialDate: number = new Date(req.query.di ? req.query.di : null).getTime() / 1000;
     const finalDate: number = (req.query.df
         ? new Date(req.query.df).getTime() / 1000
@@ -215,7 +219,7 @@ export async function search(req, res) {
     try {
         const result = await runQueries(type, keywords, tags, limit, offset, initialDate, finalDate);
         res.send(result);
-    } catch (error) {
+    } catch (error) /* istanbul ignore next */ {
         console.error(error);
         res.status(500).send('Search error');
     }
@@ -225,7 +229,7 @@ export async function searchUserByEmail(req, res) {
     const email = `%${req.query.email}%`;
     try {
         const users = await query({
-            text: `SELECT id, (first_name || ' ' || last_name) as user_name
+            text: `SELECT id, (first_name || ' ' || last_name) as user_name, avatar, avatar_mimeType
                    FROM users
                    WHERE email LIKE $1
             `,
